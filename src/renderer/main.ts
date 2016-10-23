@@ -1,22 +1,30 @@
 import * as Vue from "vue";
 import { component } from "vueit";
+import { Vtable, VtableProps } from "vue-vtable";
+import { store, AppStore } from "./store";
 
-interface AppData {
-    message: string;
-}
+console.log(Vtable);
 
 @component<App>({
-    data(): AppData {
-        return {
-            message: "Hello vuejs."
+    store,
+    render(h: typeof Vue.prototype.$createElement) {
+        const { items, columns, rowHeight } = this.$store.state;
+        const props: VtableProps = {
+            items,
+            columns,
+            rowHeight,
+            rowStyleCycle: 2,
+            getItemKey: (item: number) => item
         };
-    },
-    render(h) {
-        return h("h1", [ this.$data.message ]);
+        return h(Vtable, {
+            props,
+            staticClass: "revision-list",
+            domProps: { id: "main-revision-list" }
+        });
     }
 })
 export class App extends Vue {
-    $data: AppData;
+    $store: AppStore;
 }
 
 new Vue({
