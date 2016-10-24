@@ -16,7 +16,7 @@ export type AppStore = Vuex.Store<AppState>;
 
 const graphCellEven: GraphCellProps = {
     gridWidth: 16,
-    height: 20,
+    height: 24,
     graph: {
         interEdges: [
             { index: 2, type: "I", color: "yellow" }
@@ -37,7 +37,7 @@ const graphCellEven: GraphCellProps = {
 
 const graphCellOdd: GraphCellProps = {
     gridWidth: 16,
-    height: 20,
+    height: 24,
     graph: {
         interEdges: [
             { index: 1, type: "I", color: "cyan" }
@@ -102,6 +102,6 @@ export const store = new Vuex.Store<AppState>({
     state: {
         columns: detailColumns,
         items: _.range(0, 10000),
-        rowHeight: 20
+        rowHeight: 24
     }
 });
