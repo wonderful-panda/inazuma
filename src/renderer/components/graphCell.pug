@@ -1,0 +1,34 @@
+svg(:height="height", :width="width")
+    mask(key="m:node", id="mask-node", maskUnits="userSpaceOnUse")
+        rect(width="100%", height="100%", fill="white")
+        circle(:cx="nodeX", :cy="nodeY", :r="radius + 1", fill="black")
+    mask(key="m:line", id="mask-line", maskUnits="userSpaceOnUse")
+        rect(width="100%", height="100%", fill="white")
+        circle(:cx="nodeX", :cy="nodeY", :r="radius + 1", fill="black")
+        path(v-for="edge in foregroundEdges",
+             :key="edgeKey(edge)",
+             :d="nodeEdgePath(edge)",
+             stroke="black", :stroke-width="4", fill="none")
+
+    line(v-for="edge in graph.interEdges",
+         :key="edgeKey(edge)",
+         :x1="c2x(edge.index)", y1="0",
+         :x2="c2x(edge.index)", :y2="height",
+         :stroke="edge.color", :stroke-width="2",
+         mask="url(#mask-line)")
+
+    template(v-for="(edge, i) in graph.nodeEdges")
+        line(v-if="edge.index === nodeIdx",
+             :key="edgeKey(edge)",
+             :x1="c2x(edge.index)", :y1="edge.type === 'C' ? 0 : height",
+             :x2="c2x(edge.index)", :y2="nodeY",
+             :stroke="edge.color", :stroke-width="2",
+             mask="url(#mask-node)")
+        path(v-else,
+             :key="edgeKey(edge)",
+             :d="nodeEdgePath(edge)",
+             :stroke="edge.color", :stroke-width="2", fill="none",
+             :mask="nodeEdgeMask(edge, i)")
+
+    circle(:cx="nodeX", :cy="nodeY", :r="radius", :fill="graph.node.color")
+

@@ -22,8 +22,14 @@ module.exports = {
     },
     module: {
         loaders: [
-          { test: /\.ts$/, loader: "ts" }
+          { test: /\.ts$/, loader: "ts" },
+          { test: /\.pug$/, loader: "vue-template-compiler!simple-pug" }
         ]
+    },
+    resolveLoader: {
+        alias: {
+            "simple-pug": path.join(__dirname, "simple-pug-loader")
+        }
     },
     plugins: [
         new webpack.ExternalsPlugin("commonjs", [
