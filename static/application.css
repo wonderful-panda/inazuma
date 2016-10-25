@@ -30,6 +30,12 @@ body {
 
 .vtable-cell, .vtable-header-cell {
     padding: 0 0.2em 0 0.2em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vtable-row .cell-id, .vtable-row .cell-date {
+    font-family: monospace;
 }
 
 .cell-comment {

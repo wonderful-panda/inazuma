@@ -1,107 +1,91 @@
 import * as Vue from "vue";
 import * as Vuex from "vuex";
 import * as _ from "lodash";
+import * as Electron from "electron";
+import { GraphFragment, Grapher } from "../../grapher";
+import { Commit } from "../../types";
 import { VtableColumn } from "vue-vtable";
 import { GraphCell, GraphCellProps } from "../components/graphCell";
 
+const ipcRenderer = Electron.ipcRenderer;
+
 Vue.use(Vuex);
+
+export interface LogItem {
+    graph: GraphFragment;
+    commit: Commit;
+}
 
 export interface AppState {
     columns: VtableColumn[];
-    items: number[];
+    items: LogItem[];
     rowHeight: number;
 }
 
 export type AppStore = Vuex.Store<AppState>;
-
-const graphCellEven: GraphCellProps = {
-    gridWidth: 16,
-    height: 24,
-    graph: {
-        interEdges: [
-            { index: 2, type: "I", color: "yellow" }
-        ],
-        nodeEdges: [
-            { index: 0, type: "C", color: "orange" },
-            { index: 0, type: "P", color: "orange" },
-            { index: 1, type: "C", color: "cyan" },
-            { index: 1, type: "P", color: "cyan" }
-        ],
-        node: {
-            index: 0,
-            color: "orange"
-        },
-        width: 3
-    }
-};
-
-const graphCellOdd: GraphCellProps = {
-    gridWidth: 16,
-    height: 24,
-    graph: {
-        interEdges: [
-            { index: 1, type: "I", color: "cyan" }
-        ],
-        nodeEdges: [
-            { index: 0, type: "C", color: "orange" },
-            { index: 0, type: "P", color: "orange" },
-            { index: 2, type: "C", color: "yellow" },
-            { index: 2, type: "P", color: "yellow" }
-        ],
-        node: {
-            index: 0,
-            color: "orange"
-        },
-        width: 3
-    }
-};
-
 
 const detailColumns: VtableColumn[] = [
     {
         title: "graph",
         className: "cell-graph",
         defaultWidth: 120,
-        minWidth: 80,
-        render: (h, item, index, ctx) => {
-            const props = index % 2 ? graphCellOdd : graphCellEven;
+        minWidth: 40,
+        render: (h, item: LogItem, index, ctx) => {
+            const props: GraphCellProps = {
+                graph: item.graph,
+                gridWidth: 16,
+                height: 24
+            };
             return h(GraphCell, { props });
         }
     },
     {
         title: "id",
         className: "cell-id",
-        defaultWidth: 120,
-        minWidth: 80,
-        render: (h, item, index, ctx) => item
+        defaultWidth: 80,
+        minWidth: 40,
+        render: (h, item: LogItem, index, ctx) => item.commit.id.substring(0, 8)
     },
     {
         title: "author",
         className: "cell-author",
-        defaultWidth: 200,
-        minWidth: 80,
-        render: (h, item, index, ctx) => `author of ${item}`
+        defaultWidth: 120,
+        minWidth: 40,
+        render: (h, item: LogItem, index, ctx) => item.commit.author
     },
     {
         title: "date",
         className: "cell-date",
         defaultWidth: 200,
         minWidth: 80,
-        render: (h, item, index, ctx) => "9999-99-99 99:99:99"
+        render: (h, item: LogItem, index, ctx) => item.commit.date.toLocaleString()
     },
     {
         title: "comment",
         className: "cell-comment",
         defaultWidth: 600,
         minWidth: 200,
-        render: (h, item, index, ctx) => "----+----1----+----2----+----3----+----4-----+----5"
+        render: (h, item: LogItem, index, ctx) => item.commit.summary
     }
 ];
 
 export const store = new Vuex.Store<AppState>({
     state: {
         columns: detailColumns,
-        items: _.range(0, 10000),
+        items: [],
         rowHeight: 24
+    },
+    mutations: {
+        resetItems(state: AppState, items: LogItem[]) {
+            state.items = items;
+        }
     }
+});
+
+ipcRenderer.on("COMMITS", (event, commits: Commit[]) => {
+    const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
+    const logItems = commits.map(c => {
+        return { commit: c, graph: grapher.proceed(c) };
+    });
+    store.commit("resetItems", logItems);
 });

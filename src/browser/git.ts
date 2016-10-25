@@ -14,3 +14,15 @@ function openRepo(path: string): Promise<ngit.Repository> {
         });
     }
 }
+
+export function fetchHistory(repoPath: string, num: number): Promise<ngit.Commit[]> {
+    return openRepo(repoPath).then(repo => {
+        return repo.getHeadCommit().then(head => ( { repo, head } ));
+    }).then(item => {
+        const { repo, head } = item;
+        const rw = ngit.Revwalk.create(repo);
+        rw.sorting(ngit.Revwalk.SORT.TOPOLOGICAL);
+        rw.push(head.id());
+        return rw.getCommits(num);
+    });
+}

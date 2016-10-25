@@ -1,22 +1,6 @@
 import * as Vue from "vue";
+import { NodeEdge, InterEdge, GraphFragment } from "../../grapher";
 import { component, prop } from "vueit";
-
-interface Edge {
-    index: number;
-    type: "P" | "C" | "I";
-    color: string;
-}
-interface NodeSymbol {
-    index: number;
-    color: string;
-}
-
-interface GraphFragment {
-    interEdges: Edge[];
-    nodeEdges: Edge[];
-    node: NodeSymbol;
-    width: number;
-}
 
 export interface GraphCellProps {
     graph: GraphFragment;
@@ -35,7 +19,7 @@ export class GraphCell extends Vue implements GraphCellProps {
     c2x(c: number): number {
         return c * this.gridWidth + this.gridWidth / 2;
     }
-    nodeEdgePath(edge: Edge): string {
+    nodeEdgePath(edge: NodeEdge): string {
         const x1 = this.c2x(edge.index);
         const x2 = this.nodeX;
         const y1 = edge.type === "P" ? this.height : 0;
@@ -47,7 +31,7 @@ export class GraphCell extends Vue implements GraphCellProps {
         const ey = y1 < y2 ? ry : -1 * ry;
         return `M ${x1},${y1} a ${rx},${ry} 0 0,${sweep} ${ex},${ey} H ${x2}`;
     }
-    nodeEdgeMask(edge: Edge, index: number): string {
+    nodeEdgeMask(edge: NodeEdge, index: number): string {
         if (index == 0 || index == this.graph.nodeEdges.length - 1) {
             return "url(#mask-node)";
         }
@@ -55,8 +39,11 @@ export class GraphCell extends Vue implements GraphCellProps {
             return "url(#mask-line)";
         }
     }
-    edgeKey(edge: Edge) {
+    nodeEdgeKey(edge: NodeEdge) {
         return `${edge.type}:${edge.index}`;
+    }
+    interEdgeKey(edge: InterEdge) {
+        return `I:${edge.index}`;
     }
     get width(): number {
         return this.graph.width * this.gridWidth;
@@ -73,9 +60,9 @@ export class GraphCell extends Vue implements GraphCellProps {
     get nodeIdx(): number {
         return this.graph.node.index;
     }
-    get foregroundEdges(): Edge[] {
+    get foregroundEdges(): NodeEdge[] {
         const edges = this.graph.nodeEdges;
-        const ret = <Edge[]>[];
+        const ret = <NodeEdge[]>[];
         if (edges.length === 0) {
             return ret;
         }
