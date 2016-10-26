@@ -31,19 +31,25 @@ export interface GraphFragment {
  * Color chooser for graph edges.
  */
 class ColorPallete {
-    _freeColors: string[];
+    _used: { [color: string]: number };
+    _queue: string[];
     constructor(public colors: string[]) {
-        this._freeColors = [ ...colors ];
+        this._queue = [ ...colors ];
+        this._used = {};
+        colors.forEach(c => this._used[c] = 0);
     }
     pop(): string {
-        if (this._freeColors.length == 0) {
-            this._freeColors = [ ...this.colors ];
+        if (this._queue.length === 0) {
+            this._queue.splice(0, 0, ...this.colors);
         }
-        return this._freeColors.shift();
+        const ret = this._queue.shift();
+        this._used[ret] += 1;
+        return ret;
     }
     push(color: string) {
-        if (this._freeColors.indexOf(color) < 0) {
-            this._freeColors.push(color);
+        this._used[color] -= 1;
+        if (this._used[color] === 0) {
+            this._queue.push(color);
         }
     }
 }
@@ -81,12 +87,17 @@ export class Grapher {
             const { id, childId, index, color } = e;
             if (id === dagNode.id) {
                 nodeEdges.push({ type: "C", index, id: childId, color });
+                let edgeGoingOn = false;
                 if (!node) {
                     occupied[index] = true;
                     node = { index, color };
                     if (primaryParent) {
                         nodeEdges.push({ type: "P", index, id: primaryParent, color });
+                        edgeGoingOn = true;
                     }
+                }
+                if (!edgeGoingOn) {
+                    this._pallete.push(color);
                 }
             }
             else {
