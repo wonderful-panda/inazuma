@@ -1,36 +1,45 @@
 import * as Vue from "vue";
-import { component } from "vueit";
-import { Vtable, VtableProps } from "vue-vtable";
+import * as VueRouter from "vue-router";
+import { component, watch } from "vueit";
 import { store, AppStore, LogItem } from "./store";
+import { router } from "./route";
+import { Grapher } from "../grapher";
+import { Commit } from "../types";
+import * as Electron from "electron";
 
-@component<App>({
-    store,
-    created() {
-        console.log("created");
-    },
-    render(h: typeof Vue.prototype.$createElement) {
-        const { items, columns, rowHeight } = this.$store.state;
-        const props: VtableProps = {
-            items,
-            columns,
-            rowHeight,
-            rowStyleCycle: 2,
-            getItemKey: (item: LogItem) => item.commit.id
-        };
-        return h(Vtable, {
-            props,
-            staticClass: "revision-list",
-            domProps: { id: "main-revision-list" }
-        });
-    }
-})
-export class App extends Vue {
-    $store: AppStore;
-}
+const ipcRenderer = Electron.ipcRenderer;
 
-new Vue({
+const app = new Vue({
     el: "#app",
+    store,
+    router,
     render(h) {
-        return h(App);
+        return h(this.$options.components["router-view"]);
+    },
+    methods: {
+        onRouteChanged() {
+            const route: VueRouter.Route = this.$route;
+            if (route.name === "log") {
+                ipcRenderer.send("openRepository", route.params["repoPath"]);
+            }
+        }
+    },
+    created() {
+        (this as any).onRouteChanged();
+    },
+    watch: {
+        "$route": "onRouteChanged"
     }
+});
+
+ipcRenderer.on("navigate", (event, option: any) => {
+    router.push(option);
+});
+
+ipcRenderer.on("COMMITS", (event, commits: Commit[]) => {
+    const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
+    const logItems = commits.map(c => {
+        return { commit: c, graph: grapher.proceed(c) };
+    });
+    store.commit("resetItems", logItems);
 });

@@ -82,10 +82,3 @@ export const store = new Vuex.Store<AppState>({
     }
 });
 
-ipcRenderer.on("COMMITS", (event, commits: Commit[]) => {
-    const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
-    const logItems = commits.map(c => {
-        return { commit: c, graph: grapher.proceed(c) };
-    });
-    store.commit("resetItems", logItems);
-});

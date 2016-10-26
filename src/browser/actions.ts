@@ -4,6 +4,8 @@ import * as path from "path";
 import * as git from "./git";
 import { Commit } from "../types";
 
+const ipcMain = Electron.ipcMain;
+
 function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
     return git.fetchHistory(repoPath, num).then(rawCommits => {
         return rawCommits.map(c => {
@@ -26,3 +28,6 @@ export function openRepository(repoPath: string, target: Electron.WebContents) {
         target.send("ERROR", e);
     });
 }
+ipcMain.on(openRepository.name, (event: Electron.IpcMainEvent, repoPath: string) => {
+    openRepository(repoPath, event.sender);
+})

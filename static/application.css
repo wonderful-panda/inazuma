@@ -8,10 +8,6 @@ html, body {
 body {
     display: flex;
     margin: 0px;
-}
-
-#main-revision-list {
-    display: flex;
     box-sizing: border-box;
     height: 100%;
     flex: 1;

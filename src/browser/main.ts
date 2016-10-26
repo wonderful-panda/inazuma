@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import * as Electron from "electron";
 import * as menus from "./menus";
+import "./actions";
 
 const html = "../static/index.html";
 
