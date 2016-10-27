@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "electron-prebuilt": "^1.4.3",
+    "jsonschema": "^1.1.0",
     "lodash": "^4.16.4",
     "nodegit": "^0.16.0",
     "vue": "^2.0.3",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@types/electron": "^1.4.24",
+    "@types/jsonschema": "0.0.4",
     "@types/lodash": "^4.14.37",
     "file-loader": "^0.9.0",
     "pug": "^2.0.0-beta6",

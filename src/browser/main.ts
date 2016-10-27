@@ -1,15 +1,20 @@
 import * as _ from "lodash";
 import * as Electron from "electron";
 import * as menus from "./menus";
+import * as persist from "./persistentData";
+
 import "./actions";
 
 const html = "../static/index.html";
 
 Electron.app.on("window-all-closed", () => {
+    persist.saveConfig();
+    persist.saveEnvironment();
     if (process.platform !== "darwin") {
         Electron.app.quit();
     }
 });
+
 
 let mainWindow: Electron.BrowserWindow;
 
