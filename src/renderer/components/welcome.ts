@@ -1,7 +1,5 @@
 import * as Vue from "vue";
 import { component } from "vueit";
-import { Vtable, VtableProps } from "vue-vtable";
-import { store, AppStore, LogItem } from "../store";
 
 @component<Welcome>({
     render(h: typeof Vue.prototype.$createElement) {

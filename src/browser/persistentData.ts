@@ -41,10 +41,6 @@ function save(file: string, schema: any, data: any) {
 /*
  * config
  */
-declare interface Config {
-    recentListCount: number;
-}
-
 const configJsonPath = path.join(folder, "config.json");
 export const configSchema = {
     id: "/Config",
@@ -81,10 +77,6 @@ export const config = new ConfigObject(loadConfig());
 /*
  * environment
  */
-declare interface Environment {
-    recentOpened: string[];
-}
-
 const environmentJsonPath = path.join(folder, ".environment.json");
 const environmentSchema = {
     id: "/Environment",

@@ -1,5 +1,3 @@
-import { DagNode } from "./types";
-
 export interface InterEdge {
     index: number;
     id: string;

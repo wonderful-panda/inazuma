@@ -1,10 +1,9 @@
 import * as Vue from "vue";
 import * as VueRouter from "vue-router";
 import { component, watch } from "vueit";
-import { store, AppStore, LogItem } from "./store";
+import { store } from "./store";
 import { router } from "./route";
 import { Grapher } from "../grapher";
-import { Commit } from "../types";
 import * as Electron from "electron";
 
 const ipcRenderer = Electron.ipcRenderer;

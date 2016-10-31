@@ -2,7 +2,6 @@ import * as Electron from "electron";
 import * as _ from "lodash";
 import * as path from "path";
 import * as git from "./git";
-import { Commit } from "../types";
 
 const ipcMain = Electron.ipcMain;
 

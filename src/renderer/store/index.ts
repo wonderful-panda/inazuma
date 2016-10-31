@@ -3,7 +3,6 @@ import * as Vuex from "vuex";
 import * as _ from "lodash";
 import * as Electron from "electron";
 import { GraphFragment, Grapher } from "../../grapher";
-import { Commit } from "../../types";
 import { VtableColumn } from "vue-vtable";
 import { GraphCell, GraphCellProps } from "../components/graphCell";
 
