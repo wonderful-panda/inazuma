@@ -5,6 +5,7 @@ import { component, watch } from "vueit";
 import { store } from "./store";
 import { router } from "./route";
 import { browserActions } from "./browserActions";
+const { render, staticRenderFns } = require("./app.pug");
 
 Electron.ipcRenderer.on("action", (event, name, payload) => {
     store.dispatch(name, payload);
@@ -14,9 +15,8 @@ const app = new Vue({
     el: "#app",
     store,
     router,
-    render(h) {
-        return h(this.$options.components["router-view"]);
-    },
+    render,
+    staticRenderFns,
     methods: {
         onRouteChanged() {
             const route: VueRouter.Route = this.$route;
