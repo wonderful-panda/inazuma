@@ -15,6 +15,9 @@ export const rendererActions: RendererActions<Electron.WebContents> = {
     error(ctx, e: any) {
         sendRenderer(ctx, "error", e);
     },
+    environmentChanged(ctx, env) {
+        sendRenderer(ctx, "environmentChanged", env);
+    },
     navigateToLog(ctx, repoPath) {
         sendRenderer(ctx, "navigateToLog", repoPath);
     },
@@ -26,6 +29,9 @@ export const rendererActions: RendererActions<Electron.WebContents> = {
 const browserActions: BrowserActions<Electron.WebContents> = {
     openRepository(ctx, repoPath) {
         fetchHistory(repoPath, 1000).then(commits => {
+            if (environment.addRecentOpened(repoPath)) {
+                rendererActions.environmentChanged(ctx, environment.data);
+            }
             rendererActions.showCommits(ctx, commits);
         }).catch(e => {
             console.log(e);

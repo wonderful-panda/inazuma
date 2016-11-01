@@ -8,6 +8,7 @@ export interface LogItem {
 }
 
 export interface AppState {
+    environment: Environment,
     columns: VtableColumn[];
     items: LogItem[];
     rowHeight: number;

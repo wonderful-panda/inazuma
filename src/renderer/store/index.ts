@@ -57,6 +57,7 @@ const detailColumns: VtableColumn[] = [
 
 export const store = new Vuex.Store<AppState>({
     state: {
+        environment: <Environment>Electron.remote.getGlobal("environment"),
         columns: detailColumns,
         items: [],
         rowHeight: 24
@@ -64,6 +65,9 @@ export const store = new Vuex.Store<AppState>({
     mutations: {
         resetItems(state: AppState, items: LogItem[]) {
             state.items = items;
+        },
+        resetEnvironment(state: AppState, env: Environment) {
+            state.environment = env;
         }
     },
     actions

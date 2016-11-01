@@ -6,7 +6,7 @@ import { LogItem, AppActionContext, AppActionTree } from "../rendererTypes";
 const actions: RendererActions<AppActionContext> & AppActionTree = {
     error(ctx, e) {
     },
-    environmentChanged(ctx, env) {
+    environmentChanged(ctx, env: Environment) {
         ctx.commit("resetEnvironment", env);
     },
     navigateToLog(ctx, repoPath) {

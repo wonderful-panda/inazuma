@@ -6,6 +6,8 @@ import * as persist from "./persistentData";
 import { setupBrowserActions } from "./actions";
 setupBrowserActions();
 
+global["environment"] = persist.environment.data;
+
 const html = "../static/index.html";
 
 Electron.app.on("window-all-closed", () => {
@@ -15,7 +17,6 @@ Electron.app.on("window-all-closed", () => {
         Electron.app.quit();
     }
 });
-
 
 let mainWindow: Electron.BrowserWindow;
 

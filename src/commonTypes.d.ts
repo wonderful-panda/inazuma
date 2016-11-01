@@ -32,6 +32,7 @@ declare interface Commit extends DagNode {
  */
 declare interface RendererActions<T> {
     error(ctx: T, e: any);
+    environmentChanged(ctx: T, env: Environment);
     showCommits(ctx: T, commits: Commit[]);
     navigateToLog(ctx: T, repoPath: string);
 }
