@@ -1,12 +1,14 @@
 import * as Vue from "vue";
 import * as VueRouter from "vue-router";
+import * as Electron from "electron";
 import { component, watch } from "vueit";
 import { store } from "./store";
 import { router } from "./route";
-import { Grapher } from "../grapher";
-import * as Electron from "electron";
+import { browserActions } from "./browserActions";
 
-const ipcRenderer = Electron.ipcRenderer;
+Electron.ipcRenderer.on("action", (event, name, payload) => {
+    store.dispatch(name, payload);
+});
 
 const app = new Vue({
     el: "#app",
@@ -19,7 +21,7 @@ const app = new Vue({
         onRouteChanged() {
             const route: VueRouter.Route = this.$route;
             if (route.name === "log") {
-                ipcRenderer.send("openRepository", route.params["repoPath"]);
+                browserActions.openRepository(null, route.params["repoPath"]);
             }
         }
     },
@@ -31,14 +33,3 @@ const app = new Vue({
     }
 });
 
-ipcRenderer.on("navigate", (event, option: any) => {
-    router.push(option);
-});
-
-ipcRenderer.on("COMMITS", (event, commits: Commit[]) => {
-    const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
-    const logItems = commits.map(c => {
-        return { commit: c, graph: grapher.proceed(c) };
-    });
-    store.commit("resetItems", logItems);
-});

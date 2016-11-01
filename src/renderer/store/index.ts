@@ -6,8 +6,7 @@ import * as Electron from "electron";
 import { VtableColumn } from "vue-vtable";
 import { GraphCell, GraphCellProps } from "../components/graphCell";
 import { LogItem, AppState } from "../rendererTypes";
-
-const ipcRenderer = Electron.ipcRenderer;
+import actions from "./actions";
 
 Vue.use(Vuex);
 
@@ -66,6 +65,7 @@ export const store = new Vuex.Store<AppState>({
         resetItems(state: AppState, items: LogItem[]) {
             state.items = items;
         }
-    }
+    },
+    actions
 });
 

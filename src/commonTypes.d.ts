@@ -28,6 +28,15 @@ declare interface Commit extends DagNode {
 }
 
 /**
+ * Vuex actions can be called from browser process.
+ */
+declare interface RendererActions<T> {
+    error(ctx: T, e: any);
+    showCommits(ctx: T, commits: Commit[]);
+    navigateToLog(ctx: T, repoPath: string);
+}
+
+/**
  * Browser process methods which can be called from renderer process.
  */
 declare interface BrowserActions<T> {

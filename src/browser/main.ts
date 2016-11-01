@@ -3,7 +3,8 @@ import * as Electron from "electron";
 import * as menus from "./menus";
 import * as persist from "./persistentData";
 
-import "./actions";
+import { setupBrowserActions } from "./actions";
+setupBrowserActions();
 
 const html = "../static/index.html";
 

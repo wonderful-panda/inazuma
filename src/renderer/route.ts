@@ -11,3 +11,9 @@ const routes = [
 ];
 
 export const router = new VueRouter({ routes });
+
+export const navigate = {
+    log(repoPath) {
+        router.push({ name: "log", params: { repoPath } });
+    }
+}
