@@ -1,27 +1,15 @@
+///<reference path="../rendererTypes.d.ts" />
 import * as Vue from "vue";
 import * as Vuex from "vuex";
 import * as _ from "lodash";
 import * as Electron from "electron";
-import { GraphFragment, Grapher } from "../../grapher";
 import { VtableColumn } from "vue-vtable";
 import { GraphCell, GraphCellProps } from "../components/graphCell";
+import { LogItem, AppState } from "../rendererTypes";
 
 const ipcRenderer = Electron.ipcRenderer;
 
 Vue.use(Vuex);
-
-export interface LogItem {
-    graph: GraphFragment;
-    commit: Commit;
-}
-
-export interface AppState {
-    columns: VtableColumn[];
-    items: LogItem[];
-    rowHeight: number;
-}
-
-export type AppStore = Vuex.Store<AppState>;
 
 const detailColumns: VtableColumn[] = [
     {
