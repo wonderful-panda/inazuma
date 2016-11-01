@@ -1,0 +1,20 @@
+div
+    h3 Git repository viewer powered by Electron
+
+    h4 Select Repository
+
+    ul.mdl-list.mdl-list__item--two-line(style="padding-left:1em;")
+        li.mdl-list__item(v-for="repo in recentOpened")
+            span.mdl-list__item-primary-content
+                span {{ getRepoName(repo) }}
+                span.mdl-list__item-sub-title {{ stripDotGit(repo) }}
+            span.mdl-list__item-secondary-action
+                button.mdl-button.msl-js-button.mdl-button--primary.mdl-button--raised(style="font-weight:bold;", @click="openRepository(repo)")
+                    | Open
+        li.mdl-list__item
+            span.mdl-list__item-primary-content
+                span OTHERS ...
+                span.mdl-list__item-sub-title Select other repositories by folder browser
+            span.mdl-list__item-secondary-action()
+                button.mdl-button.msl-js-button.mdl-button--accent.mdl-button--raised(style="font-weight:bold;")
+                    | Browse

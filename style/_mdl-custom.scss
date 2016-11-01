@@ -1,0 +1,22 @@
+@import "../node_modules/material-design-lite/src/color-definitions";
+
+$trim-color-classes: false !default;
+
+$color-primary: $palette-indigo-300 !default;
+$color-primary-dark: $palette-indigo-700 !default;
+$color-accent: $palette-orange-A200 !default;
+
+$color-primary-contrast: $palette-grey-900 !default;
+$color-accent-contrast: $palette-grey-900 !default;
+
+/* LIST */
+
+$list-border: 2px !default;
+$list-min-height: 20px !default;
+$list-min-padding: 4px !default;
+$list-two-line-height: 48px !default;
+$list-bottom-padding: 4px !default;
+$list-main-text-text-color: unquote("rgb(#{$palette-grey-200})") !default;
+$list-supporting-text-text-color: unquote("rgb(#{$palette-grey-700})") !default;
+
+@import "../node_modules/material-design-lite/src/material-design-lite";

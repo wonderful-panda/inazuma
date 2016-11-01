@@ -1,13 +1,24 @@
 import * as Vue from "vue";
+import * as Vuex from "vuex";
 import { component } from "vueit";
+import { AppState } from "../rendererTypes";
+import { navigate } from "../route";
 
 @component<Welcome>({
-    render(h: typeof Vue.prototype.$createElement) {
-        return h("div", [
-            h("h1", "INAZUMA"),
-            h("h2", "git repository viewer powered by Electron")
-        ]);
-    }
+    compiledTemplate: require("./welcome.pug")
 })
 export class Welcome extends Vue {
+    $store: Vuex.Store<AppState>;
+    get recentOpened() {
+        return this.$store.state.environment.recentOpened;
+    }
+    stripDotGit(repoPath: string) {
+        return repoPath.replace(/\/\.git(\/)$/, "");
+    }
+    getRepoName(repoPath: string) {
+        return this.stripDotGit(repoPath).split("/").pop();
+    }
+    openRepository(repoPath: string) {
+        navigate.log(repoPath);
+    }
 }
