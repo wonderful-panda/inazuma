@@ -53,10 +53,8 @@ module.exports = [
         },
         module: {
             loaders: [
-                {
-                    test: /\.scss$/,
-                    loader: ExtractTextPlugin.extract(["css", "sass"])
-                }
+                { test: /\.(scss|css)$/, loader: ExtractTextPlugin.extract(["css", "sass"]) },
+                { test: /\.(eot|woff2|woff|ttf)$/, loader: "file?name=[name].[ext]" }
             ]
         },
         plugins: [

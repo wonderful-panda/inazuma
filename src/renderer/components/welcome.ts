@@ -2,7 +2,6 @@ import * as Vue from "vue";
 import * as Vuex from "vuex";
 import { component } from "vueit";
 import { AppState } from "../rendererTypes";
-import { navigate } from "../route";
 
 @component<Welcome>({
     compiledTemplate: require("./welcome.pug")
@@ -19,6 +18,9 @@ export class Welcome extends Vue {
         return this.stripDotGit(repoPath).split("/").pop();
     }
     openRepository(repoPath: string) {
-        navigate.log(repoPath);
+        this.$store.dispatch("navigateToLog", repoPath);
+    }
+    selectRepository(repoPath: string) {
+        this.$store.dispatch("selectRepository");
     }
 }

@@ -1,9 +1,8 @@
 import * as _ from "lodash";
 import * as Electron from "electron";
-import * as menus from "./menus";
 import * as persist from "./persistentData";
 
-import { setupBrowserActions } from "./actions";
+import { setupBrowserActions, rendererActions } from "./actions";
 setupBrowserActions();
 
 global["environment"] = persist.environment.data;
@@ -25,7 +24,8 @@ Electron.app.on("ready", () => {
         {
             label: "&File",
             submenu: [
-                { label: "Open repository", click: menus.openRepository },
+                { label: "Open repository", click: (_, win) => rendererActions.selectRepository(win.webContents) },
+                { label: "Show startup page", click: (_, win) => rendererActions.navigateToRoot(win.webContents) },
                 { label: "E&xit", "accelerator": "CmdOrCtrl+W",  role: "close" }
             ]
         },

@@ -4,7 +4,7 @@ import * as path from "path";
 import * as git from "./git";
 import { environment } from "./persistentData";
 
-function sendRenderer(target: Electron.WebContents, name: string, payload: any) {
+function sendRenderer(target: Electron.WebContents, name: string, payload?: any) {
     target.send("action", name, payload);
 }
 
@@ -18,8 +18,14 @@ export const rendererActions: RendererActions<Electron.WebContents> = {
     environmentChanged(ctx, env) {
         sendRenderer(ctx, "environmentChanged", env);
     },
+    selectRepository(ctx) {
+        sendRenderer(ctx, "selectRepository");
+    },
     navigateToLog(ctx, repoPath) {
         sendRenderer(ctx, "navigateToLog", repoPath);
+    },
+    navigateToRoot(ctx) {
+        sendRenderer(ctx, "navigateToRoot");
     },
     showCommits(ctx, commits) {
         sendRenderer(ctx, "showCommits", commits);

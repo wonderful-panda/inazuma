@@ -1,20 +1,18 @@
-div
-    h3 Git repository viewer powered by Electron
-
-    h4 Select Repository
-
-    ul.mdl-list.mdl-list__item--two-line(style="padding-left:1em;")
-        li.mdl-list__item(v-for="repo in recentOpened")
-            span.mdl-list__item-primary-content
-                span {{ getRepoName(repo) }}
-                span.mdl-list__item-sub-title {{ stripDotGit(repo) }}
-            span.mdl-list__item-secondary-action
-                button.mdl-button.msl-js-button.mdl-button--primary.mdl-button--raised(style="font-weight:bold;", @click="openRepository(repo)")
-                    | Open
-        li.mdl-list__item
-            span.mdl-list__item-primary-content
-                span OTHERS ...
-                span.mdl-list__item-sub-title Select other repositories by folder browser
-            span.mdl-list__item-secondary-action()
-                button.mdl-button.msl-js-button.mdl-button--accent.mdl-button--raised(style="font-weight:bold;")
-                    | Browse
+div(style="width: 100%;")
+    h3 SELECT REPOSITORY
+    div(style="display: inline-block; max-width: 80%;")
+        ul.mdl-list.mdl-list__item--two-line(style="padding-left:1em;")
+            li.mdl-list__item(v-for="repo in recentOpened")
+                span.mdl-list__item-primary-content(style="padding-right: 2em;")
+                    span {{ getRepoName(repo) }}
+                    span.mdl-list__item-sub-title {{ stripDotGit(repo) }}
+                span.mdl-list__item-secondary-action
+                    button.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--mini-fab.mdl-button--primary(@click="openRepository(repo)")
+                        i.material-icons folder_open
+            li.mdl-list__item
+                span.mdl-list__item-primary-content(style="padding-right: 2em;")
+                    span OTHERS ...
+                    span.mdl-list__item-sub-title Select other repositories by folder browser
+                span.mdl-list__item-secondary-action()
+                    button.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--mini-fab.mdl-button--accent(@click="selectRepository")
+                        i.material-icons add
