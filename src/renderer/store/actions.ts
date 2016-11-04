@@ -1,6 +1,6 @@
 import * as Vuex from "vuex";
 import * as Electron from "electron";
-import { Grapher } from "../../grapher";
+import { Grapher } from "../grapher";
 import { navigate } from "../route";
 import { LogItem, AppActionContext, AppActionTree } from "../rendererTypes";
 

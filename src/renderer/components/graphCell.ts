@@ -1,5 +1,5 @@
 import * as Vue from "vue";
-import { NodeEdge, InterEdge, GraphFragment } from "../../grapher";
+import { NodeEdge, InterEdge, GraphFragment } from "../grapher";
 import { component, prop } from "vueit";
 
 export interface GraphCellProps {

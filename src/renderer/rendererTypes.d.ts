@@ -1,5 +1,5 @@
 import * as Vuex from "vuex";
-import { GraphFragment } from "../grapher";
+import { GraphFragment } from "./grapher";
 import { VtableColumn } from "vue-vtable";
 
 export interface LogItem {
