@@ -33,30 +33,31 @@ export const rendererActions: RendererActions<Electron.WebContents> = {
 };
 
 const browserActions: BrowserActions<Electron.WebContents> = {
-    openRepository(ctx, repoPath) {
-        fetchHistory(repoPath, 1000).then(commits => {
+    async openRepository(ctx, repoPath) {
+        try {
+            const commits = await fetchHistory(repoPath, 1000);
             if (environment.addRecentOpened(repoPath)) {
                 rendererActions.environmentChanged(ctx, environment.data);
             }
             rendererActions.showCommits(ctx, commits);
-        }).catch(e => {
+        }
+        catch (e) {
             console.log(e);
             rendererActions.error(ctx, e);
-        });
+        }
     }
 };
 
-function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
-    return git.fetchHistory(repoPath, num).then(rawCommits => {
-        return rawCommits.map(c => {
-            return <Commit>{
-                id: c.sha(),
-                parentIds: _.range(0, c.parentcount()).map(i => c.parentId(i).toString()),
-                author: c.author().name(),
-                summary: c.summary(),
-                date: c.date()
-            };
-        });
+async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
+    const rawCommits = await git.fetchHistory(repoPath, num);
+    return rawCommits.map(c => {
+        return <Commit>{
+            id: c.sha(),
+            parentIds: _.range(0, c.parentcount()).map(i => c.parentId(i).toString()),
+            author: c.author().name(),
+            summary: c.summary(),
+            date: c.date()
+        };
     });
 }
 
