@@ -24,7 +24,7 @@ export class GraphCell extends Vue implements GraphCellProps {
         const x2 = this.nodeX;
         const y1 = edge.type === "P" ? this.height : 0;
         const y2 = this.height / 2;
-        const rx = this.gridWidth / 2;
+        const rx = this.gridWidth;
         const ry = this.height / 2;
         const sweep = (edge.type === "P") === (x1 < x2) ? 1 : 0;
         const ex = x1 < x2 ? rx : -1 * rx;

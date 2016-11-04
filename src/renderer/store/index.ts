@@ -19,7 +19,7 @@ const detailColumns: VtableColumn[] = [
         render: (h, item: LogItem, index, ctx) => {
             const props: GraphCellProps = {
                 graph: item.graph,
-                gridWidth: 16,
+                gridWidth: 12,
                 height: 24
             };
             return h(GraphCell, { props });
