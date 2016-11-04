@@ -31,12 +31,15 @@ export class GraphCell extends Vue implements GraphCellProps {
         const ey = y1 < y2 ? ry : -1 * ry;
         return `M ${x1},${y1} a ${rx},${ry} 0 0,${sweep} ${ex},${ey} H ${x2}`;
     }
+    maskUrl(id: string) {
+        return `url(#${ id })`;
+    }
     nodeEdgeMask(edge: NodeEdge, index: number): string {
         if (index == 0 || index == this.graph.nodeEdges.length - 1) {
-            return "url(#mask-node)";
+            return this.maskUrl(this.nodeMaskId);
         }
         else {
-            return "url(#mask-line)";
+            return this.maskUrl(this.lineMaskId);
         }
     }
     nodeEdgeKey(edge: NodeEdge) {
@@ -59,6 +62,12 @@ export class GraphCell extends Vue implements GraphCellProps {
     }
     get nodeIdx(): number {
         return this.graph.node.index;
+    }
+    get nodeMaskId() {
+        return `mask-node-${ this.graph.id.substring(0, 8) }`;
+    }
+    get lineMaskId() {
+        return `mask-line-${ this.graph.id.substring(0, 8) }`;
     }
     get foregroundEdges(): NodeEdge[] {
         const edges = this.graph.nodeEdges;
