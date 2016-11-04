@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
+    "watch": "webpack -w",
     "start": "electron ."
   },
   "dependencies": {
