@@ -1,28 +1,27 @@
 import * as Vue from "vue";
 import * as Vuex from "vuex";
 import { component } from "vueit";
-import { Vtable, VtableProps } from "vue-vtable";
+import { Vtable } from "vue-vtable";
 import { store } from "../store";
 import { LogItem, AppState } from "../rendererTypes";
 
 @component<LogView>({
-    store,
-    render(h: typeof Vue.prototype.$createElement) {
-        const { items, columns, rowHeight } = this.$store.state;
-        const props: VtableProps = {
-            items,
-            columns,
-            rowHeight,
-            rowStyleCycle: 2,
-            getItemKey: (item: LogItem) => item.commit.id
-        };
-        return h(Vtable, {
-            props,
-            staticClass: "revision-list",
-            domProps: { id: "main-revision-list" }
-        });
-    }
+    components: { Vtable },
+    compiledTemplate: require("./logView.pug"),
+    store
 })
 export class LogView extends Vue {
     $store: Vuex.Store<AppState>;
+    get items() {
+        return this.$store.state.items;
+    }
+    get columns() {
+        return this.$store.state.columns;
+    }
+    get rowHeight() {
+        return this.$store.state.rowHeight;
+    }
+    getItemKey(item: LogItem) {
+        return item.commit.id;
+    }
 }
