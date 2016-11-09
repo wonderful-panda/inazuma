@@ -2,6 +2,9 @@
 
 $trim-color-classes: false !default;
 
+/* layout as desktop always */
+$layout-screen-size-threshold: 0px;
+
 $color-primary: $palette-indigo-300 !default;
 $color-primary-dark: $palette-indigo-700 !default;
 $color-accent: $palette-orange-A200 !default;
@@ -18,5 +21,21 @@ $list-two-line-height: 48px !default;
 $list-bottom-padding: 4px !default;
 $list-main-text-text-color: unquote("rgb(#{$palette-grey-200})") !default;
 $list-supporting-text-text-color: unquote("rgb(#{$palette-grey-700})") !default;
+
+/* HEADER */
+$layout-header-desktop-row-height: 40px !default;
+$layout-header-mobile-row-height: $layout-header-desktop-row-height;
+$layout-header-bg-color: unquote("rgb(#{$palette-lime-A700})") !default;
+$layout-header-text-color: unquote("rgb(#{$palette-grey-900})") !default;
+
+/* DRAWER */
+$layout-drawer-bg-color: unquote("rgb(#{$palette-grey-900})") !default;
+$layout-drawer-border-color: unquote("rgb(#{$palette-lime-A400})") !default;
+$layout-nav-color: unquote("rgb(#{$palette-lime-A400})") !default;
+$layout-drawer-navigation-color: white !default;
+$layout-drawer-button-desktop-size: 40px !default;
+$layout-header-desktop-indent: 12px !default;
+$layout-header-desktop-baseline: 52px !default;
+
 
 @import "../node_modules/material-design-lite/src/material-design-lite";

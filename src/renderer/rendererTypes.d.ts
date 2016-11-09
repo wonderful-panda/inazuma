@@ -8,6 +8,7 @@ export interface LogItem {
 }
 
 export interface AppState {
+    repoPath: string;
     environment: Environment,
     columns: VtableColumn[];
     items: LogItem[];

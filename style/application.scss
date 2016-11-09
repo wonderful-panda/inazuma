@@ -13,9 +13,36 @@ body {
     box-sizing: border-box;
     height: 100%;
     flex: 1;
-    padding: 4px;
     background-color: #222;
     color: white;
+}
+
+.mdl-layout__drawer-button {
+    margin: auto 4px !important;
+    line-height: $layout-header-desktop-row-height !important;
+    .material-icons {
+        vertical-align: middle;
+    }
+}
+
+.mdl-navigation__link {
+    span {
+        padding-left: 1em;
+    }
+}
+.mdl-navigation__link:hover {
+    color: $layout-drawer-bg-color !important;
+}
+
+.main-content {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    padding: 4px;
 }
 
 .vlist-row:nth-child(2n) {

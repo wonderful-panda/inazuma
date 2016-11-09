@@ -1,0 +1,31 @@
+div.mdl-layout.mdl-js-layout.mdl-layout--fixed-header
+    header.mdl-layout__header
+        div.mdl-layout__header-row
+            span.mdl-layout__title(id="reponame") {{ repoName }}
+            span.mdl-layout-spacer
+            div.mdl-textfield.mdl-js-textfield
+                input.mdl-textfield__input(type="text", id="search")
+                label.mdl-textfield__label(for="search") input search pattern
+            label.mdl-button.mdl-js-button.mdl-button--icon(for="search")
+                i.material-icons search
+            label.mdl-button.mdl-js-button.mdl-button--icon
+                i.material-icons refresh
+    div.mdl-layout__drawer
+        nav.mdl-navigation
+            router-link.mdl-navigation__link(:to="branchesLocation")
+                i.material-icons local_offer
+                span Branches & Tags
+            a.mdl-navigation__link(href="#")
+                i.material-icons cloud
+                span Remotes
+            router-link.mdl-navigation__link(:to="{ name: 'root' }")
+                i.material-icons home
+                span Back to home
+            a.mdl-navigation__link(href="#")
+                i.material-icons settings
+                span Preferences
+    main.mdl-layout__content
+        div.main-content
+            log-view
+
+

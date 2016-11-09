@@ -59,6 +59,7 @@ export const store = new Vuex.Store<AppState>({
     state: {
         environment: <Environment>Electron.remote.getGlobal("environment"),
         columns: detailColumns,
+        repoPath: "",
         items: [],
         rowHeight: 24
     },
@@ -68,6 +69,9 @@ export const store = new Vuex.Store<AppState>({
         },
         resetEnvironment(state: AppState, env: Environment) {
             state.environment = env;
+        },
+        setRepoPath(state: AppState, repoPath: string) {
+            state.repoPath = repoPath;
         }
     },
     actions

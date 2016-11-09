@@ -21,12 +21,14 @@ const app = new Vue({
         onRouteChanged() {
             const route: VueRouter.Route = this.$route;
             if (route.name === "log") {
-                browserActions.openRepository(null, route.params["repoPath"]);
+                const repoPath = decodeURIComponent(route.params["repoPath"]);
+                this.$store.commit("setRepoPath", repoPath);
+                browserActions.openRepository(null, repoPath);
             }
         }
     },
-    created() {
-        (this as any).onRouteChanged();
+    created(this: any) {
+        this.onRouteChanged();
     },
     watch: {
         "$route": "onRouteChanged"
