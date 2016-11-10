@@ -21,7 +21,8 @@ body {
     margin: auto 4px !important;
     line-height: $layout-header-desktop-row-height !important;
     .material-icons {
-        vertical-align: middle;
+        margin-top: ($layout-drawer-button-desktop-size - 24px) / 2;
+        margin-bottom: ($layout-drawer-button-desktop-size - 24px) / 2;
     }
 }
 
