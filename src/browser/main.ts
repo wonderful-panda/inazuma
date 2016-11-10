@@ -46,7 +46,9 @@ Electron.app.on("ready", () => {
         }
     ];
     Electron.Menu.setApplicationMenu(Electron.Menu.buildFromTemplate(template));
-    mainWindow = new Electron.BrowserWindow();
+    mainWindow = new Electron.BrowserWindow({
+        autoHideMenuBar: true
+    });
     mainWindow.on("closed", () => {
         mainWindow = null;
     });
