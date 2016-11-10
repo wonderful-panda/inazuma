@@ -12,7 +12,7 @@ import { getFileName } from "../utils";
     store,
     created() {
         Vue.nextTick(() => {
-            componentHandler.upgradeElement(this.$el);
+            componentHandler.upgradeDom();
         });
     }
 })
