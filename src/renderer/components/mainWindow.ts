@@ -4,7 +4,7 @@ import { component } from "vueit";
 import { store } from "../store";
 import { AppState } from "../rendererTypes";
 import { LogView } from "./logView";
-import { getRepoName } from "../utils";
+import { getFileName } from "../utils";
 
 @component<MainWindow>({
     components: { LogView },
@@ -26,6 +26,6 @@ export class MainWindow extends Vue {
     }
     get repoName() {
         const { repoPath } = this.$store.state;
-        return getRepoName(repoPath);
+        return getFileName(repoPath);
     }
 }

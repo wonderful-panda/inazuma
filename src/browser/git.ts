@@ -7,7 +7,7 @@ async function openRepo(path: string): Promise<ngit.Repository> {
     if (path in repos) {
         return repos[path];
     }
-    const repo = repos[path] = await ngit.Repository.open(path);
+    const repo = repos[path] = await ngit.Repository.open(path + "/.git");
     return repo;
 }
 

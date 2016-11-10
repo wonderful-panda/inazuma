@@ -17,7 +17,7 @@ const actions: RendererActions<AppActionContext> & AppActionTree = {
         if (typeof paths === "undefined") {
             return;
         }
-        const repoPath = paths[0].replace(/\\/g, "/").replace(/\/$/, "") + "/.git/";
+        const repoPath = paths[0].replace(/\\/g, "/").replace(/\/$/, "");
         navigate.log(repoPath);
     },
     navigateToLog(ctx, repoPath) {
