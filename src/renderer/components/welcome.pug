@@ -1,18 +1,16 @@
 div(style="flex: 1; padding: 0 1em;")
     h3 SELECT REPOSITORY
-    div(style="display: inline-block; max-width: 80%;")
+    div(style="display: inline-block;")
         ul.mdl-list.mdl-list__item--two-line(style="padding-left:1em;")
             li.mdl-list__item(v-for="repo in recentOpened")
                 span.mdl-list__item-primary-content(style="padding-right: 2em;")
                     span {{ getFileName(repo) }}
                     span.mdl-list__item-sub-title {{ repo }}
                 span.mdl-list__item-secondary-action
-                    button.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--mini-fab.mdl-button--primary(@click="openRepository(repo)")
-                        i.material-icons folder_open
+                    fab-button(@click.native="openRepository(repo)") folder_open
             li.mdl-list__item
                 span.mdl-list__item-primary-content(style="padding-right: 2em;")
                     span OTHERS ...
                     span.mdl-list__item-sub-title Select other repositories by folder browser
                 span.mdl-list__item-secondary-action()
-                    button.mdl-button.mdl-js-button.mdl-button--fab.mdl-button--mini-fab.mdl-button--accent(@click="selectRepository")
-                        i.material-icons add
+                    fab-button(:accent="true", @click.native="selectRepository") add

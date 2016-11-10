@@ -28,6 +28,9 @@ export class MainWindow extends Vue {
         const { repoPath } = this.$store.state;
         return getFileName(repoPath);
     }
+    toggleDrawer() {
+        (this.$el as any).MaterialLayout.toggleDrawer();
+    }
     reload() {
         location.reload();
     }

@@ -1,0 +1,4 @@
+div.mdl-textfield.mdl-js-textfield
+    input.mdl-textfield__input(type="text", :id="inputId")
+    label.mdl-textfield__label(v-if="hintText", :for="inputId")
+        | {{ hintText }}

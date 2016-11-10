@@ -3,14 +3,13 @@ div.mdl-layout.mdl-js-layout.mdl-layout--fixed-header
         div.mdl-layout__header-row
             span.mdl-layout__title(id="reponame") {{ repoName }}
             span.mdl-layout-spacer
-            div.mdl-textfield.mdl-js-textfield
-                input.mdl-textfield__input(type="text", id="search")
-                label.mdl-textfield__label(for="search") input search pattern
-            label.mdl-button.mdl-js-button.mdl-button--icon(for="search")
-                i.material-icons search
-            label.mdl-button.mdl-js-button.mdl-button--icon
-                i.material-icons(@click="reload") refresh
+            textfield(inputId="search", hintText="input search pattern")
+            icon-button(for="search") search
+            icon-button(@click.native="reload") refresh
     div.mdl-layout__drawer
+        div(style="display:flex;")
+            icon-button(style="color:#888;", @click.native="toggleDrawer") close
+
         nav.mdl-navigation
             router-link.mdl-navigation__link(:to="branchesLocation")
                 i.material-icons local_offer
