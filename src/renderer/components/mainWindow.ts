@@ -28,4 +28,7 @@ export class MainWindow extends Vue {
         const { repoPath } = this.$store.state;
         return getFileName(repoPath);
     }
+    reload() {
+        location.reload();
+    }
 }

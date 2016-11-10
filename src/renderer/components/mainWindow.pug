@@ -9,7 +9,7 @@ div.mdl-layout.mdl-js-layout.mdl-layout--fixed-header
             label.mdl-button.mdl-js-button.mdl-button--icon(for="search")
                 i.material-icons search
             label.mdl-button.mdl-js-button.mdl-button--icon
-                i.material-icons refresh
+                i.material-icons(@click="reload") refresh
     div.mdl-layout__drawer
         nav.mdl-navigation
             router-link.mdl-navigation__link(:to="branchesLocation")
