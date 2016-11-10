@@ -7,6 +7,7 @@ import { VtableColumn } from "vue-vtable";
 import { GraphCell, GraphCellProps } from "../components/graphCell";
 import { LogItem, AppState } from "../rendererTypes";
 import actions from "./actions";
+import { formatDate } from "../utils";
 
 Vue.use(Vuex);
 
@@ -42,9 +43,9 @@ const detailColumns: VtableColumn[] = [
     {
         title: "date",
         className: "cell-date",
-        defaultWidth: 200,
-        minWidth: 80,
-        render: (h, item: LogItem, index, ctx) => item.commit.date.toLocaleString()
+        defaultWidth: 100,
+        minWidth: 40,
+        render: (h, item: LogItem, index, ctx) => formatDate(new Date(item.commit.date))
     },
     {
         title: "comment",

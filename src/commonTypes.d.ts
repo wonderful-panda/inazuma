@@ -23,7 +23,7 @@ declare interface DagNode {
 
 declare interface Commit extends DagNode {
     summary: string;
-    date: Date;
+    date: number;
     author: string;
 }
 

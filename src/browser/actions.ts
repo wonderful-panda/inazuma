@@ -56,7 +56,7 @@ async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
             parentIds: _.range(0, c.parentcount()).map(i => c.parentId(i).toString()),
             author: c.author().name(),
             summary: c.summary(),
-            date: c.date()
+            date: c.date().getTime()
         };
     });
 }
