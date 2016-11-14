@@ -1,0 +1,22 @@
+div.mdl-layout.mdl-js-layout.mdl-layout--fixed-header
+    header.mdl-layout__header
+        div.mdl-layout__header-row
+            span.mdl-layout__title(id="main-title") {{ title }}
+            span.mdl-layout-spacer
+            slot(name="titlebar-buttons")
+    div.mdl-layout__drawer
+        div(style="display:flex;")
+            span.mdl-layout-spacer
+            icon-button(style="color:#888;", @click.native="toggleDrawer") close
+
+        nav.mdl-navigation
+            router-link.mdl-navigation__link(
+                v-for="nav in navigations",
+                :replace="true",
+                :to="{ name: nav.name, params: nav.params }", @click.native="toggleDrawer")
+                    i.material-icons {{ nav.icon }}
+                    span {{ nav.text }}
+    main.mdl-layout__content
+        div.main-content
+            slot
+

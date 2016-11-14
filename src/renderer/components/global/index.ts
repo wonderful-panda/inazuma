@@ -1,4 +1,5 @@
 import * as Vue from "vue";
+import { MainLayout } from "./mainLayout";
 import { component, prop } from "vueit";
 
 @component<IconButton>({
@@ -30,3 +31,4 @@ Vue.component("icon-button", IconButton);
 Vue.component("fab-button", FabButton);
 Vue.component("textfield", TextField);
 
+Vue.component("main-layout", MainLayout);

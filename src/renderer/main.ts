@@ -1,8 +1,10 @@
 import * as Vue from "vue";
+import * as Vuex from "vuex";
 import * as VueRouter from "vue-router";
 import * as Electron from "electron";
 import { component, watch } from "vueit";
 import { store } from "./store";
+import { AppState } from "./rendererTypes";
 import { router } from "./route";
 import { browserActions } from "./browserActions";
 const { render, staticRenderFns } = require("./app.pug");
@@ -21,11 +23,15 @@ const app = new Vue({
     staticRenderFns,
     methods: {
         onRouteChanged() {
+            const store: Vuex.Store<AppState> = this.$store;
             const route: VueRouter.Route = this.$route;
-            if (route.name === "log") {
-                const repoPath = decodeURIComponent(route.params["repoPath"]);
-                this.$store.commit("setRepoPath", repoPath);
-                browserActions.openRepository(null, repoPath);
+            const { repoPathEncoded } = route.params;
+            const repoPath = repoPathEncoded ? decodeURIComponent(repoPathEncoded) : undefined;
+            if (store.state.repoPath !== repoPath) {
+                store.commit("setRepoPath", repoPath);
+                if (repoPath) {
+                    browserActions.openRepository(null, repoPath);
+                }
             }
         }
     },
