@@ -1,5 +1,6 @@
 import * as Vue from "vue";
 import { MainLayout } from "./mainLayout";
+import { DrawerLink } from "./drawerLink";
 import { component, prop } from "vueit";
 
 @component<IconButton>({
@@ -32,3 +33,4 @@ Vue.component("fab-button", FabButton);
 Vue.component("textfield", TextField);
 
 Vue.component("main-layout", MainLayout);
+Vue.component("drawer-link", DrawerLink);

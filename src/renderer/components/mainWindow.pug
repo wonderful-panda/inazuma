@@ -1,8 +1,18 @@
-main-layout(:title="repoName", :navigations="navigations")
+main-layout(:title="repoName")
     template(slot="titlebar-buttons")
         textfield(inputId="search", hintText="input search pattern")
         icon-button(for="search") search
         icon-button(@click.native="reload") refresh
+
+    template(slot="drawer-navigations")
+        drawer-link(name="branches", text="Branches", icon="local_offer",
+                    :params="$route.params")
+        drawer-link(name="remotes", text="Remotes", icon="cloud",
+                    :params="$route.params")
+        drawer-link(name="root", text="Back to Home", icon="home")
+        drawer-link(name="root", text="Preferences", icon="settings")
+        div.mdl-layout-spacer
+        drawer-link(name="root", text="Version", icon="info_outline")
 
     div.main-content
         transition(name="slide")

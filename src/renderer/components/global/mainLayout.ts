@@ -11,7 +11,6 @@ import { component, prop } from "vueit";
 })
 export class MainLayout extends Vue {
     @prop.required title: string;
-    @prop.default(() => []) navigations: { name: string, text: string, icon: string, params: any }[];
     toggleDrawer() {
         (this.$el as any).MaterialLayout.toggleDrawer();
     }

@@ -1,16 +1,21 @@
-div(style="flex: 1; padding: 0 1em;")
-    h3 SELECT REPOSITORY
-    div(style="display: inline-block;")
-        ul.mdl-list.mdl-list__item--two-line(style="padding-left:1em;")
-            li.mdl-list__item(v-for="repo in recentOpened")
-                span.mdl-list__item-primary-content(style="padding-right: 2em;")
-                    span {{ getFileName(repo) }}
-                    span.mdl-list__item-sub-title {{ repo }}
-                span.mdl-list__item-secondary-action
-                    fab-button(@click.native="openRepository(repo)") folder_open
-            li.mdl-list__item
-                span.mdl-list__item-primary-content(style="padding-right: 2em;")
-                    span OTHERS ...
-                    span.mdl-list__item-sub-title Select other repositories by folder browser
-                span.mdl-list__item-secondary-action()
-                    fab-button(:accent="true", @click.native="selectRepository") add
+main-layout(title="Inazuma")
+    template(slot="drawer-navigations")
+        drawer-link(name="root", text="Preferences", icon="settings")
+        drawer-link(name="root", text="Version", icon="info_outline")
+
+    div(style="flex: 1; padding: 0 1em;")
+        h3 SELECT REPOSITORY
+        div(style="display: inline-block;")
+            ul.mdl-list.mdl-list__item--two-line(style="padding-left:1em;")
+                li.mdl-list__item(v-for="repo in recentOpened")
+                    span.mdl-list__item-primary-content(style="padding-right: 2em;")
+                        span {{ getFileName(repo) }}
+                        span.mdl-list__item-sub-title {{ repo }}
+                    span.mdl-list__item-secondary-action
+                        fab-button(@click.native="openRepository(repo)") folder_open
+                li.mdl-list__item
+                    span.mdl-list__item-primary-content(style="padding-right: 2em;")
+                        span OTHERS ...
+                        span.mdl-list__item-sub-title Select other repositories by folder browser
+                    span.mdl-list__item-secondary-action()
+                        fab-button(:accent="true", @click.native="selectRepository") add

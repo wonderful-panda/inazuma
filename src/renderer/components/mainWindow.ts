@@ -13,22 +13,12 @@ import { getFileName } from "../utils";
     store
 })
 export class MainWindow extends Vue {
-    $route: VueRouter.Route;
     $store: Vuex.Store<AppState>;
     get repoPath () {
         return this.$store.state.repoPath;
     }
     get repoPathEncoded() {
         return encodeURIComponent(this.repoPath);
-    }
-    get navigations() {
-        const params = this.$route.params;
-        return [
-            { name: "branches", params, text: "Branches & Tags", icon: "local_offer" },
-            { name: "remotes", params, text: "Remotes", icon: "cloud" },
-            { name: "root", text: "Back to Home", icon: "home" },
-            { name: "root", text: "Preferences", icon: "settings" },
-        ]
     }
     get repoName() {
         return getFileName(this.repoPath);
