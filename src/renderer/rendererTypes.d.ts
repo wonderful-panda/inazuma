@@ -10,7 +10,7 @@ export interface LogItem {
 export interface AppState {
     repoPath: string;
     environment: Environment,
-    columns: VtableColumn[];
+    columns: VtableColumn<LogItem>[];
     items: LogItem[];
     rowHeight: number;
 }

@@ -10,12 +10,12 @@ import { LogItem, AppState } from "../rendererTypes";
     store,
     render(h) {
         const { items, columns, rowHeight } = this.$store.state;
-        const props: VtableProps = {
+        const props: VtableProps<LogItem> = {
             items,
             columns,
             rowHeight,
             rowStyleCycle: 2,
-            getItemKey: (item: LogItem) => item.commit.id
+            getItemKey: item => item.commit.id
         };
         return h(Vtable, { props });
     }

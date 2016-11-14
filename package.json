@@ -18,7 +18,7 @@
     "nodegit": "^0.16.0",
     "vue": "^2.0.3",
     "vue-router": "^2.0.1",
-    "vue-vtable": "^0.2.5",
+    "vue-vtable": "^0.3.0",
     "vueit": "^0.4.0",
     "vuex": "^2.0.0"
   },
