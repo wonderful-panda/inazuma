@@ -28,6 +28,7 @@ declare module "nodegit" {
         committer(): string;
         date(): Date;
         getParents(): Promise<Commit[]>;
+        getDiff(): Promise<Diff[]>;
         id(): Oid;
         message(): string;
         owner(): Repository;
@@ -37,6 +38,59 @@ declare module "nodegit" {
         parents(callback: any): Oid[];
         summary(): string;
         sha(): string;
+    }
+
+    export class Diff {
+        patches(): Promise<ConvenientPatch[]>;
+    }
+
+    export namespace Diff {
+        export enum DELTA {
+            UNMODIFIED = 0,
+            ADDED = 1,
+            DELETED = 2,
+            MODIFIED = 3,
+            RENAMED = 4,
+            COPIED = 5,
+            IGNORED = 6,
+            UNTRACKED = 7,
+            TYPECHANGE = 8,
+            UNREADABLE = 9,
+            CONFLICTED = 10
+        }
+
+        export enum FLAG {
+            BINARY = 1,
+            NOT_BINARY = 2,
+            VALID_ID = 4,
+            EXISTS = 8
+        }
+    }
+
+    export class DiffFile {
+        flags(): number;
+        id(): Oid;
+        mode(): number;
+        path(): string;
+        size(): number;
+    }
+
+    export class ConvenientPatch {
+        isAdded(): boolean;
+        isConflicted(): boolean;
+        isCopied(): boolean;
+        isDeleted(): boolean;
+        isIgnored(): boolean;
+        isModified(): boolean;
+        isRenamed(): boolean;
+        isTypeChange(): boolean;
+        isUnmodified(): boolean;
+        isUnreadable(): boolean;
+        isUntracked(): boolean;
+        newFile(): DiffFile;
+        oldFile(): DiffFile;
+        size(): number;
+        status(): number;
     }
 
     export class Reference {
@@ -62,7 +116,6 @@ declare module "nodegit" {
             LISTALL = 3
         }
     }
-
 
     export class Revwalk {
         static create(repo: Repository): Revwalk;
