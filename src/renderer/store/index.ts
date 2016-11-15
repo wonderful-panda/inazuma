@@ -13,17 +13,22 @@ export const store = new Vuex.Store<AppState>({
         columns: columns.detail,
         repoPath: "",
         items: [],
+        selectedIndex: -1,
         rowHeight: 24
     },
     mutations: {
         resetItems(state: AppState, items: LogItem[]) {
             state.items = items;
+            state.selectedIndex = -1;
         },
         resetEnvironment(state: AppState, env: Environment) {
             state.environment = env;
         },
         setRepoPath(state: AppState, repoPath: string) {
             state.repoPath = repoPath;
+        },
+        setSelectedIndex(state: AppState, index: number) {
+            state.selectedIndex = index;
         }
     },
     actions

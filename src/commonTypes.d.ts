@@ -27,6 +27,11 @@ declare interface Commit extends DagNode {
     author: string;
 }
 
+declare interface CommitDetail extends Commit {
+    body: string;
+    files: { path: string, status: number }[];
+}
+
 /**
  * Vuex actions can be called from browser process.
  */
@@ -37,6 +42,7 @@ declare interface RendererActions<T> {
     navigateToLog(ctx, repoPath);
     navigateToRoot(ctx);
     showCommits(ctx: T, commits: Commit[]);
+    showCommitDetail(ctx: T, commit: CommitDetail);
 }
 
 /**
@@ -44,6 +50,7 @@ declare interface RendererActions<T> {
  */
 declare interface BrowserActions<T> {
     openRepository(ctx: T, repoPath: string): void;
+    getCommitDetail(ctx: T, repoPath: string, sha: string): void;
 }
 
 

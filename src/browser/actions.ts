@@ -1,5 +1,6 @@
 import * as Electron from "electron";
 import * as _ from "lodash";
+import * as ngit from "nodegit";
 import * as path from "path";
 import * as git from "./git";
 import { environment } from "./persistentData";
@@ -29,6 +30,9 @@ export const rendererActions: RendererActions<Electron.WebContents> = {
     },
     showCommits(ctx, commits) {
         sendRenderer(ctx, "showCommits", commits);
+    },
+    showCommitDetail(ctx, commit) {
+        sendRenderer(ctx, "showCommitDetail", commit);
     }
 };
 
@@ -45,29 +49,50 @@ const browserActions: BrowserActions<Electron.WebContents> = {
             console.log(e);
             rendererActions.error(ctx, e);
         }
+    },
+    async getCommitDetail(ctx, repoPath: string, sha: string) {
+        try {
+            const detail = await getCommitDetail(repoPath, sha);
+            rendererActions.showCommitDetail(ctx, detail);
+        }
+        catch (e) {
+            console.log(e);
+            rendererActions.error(ctx, e);
+        }
     }
 };
 
+function rawCommitToCommit(c: ngit.Commit): Commit {
+    return <Commit>{
+        id: c.sha(),
+        parentIds: _.range(0, c.parentcount()).map(i => c.parentId(i).toString()),
+        author: c.author().name(),
+        summary: c.summary(),
+        date: c.date().getTime()
+    };
+}
+
 async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
     const rawCommits = await git.fetchHistory(repoPath, num);
-    return rawCommits.map(c => {
-        return <Commit>{
-            id: c.sha(),
-            parentIds: _.range(0, c.parentcount()).map(i => c.parentId(i).toString()),
-            author: c.author().name(),
-            summary: c.summary(),
-            date: c.date().getTime()
-        };
+    return rawCommits.map(c => rawCommitToCommit(c));
+}
+
+async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {
+    const { commit, patches } = await git.getCommitDetail(repoPath, sha);
+    const body = commit.body();
+    const files = patches.map(p => {
+        return { path: p.newFile().path(), status: p.status() };
     });
+    return Object.assign(rawCommitToCommit(commit), { body, files });
 }
 
 export function setupBrowserActions() {
     const ipc = Electron.ipcMain;
     Object.getOwnPropertyNames(browserActions).forEach((name) => {
         const f = <Function>browserActions[name];
-        ipc.on(name, (event, arg) => {
+        ipc.on(name, (event, ...arg) => {
             console.log(name, arg);
-            f(event.sender, arg);
+            f(event.sender, ...arg);
         });
     });
 }

@@ -9,15 +9,23 @@ import { LogItem, AppState } from "../rendererTypes";
     components: { Vtable },
     store,
     render(h) {
-        const { items, columns, rowHeight } = this.$store.state;
+        const { items, columns, rowHeight, selectedIndex } = this.$store.state;
         const props: VtableProps<LogItem> = {
             items,
             columns,
             rowHeight,
             rowStyleCycle: 2,
-            getItemKey: item => item.commit.id
+            getItemKey: item => item.commit.id,
+            getRowClass(item, index) {
+                return index === selectedIndex ? "vtable-row-selected" : "vtable-row";
+            }
         };
-        return h(Vtable, { props });
+        const on = {
+            "row-click": ({item, index}) => {
+                this.$store.dispatch("setSelectedIndex", index);
+            }
+        }
+        return h(Vtable, { props, on });
     }
 })
 export class LogView extends Vue {

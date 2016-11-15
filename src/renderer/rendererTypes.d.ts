@@ -12,6 +12,7 @@ export interface AppState {
     environment: Environment,
     columns: VtableColumn<LogItem>[];
     items: LogItem[];
+    selectedIndex: number;
     rowHeight: number;
 }
 

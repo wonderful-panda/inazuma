@@ -54,6 +54,10 @@ body {
     background-color: #383838;
 }
 
+.vtable-row-selected {
+    background-color: #484848;
+}
+
 .vlist-header-row {
     border-bottom: solid 1px #aaa;
 }
@@ -64,7 +68,7 @@ body {
     white-space: nowrap;
 }
 
-.vtable-row {
+.vtable-row, .vtable-row-selected {
     .cell-id, .cell-date {
         font-family: monospace;
     }

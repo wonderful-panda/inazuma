@@ -25,6 +25,7 @@ declare module "nodegit" {
 
     export class Commit {
         author(): Signature;
+        body(): string;
         committer(): string;
         date(): Date;
         getParents(): Promise<Commit[]>;

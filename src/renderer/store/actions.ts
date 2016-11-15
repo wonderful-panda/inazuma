@@ -3,6 +3,7 @@ import * as Electron from "electron";
 import { Grapher } from "../grapher";
 import { navigate } from "../route";
 import { LogItem, AppActionContext, AppActionTree } from "../rendererTypes";
+import { browserActions } from "../browserActions";
 
 const { BrowserWindow, dialog } = Electron.remote;
 
@@ -32,6 +33,16 @@ const actions: RendererActions<AppActionContext> & AppActionTree = {
             return { commit: c, graph: grapher.proceed(c) };
         });
         ctx.commit("resetItems", logItems);
+        if (commits.length > 0) {
+        }
+    },
+    showCommitDetail(ctx, commit) {
+        console.log(JSON.stringify(commit, null, 2));
+    },
+    setSelectedIndex(ctx, index) {
+        ctx.commit("setSelectedIndex", index);
+        const { repoPath, items } = ctx.state;
+        browserActions.getCommitDetail(null, repoPath, items[index].commit.id);
     }
 };
 

@@ -19,3 +19,11 @@ export async function fetchHistory(repoPath: string, num: number): Promise<ngit.
     rw.push(head.id());
     return await rw.getCommits(num);
 }
+
+export async function getCommitDetail(repoPath: string, sha: string): Promise<{ commit: ngit.Commit, patches: ngit.ConvenientPatch[] }> {
+    const repo = await openRepo(repoPath);
+    const commit = await repo.getCommit(sha);
+    const diff = (await commit.getDiff())[0];
+    const patches = await diff.patches();
+    return { commit, patches };
+}
