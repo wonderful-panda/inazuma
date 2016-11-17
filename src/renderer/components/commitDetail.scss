@@ -1,0 +1,83 @@
+.commit-detail {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 8px;
+    min-width: 40%;
+    max-width: 40%;
+
+    .commit-detail-blank-message {
+        margin: auto;
+        font-weight: bold;
+        font-size: x-large;
+        color: #444;
+    }
+
+    .commit-detail-summary {
+        font-weight: bold;
+        font-size: larger;
+        padding: 4px;
+        margin-bottom: 8px;
+    }
+
+    table {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    td {
+        background-color: #333;
+    }
+
+    .attr-name {
+        vertical-align: top;
+        padding: 0 8px;
+    }
+
+    .attr-value {
+        padding: 0 8px;
+        width: 100%;
+    }
+
+    .commit-detail-body {
+        margin: 0px 2px 8px 2px;
+        font-size: medium;
+        background-color: #333;
+        padding: 0.2em;
+        min-height: 1em;
+        max-height: 12em;
+        white-space: pre-wrap;
+        overflow: auto;
+    }
+
+    .commit-detail-files {
+        display: flex;
+        flex: 1;
+
+        .cell-path {
+            flex: 1;
+        }
+    }
+
+    #commit-detail-files {
+        display: flex;
+        margin: 4px 2px;
+        background-color: #333;
+
+        .vlist-row:hover {
+            background-color: #383838;
+        }
+
+        .vtable-row-selected {
+            background-color: #484848;
+        }
+
+        .vlist-header-row {
+            border-bottom: solid 2px #222;
+        }
+
+        .cell-path {
+            flex: 1;
+        }
+    }
+}
+

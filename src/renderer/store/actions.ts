@@ -33,11 +33,10 @@ const actions: RendererActions<AppActionContext> & AppActionTree = {
             return { commit: c, graph: grapher.proceed(c) };
         });
         ctx.commit("resetItems", logItems);
-        if (commits.length > 0) {
-        }
     },
     showCommitDetail(ctx, commit) {
         console.log(JSON.stringify(commit, null, 2));
+        ctx.commit("setCommitDetail", commit);
     },
     setSelectedIndex(ctx, index) {
         ctx.commit("setSelectedIndex", index);

@@ -24,8 +24,11 @@ import { LogItem, AppState } from "../rendererTypes";
             "row-click": ({item, index}) => {
                 this.$store.dispatch("setSelectedIndex", index);
             }
-        }
-        return h(Vtable, { props, on });
+        };
+        const attrs = {
+            id: "main-revision-log"
+        };
+        return h(Vtable, { attrs, props, on });
     }
 })
 export class LogView extends Vue {

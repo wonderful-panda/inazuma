@@ -5,10 +5,11 @@ import { component } from "vueit";
 import { store } from "../store";
 import { AppState } from "../rendererTypes";
 import { LogView } from "./logView";
+import { CommitDetail } from "./commitDetail";
 import { getFileName } from "../utils";
 
 @component<MainWindow>({
-    components: { LogView },
+    components: { LogView, CommitDetail },
     compiledTemplate: require("./mainWindow.pug"),
     store
 })

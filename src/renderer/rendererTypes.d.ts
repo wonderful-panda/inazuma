@@ -13,6 +13,7 @@ export interface AppState {
     columns: VtableColumn<LogItem>[];
     items: LogItem[];
     selectedIndex: number;
+    selectedCommit: CommitDetail;
     rowHeight: number;
 }
 
