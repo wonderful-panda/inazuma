@@ -5,61 +5,50 @@ import * as path from "path";
 import * as git from "./git";
 import { environment } from "./persistentData";
 
-function sendRenderer(target: Electron.WebContents, name: string, payload?: any) {
-    target.send("action", name, payload);
+export function dispatch(target: Electron.WebContents, type: keyof ActionPayload, payload: never);
+export function dispatch<K extends keyof ActionPayload>(target: Electron.WebContents, type: K, payload: ActionPayload[K]);
+
+export function dispatch(target: Electron.WebContents, type, payload) {
+    target.send("action", type, payload);
 }
 
-/**
- * Proxy object to pass action/payload to Vuex via ipc
- */
-export const rendererActions: RendererActions<Electron.WebContents> = {
-    error(ctx, e: any) {
-        sendRenderer(ctx, "error", e);
-    },
-    environmentChanged(ctx, env) {
-        sendRenderer(ctx, "environmentChanged", env);
-    },
-    selectRepository(ctx) {
-        sendRenderer(ctx, "selectRepository");
-    },
-    navigateToLog(ctx, repoPath) {
-        sendRenderer(ctx, "navigateToLog", repoPath);
-    },
-    navigateToRoot(ctx) {
-        sendRenderer(ctx, "navigateToRoot");
-    },
-    showCommits(ctx, commits) {
-        sendRenderer(ctx, "showCommits", commits);
-    },
-    showCommitDetail(ctx, commit) {
-        sendRenderer(ctx, "showCommitDetail", commit);
-    }
-};
+function registerCommand(type: keyof BrowserCommandPayload, handler: never): void;
+function registerCommand<K extends keyof BrowserCommandPayload>(
+    type: K,
+    handler: (target: Electron.WebContents, payload: BrowserCommandPayload[K]) => void
+): void;
 
-const browserActions: BrowserActions<Electron.WebContents> = {
-    async openRepository(ctx, repoPath) {
+function registerCommand(type, handler) {
+    Electron.ipcMain.on(type, (event, payload) => {
+        console.log(type, payload);
+        handler(event.sender, payload);
+    });
+}
+
+export function setupBrowserCommands() {
+    registerCommand("openRepository", async (target, repoPath) => {
         try {
             const commits = await fetchHistory(repoPath, 1000);
             if (environment.addRecentOpened(repoPath)) {
-                rendererActions.environmentChanged(ctx, environment.data);
+                dispatch(target, "environmentChanged", environment.data);
             }
-            rendererActions.showCommits(ctx, commits);
+            dispatch(target, "showCommits", commits);
         }
         catch (e) {
             console.log(e);
-            rendererActions.error(ctx, e);
+            dispatch(target, "error", e);
         }
-    },
-    async getCommitDetail(ctx, repoPath: string, sha: string) {
+    });
+    registerCommand("getCommitDetail", async (target, { repoPath, sha }) => {
         try {
             const detail = await getCommitDetail(repoPath, sha);
-            rendererActions.showCommitDetail(ctx, detail);
+            dispatch(target, "showCommitDetail", detail);
         }
         catch (e) {
             console.log(e);
-            rendererActions.error(ctx, e);
+            dispatch(target, "error", e);
         }
-    }
+    });
 };
 
 function rawCommitToCommit(c: ngit.Commit): Commit {
@@ -84,16 +73,5 @@ async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDet
         return { path: p.newFile().path(), status: p.status() };
     });
     return Object.assign(rawCommitToCommit(commit), { body, files });
-}
-
-export function setupBrowserActions() {
-    const ipc = Electron.ipcMain;
-    Object.getOwnPropertyNames(browserActions).forEach((name) => {
-        const f = <Function>browserActions[name];
-        ipc.on(name, (event, ...arg) => {
-            console.log(name, arg);
-            f(event.sender, ...arg);
-        });
-    });
 }
 

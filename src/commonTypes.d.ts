@@ -38,24 +38,28 @@ declare interface CommitDetail extends Commit {
 }
 
 /**
- * Vuex actions can be called from browser process.
+ * Type of each Vuex action payload.
+ * Vuex actions run in renderer process, and can be dispatched from
+ * both renderer and browser processes.
  */
-declare interface RendererActions<T> {
-    error(ctx: T, e: any);
-    environmentChanged(ctx: T, env: Environment);
-    selectRepository(ctx: T);
-    navigateToLog(ctx, repoPath);
-    navigateToRoot(ctx);
-    showCommits(ctx: T, commits: Commit[]);
-    showCommitDetail(ctx: T, commit: CommitDetail);
+declare interface ActionPayload {
+    error: any;
+    environmentChanged: Environment;
+    selectRepository: null;
+    navigateToLog: string;
+    navigateToRoot: null;
+    showCommits: Commit[];
+    showCommitDetail: CommitDetail;
+    setSelectedIndex: number;
 }
 
 /**
- * Browser process methods which can be called from renderer process.
+ * Type of each browser command payload.
+ * Browser commands run in browser process, and can be dispatched from
+ * both browser and renderer processes
  */
-declare interface BrowserActions<T> {
-    openRepository(ctx: T, repoPath: string): void;
-    getCommitDetail(ctx: T, repoPath: string, sha: string): void;
+declare interface BrowserCommandPayload {
+    openRepository: string;
+    getCommitDetail: { repoPath: string, sha: string };
 }
-
 

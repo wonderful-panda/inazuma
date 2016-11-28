@@ -6,7 +6,7 @@ import { component, watch } from "vueit";
 import { store } from "./store";
 import { AppState } from "./rendererTypes";
 import { router } from "./route";
-import { browserActions } from "./browserActions";
+import { dispatchBrowser } from "./browser";
 const { render, staticRenderFns } = require("./app.pug");
 
 import "./components/global/index";
@@ -30,7 +30,7 @@ const app = new Vue({
             if (store.state.repoPath !== repoPath) {
                 store.commit("setRepoPath", repoPath);
                 if (repoPath) {
-                    browserActions.openRepository(null, repoPath);
+                    dispatchBrowser("openRepository", repoPath);
                 }
             }
         }
