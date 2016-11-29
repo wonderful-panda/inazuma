@@ -45,7 +45,7 @@ declare interface CommitDetail extends Commit {
 declare interface ActionPayload {
     error: any;
     environmentChanged: Environment;
-    selectRepository: null;
+    showRepositorySelectDialog: null;
     navigateToLog: string;
     navigateToRoot: null;
     showCommits: Commit[];

@@ -5,20 +5,16 @@ import * as path from "path";
 import * as git from "./git";
 import { environment } from "./persistentData";
 
-export function dispatch(target: Electron.WebContents, type: keyof ActionPayload, payload: never);
-export function dispatch<K extends keyof ActionPayload>(target: Electron.WebContents, type: K, payload: ActionPayload[K]);
-
-export function dispatch(target: Electron.WebContents, type, payload) {
+export function dispatch<K extends keyof ActionPayload>(
+        target: Electron.WebContents, type: K, payload: ActionPayload[K]) {
     target.send("action", type, payload);
 }
 
-function registerCommand(type: keyof BrowserCommandPayload, handler: never): void;
-function registerCommand<K extends keyof BrowserCommandPayload>(
-    type: K,
-    handler: (target: Electron.WebContents, payload: BrowserCommandPayload[K]) => void
-): void;
+type BrowserCommandHandler<K extends keyof BrowserCommandPayload> = (
+        target: Electron.WebContents,
+        payload: BrowserCommandPayload[K]) => void;
 
-function registerCommand(type, handler) {
+function registerCommand<K extends keyof BrowserCommandPayload>(type: K, handler: BrowserCommandHandler<K>) {
     Electron.ipcMain.on(type, (event, payload) => {
         console.log(type, payload);
         handler(event.sender, payload);

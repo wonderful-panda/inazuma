@@ -24,7 +24,7 @@ Electron.app.on("ready", () => {
         {
             label: "&File",
             submenu: [
-                { label: "Open repository", click: (_, win) => dispatch(win.webContents, "selectRepository", null) },
+                { label: "Open repository", click: (_, win) => dispatch(win.webContents, "showRepositorySelectDialog", null) },
                 { label: "Show startup page", click: (_, win) => dispatch(win.webContents, "navigateToRoot", null) },
                 { label: "E&xit", "accelerator": "CmdOrCtrl+W",  role: "close" }
             ]

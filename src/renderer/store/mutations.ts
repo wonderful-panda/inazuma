@@ -12,41 +12,34 @@ const emptyCommit: CommitDetail = {
     files: []
 }
 
-const mutations: any = {};
+type MutationHandler<K extends keyof MutationPayload> = (state: AppState, payload: MutationPayload[K]) => void;
+type Mutations = { [K in keyof MutationPayload]: MutationHandler<K> };
 
-function register(type: keyof MutationPayload, handler: never): void;
-function register<K extends keyof MutationPayload>(type: K, handler: (state: AppState, payload: MutationPayload[K]) => any): void;
-function register(type, handler) {
-    mutations[type] = handler;
-}
-
-register("resetItems", (state, items) => {
-    state.items = items;
-    state.selectedIndex = -1;
-    state.selectedCommit = emptyCommit;
-});
-
-register("resetEnvironment", (state, env) => {
-    state.environment = env;
-});
-
-register("setRepoPath", (state, repoPath) => {
-    state.repoPath = repoPath;
-    state.items = [];
-    state.selectedIndex = -1;
-    state.selectedCommit = emptyCommit;
-});
-
-register("setSelectedIndex", (state, index) => {
-    state.selectedIndex = index;
-    state.selectedCommit = emptyCommit;
-});
-
-register("setCommitDetail", (state, commit) => {
-    const { items, selectedIndex } = state;
-    if (items[selectedIndex].commit.id === commit.id) {
-        state.selectedCommit = commit;
+const mutations: Mutations = {
+    resetItems: (state, items) => {
+        state.items = items;
+        state.selectedIndex = -1;
+        state.selectedCommit = emptyCommit;
+    },
+    resetEnvironment(state, env) {
+        state.environment = env;
+    },
+    setRepoPath(state, repoPath) {
+        state.repoPath = repoPath;
+        state.items = [];
+        state.selectedIndex = -1;
+        state.selectedCommit = emptyCommit;
+    },
+    setSelectedIndex(state, index) {
+        state.selectedIndex = index;
+        state.selectedCommit = emptyCommit;
+    },
+    setCommitDetail(state, commit) {
+        const { items, selectedIndex } = state;
+        if (items[selectedIndex].commit.id === commit.id) {
+            state.selectedCommit = commit;
+        }
     }
-});
+}
 
 export default mutations;

@@ -1,9 +1,8 @@
 import * as Vue from "vue";
-import * as Vuex from "vuex";
 import { component } from "vueit";
 import { Vtable, VtableProps } from "vue-vtable";
 import { store } from "../store";
-import { LogItem, AppState } from "../rendererTypes";
+import { LogItem, AppStore } from "../rendererTypes";
 
 @component<LogView>({
     components: { Vtable },
@@ -32,5 +31,5 @@ import { LogItem, AppState } from "../rendererTypes";
     }
 })
 export class LogView extends Vue {
-    $store: Vuex.Store<AppState>;
+    $store: AppStore;
 }
