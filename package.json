@@ -36,7 +36,8 @@
     "pug-cli": "^1.0.0-alpha6",
     "sass-loader": "^4.0.2",
     "ts-loader": "^0.9.4",
-    "typescript": "^2.2.0-dev.20161127",
+    "typescript": "^2.2.0-dev.20161206",
+    "vue-css-definition": "^0.1.0",
     "vue-template-compiler-loader": "^1.0.3",
     "webpack": "^1.13.2"
   }
