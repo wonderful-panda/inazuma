@@ -1,0 +1,6 @@
+div.splitter-panel-container(:style="containerStyle")
+    div.splitter-panel-first(:style="firstPanelStyle")
+        slot(name="first")
+    div(:class="splitterClass", :style="splitterStyle", @mousedown="onSplitterMouseDown")
+    div.splitter-panel-second(:style="secondPanelStyle")
+        slot(name="second")
