@@ -17,7 +17,8 @@ main-layout(:title="repoName")
     div.main-content
         transition(name="slide")
             router-view
-        log-view
-        commit-detail
+        splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :initial-ratio="0.6")
+            log-view(slot="first")
+            commit-detail(slot="second")
 
 

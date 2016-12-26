@@ -54,6 +54,18 @@ body {
     white-space: nowrap;
 }
 
+#main-splitter-panel {
+    flex: 1;
+    margin: 2px;
+}
+
+.splitter-panel-splitter-horizontal, .splitter-panel-splitter-vertical {
+    margin: 0 2px;
+    &:hover {
+        background-color: #383838;
+    }
+}
+
 #main-revision-log {
     .vlist-row:nth-child(2n) {
         background-color: #282828;
