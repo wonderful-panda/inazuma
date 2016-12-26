@@ -9,7 +9,7 @@ import { LogItem, AppStore } from "../rendererTypes";
     store,
     render(h) {
         const { items, columns, rowHeight, selectedIndex } = this.$store.state;
-        const props: VtableProps<LogItem> = {
+        const props: Partial<VtableProps<LogItem>> = {
             items,
             columns,
             rowHeight,
