@@ -17,7 +17,6 @@ const emptyCommit: CommitDetail = {
     files: []
 }
 
-Vue.use(Vuex);
 export const store = new Vuex.Store<AppState>({
     state: {
         environment: <Environment>Electron.remote.getGlobal("environment"),

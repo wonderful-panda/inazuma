@@ -1,6 +1,8 @@
 import * as Vue from "vue";
 import * as Vuex from "vuex";
 import * as VueRouter from "vue-router";
+Vue.use(Vuex);
+Vue.use(VueRouter);
 import * as Electron from "electron";
 import { component, watch } from "vueit";
 import { store } from "./store";

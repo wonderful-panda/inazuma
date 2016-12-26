@@ -4,8 +4,6 @@ import { Welcome } from "./components/welcome";
 import { MainWindow } from "./components/mainWindow";
 import leftPanels from "./components/leftPanels";
 
-Vue.use(VueRouter);
-
 const routes = [
     {
         name: "root", path: "/", component: Welcome
