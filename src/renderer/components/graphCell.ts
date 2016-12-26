@@ -1,6 +1,6 @@
 import { NodeEdge, InterEdge, GraphFragment } from "../grapher";
 import * as typed from "vue-typed-component";
-import { PropOptions } from "./propOptions";
+const p = typed.PropOptions;
 
 export interface GraphCellProps {
     graph: GraphFragment;
@@ -8,12 +8,12 @@ export interface GraphCellProps {
     height: number;
 }
 
-@typed.component<GraphCellProps, GraphCell>({
+@typed.component<GraphCellProps>({
     ...<CompiledTemplate>require("./graphCell.pug"),
     props: {
-        graph: PropOptions.objectRequired(),
-        gridWidth: PropOptions.numberRequired(),
-        height: PropOptions.numberRequired()
+        graph: p.Obj,
+        gridWidth: p.Num.Required,
+        height: p.Num.Required
     }
 })
 export class GraphCell extends typed.TypedComponent<GraphCellProps> {

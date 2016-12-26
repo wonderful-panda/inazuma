@@ -2,15 +2,15 @@ import * as Vue from "vue";
 import { MainLayout } from "./mainLayout";
 import { DrawerLink } from "./drawerLink";
 import * as typed from "vue-typed-component";
-import { PropOptions } from "../propOptions";
+const p = typed.PropOptions;
 
 interface IconButtonProps {
     forElement: String;
 }
-@typed.component<IconButtonProps, IconButton>({
+@typed.component<IconButtonProps>({
     ...<CompiledTemplate>require("./icon-button.pug"),
     props: {
-        forElement: String
+        forElement: p.Str
     }
 })
 class IconButton extends typed.TypedComponent<IconButtonProps> {
@@ -19,10 +19,10 @@ class IconButton extends typed.TypedComponent<IconButtonProps> {
 interface FabButtonProps {
     accent: boolean;
 }
-@typed.component<FabButtonProps, FabButton>({
+@typed.component<FabButtonProps>({
     ...<CompiledTemplate>require("./fab-button.pug"),
     props: {
-        accent: PropOptions.booleanDefault(false)
+        accent: p.Bool.Default(false)
     }
 })
 class FabButton extends typed.TypedComponent<FabButtonProps> {
@@ -35,11 +35,11 @@ interface TextFieldProps {
     inputId: string;
     hintText: string;
 }
-@typed.component<TextFieldProps, TextField>({
+@typed.component<TextFieldProps>({
     ...<CompiledTemplate>require("./textfield.pug"),
     props: {
-        inputId: PropOptions.stringDefault(""),
-        hintText: String
+        inputId: p.Str.Default(""),
+        hintText: p.Str
     }
 })
 class TextField extends typed.TypedComponent<TextFieldProps> {

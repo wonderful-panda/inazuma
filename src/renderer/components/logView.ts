@@ -3,7 +3,6 @@ import component from "vue-class-component";
 import { Vtable, VtableProps } from "vue-vtable";
 import { store } from "../store";
 import { LogItem, AppStore } from "../rendererTypes";
-import { PropOptions } from "./propOptions";
 
 @component<LogView>({
     components: { Vtable },

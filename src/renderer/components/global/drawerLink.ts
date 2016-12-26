@@ -1,5 +1,5 @@
 import * as typed from "vue-typed-component";
-import { PropOptions } from "../propOptions";
+const p = typed.PropOptions;
 
 interface DrawerLinkProps {
     name: string;
@@ -8,13 +8,13 @@ interface DrawerLinkProps {
     params: any;
 }
 
-@typed.component<DrawerLinkProps, DrawerLink>({
+@typed.component<DrawerLinkProps>({
     ...<CompiledTemplate>require("./drawer-link.pug"),
     props: {
-        name: PropOptions.stringRequired(),
-        icon: PropOptions.stringRequired(),
-        text: PropOptions.stringRequired(),
-        params: {}
+        name: p.Str.Required,
+        icon: p.Str.Required,
+        text: p.Str.Required,
+        params: p.Any
     }
 })
 export class DrawerLink extends typed.TypedComponent<DrawerLinkProps> {

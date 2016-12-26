@@ -1,7 +1,7 @@
 import * as typed from "vue-typed-component";
 import { px, clamp } from "../utils";
 import { CssProperties } from "vue-css-definition";
-import { PropOptions } from "./propOptions";
+const p = typed.PropOptions;
 
 export interface SplitterPanelProps {
     direction: "horizontal" | "vertical";
@@ -18,14 +18,14 @@ interface SplitterPanelData {
 
 const FLEX_SUM = 1000;
 
-@typed.component<SplitterPanelProps, SplitterPanel>({
+@typed.component<SplitterPanelProps>({
     ...<CompiledTemplate>require("./splitterPanel.pug"),
     props: {
-        direction: PropOptions.stringRequired(),
-        splitterWidth: PropOptions.numberDefault(3, v => v >= 1),
-        initialRatio: PropOptions.numberDefault(0.5, v => 0 <= v && v <= 1),
-        minSizeFirst: PropOptions.default_("10%"),
-        minSizeSecond: PropOptions.default_("10%")
+        direction: p.Str.Required,
+        splitterWidth: p.Num.Default(3).$positive(),
+        initialRatio: p.Num.Default(0.5).$between(0, 1),
+        minSizeFirst: p.Any.Default("10%"),
+        minSizeSecond: p.Any.Default("10%")
     }
 })
 export class SplitterPanel extends typed.StatefulTypedComponent<SplitterPanelProps, SplitterPanelData> {

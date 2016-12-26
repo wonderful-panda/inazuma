@@ -1,14 +1,15 @@
 import * as VueRouter from "vue-router";
 import * as typed from "vue-typed-component";
+const p = typed.PropOptions;
 
 interface LeftPanelBaseProps {
     title: string;
 }
 
-@typed.component<LeftPanelBaseProps, LeftPanelBase>({
+@typed.component<LeftPanelBaseProps>({
     ...<CompiledTemplate>require("./base.pug"),
     props: {
-        title: String
+        title: p.Str
     }
 })
 export class LeftPanelBase extends typed.TypedComponent<LeftPanelBaseProps> {

@@ -1,15 +1,15 @@
 import * as Vue from "vue";
 import * as typed from "vue-typed-component";
-import { PropOptions } from "../propOptions";
+const p = typed.PropOptions;
 
 interface MainLayoutProps {
     title: string;
 }
 
-@typed.component<MainLayoutProps, MainLayout>({
+@typed.component<MainLayoutProps>({
     ...<CompiledTemplate>require("./main-layout.pug"),
     props: {
-        title: PropOptions.stringRequired()
+        title: p.Str.Required
     },
     created() {
         Vue.nextTick(() => {
