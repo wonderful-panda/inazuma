@@ -6,7 +6,7 @@ Vue.use(VueRouter);
 import * as Electron from "electron";
 import { component, watch } from "vueit";
 import { store } from "./store";
-import { AppState } from "./rendererTypes";
+import { AppStore } from "./rendererTypes";
 import { router } from "./route";
 import { dispatchBrowser } from "./browser";
 const { render, staticRenderFns } = require("./app.pug");
@@ -25,7 +25,7 @@ const app = new Vue({
     staticRenderFns,
     methods: {
         onRouteChanged() {
-            const store: Vuex.Store<AppState> = this.$store;
+            const store = <AppStore>this.$store;
             const route: VueRouter.Route = this.$route;
             const { repoPathEncoded } = route.params;
             const repoPath = repoPathEncoded ? decodeURIComponent(repoPathEncoded) : undefined;

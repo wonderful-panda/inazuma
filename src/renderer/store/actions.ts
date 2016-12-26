@@ -1,4 +1,3 @@
-import * as Vuex from "vuex";
 import * as Electron from "electron";
 import { Grapher } from "../grapher";
 import { navigate } from "../route";

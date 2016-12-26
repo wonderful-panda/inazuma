@@ -1,5 +1,4 @@
 import * as Vue from "vue";
-import * as Vuex from "vuex";
 import { AppState, LogItem, MutationPayload } from "../rendererTypes";
 
 const emptyCommit: CommitDetail = {

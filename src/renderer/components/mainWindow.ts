@@ -1,9 +1,8 @@
 import * as Vue from "vue";
-import * as Vuex from "vuex";
 import * as VueRouter from "vue-router";
 import { component } from "vueit";
 import { store } from "../store";
-import { AppState } from "../rendererTypes";
+import { AppStore } from "../rendererTypes";
 import { LogView } from "./logView";
 import { SplitterPanel } from "./splitterPanel";
 import { CommitDetail } from "./commitDetail";
@@ -15,7 +14,7 @@ import { getFileName } from "../utils";
     store
 })
 export class MainWindow extends Vue {
-    $store: Vuex.Store<AppState>;
+    $store: AppStore;
     get repoPath () {
         return this.$store.state.repoPath;
     }

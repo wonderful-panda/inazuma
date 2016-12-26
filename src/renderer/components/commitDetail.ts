@@ -1,9 +1,8 @@
 import * as Vue from "vue";
-import * as Vuex from "vuex";
 import { component } from "vueit";
 import { Vtable, VtableColumn } from "vue-vtable";
 import { store } from "../store";
-import { AppState } from "../rendererTypes";
+import { AppStore } from "../rendererTypes";
 import { formatDate } from "../utils";
 
 const fileColumns: VtableColumn<CommitEntry>[] = [
@@ -22,7 +21,7 @@ const fileColumns: VtableColumn<CommitEntry>[] = [
     store
 })
 export class CommitDetail extends Vue {
-    $store: Vuex.Store<AppState>;
+    $store: AppStore;
     get commit() {
         return this.$store.state.selectedCommit;
     }
