@@ -1,6 +1,5 @@
 import * as Vue from "vue";
-import * as VueRouter from "vue-router";
-import { component } from "vueit";
+import component from "vue-class-component";
 import { store } from "../store";
 import { AppStore } from "../rendererTypes";
 import { LogView } from "./logView";
@@ -10,7 +9,7 @@ import { getFileName } from "../utils";
 
 @component<MainWindow>({
     components: { LogView, CommitDetail, SplitterPanel },
-    compiledTemplate: require("./mainWindow.pug"),
+    ...<CompiledTemplate>require("./mainWindow.pug"),
     store
 })
 export class MainWindow extends Vue {

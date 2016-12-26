@@ -1,19 +1,27 @@
-import * as Vue from "vue";
-import { component, prop } from "vueit";
+import * as typed from "vue-typed-component";
+import { PropOptions } from "../propOptions";
 
-@component({
-    compiledTemplate: require("./drawer-link.pug")
+interface DrawerLinkProps {
+    name: string;
+    icon: string;
+    text: string;
+    params: any;
+}
+
+@typed.component<DrawerLinkProps, DrawerLink>({
+    ...<CompiledTemplate>require("./drawer-link.pug"),
+    props: {
+        name: PropOptions.stringRequired(),
+        icon: PropOptions.stringRequired(),
+        text: PropOptions.stringRequired(),
+        params: {}
+    }
 })
-export class DrawerLink extends Vue {
-    @prop.required name: string;
-    @prop.required icon: string;
-    @prop.required text: string;
-    @prop params: any;
-
+export class DrawerLink extends typed.TypedComponent<DrawerLinkProps> {
     get location() {
         return {
-            name: this.name,
-            params: this.params
+            name: this.$props.name,
+            params: this.$props.params
         };
     }
 }

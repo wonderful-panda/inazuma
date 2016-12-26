@@ -1,16 +1,23 @@
 import * as Vue from "vue";
-import { component, prop } from "vueit";
+import * as typed from "vue-typed-component";
+import { PropOptions } from "../propOptions";
 
-@component({
-    compiledTemplate: require("./main-layout.pug"),
+interface MainLayoutProps {
+    title: string;
+}
+
+@typed.component<MainLayoutProps, MainLayout>({
+    ...<CompiledTemplate>require("./main-layout.pug"),
+    props: {
+        title: PropOptions.stringRequired()
+    },
     created() {
         Vue.nextTick(() => {
             componentHandler.upgradeDom();
         });
     }
 })
-export class MainLayout extends Vue {
-    @prop.required title: string;
+export class MainLayout extends typed.TypedComponent<MainLayoutProps> {
     toggleDrawer() {
         (this.$el as any).MaterialLayout.toggleDrawer();
     }

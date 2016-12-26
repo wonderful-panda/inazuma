@@ -1,10 +1,10 @@
 import * as Vue from "vue";
-import { component } from "vueit";
+import component from "vue-class-component";
 import { AppStore } from "../rendererTypes";
 import { getFileName } from "../utils";
 
 @component<Welcome>({
-    compiledTemplate: require("./welcome.pug"),
+    ...<CompiledTemplate>require("./welcome.pug"),
     methods: {
         getFileName
     }

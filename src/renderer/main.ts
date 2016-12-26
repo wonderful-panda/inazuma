@@ -4,7 +4,6 @@ import * as VueRouter from "vue-router";
 Vue.use(Vuex);
 Vue.use(VueRouter);
 import * as Electron from "electron";
-import { component, watch } from "vueit";
 import { store } from "./store";
 import { AppStore } from "./rendererTypes";
 import { router } from "./route";

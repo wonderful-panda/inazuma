@@ -1,5 +1,5 @@
 import * as Vue from "vue";
-import { component } from "vueit";
+import component from "vue-class-component";
 import { Vtable, VtableColumn } from "vue-vtable";
 import { store } from "../store";
 import { AppStore } from "../rendererTypes";
@@ -16,7 +16,7 @@ const fileColumns: VtableColumn<CommitEntry>[] = [
 ];
 
 @component<CommitDetail>({
-    compiledTemplate: require("./commitDetail.pug"),
+    ...<CompiledTemplate>require("./commitDetail.pug"),
     components: { Vtable },
     store
 })

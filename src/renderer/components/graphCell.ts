@@ -1,6 +1,6 @@
-import * as Vue from "vue";
 import { NodeEdge, InterEdge, GraphFragment } from "../grapher";
-import { component, prop } from "vueit";
+import * as typed from "vue-typed-component";
+import { PropOptions } from "./propOptions";
 
 export interface GraphCellProps {
     graph: GraphFragment;
@@ -8,24 +8,25 @@ export interface GraphCellProps {
     height: number;
 }
 
-@component({
-    compiledTemplate: require("./graphCell.pug")
+@typed.component<GraphCellProps, GraphCell>({
+    ...<CompiledTemplate>require("./graphCell.pug"),
+    props: {
+        graph: PropOptions.objectRequired(),
+        gridWidth: PropOptions.numberRequired(),
+        height: PropOptions.numberRequired()
+    }
 })
-export class GraphCell extends Vue implements GraphCellProps {
-    @prop.required gridWidth: number;
-    @prop.required height: number;
-    @prop.required graph: GraphFragment;
-
+export class GraphCell extends typed.TypedComponent<GraphCellProps> {
     c2x(c: number): number {
-        return c * this.gridWidth + this.gridWidth / 2;
+        return c * this.$props.gridWidth + this.$props.gridWidth / 2;
     }
     nodeEdgePath(edge: NodeEdge): string {
         const x1 = this.c2x(edge.index);
         const x2 = this.nodeX;
-        const y1 = edge.type === "P" ? this.height : 0;
-        const y2 = this.height / 2;
-        const rx = this.gridWidth;
-        const ry = this.height / 2;
+        const y1 = edge.type === "P" ? this.$props.height : 0;
+        const y2 = this.$props.height / 2;
+        const rx = this.$props.gridWidth;
+        const ry = this.$props.height / 2;
         const sweep = (edge.type === "P") === (x1 < x2) ? 1 : 0;
         const ex = x1 < x2 ? rx : -1 * rx;
         const ey = y1 < y2 ? ry : -1 * ry;
@@ -35,7 +36,7 @@ export class GraphCell extends Vue implements GraphCellProps {
         return `url(#${ id })`;
     }
     nodeEdgeMask(edge: NodeEdge, index: number): string {
-        if (index == 0 || index == this.graph.nodeEdges.length - 1) {
+        if (index == 0 || index == this.$props.graph.nodeEdges.length - 1) {
             return this.maskUrl(this.nodeMaskId);
         }
         else {
@@ -49,28 +50,28 @@ export class GraphCell extends Vue implements GraphCellProps {
         return `I:${edge.index}`;
     }
     get width(): number {
-        return this.graph.width * this.gridWidth;
+        return this.$props.graph.width * this.$props.gridWidth;
     }
     get radius(): number {
-        return this.height >= 30 ? 6 : 5;
+        return this.$props.height >= 30 ? 6 : 5;
     }
     get nodeX(): number {
-        return this.c2x(this.graph.node.index);
+        return this.c2x(this.$props.graph.node.index);
     }
     get nodeY(): number {
-        return this.height / 2;
+        return this.$props.height / 2;
     }
     get nodeIdx(): number {
-        return this.graph.node.index;
+        return this.$props.graph.node.index;
     }
     get nodeMaskId() {
-        return `mask-node-${ this.graph.id.substring(0, 8) }`;
+        return `mask-node-${ this.$props.graph.id.substring(0, 8) }`;
     }
     get lineMaskId() {
-        return `mask-line-${ this.graph.id.substring(0, 8) }`;
+        return `mask-line-${ this.$props.graph.id.substring(0, 8) }`;
     }
     get foregroundEdges(): NodeEdge[] {
-        const edges = this.graph.nodeEdges;
+        const edges = this.$props.graph.nodeEdges;
         const ret = <NodeEdge[]>[];
         if (edges.length === 0) {
             return ret;
