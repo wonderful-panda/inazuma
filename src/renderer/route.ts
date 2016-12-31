@@ -26,4 +26,4 @@ export const navigate = {
     root() {
         router.push({ name: "root" });
     }
-}
+};

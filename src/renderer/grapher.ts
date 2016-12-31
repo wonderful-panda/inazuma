@@ -117,7 +117,7 @@ export class Grapher {
             occupied[index] = true;
             const color = this._pallete.pop();
             if (!node) {
-                node = { index, color }
+                node = { index, color };
                 if (primaryParent) {
                     nodeEdges.push({ type: "P", index, id: primaryParent, color });
                 }

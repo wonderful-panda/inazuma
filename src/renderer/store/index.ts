@@ -15,7 +15,7 @@ const emptyCommit: CommitDetail = {
     body: "",
     date: 0,
     files: []
-}
+};
 
 export const store = new Vuex.Store<AppState>({
     state: {

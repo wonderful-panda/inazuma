@@ -9,7 +9,7 @@ const emptyCommit: CommitDetail = {
     body: "",
     date: 0,
     files: []
-}
+};
 
 type MutationHandler<K extends keyof MutationPayload> = (state: AppState, payload: MutationPayload[K]) => void;
 type Mutations = { [K in keyof MutationPayload]: MutationHandler<K> };
@@ -39,6 +39,6 @@ const mutations: Mutations = {
             state.selectedCommit = commit;
         }
     }
-}
+};
 
 export default mutations;

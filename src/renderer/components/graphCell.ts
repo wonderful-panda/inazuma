@@ -36,7 +36,7 @@ export class GraphCell extends typed.TypedComponent<GraphCellProps> {
         return `url(#${ id })`;
     }
     nodeEdgeMask(edge: NodeEdge, index: number): string {
-        if (index == 0 || index == this.$props.graph.nodeEdges.length - 1) {
+        if (index === 0 || index === this.$props.graph.nodeEdges.length - 1) {
             return this.maskUrl(this.nodeMaskId);
         }
         else {

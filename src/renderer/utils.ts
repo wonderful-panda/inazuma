@@ -2,7 +2,7 @@ export function formatDate(value: Date): string {
     const y = value.getFullYear().toString();
     const m = (value.getMonth() + 1).toString();
     const d = (value.getDate()).toString();
-    return `${y}/${('0' + m).slice(-2)}/${('0' + d).slice(-2)}`;
+    return `${y}/${("0" + m).slice(-2)}/${("0" + d).slice(-2)}`;
 }
 
 export function getFileName(fullpath: string) {
@@ -10,7 +10,7 @@ export function getFileName(fullpath: string) {
 }
 
 export function px(value: number) {
-    return `${value}px`
+    return `${value}px`;
 }
 
 export function clamp(value: number, min: number, max: number) {

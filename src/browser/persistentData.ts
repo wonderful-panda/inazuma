@@ -51,7 +51,7 @@ export const configSchema = {
             minimum: "0"
         }
     }
-}
+};
 
 class ConfigObject {
     constructor(public data: Config) {

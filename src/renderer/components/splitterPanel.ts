@@ -104,12 +104,12 @@ export class SplitterPanel extends typed.StatefulTypedComponent<SplitterPanelPro
             const currentOffset = (this.horizontal ? e.clientX : e.clientY) - basePosition;
             const flexFirst = Math.floor(clamp(currentOffset / totalLength, 0, 1) * FLEX_SUM);
             this.$data.flexFirst = flexFirst;
-        }
+        };
         const onMouseUp = () => {
             this.$data.dragging = false;
             window.removeEventListener("mousemove", onMouseMove);
             window.removeEventListener("mouseup", onMouseUp);
-        }
+        };
         window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("mouseup", onMouseUp);
     }

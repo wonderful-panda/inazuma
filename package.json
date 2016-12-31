@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
+    "lint": "tslint -c tslint.json --fix src/**/*.ts",
     "watch": "webpack -w",
     "start": "electron ."
   },
@@ -36,6 +37,7 @@
     "pug-cli": "^1.0.0-alpha6",
     "sass-loader": "^4.1.1",
     "ts-loader": "^1.3.3",
+    "tslint": "^4.2.0",
     "typescript": "^2.1.4",
     "vue-css-definition": "^0.1.0",
     "vue-template-compiler-loader": "^1.0.4",

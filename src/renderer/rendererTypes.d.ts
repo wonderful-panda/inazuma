@@ -9,7 +9,7 @@ export interface LogItem {
 
 export interface AppState {
     repoPath: string;
-    environment: Environment,
+    environment: Environment;
     columns: VtableColumn<LogItem>[];
     items: LogItem[];
     selectedIndex: number;
