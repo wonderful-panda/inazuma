@@ -1,5 +1,6 @@
 .commit-detail {
     display: flex;
+    flex: 1;
     flex-flow: column nowrap;
     padding: 8px;
 
@@ -54,27 +55,26 @@
         .cell-path {
             flex: 1;
         }
-    }
+        div.vlist-container {
+            display: flex;
+            margin: 4px 2px;
+            background-color: #333;
 
-    #commit-detail-files {
-        display: flex;
-        margin: 4px 2px;
-        background-color: #333;
+            .vlist-row:hover {
+                background-color: #383838;
+            }
 
-        .vlist-row:hover {
-            background-color: #383838;
-        }
+            .vtable-row-selected {
+                background-color: #484848;
+            }
 
-        .vtable-row-selected {
-            background-color: #484848;
-        }
+            .vlist-header-row {
+                border-bottom: solid 2px #222;
+            }
 
-        .vlist-header-row {
-            border-bottom: solid 2px #222;
-        }
-
-        .cell-path {
-            flex: 1;
+            .cell-path {
+                flex: 1;
+            }
         }
     }
 }
