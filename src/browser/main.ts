@@ -20,7 +20,7 @@ Electron.app.on("window-all-closed", () => {
 let mainWindow: Electron.BrowserWindow;
 
 Electron.app.on("ready", () => {
-    const template: Electron.MenuItemOptions[] = [
+    const template: Electron.MenuItemConstructorOptions[] = [
         {
             label: "&File",
             submenu: [

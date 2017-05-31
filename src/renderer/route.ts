@@ -1,5 +1,5 @@
-import * as Vue from "vue";
-import * as VueRouter from "vue-router";
+import Vue from "vue";
+import VueRouter from "vue-router";
 import { Welcome } from "./components/welcome";
 import { MainWindow } from "./components/mainWindow";
 import leftPanels from "./components/leftPanels";

@@ -6,7 +6,8 @@
     "noImplicitAny": false,
     "sourceMap": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true
   },
   "filesGlob": [
     "**/*.ts"

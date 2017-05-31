@@ -1,4 +1,4 @@
-import * as Vue from "vue";
+import Vue from "vue";
 import component from "vue-class-component";
 import { store } from "../store";
 import { AppStore } from "../rendererTypes";

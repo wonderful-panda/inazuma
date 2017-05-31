@@ -1,7 +1,7 @@
 import * as typed from "vue-typed-component";
+import * as p from "vue-typed-component/lib/props";
 import { px, clamp } from "../utils";
 import { CssProperties } from "vue-css-definition";
-const p = typed.PropOptions;
 
 export interface SplitterPanelProps {
     direction: "horizontal" | "vertical";

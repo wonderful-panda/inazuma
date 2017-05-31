@@ -1,8 +1,8 @@
-import * as Vue from "vue";
+import Vue from "vue";
 import { MainLayout } from "./mainLayout";
 import { DrawerLink } from "./drawerLink";
 import * as typed from "vue-typed-component";
-const p = typed.PropOptions;
+import * as p from "vue-typed-component/lib/props";
 
 interface IconButtonProps {
     forElement: String;

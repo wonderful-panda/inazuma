@@ -1,6 +1,6 @@
-import * as VueRouter from "vue-router";
+import VueRouter from "vue-router";
 import * as typed from "vue-typed-component";
-const p = typed.PropOptions;
+import * as p from "vue-typed-component/lib/props";
 
 interface LeftPanelBaseProps {
     title: string;

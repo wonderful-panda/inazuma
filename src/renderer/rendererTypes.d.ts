@@ -1,4 +1,4 @@
-import * as Vuex from "vuex";
+import Vuex from "vuex";
 import { GraphFragment } from "./grapher";
 import { VtableColumn } from "vue-vtable";
 

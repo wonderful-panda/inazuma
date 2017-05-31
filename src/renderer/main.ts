@@ -1,6 +1,6 @@
-import * as Vue from "vue";
-import * as Vuex from "vuex";
-import * as VueRouter from "vue-router";
+import Vue from "vue";
+import Vuex from "vuex";
+import VueRouter from "vue-router";
 Vue.use(Vuex);
 Vue.use(VueRouter);
 import * as Electron from "electron";

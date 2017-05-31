@@ -19,18 +19,21 @@ module.exports = [
         },
         devtool: 'source-map',
         resolve: {
-            extensions: ["", ".ts", ".js"],
-            root: path.join(__dirname, "src")
+            extensions: [".ts", ".js"],
+            modules: [
+                path.join(__dirname, "src"),
+                "node_modules"
+            ]
         },
         module: {
             loaders: [
-              { test: /\.ts$/, loader: "ts" },
-              { test: /\.pug$/, loader: "vue-template-compiler!simple-pug" }
+              { test: /\.ts$/, loader: "ts-loader" },
+              { test: /\.pug$/, loader: "vue-template-compiler-loader!simple-pug-loader" }
             ]
         },
         resolveLoader: {
             alias: {
-                "simple-pug": path.join(__dirname, "simple-pug-loader")
+                "simple-pug-loader": path.join(__dirname, "simple-pug-loader")
             }
         },
         plugins: [
@@ -48,13 +51,16 @@ module.exports = [
             filename: ".dummy.js"
         },
         resolve: {
-            root: path.join(__dirname, "style"),
-            extensions: ["", ".js"],
+            extensions: [".js"],
+            modules: [
+                path.join(__dirname, "style"),
+                "node_modules"
+            ]
         },
         module: {
             loaders: [
-                { test: /\.(scss|css)$/, loader: ExtractTextPlugin.extract(["css", "sass"]) },
-                { test: /\.(eot|woff2|woff|ttf)$/, loader: "file?name=[name].[ext]" }
+                { test: /\.(scss|css)$/, loader: ExtractTextPlugin.extract(["css-loader", "sass-loader"]) },
+                { test: /\.(eot|woff2|woff|ttf)$/, loader: "file-loader?name=[name].[ext]" }
             ]
         },
         plugins: [

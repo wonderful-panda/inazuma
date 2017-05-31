@@ -1,6 +1,6 @@
 ///<reference path="../rendererTypes.d.ts" />
-import * as Vue from "vue";
-import * as Vuex from "vuex";
+import Vue from "vue";
+import Vuex from "vuex";
 import * as Electron from "electron";
 import { AppState, LogItem } from "../rendererTypes";
 import mutations from "./mutations";
