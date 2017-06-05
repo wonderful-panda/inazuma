@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { AppState, LogItem, MutationPayload } from "../rendererTypes";
+import { AppState, LogItem, MutationPayload } from "../mainTypes";
 
 const emptyCommit: CommitDetail = {
     id: "",

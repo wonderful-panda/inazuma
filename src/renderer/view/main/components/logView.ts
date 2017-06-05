@@ -2,7 +2,7 @@ import Vue from "vue";
 import component from "vue-class-component";
 import { Vtable, VtableProps } from "vue-vtable";
 import { store } from "../store";
-import { LogItem, AppStore } from "../rendererTypes";
+import { LogItem, AppStore } from "../mainTypes";
 
 @component<LogView>({
     components: { Vtable },

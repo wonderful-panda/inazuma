@@ -1,4 +1,4 @@
-import { NodeEdge, InterEdge, GraphFragment } from "../grapher";
+import { NodeEdge, InterEdge, GraphFragment } from "core/grapher";
 import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
 

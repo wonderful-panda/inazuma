@@ -1,7 +1,7 @@
 import Vue from "vue";
 import component from "vue-class-component";
-import { AppStore } from "../rendererTypes";
-import { getFileName } from "../utils";
+import { AppStore } from "../mainTypes";
+import { getFileName } from "core/utils";
 
 @component<Welcome>({
     ...<CompiledTemplate>require("./welcome.pug"),

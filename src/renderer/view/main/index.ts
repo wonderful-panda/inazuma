@@ -5,9 +5,9 @@ Vue.use(Vuex);
 Vue.use(VueRouter);
 import * as Electron from "electron";
 import { store } from "./store";
-import { AppStore } from "./rendererTypes";
+import { AppStore } from "./mainTypes";
 import { router } from "./route";
-import { dispatchBrowser } from "./browser";
+import { dispatchBrowser } from "core/browser";
 const { render, staticRenderFns } = require("./app.pug");
 
 import "./components/global/index";

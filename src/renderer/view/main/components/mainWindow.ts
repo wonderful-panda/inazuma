@@ -1,11 +1,11 @@
 import Vue from "vue";
 import component from "vue-class-component";
 import { store } from "../store";
-import { AppStore } from "../rendererTypes";
+import { AppStore } from "../mainTypes";
 import { LogView } from "./logView";
 import { SplitterPanel } from "./splitterPanel";
 import { CommitDetail } from "./commitDetail";
-import { getFileName } from "../utils";
+import { getFileName } from "core/utils";
 
 @component<MainWindow>({
     components: { LogView, CommitDetail, SplitterPanel },

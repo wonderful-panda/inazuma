@@ -1,7 +1,7 @@
 import { VtableColumn } from "vue-vtable";
-import { LogItem } from "../rendererTypes";
+import { LogItem } from "../mainTypes";
 import { GraphCell, GraphCellProps } from "../components/graphCell";
-import { formatDate } from "../utils";
+import { formatDate } from "core/utils";
 
 export const detail: VtableColumn<LogItem>[] = [
     {

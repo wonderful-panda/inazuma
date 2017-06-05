@@ -1,6 +1,6 @@
 import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
-import { px, clamp } from "../utils";
+import { px, clamp } from "core/utils";
 import { CssProperties } from "vue-css-definition";
 
 export interface SplitterPanelProps {

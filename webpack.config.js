@@ -4,14 +4,42 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = [
     {
-        context: path.join(__dirname, "src"),
+        // bundle for renderer process (per windows)
+        context: path.join(__dirname, "src/renderer"),
         entry: {
-            browser: "./browser/main.ts",
-            renderer: "./renderer/main.ts"
+            main: "./view/main/index.ts",
         },
         output: {
             path: path.join(__dirname, "dist"),
-            filename: "[name].js"
+            filename: "renderer_[name].js"
+        },
+        devtool: 'source-map',
+        resolve: {
+            extensions: [".ts", ".js"],
+            modules: [
+                path.join(__dirname, "src/renderer"),
+                "node_modules"
+            ]
+        },
+        module: {
+            loaders: [
+                { test: /\.ts$/, loader: "ts-loader" },
+                { test: /\.pug$/, loader: "vue-template-compiler-loader!./simple-pug-loader" }
+            ]
+        },
+        plugins: [
+            new webpack.ExternalsPlugin("commonjs", [
+                "electron"
+            ])
+        ]
+    },
+    {
+        // bundle for browser process
+        context: path.join(__dirname, "src/browser"),
+        entry: "./main.ts",
+        output: {
+            path: path.join(__dirname, "dist"),
+            filename: "browser.js"
         },
         target: "node",
         node: {
@@ -28,13 +56,7 @@ module.exports = [
         module: {
             loaders: [
               { test: /\.ts$/, loader: "ts-loader" },
-              { test: /\.pug$/, loader: "vue-template-compiler-loader!simple-pug-loader" }
             ]
-        },
-        resolveLoader: {
-            alias: {
-                "simple-pug-loader": path.join(__dirname, "simple-pug-loader")
-            }
         },
         plugins: [
             new webpack.ExternalsPlugin("commonjs", [

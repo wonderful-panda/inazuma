@@ -1,8 +1,8 @@
 import * as Electron from "electron";
-import { Grapher } from "../grapher";
+import { Grapher } from "core/grapher";
 import { navigate } from "../route";
-import { LogItem, AppActionContext, AppActionTree } from "../rendererTypes";
-import { dispatchBrowser } from "../browser";
+import { LogItem, AppActionContext, AppActionTree } from "../mainTypes";
+import { dispatchBrowser } from "core/browser";
 
 const { BrowserWindow, dialog } = Electron.remote;
 
