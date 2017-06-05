@@ -19,6 +19,6 @@ main-layout(:title="repoName")
             router-view
         splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :initial-ratio="0.6")
             log-view(slot="first")
-            commit-detail(slot="second")
+            component(:is="detailComponent", slot="second")
 
 

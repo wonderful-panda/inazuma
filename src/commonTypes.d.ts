@@ -27,14 +27,16 @@ declare interface Commit extends DagNode {
     author: string;
 }
 
-declare interface CommitEntry {
+declare interface FileEntry {
     path: string;
     status: number;
+    inIndex?: boolean;
+    inWorkingTree?: boolean;
 }
 
 declare interface CommitDetail extends Commit {
     body: string;
-    files: CommitEntry[];
+    files: FileEntry[];
 }
 
 /**

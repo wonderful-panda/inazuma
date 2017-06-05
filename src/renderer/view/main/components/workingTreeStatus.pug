@@ -1,0 +1,21 @@
+div.commit-detail
+    div.commit-detail-summary
+        | Changes to be committed
+    div.commit-detail-files
+        vtable(
+            id="staged-files",
+            :items="stagedFiles",
+            :columns="fileColumns",
+            :row-height="24",
+            :get-item-key="getFileKey")
+
+    div.commit-detail-summary
+        | Changes not staged
+
+    div.commit-detail-files
+        vtable(
+            id="unstaged-files",
+            :items="unstagedFiles",
+            :columns="fileColumns",
+            :row-height="24",
+            :get-item-key="getFileKey")

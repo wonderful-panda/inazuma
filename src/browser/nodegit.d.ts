@@ -7,6 +7,20 @@ declare module "nodegit" {
         iszero(): number;
     }
 
+    export interface StatusFile {
+        inIndex(): number;
+        inWorkingTree(): number;
+        isConflicted(): number;
+        isDeleted(): number;
+        isIgnored(): number;
+        isModified(): number;
+        isNew(): number;
+        isRenamed(): number;
+        isTypeChange(): number;
+        path(): string;
+        status(): number;
+    }
+
     export class Repository {
         static open(path: string): Promise<Repository>;
         path(): string;
@@ -16,6 +30,7 @@ declare module "nodegit" {
         getReferences(type: Reference.TYPE): Promise<Reference[]>;
         getReferenceNames(type: Reference.TYPE): Promise<string[]>;
         getReferenceCommit(name: string|Reference): Promise<Commit>;
+        getStatus(opts?: any): Promise<StatusFile[]>;
     }
 
     export class Signature {

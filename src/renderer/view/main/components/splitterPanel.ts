@@ -59,6 +59,8 @@ export class SplitterPanel extends typed.StatefulTypedComponent<SplitterPanelPro
         return this.setMinSize({
             display: "flex",
             flex: this.$data.flexFirst,
+            flexDirection: this.horizontal ? "column" : "row",
+            alignItems: "stretch",
             overflow: "auto"
         }, this.$props.minSizeFirst);
     }
@@ -67,6 +69,8 @@ export class SplitterPanel extends typed.StatefulTypedComponent<SplitterPanelPro
         return this.setMinSize({
             display: "flex",
             flex: FLEX_SUM - this.$data.flexFirst,
+            flexDirection: this.horizontal ? "column" : "row",
+            alignItems: "stretch",
             overflow: "auto"
         }, this.$props.minSizeSecond);
     }

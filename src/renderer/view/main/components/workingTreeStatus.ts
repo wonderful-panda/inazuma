@@ -15,21 +15,28 @@ const fileColumns: VtableColumn<FileEntry>[] = [
     }
 ];
 
-@component<CommitDetail>({
-    ...<CompiledTemplate>require("./commitDetail.pug"),
+@component<WorkingTreeStatus>({
+    ...<CompiledTemplate>require("./workingTreeStatus.pug"),
     components: { Vtable },
     store
 })
-export class CommitDetail extends Vue {
+export class WorkingTreeStatus extends Vue {
     $store: AppStore;
     get commit() {
         return this.$store.state.selectedCommit;
     }
-    get commitDate() {
-        return formatDate(new Date(this.commit.date));
-    }
     get fileColumns() {
         return fileColumns;
+    }
+    get stagedFiles() {
+        return this.$store.state.selectedCommit.files.filter(f => {
+            return f.inIndex;
+        });
+    }
+    get unstagedFiles() {
+        return this.$store.state.selectedCommit.files.filter(f => {
+            return f.inWorkingTree;
+        });
     }
     getFileKey(item: FileEntry) {
         return item.path;

@@ -1,29 +1,68 @@
 ///<reference path="./nodegit.d.ts" />
 import * as ngit from "nodegit";
 
-const repos: { [path: string]: ngit.Repository } = {};
+export class Repository {
+    _head?: ngit.Commit = undefined;
+    _status?: ngit.StatusFile[] = undefined;
 
-async function openRepo(path: string): Promise<ngit.Repository> {
-    if (path in repos) {
-        return repos[path];
+    constructor(private _repo: ngit.Repository) {
     }
-    const repo = repos[path] = await ngit.Repository.open(path + "/.git");
+
+    invalidateCache() {
+        this._head = undefined;
+        this._status = undefined;
+    }
+
+    async refreshCacheIfHeadMoved() {
+        const head = await this._repo.getHeadCommit();
+        if (!this._head || this._head.sha() !== head.sha()) {
+            this._head = head;
+            this._status = undefined;
+        }
+    }
+
+    async getHeadCommit(): Promise<ngit.Commit> {
+        await this.refreshCacheIfHeadMoved();
+        return this._head;
+    }
+
+    async getStatus(): Promise<ngit.StatusFile[]> {
+        await this.refreshCacheIfHeadMoved();
+        if (!this._status) {
+            this._status = await this._repo.getStatus();
+        }
+        return this._status;
+    }
+
+    async fetchHistory(heads: ngit.Commit[], num: number): Promise<ngit.Commit[]> {
+        const rw = ngit.Revwalk.create(this._repo);
+        rw.sorting(ngit.Revwalk.SORT.TOPOLOGICAL);
+        heads.forEach(head => {
+            rw.push(head.id());
+        });
+        return await rw.getCommits(num);
+    }
+
+    async getCommitDetail(sha: string): Promise<{ commit: ngit.Commit, patches: ngit.ConvenientPatch[] }> {
+        const commit = await this._repo.getCommit(sha);
+        const diff = (await commit.getDiff())[0];
+        const patches = await diff.patches();
+        return { commit, patches };
+    }
+}
+
+const repos: { [path: string]: Repository } = {};
+
+export async function openRepo(path: string, invalidateCache: boolean): Promise<Repository> {
+    if (path in repos) {
+        const repo = repos[path];
+        if (invalidateCache) {
+            repo.invalidateCache();
+        }
+        return repo;
+    }
+    const rawRepo = await ngit.Repository.open(path + "/.git");
+    const repo = repos[path] = new Repository(rawRepo);
     return repo;
 }
 
-export async function fetchHistory(repoPath: string, num: number): Promise<ngit.Commit[]> {
-    const repo = await openRepo(repoPath);
-    const head = await repo.getHeadCommit();
-    const rw = ngit.Revwalk.create(repo);
-    rw.sorting(ngit.Revwalk.SORT.TOPOLOGICAL);
-    rw.push(head.id());
-    return await rw.getCommits(num);
-}
-
-export async function getCommitDetail(repoPath: string, sha: string): Promise<{ commit: ngit.Commit, patches: ngit.ConvenientPatch[] }> {
-    const repo = await openRepo(repoPath);
-    const commit = await repo.getCommit(sha);
-    const diff = (await commit.getDiff())[0];
-    const patches = await diff.patches();
-    return { commit, patches };
-}

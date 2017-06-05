@@ -5,6 +5,8 @@ import * as path from "path";
 import * as git from "./git";
 import { environment } from "./persistentData";
 
+const PSEUDO_COMMIT_ID_WTREE = "--";
+
 export function dispatch<K extends keyof ActionPayload>(
         target: Electron.WebContents, type: K, payload: ActionPayload[K]) {
     target.send("action", type, payload);
@@ -57,17 +59,49 @@ function rawCommitToCommit(c: ngit.Commit): Commit {
     };
 }
 
+function getWtreePseudoCommit(head: ngit.Commit): Commit {
+    return <Commit>{
+        id: PSEUDO_COMMIT_ID_WTREE,
+        parentIds: [head.sha()],
+        author: "--",
+        summary: "<Working tree>",
+        date: new Date().getTime()
+    };
+}
+
 async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
-    const rawCommits = await git.fetchHistory(repoPath, num);
-    return rawCommits.map(c => rawCommitToCommit(c));
+    const repo = await git.openRepo(repoPath, true);
+    const head = await repo.getHeadCommit();
+
+    const rawCommits = await repo.fetchHistory([head], num);
+    return [
+        getWtreePseudoCommit(head),
+        ...rawCommits.map(c => rawCommitToCommit(c))
+    ];
 }
 
 async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {
-    const { commit, patches } = await git.getCommitDetail(repoPath, sha);
-    const body = commit.body();
-    const files = patches.map(p => {
-        return { path: p.newFile().path(), status: p.status() };
-    });
-    return Object.assign(rawCommitToCommit(commit), { body, files });
+    const repo = await git.openRepo(repoPath, false);
+    if (sha === PSEUDO_COMMIT_ID_WTREE) {
+        const head = await repo.getHeadCommit();
+        const status = await repo.getStatus();
+        const files = status.map(f => {
+            return {
+                path: f.path(),
+                status: f.status(),
+                inIndex: f.inIndex() != 0,
+                inWorkingTree: f.inWorkingTree() != 0
+            };
+        });
+        return Object.assign(getWtreePseudoCommit(head), { body: "", files });
+    }
+    else {
+        const { commit, patches } = await repo.getCommitDetail(sha);
+        const body = commit.body();
+        const files = patches.map(p => {
+            return { path: p.newFile().path(), status: p.status() };
+        });
+        return Object.assign(rawCommitToCommit(commit), { body, files });
+    }
 }
 
