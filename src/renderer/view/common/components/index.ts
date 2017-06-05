@@ -13,7 +13,7 @@ interface IconButtonProps {
     }
 })
 class IconButton extends typed.TypedComponent<IconButtonProps> {
-};
+}
 
 interface FabButtonProps {
     accent: boolean;
@@ -28,7 +28,7 @@ class FabButton extends typed.TypedComponent<FabButtonProps> {
     get additionalClass() {
         return "mdl-button--" + (this.$props.accent ? "accent" : "primary");
     }
-};
+}
 
 interface TextFieldProps {
     inputId: string;
@@ -42,7 +42,7 @@ interface TextFieldProps {
     }
 })
 class TextField extends typed.TypedComponent<TextFieldProps> {
-};
+}
 
 Vue.component("icon-button", IconButton);
 Vue.component("fab-button", FabButton);

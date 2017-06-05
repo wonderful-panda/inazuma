@@ -45,7 +45,7 @@ export function setupBrowserCommands() {
             dispatch(target, "error", e);
         }
     });
-};
+}
 
 function rawCommitToCommit(c: ngit.Commit): Commit {
     return <Commit>{
