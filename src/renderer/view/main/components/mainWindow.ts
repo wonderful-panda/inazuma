@@ -2,13 +2,14 @@ import Vue from "vue";
 import component from "vue-class-component";
 import { store } from "../store";
 import { AppStore } from "../mainTypes";
+import { MainLayout } from "./mainLayout";
 import { LogView } from "./logView";
 import { SplitterPanel } from "./splitterPanel";
 import { CommitDetail } from "./commitDetail";
 import { getFileName } from "core/utils";
 
 @component<MainWindow>({
-    components: { LogView, CommitDetail, SplitterPanel },
+    components: { MainLayout, LogView, CommitDetail, SplitterPanel },
     ...<CompiledTemplate>require("./mainWindow.pug"),
     store
 })

@@ -7,7 +7,7 @@ interface MainLayoutProps {
 }
 
 @typed.component<MainLayoutProps>({
-    ...<CompiledTemplate>require("./main-layout.pug"),
+    ...<CompiledTemplate>require("./mainLayout.pug"),
     props: {
         title: p.Str.Required
     },

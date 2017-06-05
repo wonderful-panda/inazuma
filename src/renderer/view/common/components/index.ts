@@ -1,5 +1,4 @@
 import Vue from "vue";
-import { MainLayout } from "./mainLayout";
 import { DrawerLink } from "./drawerLink";
 import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
@@ -49,5 +48,4 @@ Vue.component("icon-button", IconButton);
 Vue.component("fab-button", FabButton);
 Vue.component("textfield", TextField);
 
-Vue.component("main-layout", MainLayout);
 Vue.component("drawer-link", DrawerLink);

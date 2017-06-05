@@ -10,7 +10,7 @@ import { router } from "./route";
 import { dispatchBrowser } from "core/browser";
 const { render, staticRenderFns } = require("./app.pug");
 
-import "./components/global/index";
+import "../common/components/index";
 
 Electron.ipcRenderer.on("action", (event, name, payload) => {
     store.dispatch(name, payload);

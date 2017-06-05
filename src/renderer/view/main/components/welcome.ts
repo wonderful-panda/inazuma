@@ -1,9 +1,11 @@
 import Vue from "vue";
 import component from "vue-class-component";
 import { AppStore } from "../mainTypes";
+import { MainLayout } from "./mainLayout";
 import { getFileName } from "core/utils";
 
 @component<Welcome>({
+    components: { MainLayout },
     ...<CompiledTemplate>require("./welcome.pug"),
     methods: {
         getFileName
