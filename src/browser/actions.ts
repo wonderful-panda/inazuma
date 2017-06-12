@@ -4,6 +4,7 @@ import * as ngit from "nodegit";
 import * as path from "path";
 import * as git from "./git";
 import { environment } from "./persistentData";
+import { log, getHeadCommit } from "./git/function";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
@@ -59,10 +60,10 @@ function rawCommitToCommit(c: ngit.Commit): Commit {
     };
 }
 
-function getWtreePseudoCommit(head: ngit.Commit): Commit {
+function getWtreePseudoCommit(headId: string): Commit {
     return <Commit>{
         id: PSEUDO_COMMIT_ID_WTREE,
-        parentIds: [head.sha()],
+        parentIds: [headId],
         author: "--",
         summary: "<Working tree>",
         date: new Date().getTime()
@@ -70,20 +71,17 @@ function getWtreePseudoCommit(head: ngit.Commit): Commit {
 }
 
 async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
-    const repo = await git.openRepo(repoPath, true);
-    const head = await repo.getHeadCommit();
+    const headId = await getHeadCommit(repoPath);
 
-    const rawCommits = await repo.fetchHistory([head], num);
-    return [
-        getWtreePseudoCommit(head),
-        ...rawCommits.map(c => rawCommitToCommit(c))
-    ];
+    const commits = [getWtreePseudoCommit(headId)];
+    const ret = await log(repoPath, num, commit => commits.push(commit));
+    return commits;
 }
 
 async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {
     const repo = await git.openRepo(repoPath, false);
     if (sha === PSEUDO_COMMIT_ID_WTREE) {
-        const head = await repo.getHeadCommit();
+        const headId = await getHeadCommit(repoPath);
         const status = await repo.getStatus();
         const files = status.map(f => {
             return {
@@ -93,7 +91,7 @@ async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDet
                 inWorkingTree: f.inWorkingTree() != 0
             };
         });
-        return Object.assign(getWtreePseudoCommit(head), { body: "", files });
+        return Object.assign(getWtreePseudoCommit(headId), { body: "", files });
     }
     else {
         const { commit, patches } = await repo.getCommitDetail(sha);

@@ -21,26 +21,12 @@ export class Repository {
         }
     }
 
-    async getHeadCommit(): Promise<ngit.Commit> {
-        await this.refreshCacheIfHeadMoved();
-        return this._head;
-    }
-
     async getStatus(): Promise<ngit.StatusFile[]> {
         await this.refreshCacheIfHeadMoved();
         if (!this._status) {
             this._status = await this._repo.getStatus();
         }
         return this._status;
-    }
-
-    async fetchHistory(heads: ngit.Commit[], num: number): Promise<ngit.Commit[]> {
-        const rw = ngit.Revwalk.create(this._repo);
-        rw.sorting(ngit.Revwalk.SORT.TOPOLOGICAL);
-        heads.forEach(head => {
-            rw.push(head.id());
-        });
-        return await rw.getCommits(num);
     }
 
     async getCommitDetail(sha: string): Promise<{ commit: ngit.Commit, patches: ngit.ConvenientPatch[] }> {
