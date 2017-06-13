@@ -4,7 +4,8 @@ import * as ngit from "nodegit";
 import * as path from "path";
 import * as git from "./git";
 import { environment } from "./persistentData";
-import { log, getHeadCommit } from "./git/function";
+import { log } from "./git/function";
+import { getRefs } from "./git/refs";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
@@ -71,7 +72,8 @@ function getWtreePseudoCommit(headId: string): Commit {
 }
 
 async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
-    const headId = await getHeadCommit(repoPath);
+    const refs = await getRefs(repoPath);
+    const headId = refs.head;
 
     const commits = [getWtreePseudoCommit(headId)];
     const ret = await log(repoPath, num, commit => commits.push(commit));
@@ -81,7 +83,7 @@ async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
 async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {
     const repo = await git.openRepo(repoPath, false);
     if (sha === PSEUDO_COMMIT_ID_WTREE) {
-        const headId = await getHeadCommit(repoPath);
+        const refs = await getRefs(repoPath);
         const status = await repo.getStatus();
         const files = status.map(f => {
             return {
@@ -91,7 +93,7 @@ async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDet
                 inWorkingTree: f.inWorkingTree() != 0
             };
         });
-        return Object.assign(getWtreePseudoCommit(headId), { body: "", files });
+        return Object.assign(getWtreePseudoCommit(refs.head), { body: "", files });
     }
     else {
         const { commit, patches } = await repo.getCommitDetail(sha);

@@ -49,7 +49,3 @@ export async function log(repoPath: string, maxCount: number, commitCb: (c: Comm
     return commitCount;
 }
 
-export async function getHeadCommit(repoPath: string): Promise<string> {
-    const { stdout } = await exec(repoPath, "rev-parse", ["HEAD"]);
-    return stdout.split("\n")[0];
-}
