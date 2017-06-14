@@ -1,6 +1,5 @@
 import * as Electron from "electron";
 import * as _ from "lodash";
-import * as ngit from "nodegit";
 import * as path from "path";
 import { environment } from "./persistentData";
 import git from "./git/index";
@@ -47,16 +46,6 @@ export function setupBrowserCommands() {
             dispatch(target, "error", e);
         }
     });
-}
-
-function rawCommitToCommit(c: ngit.Commit): Commit {
-    return <Commit>{
-        id: c.sha(),
-        parentIds: _.range(0, c.parentcount()).map(i => c.parentId(i).toString()),
-        author: c.author().name(),
-        summary: c.summary(),
-        date: c.date().getTime()
-    };
 }
 
 function getWtreePseudoCommit(headId: string): Commit {
