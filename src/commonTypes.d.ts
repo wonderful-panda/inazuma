@@ -29,7 +29,8 @@ declare interface Commit extends DagNode {
 
 declare interface FileEntry {
     path: string;
-    status: number;
+    oldPath?: string;
+    statusCode: string;
     inIndex?: boolean;
     inWorkingTree?: boolean;
 }

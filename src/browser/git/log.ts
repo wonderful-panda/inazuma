@@ -127,7 +127,11 @@ export async function getCommitDetail(repoPath: string, commitId: string): Promi
                 console.log("show/unexpected output:", line);
                 return;
             }
-            ret.files.push({ path: tokens[1], status: 0 }); // TODO: set correct status
+            // tokens are [statusCode, path] or [statusCode(R), oldPath, path]
+            const statusCode = tokens.shift();
+            const path = tokens.pop();
+            const oldPath = tokens.pop();
+            ret.files.push({ path, oldPath, statusCode });
         }
     });
     return ret;

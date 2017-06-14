@@ -14,14 +14,23 @@ export async function status(repoPath: string): Promise<FileEntry[]> {
             continue;
         }
         const statusCode = value.slice(0, 2);
-        let path = value.slice(3);
+        let path: string;
+        let oldPath: string;
         if (statusCode[0] === "R") {
             // if renamed, next value is new path
+            oldPath = value.slice(3);
             path = values[++i];
         }
-        const inIndex = (statusCode[0] !== ' ' && statusCode !== "??");
-        const inWorkingTree = (statusCode[1] !== ' ');
-        ret.push({ path, status: 0, inWorkingTree, inIndex });
+        else {
+            oldPath = undefined;
+            path = value.slice(3);
+        }
+        if (statusCode[0] !== ' ' && statusCode !== "??") {
+            ret.push({ path, oldPath, statusCode: statusCode[0], inIndex: true });
+        }
+        if (statusCode[1] !== ' ') {
+            ret.push({ path, statusCode: statusCode[1], inWorkingTree: true });
+        }
     };
     return ret;
 }

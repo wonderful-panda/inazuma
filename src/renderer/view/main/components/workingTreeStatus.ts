@@ -7,6 +7,13 @@ import { formatDate } from "core/utils";
 
 const fileColumns: VtableColumn<FileEntry>[] = [
     {
+        title: "",
+        className: "cell-stat",
+        defaultWidth: 24,
+        minWidth: 24,
+        render: (h, item, index, ctx) => item.statusCode
+    },
+    {
         title: "path",
         className: "cell-path",
         defaultWidth: 200,
