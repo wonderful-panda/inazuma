@@ -2,7 +2,6 @@ import * as Electron from "electron";
 import * as _ from "lodash";
 import * as ngit from "nodegit";
 import * as path from "path";
-import { openRepo } from "./git";
 import { environment } from "./persistentData";
 import git from "./git/index";
 
@@ -81,17 +80,8 @@ async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
 
 async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {
     if (sha === PSEUDO_COMMIT_ID_WTREE) {
-        const repo = await openRepo(repoPath, false);
         const refs = await git.getRefs(repoPath);
-        const status = await repo.getStatus();
-        const files = status.map(f => {
-            return {
-                path: f.path(),
-                status: f.status(),
-                inIndex: f.inIndex() != 0,
-                inWorkingTree: f.inWorkingTree() != 0
-            };
-        });
+        const files = await git.status(repoPath);
         return Object.assign(getWtreePseudoCommit(refs.head), { body: "", files });
     }
     else {
