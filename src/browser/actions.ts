@@ -1,9 +1,8 @@
 import * as Electron from "electron";
 import * as _ from "lodash";
-import * as ngit from "nodegit";
 import * as path from "path";
-import * as git from "./git";
 import { environment } from "./persistentData";
+import git from "./git/index";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
@@ -49,20 +48,10 @@ export function setupBrowserCommands() {
     });
 }
 
-function rawCommitToCommit(c: ngit.Commit): Commit {
-    return <Commit>{
-        id: c.sha(),
-        parentIds: _.range(0, c.parentcount()).map(i => c.parentId(i).toString()),
-        author: c.author().name(),
-        summary: c.summary(),
-        date: c.date().getTime()
-    };
-}
-
-function getWtreePseudoCommit(head: ngit.Commit): Commit {
+function getWtreePseudoCommit(headId: string): Commit {
     return <Commit>{
         id: PSEUDO_COMMIT_ID_WTREE,
-        parentIds: [head.sha()],
+        parentIds: [headId],
         author: "--",
         summary: "<Working tree>",
         date: new Date().getTime()
@@ -70,38 +59,22 @@ function getWtreePseudoCommit(head: ngit.Commit): Commit {
 }
 
 async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
-    const repo = await git.openRepo(repoPath, true);
-    const head = await repo.getHeadCommit();
+    const refs = await git.getRefs(repoPath);
+    const headId = refs.head;
 
-    const rawCommits = await repo.fetchHistory([head], num);
-    return [
-        getWtreePseudoCommit(head),
-        ...rawCommits.map(c => rawCommitToCommit(c))
-    ];
+    const commits = [getWtreePseudoCommit(headId)];
+    const ret = await git.log(repoPath, num, commit => commits.push(commit));
+    return commits;
 }
 
 async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {
-    const repo = await git.openRepo(repoPath, false);
     if (sha === PSEUDO_COMMIT_ID_WTREE) {
-        const head = await repo.getHeadCommit();
-        const status = await repo.getStatus();
-        const files = status.map(f => {
-            return {
-                path: f.path(),
-                status: f.status(),
-                inIndex: f.inIndex() != 0,
-                inWorkingTree: f.inWorkingTree() != 0
-            };
-        });
-        return Object.assign(getWtreePseudoCommit(head), { body: "", files });
+        const refs = await git.getRefs(repoPath);
+        const files = await git.status(repoPath);
+        return Object.assign(getWtreePseudoCommit(refs.head), { body: "", files });
     }
     else {
-        const { commit, patches } = await repo.getCommitDetail(sha);
-        const body = commit.body();
-        const files = patches.map(p => {
-            return { path: p.newFile().path(), status: p.status() };
-        });
-        return Object.assign(rawCommitToCommit(commit), { body, files });
+        return await git.getCommitDetail(repoPath, sha);
     }
 }
 
