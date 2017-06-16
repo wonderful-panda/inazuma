@@ -9,7 +9,7 @@ interface DrawerLinkProps {
 }
 
 @typed.component<DrawerLinkProps>({
-    ...<CompiledTemplate>require("./drawer-link.pug"),
+    ...<CompiledTemplate>require("./drawerLink.pug"),
     props: {
         name: p.Str.Required,
         icon: p.Str.Required,

@@ -3,9 +3,10 @@ import component from "vue-class-component";
 import { AppStore } from "../mainTypes";
 import { MainLayout } from "./mainLayout";
 import { getFileName } from "core/utils";
+import { DrawerLink } from "./drawerLink";
 
 @component<Welcome>({
-    components: { MainLayout },
+    components: { MainLayout, DrawerLink },
     ...<CompiledTemplate>require("./welcome.pug"),
     methods: {
         getFileName

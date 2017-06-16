@@ -3,13 +3,13 @@ import component from "vue-class-component";
 import { store } from "../store";
 import { AppStore } from "../mainTypes";
 import { MainLayout } from "./mainLayout";
+import { DrawerLink } from "./drawerLink";
 import { LogView } from "./logView";
-import { SplitterPanel } from "./splitterPanel";
 import { DetailPanel } from "./detailPanel";
 import { getFileName } from "core/utils";
 
 @component<MainWindow>({
-    components: { MainLayout, LogView, SplitterPanel, DetailPanel },
+    components: { MainLayout, DrawerLink, LogView, DetailPanel },
     ...<CompiledTemplate>require("./mainWindow.pug"),
     store
 })

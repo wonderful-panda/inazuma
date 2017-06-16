@@ -1,7 +1,7 @@
 import Vue from "vue";
-import { DrawerLink } from "./drawerLink";
 import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
+import { SplitterPanel } from "./splitterPanel";
 
 interface IconButtonProps {
     forElement: String;
@@ -47,5 +47,4 @@ class TextField extends typed.TypedComponent<TextFieldProps> {
 Vue.component("icon-button", IconButton);
 Vue.component("fab-button", FabButton);
 Vue.component("textfield", TextField);
-
-Vue.component("drawer-link", DrawerLink);
+Vue.component("splitter-panel", SplitterPanel);
