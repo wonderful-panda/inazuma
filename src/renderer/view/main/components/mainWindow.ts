@@ -5,12 +5,11 @@ import { AppStore } from "../mainTypes";
 import { MainLayout } from "./mainLayout";
 import { LogView } from "./logView";
 import { SplitterPanel } from "./splitterPanel";
-import { CommitDetail } from "./commitDetail";
-import { WorkingTreeStatus } from "./workingTreeStatus";
+import { DetailPanel } from "./detailPanel";
 import { getFileName } from "core/utils";
 
 @component<MainWindow>({
-    components: { MainLayout, LogView, CommitDetail, WorkingTreeStatus, SplitterPanel },
+    components: { MainLayout, LogView, SplitterPanel, DetailPanel },
     ...<CompiledTemplate>require("./mainWindow.pug"),
     store
 })
@@ -24,14 +23,6 @@ export class MainWindow extends Vue {
     }
     get repoName() {
         return getFileName(this.repoPath);
-    }
-    get detailComponent() {
-        if (this.$store.state.selectedCommit.id === "--") {
-            return WorkingTreeStatus;
-        }
-        else {
-            return CommitDetail;
-        }
     }
     reload() {
         location.reload();
