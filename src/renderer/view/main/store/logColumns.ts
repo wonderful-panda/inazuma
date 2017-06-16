@@ -2,6 +2,7 @@ import * as moment from "moment";
 import { VtableColumn } from "vue-vtable";
 import { LogItem } from "../mainTypes";
 import { GraphCell, GraphCellProps } from "../components/graphCell";
+import { SummaryCell, SummaryCellProps } from "../components/summaryCell";
 
 export const detail: VtableColumn<LogItem>[] = [
     {
@@ -44,7 +45,10 @@ export const detail: VtableColumn<LogItem>[] = [
         className: "cell-comment",
         defaultWidth: 600,
         minWidth: 200,
-        render: (h, item, index, ctx) => item.commit.summary
+        render: (h, item, index, ctx) => {
+            const props: SummaryCellProps = { commit: item.commit };
+            return h(SummaryCell, { props });
+        }
     }
 ];
 

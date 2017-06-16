@@ -16,6 +16,20 @@ declare interface Config {
     recentListCount: number;
 }
 
+declare type Ref = {
+    type: "HEAD" | "MERGE_HEAD",
+    id: string
+} | {
+    type: "tags" | "heads",
+    name: string,
+    id: string
+} | {
+    type: "remotes",
+    remote: string,
+    name: string,
+    id: string
+};
+
 declare interface DagNode {
     id: string;
     parentIds: string[];
@@ -25,6 +39,7 @@ declare interface Commit extends DagNode {
     summary: string;
     date: number;
     author: string;
+    refs?: Ref[];
 }
 
 declare interface FileEntry {

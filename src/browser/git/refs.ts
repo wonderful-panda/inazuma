@@ -2,20 +2,6 @@ import * as path from "path";
 import * as fs from "fs-extra";
 import { exec } from "./process";
 
-export type Ref = {
-    type: "HEAD" | "MERGE_HEAD",
-    id: string
-} | {
-    type: "tags" | "heads",
-    name: string,
-    id: string
-} | {
-    type: "remotes",
-    remote: string,
-    name: string,
-    id: string
-};
-
 export class Refs {
     private readonly _idMap: { [id: string]: Ref[] } = {};
     readonly head?: string;
@@ -54,7 +40,7 @@ export class Refs {
     }
 
     getRefsById(id: string): Ref[] {
-        return this._idMap[id] || [];
+        return this._idMap[id];
     }
 }
 

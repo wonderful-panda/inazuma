@@ -63,7 +63,10 @@ async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
     const headId = refs.head;
 
     const commits = [getWtreePseudoCommit(headId)];
-    const ret = await git.log(repoPath, num, commit => commits.push(commit));
+    const ret = await git.log(repoPath, num, commit => {
+        commit.refs = refs.getRefsById(commit.id);
+        commits.push(commit);
+    });
     return commits;
 }
 
