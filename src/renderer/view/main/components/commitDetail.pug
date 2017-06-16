@@ -1,29 +1,26 @@
-div.commit-detail
-    template(v-if="commit.id")
-        div.commit-detail-summary
-            | {{ commit.summary }}
-        table.commit-detail-attrs
-            tr
-                td.attr-name id
-                td.attr-value {{ commit.id.substring(0, 8) }}
-            tr
-                td.attr-name parents
-                td.attr-value
-                    div(v-for="p in commit.parentIds") {{ p.substring(0, 8) }}
-            tr
-                td.attr-name author
-                td.attr-value {{ commit.author }}
-            tr
-                td.attr-name date
-                td.attr-value {{ commitDate }}
-        pre.commit-detail-body(v-if="commit.body")
-            | {{ commit.body }}
-        div.commit-detail-files
-            vtable(
-                id="commit-detail-files",
-                :items="commit.files",
-                :columns="fileColumns",
-                :row-height="24",
-                :get-item-key="getFileKey")
-    template(v-else)
-        span.commit-detail-blank-message No commit selected
+div.commit-detail(:class="className")
+    div.commit-detail-summary
+        | {{ commitSummary }}
+    table.commit-detail-attrs
+        tr
+            td.attr-name id
+            td.attr-value {{ commit.id.substring(0, 8) }}
+        tr
+            td.attr-name parents
+            td.attr-value
+                div(v-for="p in commit.parentIds") {{ p.substring(0, 8) }}
+        tr
+            td.attr-name author
+            td.attr-value {{ commit.author }}
+        tr
+            td.attr-name date
+            td.attr-value {{ commitDate }}
+    pre.commit-detail-body(v-if="commit.body")
+        | {{ commit.body }}
+    div.commit-detail-files
+        vtable(
+            id="commit-detail-files",
+            :items="commit.files",
+            :columns="fileColumns",
+            :row-height="24",
+            :get-item-key="getFileKey")

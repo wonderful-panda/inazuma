@@ -32,8 +32,19 @@ export class CommitDetail extends Vue {
     get commit() {
         return this.$store.state.selectedCommit;
     }
+    get className() {
+        return (this.commit.id ? undefined : "commit-detail-inactive");
+    }
+    get commitSummary() {
+        return this.commit.summary || "No commit selected"
+    }
     get commitDate() {
-        return moment(this.commit.date).local().format("llll");
+        if (this.commit.id) {
+            return moment(this.commit.date).local().format("llll");
+        }
+        else {
+            return "";
+        }
     }
     get fileColumns() {
         return fileColumns;
