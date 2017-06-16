@@ -1,7 +1,7 @@
+import * as moment from "moment";
 import { VtableColumn } from "vue-vtable";
 import { LogItem } from "../mainTypes";
 import { GraphCell, GraphCellProps } from "../components/graphCell";
-import { formatDate } from "core/utils";
 
 export const detail: VtableColumn<LogItem>[] = [
     {
@@ -37,7 +37,7 @@ export const detail: VtableColumn<LogItem>[] = [
         className: "cell-date",
         defaultWidth: 100,
         minWidth: 40,
-        render: (h, item, index, ctx) => formatDate(new Date(item.commit.date))
+        render: (h, item, index, ctx) => moment(item.commit.date).local().format("L")
     },
     {
         title: "comment",

@@ -1,9 +1,9 @@
 import Vue from "vue";
 import component from "vue-class-component";
+import * as moment from "moment";
 import { Vtable, VtableColumn } from "vue-vtable";
 import { store } from "../store";
 import { AppStore } from "../mainTypes";
-import { formatDate } from "core/utils";
 
 const fileColumns: VtableColumn<FileEntry>[] = [
     {
@@ -33,7 +33,7 @@ export class CommitDetail extends Vue {
         return this.$store.state.selectedCommit;
     }
     get commitDate() {
-        return formatDate(new Date(this.commit.date));
+        return moment(this.commit.date).local().format("llll");
     }
     get fileColumns() {
         return fileColumns;
