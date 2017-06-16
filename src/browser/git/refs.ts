@@ -42,17 +42,23 @@ export class Refs {
     getRefsById(id: string): Ref[] {
         return this._idMap[id];
     }
+
+    getAllIds(): string[] {
+        return Object.keys(this._idMap);
+    }
 }
 
 export async function getRefs(repoPath: string): Promise<Refs> {
     const refs: Ref[] = [];
+    const currentBranch = (await exec(repoPath, "symbolic-ref", ["HEAD", "-q"])).stdout.replace(/\n$/, "");
     await exec(repoPath, "show-ref", ["--head"], line => {
         const p = line.indexOf(" ");
         if (p <= 0) {
             return;
         }
         const id = line.slice(0, p);
-        const refNameComponents = line.slice(p + 1).split("/");
+        const fullname = line.slice(p + 1);
+        const refNameComponents = fullname.split("/");
         let type = refNameComponents.shift();
         if (type === "HEAD") {
             refs.push({ type, id });
@@ -62,6 +68,9 @@ export async function getRefs(repoPath: string): Promise<Refs> {
             let name: string;
             switch (type) {
                 case "heads":
+                    name = refNameComponents.join("/");
+                    refs.push({ type, name, id, current: (fullname === currentBranch) });
+                    break;
                 case "tags":
                     name = refNameComponents.join("/");
                     refs.push({ type, name, id });

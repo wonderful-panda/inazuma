@@ -20,7 +20,7 @@ _logKeywords.forEach(k => _procMap[k.name] = k.proc);
 
 const _lastKeywordName = _logKeywords[_logKeywords.length - 1].name;
 
-export async function log(repoPath: string, maxCount: number, commitCb: (c: Commit) => any): Promise<number> {
+export async function log(repoPath: string, maxCount: number, heads: string[], commitCb: (c: Commit) => any): Promise<number> {
     /* Output format
 
      |id <hash>
@@ -31,7 +31,7 @@ export async function log(repoPath: string, maxCount: number, commitCb: (c: Comm
 
      */
 
-    const args = [`--format=${ _logFormat }`];
+    const args = [...heads, `--format=${ _logFormat }`];
     if (maxCount > 0) {
         args.push(`-${ maxCount }`);
     }

@@ -12,30 +12,39 @@ export interface SummaryCellProps {
     }
 })
 export class SummaryCell extends typed.TypedComponent<SummaryCellProps> {
+    get refs(): Ref[] {
+        const { refs } = this.$props.commit;
+        if (refs) {
+            return refs.filter(r => r.type !== "MERGE_HEAD");
+        }
+        else {
+            return [];
+        }
+    }
     refClass(ref: Ref): string {
         switch (ref.type) {
             case "HEAD":
-            case "MERGE_HEAD":
                 return "ref-label-head";
             case "heads":
-                return "ref-label-branch";
+                return ref.current ? "ref-label-branch-current" : "ref-label-branch";
             case "remotes":
                 return "ref-label-remote";
             case "tags":
                 return "ref-label-tag";
             default:
-                return "ref-label-others";
+                return "";
         }
     }
     refText(ref: Ref): string {
         switch (ref.type) {
             case "HEAD":
-            case "MERGE_HEAD":
                 return ref.type;
             case "remotes":
                 return ref.remote + "/" + ref.name;
-            default:
+            case "heads":
                 return ref.name;
+            default:
+                return "";
         }
     }
 }

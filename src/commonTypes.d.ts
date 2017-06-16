@@ -20,7 +20,12 @@ declare type Ref = {
     type: "HEAD" | "MERGE_HEAD",
     id: string
 } | {
-    type: "tags" | "heads",
+    type: "heads",
+    name: string,
+    id: string,
+    current: boolean
+} | {
+    type: "tags",
     name: string,
     id: string
 } | {

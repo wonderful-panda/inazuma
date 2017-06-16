@@ -1,4 +1,3 @@
 div
-    template(v-if="commit.refs")
-        span.ref-label(v-for="ref in commit.refs" :class="refClass(ref)") {{ refText(ref) }}
+    span.ref-label(v-for="ref in refs" :class="refClass(ref)") {{ refText(ref) }}
     | {{ commit.summary }}

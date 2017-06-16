@@ -1,6 +1,7 @@
 #main-revision-log {
     span.ref-label {
-        font-size: x-small;
+        vertical-align: middle;
+        font-size: xx-small;
         font-weight: bold;
         border: 2px solid;
         margin-right: 4px;
@@ -10,12 +11,19 @@
     }
 
     span.ref-label-head {
+        font-size: smaller;
         border-radius: 0;
         color: darkorange;
         border-color: darkorange;
     }
 
     span.ref-label-branch {
+        color: darkcyan;
+        border-color: darkcyan;
+    }
+
+    span.ref-label-branch-current {
+        font-size: smaller;
         color: cyan;
         border-color: cyan;
     }
