@@ -48,7 +48,6 @@ body {
     padding: 4px;
 }
 
-
 .vtable-cell, .vtable-header-cell {
     padding: 0 0.5em 0 0.5em;
     text-overflow: ellipsis;
@@ -67,65 +66,4 @@ body {
     }
 }
 
-#main-revision-log {
-    .vlist-row:nth-child(2n) {
-        background-color: #282828;
-    }
 
-    .vlist-row:hover {
-        background-color: #383838;
-    }
-
-    .vtable-row-selected {
-        background-color: #484848;
-    }
-
-    .vlist-header-row {
-        border-bottom: solid 1px #aaa;
-    }
-
-    .vtable-row, .vtable-row-selected {
-        .cell-id, .cell-date {
-            font-family: monospace;
-        }
-        .cell-graph {
-            padding-left: 12px;
-        }
-    }
-
-    .cell-comment {
-        flex: 1;
-    }
-
-    .vtable-splitter {
-        border-left: solid 1px #555;
-    }
-
-    .vtable-dragging-splitter {
-        background-color: #888;
-    }
-}
-
-.info-panel {
-    display: flex;
-    flex-flow: column nowrap;
-    background-color: #222;
-    flex: 1;
-    margin: 2px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 200px;
-    z-index: 100;
-    border: 1px solid $layout-header-bg-color;
-    transition: all 0.3s ease;
-}
-
-.slide-enter, .slide-leave-active {
-    transform: translate(-200px, 0);
-}
-
-.slide-enter-leave, .slide-leave {
-    transform: translate(0, 0);
-}
