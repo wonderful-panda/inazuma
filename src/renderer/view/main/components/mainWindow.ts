@@ -3,13 +3,14 @@ import component from "vue-class-component";
 import { store } from "../store";
 import { AppStore } from "../mainTypes";
 import { MainLayout } from "./mainLayout";
-import { DrawerLink } from "./drawerLink";
+import { NavigationLink } from "./navigationLink";
+import { NavigationRouterLink } from "./navigationRouterLink";
 import { LogView } from "./logView";
 import { DetailPanel } from "./detailPanel";
 import { getFileName } from "core/utils";
 
 @component<MainWindow>({
-    components: { MainLayout, DrawerLink, LogView, DetailPanel },
+    components: { MainLayout, NavigationLink, NavigationRouterLink, LogView, DetailPanel },
     ...<CompiledTemplate>require("./mainWindow.pug"),
     store
 })

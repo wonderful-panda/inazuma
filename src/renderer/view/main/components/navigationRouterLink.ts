@@ -1,15 +1,15 @@
 import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
 
-interface DrawerLinkProps {
+interface NavigationRouterLinkProps {
     name: string;
     icon: string;
     text: string;
     params: any;
 }
 
-@typed.component<DrawerLinkProps>({
-    ...<CompiledTemplate>require("./drawerLink.pug"),
+@typed.component<NavigationRouterLinkProps>({
+    ...<CompiledTemplate>require("./navigationRouterLink.pug"),
     props: {
         name: p.Str.Required,
         icon: p.Str.Required,
@@ -17,7 +17,7 @@ interface DrawerLinkProps {
         params: p.Any
     }
 })
-export class DrawerLink extends typed.TypedComponent<DrawerLinkProps> {
+export class NavigationRouterLink extends typed.TypedComponent<NavigationRouterLinkProps> {
     get location() {
         return {
             name: this.$props.name,

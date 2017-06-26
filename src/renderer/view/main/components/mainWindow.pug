@@ -5,14 +5,12 @@ main-layout(:title="repoName")
         icon-button(@click.native="reload") refresh
 
     template(slot="drawer-navigations")
-        drawer-link(name="branches", text="Branches", icon="local_offer",
-                    :params="$route.params")
-        drawer-link(name="remotes", text="Remotes", icon="cloud",
-                    :params="$route.params")
-        drawer-link(name="root", text="Back to Home", icon="home")
-        drawer-link(name="root", text="Preferences", icon="settings")
+        navigation-link(text="Branches", icon="local_offer")
+        navigation-link(text="Remotes", icon="cloud")
+        navigation-router-link(name="root", text="Back to Home", icon="home")
+        navigation-router-link(name="root", text="Preferences", icon="settings")
         div.mdl-layout-spacer
-        drawer-link(name="root", text="Version", icon="info_outline")
+        navigation-router-link(name="root", text="Version", icon="info_outline")
 
     div.main-content
         transition(name="slide")
