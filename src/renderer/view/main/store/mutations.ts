@@ -38,6 +38,9 @@ const mutations: Mutations = {
         if (items[selectedIndex].commit.id === commit.id) {
             state.selectedCommit = commit;
         }
+    },
+    setSidebarName(state, name) {
+        state.sidebar = name;
     }
 };
 

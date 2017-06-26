@@ -5,12 +5,13 @@ import { AppStore } from "../mainTypes";
 import { MainLayout } from "./mainLayout";
 import { NavigationLink } from "./navigationLink";
 import { NavigationRouterLink } from "./navigationRouterLink";
+import { BranchesBar, RemotesBar } from "./sidebar";
 import { LogView } from "./logView";
 import { DetailPanel } from "./detailPanel";
 import { getFileName } from "core/utils";
 
 @component<MainWindow>({
-    components: { MainLayout, NavigationLink, NavigationRouterLink, LogView, DetailPanel },
+    components: { MainLayout, NavigationLink, NavigationRouterLink, LogView, DetailPanel, BranchesBar, RemotesBar },
     ...<CompiledTemplate>require("./mainWindow.pug"),
     store
 })
@@ -24,6 +25,16 @@ export class MainWindow extends Vue {
     }
     get repoName() {
         return getFileName(this.repoPath);
+    }
+    get sidebar() {
+        switch (this.$store.state.sidebar) {
+            case "branches":
+                return BranchesBar;
+            case "remotes":
+                return RemotesBar;
+            default:
+                return undefined;
+        }
     }
     reload() {
         location.reload();

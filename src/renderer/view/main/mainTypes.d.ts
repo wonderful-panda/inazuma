@@ -15,6 +15,7 @@ export interface AppState {
     selectedIndex: number;
     selectedCommit: CommitDetail;
     rowHeight: number;
+    sidebar: string;
 }
 
 interface MutationPayload {
@@ -23,6 +24,7 @@ interface MutationPayload {
     setRepoPath: string;
     setSelectedIndex: number;
     setCommitDetail: CommitDetail;
+    setSidebarName: string;
 }
 
 interface AppDispatch {

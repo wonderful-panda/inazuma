@@ -74,6 +74,8 @@ declare interface ActionPayload {
     showCommits: Commit[];
     showCommitDetail: CommitDetail;
     setSelectedIndex: number;
+    showSidebar: string;
+    hideSidebar: null
 }
 
 /**

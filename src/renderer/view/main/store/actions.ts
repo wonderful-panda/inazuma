@@ -46,6 +46,12 @@ const actions: Actions = {
         ctx.commit("setSelectedIndex", index);
         const { repoPath, items } = ctx.state;
         dispatchBrowser("getCommitDetail", { repoPath, sha: items[index].commit.id });
+    },
+    showSidebar(ctx, name) {
+        ctx.commit("setSidebarName", name);
+    },
+    hideSidebar(ctx, _) {
+        ctx.commit("setSidebarName", "");
     }
 };
 

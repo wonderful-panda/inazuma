@@ -2,7 +2,6 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import { Welcome } from "./components/welcome";
 import { MainWindow } from "./components/mainWindow";
-import leftPanels from "./components/leftPanels";
 
 const routes = [
     {
@@ -11,8 +10,6 @@ const routes = [
     {
         name: "log", path: "/:repoPathEncoded", component: MainWindow,
         children: [
-            { name: "branches", path: "branches", component: leftPanels.BranchesPanel },
-            { name: "remotes", path: "remotes", component: leftPanels.RemotesPanel },
         ]
     },
 ];

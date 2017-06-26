@@ -5,16 +5,17 @@ main-layout(:title="repoName")
         icon-button(@click.native="reload") refresh
 
     template(slot="drawer-navigations")
-        navigation-link(text="Branches", icon="local_offer")
-        navigation-link(text="Remotes", icon="cloud")
+        navigation-link(text="Branches", icon="local_offer", @click.native="$store.dispatch('showSidebar', 'branches')")
+        navigation-link(text="Remotes", icon="cloud", @click.native="$store.dispatch('showSidebar', 'remotes')")
         navigation-router-link(name="root", text="Back to Home", icon="home")
         navigation-router-link(name="root", text="Preferences", icon="settings")
         div.mdl-layout-spacer
         navigation-router-link(name="root", text="Version", icon="info_outline")
 
     div.main-content
-        transition(name="slide")
-            router-view
+        keep-alive
+            transition(name="sidebar")
+                component(:is="sidebar")
         splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :initial-ratio="0.6")
             log-view(slot="first")
             detail-panel(slot="second")

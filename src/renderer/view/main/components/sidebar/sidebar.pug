@@ -1,0 +1,8 @@
+transition(name="sidebar", mode="out-in")
+    div.sidebar-wrapper
+        div.sidebar-container
+            div.sidebar-titlebar
+                span.sidebar-title {{ title }}
+                icon-button(style="color:#888", @click.native="close")  close
+            div.sidebar-content
+                slot
