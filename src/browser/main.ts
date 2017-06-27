@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import * as Electron from "electron";
 import * as persist from "./persistentData";
+import wm from "./windowManager";
 
 import { setupBrowserCommands, dispatch } from "./actions";
 setupBrowserCommands();
@@ -16,8 +17,6 @@ Electron.app.on("window-all-closed", () => {
         Electron.app.quit();
     }
 });
-
-let mainWindow: Electron.BrowserWindow;
 
 Electron.app.on("ready", () => {
     const template: Electron.MenuItemConstructorOptions[] = [
@@ -45,12 +44,9 @@ Electron.app.on("ready", () => {
             ]
         }
     ];
-    Electron.Menu.setApplicationMenu(Electron.Menu.buildFromTemplate(template));
-    mainWindow = new Electron.BrowserWindow({
+    const mainWindow = wm.create({
         autoHideMenuBar: true
     });
-    mainWindow.on("closed", () => {
-        mainWindow = null;
-    });
+    mainWindow.setMenu(Electron.Menu.buildFromTemplate(template))
     mainWindow.loadURL(`file://${__dirname}/${html}`);
 });
