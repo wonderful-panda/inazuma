@@ -1,51 +1,36 @@
 import * as Electron from "electron";
 import * as _ from "lodash";
+import * as ipcPromise from "ipc-promise";
 import * as path from "path";
 import { environment } from "./persistentData";
 import git from "./git/index";
+import wm from "./windowManager";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
-export function dispatch<K extends keyof ActionPayload>(
-        target: Electron.WebContents, type: K, payload: ActionPayload[K]) {
-    target.send("action", type, payload);
+export function broadcast<K extends keyof BroadcastAction>(
+    type: K, payload: BroadcastAction[K]) {
+    wm.broadcast(type, payload);
 }
 
-type BrowserCommandHandler<K extends keyof BrowserCommandPayload> = (
-        target: Electron.WebContents,
-        payload: BrowserCommandPayload[K]) => void;
-
-function registerCommand<K extends keyof BrowserCommandPayload>(type: K, handler: BrowserCommandHandler<K>) {
-    Electron.ipcMain.on(type, (event, payload) => {
-        console.log(type, payload);
-        handler(event.sender, payload);
-    });
-}
+const browserCommand: BrowserCommand = {
+    async openRepository(repoPath: string): Promise<Commit[]> {
+        const commits = await fetchHistory(repoPath, 1000);
+        if (environment.addRecentOpened(repoPath)) {
+            broadcast("environmentChanged", environment.data);
+        }
+        return commits;
+    },
+    async getCommitDetail(arg: { repoPath: string, sha: string }): Promise<CommitDetail> {
+        const detail = await getCommitDetail(arg.repoPath, arg.sha);
+        return detail;
+    }
+};
 
 export function setupBrowserCommands() {
-    registerCommand("openRepository", async (target, repoPath) => {
-        try {
-            const commits = await fetchHistory(repoPath, 1000);
-            if (environment.addRecentOpened(repoPath)) {
-                dispatch(target, "environmentChanged", environment.data);
-            }
-            dispatch(target, "showCommits", commits);
-        }
-        catch (e) {
-            console.log(e);
-            dispatch(target, "error", e);
-        }
-    });
-    registerCommand("getCommitDetail", async (target, { repoPath, sha }) => {
-        try {
-            const detail = await getCommitDetail(repoPath, sha);
-            dispatch(target, "showCommitDetail", detail);
-        }
-        catch (e) {
-            console.log(e);
-            dispatch(target, "error", e);
-        }
-    });
+    Object.keys(browserCommand).forEach(key => {
+        ipcPromise.on(key, browserCommand[key]);
+    })
 }
 
 function getWtreePseudoCommit(headId: string): Commit {

@@ -1,8 +1,8 @@
 import * as Electron from "electron";
 import { Grapher } from "core/grapher";
 import { navigate } from "../route";
-import { LogItem, AppActionContext, AppActionTree } from "../mainTypes";
-import { dispatchBrowser } from "core/browser";
+import { LogItem, AppActionContext, AppActionTree, ActionPayload } from "../mainTypes";
+import { browserCommand } from "core/browser";
 
 const { BrowserWindow, dialog } = Electron.remote;
 
@@ -42,10 +42,11 @@ const actions: Actions = {
     showCommitDetail(ctx, commit) {
         ctx.commit("setCommitDetail", commit);
     },
-    setSelectedIndex(ctx, index) {
+    async setSelectedIndex(ctx, index) {
         ctx.commit("setSelectedIndex", index);
         const { repoPath, items } = ctx.state;
-        dispatchBrowser("getCommitDetail", { repoPath, sha: items[index].commit.id });
+        const detail = await browserCommand.getCommitDetail({ repoPath, sha: items[index].commit.id });
+        ctx.dispatch("showCommitDetail", detail);
     },
     showSidebar(ctx, name) {
         ctx.commit("setSidebarName", name);

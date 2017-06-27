@@ -18,6 +18,18 @@ export interface AppState {
     sidebar: string;
 }
 
+declare interface ActionPayload extends BroadcastAction {
+    error: any;
+    showRepositorySelectDialog: null;
+    navigateToLog: string;
+    navigateToRoot: null;
+    showCommits: Commit[];
+    showCommitDetail: CommitDetail;
+    setSelectedIndex: number;
+    showSidebar: string;
+    hideSidebar: null
+}
+
 interface MutationPayload {
     resetItems: LogItem[];
     resetEnvironment: Environment;

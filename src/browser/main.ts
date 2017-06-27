@@ -3,7 +3,7 @@ import * as Electron from "electron";
 import * as persist from "./persistentData";
 import wm from "./windowManager";
 
-import { setupBrowserCommands, dispatch } from "./actions";
+import { setupBrowserCommands } from "./actions";
 setupBrowserCommands();
 
 global["environment"] = persist.environment.data;
@@ -23,8 +23,6 @@ Electron.app.on("ready", () => {
         {
             label: "&File",
             submenu: [
-                { label: "Open repository", click: (_, win) => dispatch(win.webContents, "showRepositorySelectDialog", null) },
-                { label: "Show startup page", click: (_, win) => dispatch(win.webContents, "navigateToRoot", null) },
                 { label: "E&xit", "accelerator": "CmdOrCtrl+W",  role: "close" }
             ]
         },

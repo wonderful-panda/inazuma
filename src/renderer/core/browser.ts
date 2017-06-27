@@ -1,8 +1,9 @@
 import * as Electron from "electron";
+import * as ipcPromise from "ipc-promise";
 
-export function dispatchBrowser(type: keyof BrowserCommandPayload, payload: never): void;
-export function dispatchBrowser<K extends keyof BrowserCommandPayload>(type: K, payload: BrowserCommandPayload[K]): void;
+export const browserCommand = new Proxy({}, {
+    get: function(target, name: string) {
+        return params => ipcPromise.send(name, params);
+    }
+}) as BrowserCommand;
 
-export function dispatchBrowser(type, payload) {
-    Electron.ipcRenderer.send(type, payload);
-}
