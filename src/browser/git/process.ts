@@ -52,10 +52,6 @@ export function tryExec(repoPath: string, command: string, args: string[], stdou
         const stderrOutput: string[] = [];
         proc.stderr.on("data", stderrOutput.push.bind(stderrOutput));
         if (stdoutCb) {
-            proc.on("close", exitCode => {
-                const stderr = stderrOutput.join("");
-                resolve({ command, args, exitCode, stderr });
-            });
             let lastLine = "";
             proc.stdout.on("data", (data: string) => {
                 const lines = data.split("\n");
@@ -65,6 +61,13 @@ export function tryExec(repoPath: string, command: string, args: string[], stdou
                 }
                 lastLine = lines.pop();
                 lines.forEach(stdoutCb);
+            });
+            proc.on("close", exitCode => {
+                if (lastLine) {
+                    stdoutCb(lastLine);
+                }
+                const stderr = stderrOutput.join("");
+                resolve({ command, args, exitCode, stderr });
             });
         }
         else {
