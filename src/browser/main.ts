@@ -1,8 +1,9 @@
 import * as _ from "lodash";
 import * as Electron from "electron";
 import * as persist from "./persistentData";
+import wm from "./windowManager";
 
-import { setupBrowserCommands, dispatch } from "./actions";
+import { setupBrowserCommands } from "./actions";
 setupBrowserCommands();
 
 global["environment"] = persist.environment.data;
@@ -17,15 +18,11 @@ Electron.app.on("window-all-closed", () => {
     }
 });
 
-let mainWindow: Electron.BrowserWindow;
-
 Electron.app.on("ready", () => {
     const template: Electron.MenuItemConstructorOptions[] = [
         {
             label: "&File",
             submenu: [
-                { label: "Open repository", click: (_, win) => dispatch(win.webContents, "showRepositorySelectDialog", null) },
-                { label: "Show startup page", click: (_, win) => dispatch(win.webContents, "navigateToRoot", null) },
                 { label: "E&xit", "accelerator": "CmdOrCtrl+W",  role: "close" }
             ]
         },
@@ -45,12 +42,9 @@ Electron.app.on("ready", () => {
             ]
         }
     ];
-    Electron.Menu.setApplicationMenu(Electron.Menu.buildFromTemplate(template));
-    mainWindow = new Electron.BrowserWindow({
+    const mainWindow = wm.create({
         autoHideMenuBar: true
     });
-    mainWindow.on("closed", () => {
-        mainWindow = null;
-    });
+    mainWindow.setMenu(Electron.Menu.buildFromTemplate(template))
     mainWindow.loadURL(`file://${__dirname}/${html}`);
 });

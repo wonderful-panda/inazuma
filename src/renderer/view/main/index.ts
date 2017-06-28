@@ -7,7 +7,7 @@ import * as Electron from "electron";
 import { store } from "./store";
 import { AppStore } from "./mainTypes";
 import { router } from "./route";
-import { dispatchBrowser } from "core/browser";
+import { browserCommand } from "core/browser";
 const { render, staticRenderFns } = require("./app.pug");
 
 import "../common/components/index";
@@ -23,7 +23,7 @@ const app = new Vue({
     render,
     staticRenderFns,
     methods: {
-        onRouteChanged() {
+        async onRouteChanged() {
             const store = <AppStore>this.$store;
             const route: VueRouter.Route = this.$route;
             const { repoPathEncoded } = route.params;
@@ -31,7 +31,8 @@ const app = new Vue({
             if (store.state.repoPath !== repoPath) {
                 store.commit("setRepoPath", repoPath);
                 if (repoPath) {
-                    dispatchBrowser("openRepository", repoPath);
+                    const commits = await browserCommand.openRepository(repoPath);
+                    store.dispatch("showCommits", commits);
                 }
             }
         }

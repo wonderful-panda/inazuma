@@ -24,7 +24,8 @@ export const store = new Vuex.Store<AppState>({
         items: [],
         selectedIndex: -1,
         selectedCommit: emptyCommit,
-        rowHeight: 24
+        rowHeight: 24,
+        sidebar: ""
     },
     mutations,
     actions

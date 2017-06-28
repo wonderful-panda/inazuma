@@ -15,6 +15,19 @@ export interface AppState {
     selectedIndex: number;
     selectedCommit: CommitDetail;
     rowHeight: number;
+    sidebar: string;
+}
+
+declare interface ActionPayload extends BroadcastAction {
+    error: any;
+    showRepositorySelectDialog: null;
+    navigateToLog: string;
+    navigateToRoot: null;
+    showCommits: Commit[];
+    showCommitDetail: CommitDetail;
+    setSelectedIndex: number;
+    showSidebar: string;
+    hideSidebar: null
 }
 
 interface MutationPayload {
@@ -23,6 +36,7 @@ interface MutationPayload {
     setRepoPath: string;
     setSelectedIndex: number;
     setCommitDetail: CommitDetail;
+    setSidebarName: string;
 }
 
 interface AppDispatch {
