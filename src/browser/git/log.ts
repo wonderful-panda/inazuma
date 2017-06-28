@@ -59,7 +59,7 @@ export async function log(repoPath: string, maxCount: number, heads: string[], c
     return commitCount;
 }
 
-const _commitDetailFormat = _logFormat + "%nbody {{{%n%w(0,1,1)%b%n%w(0)}}}";
+const _commitDetailFormat = _logFormat + "%nbody {{{%n%w(0,1,1)%b%n%w(0)}}}%n";
 
 export async function getCommitDetail(repoPath: string, commitId: string): Promise<CommitDetail> {
     /* Output format
@@ -76,13 +76,10 @@ export async function getCommitDetail(repoPath: string, commitId: string): Promi
      | <blank>
      |}}}
      |
-     |M   dir/foo.txt
-     |A   dir/bar.txt
-     |R100 dir/baz-new.txt   dir/baz-old.txt
-     |...
+     |M<NUL>dir/foo.txt<NUL>A<NUL>dir/bar.txt<NUL>R100<NUL>dir/baz-new.txt<NUL>dir/baz-old.txt...
 
      */
-    const args = [commitId, "--name-status", "--find-renames", `--format=${ _commitDetailFormat }`];
+    const args = [commitId, "--name-status", "--find-renames", "-z", `--format=${ _commitDetailFormat }`];
     const ret = { body: "", files: [] } as CommitDetail;
     let region: "PROPS" | "BODY" | "FILES" = "PROPS";
     await exec(repoPath, "show", args, line => {
@@ -122,16 +119,22 @@ export async function getCommitDetail(repoPath: string, commitId: string): Promi
             if (line === "") {
                 return;
             }
-            const tokens = line.split("\t");
-            if (tokens.length < 2) {
-                console.log("show/unexpected output:", line);
-                return;
+            const tokens = line.split("\0");
+            for (let i = 0; i < tokens.length; ++i) {
+                const statusCode = tokens[i];
+                if (statusCode.startsWith("R")) {
+                    // rename
+                    ret.files.push({ path: tokens[i + 2], oldPath: tokens[i + 1], statusCode });
+                    i += 2;
+                }
+                else if (statusCode) {
+                    ret.files.push({ path: tokens[i + 1], statusCode });
+                    i += 1;
+                }
+                else {
+                    break;
+                }
             }
-            // tokens are [statusCode, path] or [statusCode(R), oldPath, path]
-            const statusCode = tokens.shift();
-            const path = tokens.pop();
-            const oldPath = tokens.pop();
-            ret.files.push({ path, oldPath, statusCode });
         }
     });
     return ret;
