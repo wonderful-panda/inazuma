@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import * as Electron from "electron";
 import * as persist from "./persistentData";
 import wm from "./windowManager";
+import { setup as setupTempdir } from "./tempdir";
 
 import { setupBrowserCommands } from "./actions";
 setupBrowserCommands();
@@ -10,9 +11,12 @@ global["environment"] = persist.environment.data;
 
 const html = "../static/index.html";
 
+const tempdir = setupTempdir();
+
 Electron.app.on("window-all-closed", () => {
     persist.saveConfig();
     persist.saveEnvironment();
+    tempdir.creanup();
     if (process.platform !== "darwin") {
         Electron.app.quit();
     }
