@@ -66,4 +66,23 @@ body {
     }
 }
 
+.fullscreen-overlay {
+    display: flex;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
 
+.left-overlay-wide {
+    display: flex;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80%;
+    height: 100%;
+    bottom: 0;
+    overflow: scroll;
+    box-shadow: 4px 0 4px rgba(0, 0, 0, 0.4);
+}

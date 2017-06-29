@@ -5,6 +5,7 @@ interface NavigationRouterLinkProps {
     name: string;
     icon: string;
     text: string;
+    replace: boolean;
     params: any;
 }
 
@@ -14,6 +15,7 @@ interface NavigationRouterLinkProps {
         name: p.Str.Required,
         icon: p.Str.Required,
         text: p.Str.Required,
+        replace: p.Bool.Default(true),
         params: p.Any
     }
 })

@@ -1,6 +1,6 @@
 main-layout(title="Inazuma")
     template(slot="drawer-navigations")
-        navigation-link(text="Preferences", icon="settings")
+        navigation-router-link(name="preference", text="Preference", icon="settings", :replace="false")
         navigation-link(text="Version", icon="info_outline")
 
     div(style="flex: 1; padding: 0 1em;")
@@ -19,3 +19,5 @@ main-layout(title="Inazuma")
                         span.mdl-list__item-sub-title Select other repositories by folder browser
                     span.mdl-list__item-secondary-action()
                         fab-button(:accent="true", @click.native="selectRepository") add
+
+    router-view(slot="overlay")

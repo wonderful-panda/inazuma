@@ -8,7 +8,7 @@ main-layout(:title="repoName")
         navigation-link(text="Branches", icon="local_offer", @click.native="$store.dispatch('showSidebar', 'branches')")
         navigation-link(text="Remotes", icon="cloud", @click.native="$store.dispatch('showSidebar', 'remotes')")
         navigation-router-link(name="root", text="Back to Home", icon="home")
-        navigation-router-link(name="root", text="Preferences", icon="settings")
+        navigation-router-link(name="log/preference", text="Preference", icon="settings", :replace="false")
         div.mdl-layout-spacer
         navigation-router-link(name="root", text="Version", icon="info_outline")
 
@@ -19,5 +19,7 @@ main-layout(:title="repoName")
         splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :initial-ratio="0.6")
             log-view(slot="first")
             detail-panel(slot="second")
+
+    router-view(slot="overlay")
 
 

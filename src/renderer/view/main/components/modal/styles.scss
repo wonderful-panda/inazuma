@@ -1,0 +1,36 @@
+.modal-mask {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    transition: all 0.5s ease;
+
+    &.v-enter, &.v-leave-active {
+        background-color: rgba(0, 0, 0, 0);
+
+        .preference-container {
+            transform: translateX(-800px);
+        }
+    }
+}
+
+.preference-container {
+    max-width: 800px;
+    flex-flow: column nowrap;
+    padding: 0 1em;
+    background-color: $layout-drawer-bg-color;
+    border-right: 1px solid $layout-drawer-border-color;
+    transition: all 0.5s ease;
+}
+
+.preference-titlebar {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.preference-title {
+    flex: 1;
+}
+
+.preference-content {
+    flex: 1;
+}
+

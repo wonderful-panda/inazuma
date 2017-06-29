@@ -1,0 +1,9 @@
+doctype html
+transition
+    div.fullscreen-overlay.modal-mask(@click="back")
+        div.left-overlay-wide.preference-container(@click.stop)
+            div.preference-titlebar
+                h3.preference-title PREFERENCE
+                icon-button(style="color:#888", @click.native.stop="back")  close
+            div.preference-content
+

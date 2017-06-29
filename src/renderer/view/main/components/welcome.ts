@@ -4,9 +4,10 @@ import { AppStore } from "../mainTypes";
 import { MainLayout } from "./mainLayout";
 import { getFileName } from "core/utils";
 import { NavigationLink } from "./navigationLink";
+import { NavigationRouterLink } from "./navigationRouterLink";
 
 @component<Welcome>({
-    components: { MainLayout, NavigationLink },
+    components: { MainLayout, NavigationLink, NavigationRouterLink },
     ...<CompiledTemplate>require("./welcome.pug"),
     methods: {
         getFileName
