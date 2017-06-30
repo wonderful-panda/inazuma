@@ -1,9 +1,27 @@
 doctype html
 transition
     div.fullscreen-overlay.modal-mask(@click="back")
-        div.left-overlay-wide.preference-container(@click.stop)
-            div.preference-titlebar
-                h3.preference-title PREFERENCE
+        div.left-overlay-wide.pref-container(@click.stop)
+            div.pref-header
+                h3.pref-title PREFERENCE
                 icon-button(style="color:#888", @click.native.stop="back")  close
-            div.preference-content
+            div.pref-content
+                form(action="#")
+                    text-field.pref-path-input(
+                        input-id="externaldiff",
+                        label="Path of external diff tool",
+                        :use-floating-label="true",
+                        :required="true",
+                        v-model="config.externalDiffTool")
+                    text-field(
+                        type="number",
+                        input-id="recentListCount",
+                        label="Number of recent opened",
+                        :use-floating-label="true",
+                        :min="0",
+                        :max="20",
+                        v-model.number="config.recentListCount")
+            div.pref-footer
+                div(style="flex: 1")
+                text-button.footer-text-button(text="SAVE", color="primary", @click.native="onOk")
 

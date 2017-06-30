@@ -14,6 +14,7 @@ declare interface Environment {
  */
 declare interface Config {
     recentListCount: number;
+    externalDiffTool: string;
 }
 
 declare type Ref = {
