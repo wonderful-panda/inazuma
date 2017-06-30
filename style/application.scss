@@ -37,6 +37,18 @@ body {
     color: $layout-drawer-bg-color !important;
 }
 
+.mdl-textfield__input {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+.mdl-textfield__label {
+    color: rgba(255, 255, 255, 0.26);
+}
+
+.mdl-layout__header .mdl-textfield__label {
+    color: rgba(0, 0, 0, 0.26);
+}
+
+
 .main-content {
     display: flex;
     position: absolute;

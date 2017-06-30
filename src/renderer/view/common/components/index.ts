@@ -33,15 +33,26 @@ class FabButton extends typed.TypedComponent<FabButtonProps> {
 interface TextFieldProps {
     inputId: string;
     hintText: string;
+    showFloatingLabel: boolean;
+    value: string;
 }
 @typed.component<TextFieldProps>({
     ...<CompiledTemplate>require("./textfield.pug"),
     props: {
         inputId: p.Str.Default(""),
-        hintText: p.Str
+        hintText: p.Str,
+        value: p.Str,
+        showFloatingLabel: p.Bool.Default(false)
     }
 })
 class TextField extends typed.TypedComponent<TextFieldProps> {
+    $refs: { input: HTMLInputElement };
+    get className() {
+        return this.$props.showFloatingLabel ? "mdl-textfield--floating-label" : undefined;
+    }
+    onInput(e: Event) {
+        this.$emit('input', this.$refs.input.value);
+    }
 }
 
 Vue.component("icon-button", IconButton);

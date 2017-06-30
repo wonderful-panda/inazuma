@@ -1,4 +1,4 @@
-div.mdl-textfield.mdl-js-textfield
-    input.mdl-textfield__input(type="text", :id="inputId")
+div.mdl-textfield.mdl-js-textfield(:class="className")
+    input.mdl-textfield__input(ref="input", type="text", :id="inputId", :value="value", @input="onInput")
     label.mdl-textfield__label(v-if="hintText", :for="inputId")
         | {{ hintText }}
