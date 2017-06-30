@@ -49,6 +49,9 @@ export const configSchema = {
         recentListCount: {
             type: "integer",
             minimum: "0"
+        },
+        externalDiffTool: {
+            type: "string"
         }
     }
 };
@@ -61,7 +64,7 @@ class ConfigObject {
 function loadConfig(): Config {
     const ret = load(configJsonPath, configSchema);
     if (!ret) {
-        return { recentListCount: 5 };
+        return { recentListCount: 5, externalDiffTool: "" };
     }
     else {
         return ret as Config;
@@ -69,7 +72,7 @@ function loadConfig(): Config {
 }
 
 export function saveConfig() {
-    save(environmentJsonPath, environmentSchema, environment.data);
+    save(configJsonPath, configSchema, config.data);
 }
 
 export const config = new ConfigObject(loadConfig());
