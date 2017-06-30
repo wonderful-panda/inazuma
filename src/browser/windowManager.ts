@@ -15,7 +15,7 @@ class WindowManager {
 
     broadcast(type: string, payload: any) {
         Object.keys(this._wins).forEach(id => {
-            this._wins[id].webContents.send(type, payload);
+            this._wins[id].webContents.send("action", type, payload);
         })
     }
 }
