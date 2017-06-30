@@ -18,6 +18,9 @@ const actions: Actions = {
     environmentChanged(ctx, env) {
         ctx.commit("resetEnvironment", env);
     },
+    configChanged(ctx, config) {
+        ctx.commit("resetConfig", config);
+    },
     showRepositorySelectDialog(ctx, _) {
         const paths = dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {properties: ["openDirectory"]});
         if (typeof paths === "undefined") {
@@ -53,6 +56,9 @@ const actions: Actions = {
     },
     hideSidebar(ctx, _) {
         ctx.commit("setSidebarName", "");
+    },
+    async resetConfig(ctx, config) {
+        await browserCommand.resetConfig(config);
     }
 };
 

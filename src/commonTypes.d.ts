@@ -62,10 +62,12 @@ declare interface CommitDetail extends Commit {
 
 declare interface BroadcastAction {
     environmentChanged: Environment;
+    configChanged: Config;
 }
 
 declare interface BrowserCommand {
     openRepository(repoPath: string): Promise<Commit[]>;
     getCommitDetail(params: { repoPath: string, sha: string }): Promise<CommitDetail>;
+    resetConfig(config: Config): Promise<null>;
 }
 

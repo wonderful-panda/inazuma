@@ -23,6 +23,9 @@ const mutations: Mutations = {
     resetEnvironment(state, env) {
         state.environment = env;
     },
+    resetConfig(state, config) {
+        state.config = config;
+    },
     setRepoPath(state, repoPath) {
         state.repoPath = repoPath;
         state.items = [];

@@ -8,6 +8,7 @@ import { setupBrowserCommands } from "./actions";
 setupBrowserCommands();
 
 global["environment"] = persist.environment.data;
+global["config"] = persist.config.data;
 
 const html = "../static/index.html";
 

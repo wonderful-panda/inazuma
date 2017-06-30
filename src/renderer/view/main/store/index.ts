@@ -19,6 +19,7 @@ const emptyCommit: CommitDetail = {
 export const store = new Vuex.Store<AppState>({
     state: {
         environment: <Environment>Electron.remote.getGlobal("environment"),
+        config: <Config>Electron.remote.getGlobal("config"),
         columns: columns.detail,
         repoPath: "",
         items: [],

@@ -2,7 +2,7 @@ import * as Electron from "electron";
 import * as _ from "lodash";
 import * as ipcPromise from "ipc-promise";
 import * as path from "path";
-import { environment } from "./persistentData";
+import { environment, config } from "./persistentData";
 import git from "./git/index";
 import wm from "./windowManager";
 
@@ -24,6 +24,11 @@ const browserCommand: BrowserCommand = {
     async getCommitDetail(arg: { repoPath: string, sha: string }): Promise<CommitDetail> {
         const detail = await getCommitDetail(arg.repoPath, arg.sha);
         return detail;
+    },
+    resetConfig(cfg: Config): Promise<null> {
+        config.data = cfg;
+        broadcast("configChanged", cfg);
+        return Promise.resolve(null);
     }
 };
 

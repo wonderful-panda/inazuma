@@ -10,6 +10,7 @@ export interface LogItem {
 export interface AppState {
     repoPath: string;
     environment: Environment;
+    config: Config;
     columns: VtableColumn<LogItem>[];
     items: LogItem[];
     selectedIndex: number;
@@ -27,12 +28,14 @@ declare interface ActionPayload extends BroadcastAction {
     showCommitDetail: CommitDetail;
     setSelectedIndex: number;
     showSidebar: string;
-    hideSidebar: null
+    hideSidebar: null;
+    resetConfig: Config;
 }
 
 interface MutationPayload {
     resetItems: LogItem[];
     resetEnvironment: Environment;
+    resetConfig: Config;
     setRepoPath: string;
     setSelectedIndex: number;
     setCommitDetail: CommitDetail;
