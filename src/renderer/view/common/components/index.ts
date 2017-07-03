@@ -3,6 +3,7 @@ import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
 import { SplitterPanel } from "./splitterPanel";
 import { TextField } from "./textField";
+import { TextButton } from "./textButton";
 
 interface IconButtonProps {
     forElement: String;
@@ -33,5 +34,6 @@ class FabButton extends typed.TypedComponent<FabButtonProps> {
 
 Vue.component("icon-button", IconButton);
 Vue.component("fab-button", FabButton);
+Vue.component("text-button", TextButton);
 Vue.component("text-field", TextField);
 Vue.component("splitter-panel", SplitterPanel);
