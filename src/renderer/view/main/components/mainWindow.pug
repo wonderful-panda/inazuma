@@ -1,6 +1,6 @@
 main-layout(:title="repoName")
     template(slot="titlebar-buttons")
-        textfield(inputId="search", hintText="input search pattern")
+        text-field(inputId="search", label="input search pattern")
         icon-button(for="search") search
         icon-button(@click.native="reload") refresh
 

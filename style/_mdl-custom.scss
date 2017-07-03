@@ -37,5 +37,7 @@ $layout-drawer-button-desktop-size: 40px !default;
 $layout-header-desktop-indent: 12px !default;
 $layout-header-desktop-baseline: 52px !default;
 
+/* TEXT FIELD */
+$input-text-error-color: unquote("rgb(#{$palette-orange-A200})") !default;
 
 @import "../node_modules/material-design-lite/src/material-design-lite";
