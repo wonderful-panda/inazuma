@@ -9,16 +9,16 @@ main-layout(title="Inazuma")
             ul#welcome-repo-list.mdc-list.mdc-list--two-line
                 li.mdc-list-item(v-for="repo in recentOpened")
                     span.mdc-list-item__text
-                        span {{ getFileName(repo) }}
+                        text-button.repo-name(
+                            compact, dense, @click.native="openRepository(repo)")
+                                | {{ getFileName(repo) }}
                         span.mdc-list-item__text__secondary {{ repo }}
-                    span.mdc-list-item__end-detail
-                        fab-button(@click.native="openRepository(repo)") folder_open
                 li.mdc-list-divider(role="separator")
                 li.mdc-list-item
                     span.mdc-list-item__text(style="padding-right: 2em;")
-                        span OTHERS ...
+                        text-button.repo-name(
+                            accent, compact, dense, @click.native="selectRepository")
+                                | BROWSE...
                         span.mdc-list-item__text__secondary Select other repositories by folder browser
-                    span.mdc-list-item__end-detail
-                        fab-button(:accent="true", @click.native="selectRepository") add
 
     router-view(slot="overlay")

@@ -5,25 +5,30 @@
 
 #welcome-repo-list {
     @include mdc-typography-base;
-    padding-left: 1em;
+
+    padding: 0 0.5em;
 
     .mdc-list-item {
-        height: 52px;
+        height: 40px;
+        margin-bottom: 0.6em;
     }
 
     .mdc-list-item__text {
-        @include mdc-typography(headline);
         padding-left: 0.3em;
         padding-right: 2em;
     }
 
-    .mdc-list-item__text__secondary {
-        color: #666;
-        font-size: smaller;
+    .repo-name {
+        @include mdc-typography(title);
+        height: 24px;
+        margin-right: auto;
     }
-    .mdc-list-item__end-detail {
-        height: 40px;
-        line-height: 40px;
+
+    .mdc-list-item__text__secondary {
+        @include mdc-typography(subheading1);
+        height: 16px;
+        padding: 0 1em;
+        color: #666;
     }
     .mdc-list-divider {
         margin: 1em 0;
