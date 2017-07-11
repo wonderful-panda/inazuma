@@ -1,20 +1,20 @@
-div.mdl-layout.mdl-js-layout.mdl-layout--fixed-header
-    header.mdl-layout__header
-        div.mdl-layout__header-row
-            span.mdl-layout__title(id="main-title") {{ title }}
-            span.mdl-layout-spacer
-            slot(name="titlebar-buttons")
-    div.mdl-layout__drawer
-        div(style="display:flex;")
-            span.mdl-layout-spacer
-            icon-button(style="color:#888;", @click.native="toggleDrawer") close
+doctype html
+div.main-container.mdc-theme--dark.mdc-typography
+    header.mdc-toolbar(data-mdc-auto-init="MDCToolbar")
+        div.mdc-toolbar__row
+            section.mdc-toolbar__section.mdc-toolbar__section--align-start
+                toolbar-button.mdc-toolbar__icon--menu(@click.native.left="openDrawer") menu
+                span.mdc-toolbar__title.mdc-typography--headline(id="main-title") {{ title }}
 
-        nav.mdl-navigation(@click="toggleDrawer")
-            slot(name="drawer-navigations")
+            section.mdc-toolbar__section.mdc-toolbar__section--align-end
+                slot(name="titlebar-buttons")
 
-    main.mdl-layout__content
-        div.main-content
-            slot
+    aside.mdc-temporary-drawer(ref="drawer", data-mdc-auto-init="MDCTemporaryDrawer")
+        nav.mdc-temporary-drawer__drawer.custom-drawer
+            nav.mdc-temporary-drawer__content.mdc-list(@click.capture="closeDrawer")
+                slot(name="drawer-navigations")
+    main
+        slot
 
     slot(name="overlay")
 

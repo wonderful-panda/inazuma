@@ -4,14 +4,13 @@ import { store } from "../store";
 import { AppStore } from "../mainTypes";
 import { MainLayout } from "./mainLayout";
 import { NavigationLink } from "./navigationLink";
-import { NavigationRouterLink } from "./navigationRouterLink";
 import { BranchesBar, RemotesBar } from "./sidebar";
 import { LogView } from "./logView";
 import { DetailPanel } from "./detailPanel";
 import { getFileName } from "core/utils";
 
 @component<MainWindow>({
-    components: { MainLayout, NavigationLink, NavigationRouterLink, LogView, DetailPanel, BranchesBar, RemotesBar },
+    components: { MainLayout, NavigationLink, LogView, DetailPanel, BranchesBar, RemotesBar },
     ...<CompiledTemplate>require("./mainWindow.pug"),
     store
 })

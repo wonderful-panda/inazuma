@@ -1,0 +1,15 @@
+$mdc-theme-primary: black;
+$mdc-theme-accent: #aeea00;
+$mdc-theme-background: #333;
+$toolbar-height: 40px;
+@import "material-components-web/material-components-web";
+
+.mdc-toolbar {
+    @include mdc-theme-prop(background-color, accent);
+    @include mdc-theme-prop(color, primary);
+    height: $toolbar-height;
+    .mdc-toolbar__row {
+        min-height: $toolbar-height;
+        height: $toolbar-height;
+    }
+}

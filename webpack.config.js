@@ -81,7 +81,7 @@ module.exports = [
         },
         module: {
             loaders: [
-                { test: /\.(scss|css)$/, loader: ExtractTextPlugin.extract(["css-loader", "sass-loader"]) },
+                { test: /\.(scss|css)$/, loader: ExtractTextPlugin.extract(["css-loader", "sass-loader?includePaths[]=./node_modules"]) },
                 { test: /\.(eot|woff2|woff|ttf)$/, loader: "file-loader?name=[name].[ext]" }
             ]
         },

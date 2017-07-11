@@ -2,3 +2,30 @@
 @import "./logView";
 @import "./sidebar/styles";
 @import "./modal/styles";
+
+#welcome-repo-list {
+    @include mdc-typography-base;
+    padding-left: 1em;
+
+    .mdc-list-item {
+        height: 52px;
+    }
+
+    .mdc-list-item__text {
+        @include mdc-typography(headline);
+        padding-left: 0.3em;
+        padding-right: 2em;
+    }
+
+    .mdc-list-item__text__secondary {
+        color: #666;
+        font-size: smaller;
+    }
+    .mdc-list-item__end-detail {
+        height: 40px;
+        line-height: 40px;
+    }
+    .mdc-list-divider {
+        margin: 1em 0;
+    }
+}

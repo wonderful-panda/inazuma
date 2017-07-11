@@ -4,18 +4,7 @@ import * as p from "vue-typed-component/lib/props";
 import { SplitterPanel } from "./splitterPanel";
 import { TextField } from "./textField";
 import { TextButton } from "./textButton";
-
-interface IconButtonProps {
-    forElement: String;
-}
-@typed.component<IconButtonProps>({
-    ...<CompiledTemplate>require("./icon-button.pug"),
-    props: {
-        forElement: p.Str
-    }
-})
-class IconButton extends typed.TypedComponent<IconButtonProps> {
-}
+import { IconButton, ToolbarButton, CloseButton } from "./iconButton";
 
 interface FabButtonProps {
     accent: boolean;
@@ -33,6 +22,8 @@ class FabButton extends typed.TypedComponent<FabButtonProps> {
 }
 
 Vue.component("icon-button", IconButton);
+Vue.component("toolbar-button", ToolbarButton);
+Vue.component("close-button", CloseButton);
 Vue.component("fab-button", FabButton);
 Vue.component("text-button", TextButton);
 Vue.component("text-field", TextField);

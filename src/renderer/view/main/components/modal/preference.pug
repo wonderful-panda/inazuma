@@ -4,7 +4,7 @@ transition
         div.left-overlay-wide.pref-container(@click.stop)
             div.pref-header
                 h3.pref-title PREFERENCE
-                icon-button(style="color:#888", @click.native.stop="back")  close
+                close-button(@click.native.stop="back")
             div.pref-content
                 form(action="#")
                     text-field.pref-path-input(
