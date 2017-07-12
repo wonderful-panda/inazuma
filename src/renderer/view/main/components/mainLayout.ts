@@ -14,7 +14,6 @@ interface MainLayoutProps {
     },
     created() {
         Vue.nextTick(() => {
-            componentHandler.upgradeDom();
             mdc.autoInit();
         });
     }

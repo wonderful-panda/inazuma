@@ -19,8 +19,7 @@
     flex-flow: column nowrap;
     padding: 0 0 1em 1em;
     box-sizing: border-box;
-    background-color: $layout-drawer-bg-color;
-    border-right: 1px solid $layout-drawer-border-color;
+    @include mdc-theme-prop(background-color, background);
     transition: all 0.5s ease;
 
     .mdc-textfield__label--float-above {
