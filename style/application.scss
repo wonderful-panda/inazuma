@@ -36,7 +36,7 @@ main {
 }
 
 .mdc-toolbar__icon {
-    @include mdc-theme-prop(color, primary);
+    @include mdc-theme-prop(color, text-primary-on-accent);
     margin: auto 4px !important;
     height: 24px !important;
     line-height: 24px !important;
@@ -74,9 +74,9 @@ main {
         }
         &:hover {
             @include mdc-theme-prop(background-color, accent);
-            @include mdc-theme-prop(color, primary);
+            @include mdc-theme-prop(color, text-primary-on-accent);
             i {
-                @include mdc-theme-prop(color, primary);
+                @include mdc-theme-prop(color, text-primary-on-accent);
             }
         }
     }

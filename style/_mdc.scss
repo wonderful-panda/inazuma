@@ -1,15 +1,26 @@
-$mdc-theme-primary: black;
-$mdc-theme-accent: #aeea00;
-$mdc-theme-background: #333;
-$toolbar-height: 40px;
+$mdc-theme-primary: #64B5F6;    // blue-300
+$mdc-theme-accent: #aeea00;     // lime-A700
+$mdc-theme-background: #222;
+$mdc-theme-background: #222;
+
 @import "material-components-web/material-components-web";
+
+$toolbar-height: 40px;
+
+:root {
+    --mdc-theme-text-primary-on-primary: black;
+    --mdc-theme-text-primary-on-accent: black;
+    --mdc-theme-text-secondary-on-primary: #666;
+    --mdc-theme-text-secondary-on-accent: #666;
+}
 
 .mdc-toolbar {
     @include mdc-theme-prop(background-color, accent);
-    @include mdc-theme-prop(color, primary);
+    @include mdc-theme-prop(color, text-primary-on-accent);
     height: $toolbar-height;
     .mdc-toolbar__row {
         min-height: $toolbar-height;
         height: $toolbar-height;
     }
 }
+
