@@ -1,9 +1,0 @@
-div.mdl-textfield.mdl-js-textfield(:class="additionalClass")
-    input.mdl-textfield__input(
-        ref="input", :type="type", :id="inputId", :value="value",
-        :required="required", :min="min", :max="max", :pattern="pattern",
-        @input="onInput")
-    label.mdl-textfield__label(v-if="label", :for="inputId")
-        | {{ label }}
-    span.mdl-textfield__error
-        | {{ errorMessage || validationMessage }}

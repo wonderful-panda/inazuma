@@ -1,9 +1,11 @@
 import Vue from "vue";
+import * as mdc from "material-components-web";
 import * as typed from "vue-typed-component";
 import { AppStore } from "../../mainTypes";
 
 interface PreferenceData {
     config: Config;
+    error: { [K in keyof Config]: string | undefined };
 }
 
 @typed.component<{}>({
@@ -11,16 +13,20 @@ interface PreferenceData {
     props: {},
     created() {
         Vue.nextTick(() => {
-            componentHandler.upgradeDom();
+            mdc.autoInit(this.$el, () => {});
         });
     }
 })
 export class Preference extends typed.StatefulTypedComponent<{}, PreferenceData> {
     $store: AppStore;
-    data() {
+    data(): PreferenceData {
         // don't pass state.config directly.
         return {
-            config: JSON.parse(JSON.stringify(this.$store.state.config))
+            config: JSON.parse(JSON.stringify(this.$store.state.config)),
+            error: {
+                "externalDiffTool": undefined,
+                "recentListCount": undefined
+            }
         };
     }
     back() {
