@@ -1,6 +1,7 @@
 main-layout(:title="repoName")
     template(slot="titlebar-buttons")
-        toolbar-button(@click.native.left="runInteractiveShell") input
+        toolbar-button(:disabled="!$store.state.config.interactiveShell",
+                       @click.native.left="runInteractiveShell") input
         toolbar-button(@click.native.left="reload") refresh
 
     template(slot="drawer-navigations")
