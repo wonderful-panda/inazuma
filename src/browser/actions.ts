@@ -2,6 +2,7 @@ import * as Electron from "electron";
 import * as _ from "lodash";
 import * as ipcPromise from "ipc-promise";
 import * as path from "path";
+import * as cp from "child_process";
 import { environment, config } from "./persistentData";
 import git from "./git/index";
 import wm from "./windowManager";
@@ -28,6 +29,19 @@ const browserCommand: BrowserCommand = {
     resetConfig(cfg: Config): Promise<null> {
         config.data = cfg;
         broadcast("configChanged", cfg);
+        return Promise.resolve(null);
+    },
+    runInteractiveShell(cwd: string): Promise<null> {
+        console.log("runInteractiveShell", cwd);
+        const [command, ...args] = config.data.interactiveShell.split(/\s+/g);
+        console.log(command, args);
+        if (command) {
+            cp.spawn(command, args, {
+                cwd,
+                detached: true,
+                stdio: "ignore"
+            }).unref();
+        }
         return Promise.resolve(null);
     }
 };

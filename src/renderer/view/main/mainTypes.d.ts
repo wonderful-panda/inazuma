@@ -30,6 +30,7 @@ declare interface ActionPayload extends BroadcastAction {
     showSidebar: string;
     hideSidebar: null;
     resetConfig: Config;
+    runInteractiveShell: null;
 }
 
 interface MutationPayload {

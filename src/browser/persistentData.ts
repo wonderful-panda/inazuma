@@ -52,6 +52,9 @@ export const configSchema = {
         },
         externalDiffTool: {
             type: "string"
+        },
+        interactiveShell: {
+            type: "string"
         }
     }
 };
@@ -62,12 +65,13 @@ class ConfigObject {
 }
 
 function loadConfig(): Config {
+    const defaultData: Config = { recentListCount: 5, externalDiffTool: "", interactiveShell: "" };
     const ret = load(configJsonPath, configSchema);
     if (!ret) {
-        return { recentListCount: 5, externalDiffTool: "" };
+        return defaultData;
     }
     else {
-        return ret as Config;
+        return Object.assign(defaultData, ret);
     }
 }
 
@@ -116,12 +120,13 @@ class EnvironmentObject {
 
 
 function loadEnvironment(): Environment {
+    const defaultData: Environment = { recentOpened: [] };
     const ret = load(environmentJsonPath, environmentSchema);
     if (!ret) {
-        return { recentOpened: [] };
+        return defaultData;
     }
     else {
-        return ret as Environment;
+        return Object.assign(defaultData, ret);
     }
 }
 

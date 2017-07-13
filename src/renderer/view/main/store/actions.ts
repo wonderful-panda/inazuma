@@ -59,6 +59,9 @@ const actions: Actions = {
     },
     async resetConfig(ctx, config) {
         await browserCommand.resetConfig(config);
+    },
+    async runInteractiveShell(ctx, _) {
+        await browserCommand.runInteractiveShell(ctx.state.repoPath);
     }
 };
 

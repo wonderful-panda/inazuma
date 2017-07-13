@@ -5,7 +5,9 @@ import { AppStore } from "../../mainTypes";
 
 interface PreferenceData {
     config: Config;
-    error: { [K in keyof Config]: string | undefined };
+    error: {
+        recentListCount: string | undefined
+    };
 }
 
 @typed.component<{}>({
@@ -24,7 +26,6 @@ export class Preference extends typed.StatefulTypedComponent<{}, PreferenceData>
         return {
             config: JSON.parse(JSON.stringify(this.$store.state.config)),
             error: {
-                "externalDiffTool": undefined,
                 "recentListCount": undefined
             }
         };

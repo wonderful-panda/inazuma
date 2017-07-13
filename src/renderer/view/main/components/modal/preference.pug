@@ -10,9 +10,12 @@ transition
                     text-field.pref-path-input(
                         type="text", input-id="externaldiff", autofocus,
                         label="Path of external diff tool",
-                        v-model="config.externalDiffTool",
-                        @validation="error.externalDiffTool = $event.message")
-                    text-field-helptext(persistent) {{ error.externalDiffTool }}
+                        v-model="config.externalDiffTool")
+
+                    text-field.pref-path-input(
+                        type="text", input-id="interactiveShell",
+                        label="Interactive shell command",
+                        v-model="config.interactiveShell")
 
                     text-field.pref-input(
                         type="number", input-id="recentListCount",

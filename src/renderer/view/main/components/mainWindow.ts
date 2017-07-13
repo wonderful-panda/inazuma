@@ -38,4 +38,7 @@ export class MainWindow extends Vue {
     reload() {
         location.reload();
     }
+    runInteractiveShell() {
+        this.$store.dispatch("runInteractiveShell", null);
+    }
 }

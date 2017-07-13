@@ -15,6 +15,7 @@ declare interface Environment {
 declare interface Config {
     recentListCount: number;
     externalDiffTool: string;
+    interactiveShell: string;
 }
 
 declare type Ref = {
@@ -70,5 +71,6 @@ declare interface BrowserCommand {
     openRepository(repoPath: string): Promise<Commit[]>;
     getCommitDetail(params: { repoPath: string, sha: string }): Promise<CommitDetail>;
     resetConfig(config: Config): Promise<null>;
+    runInteractiveShell(curdir: string): Promise<null>;
 }
 
