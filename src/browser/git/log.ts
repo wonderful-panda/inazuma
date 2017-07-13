@@ -31,7 +31,7 @@ export async function log(repoPath: string, maxCount: number, heads: string[], c
 
      */
 
-    const args = [...heads, `--format=${ _logFormat }`];
+    const args = [...heads, "--topo-order", `--format=${ _logFormat }`];
     if (maxCount > 0) {
         args.push(`-${ maxCount }`);
     }
