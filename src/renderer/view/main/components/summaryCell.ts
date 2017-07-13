@@ -42,6 +42,7 @@ export class SummaryCell extends typed.TypedComponent<SummaryCellProps> {
             case "remotes":
                 return ref.remote + "/" + ref.name;
             case "heads":
+            case "tags":
                 return ref.name;
             default:
                 return "";
