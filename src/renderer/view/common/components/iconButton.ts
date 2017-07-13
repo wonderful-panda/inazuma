@@ -1,14 +1,19 @@
 import Vue from "vue";
+import * as p from "vue-typed-component/lib/props";
 
 export const IconButton = Vue.extend({
     name: "IconButton",
+    props: {
+        disabled: p.Bool.Default(false)
+    },
     render(h) {
-        return h("a", {
-            class: [
-                "material-icons"
-            ],
-            attrs: {
-                href: "javascript: void(0)"
+        return h("button", {
+            class: {
+                "material-icons": true,
+                "icon-button--disabled": this.$props.disabled
+            },
+            domProps: {
+                disabled: this.$props.disabled
             }
         }, [
             this.$slots.default
