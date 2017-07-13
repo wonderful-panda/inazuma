@@ -4,16 +4,16 @@
     flex-flow: column nowrap;
     padding: 8px;
 
+    @include mdc-typography(subheading2);
+
     .commit-detail-blank-message {
+        @include mdc-typography(title);
         margin: auto;
-        font-weight: bold;
-        font-size: x-large;
         color: #444;
     }
 
     .commit-detail-summary {
-        font-weight: bold;
-        font-size: larger;
+        @include mdc-typography(title);
         padding: 4px;
         margin-bottom: 8px;
     }
@@ -25,7 +25,7 @@
 
     td {
         background-color: #333;
-        padding: 4px 8px;
+        padding: 0 8px;
     }
 
     .attr-name {
@@ -38,7 +38,7 @@
 
     .commit-detail-body {
         margin: 0px 2px 8px 2px;
-        font-size: medium;
+        font-size: small;
         background-color: #333;
         padding: 0.2em;
         min-height: 1em;
@@ -59,8 +59,12 @@
             margin: 4px 2px;
             background-color: #333;
 
-            .vlist-row:hover {
-                background-color: #383838;
+            .vlist-row {
+                font-family: monospace;
+                font-size: small;
+                &:hover {
+                    background-color: #383838;
+                }
             }
 
             .vtable-row-selected {

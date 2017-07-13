@@ -22,6 +22,9 @@
     @include mdc-theme-prop(background-color, background);
     transition: all 0.5s ease;
 
+    .mdc-textfield {
+        margin-top: 8px !important;
+    }
     .mdc-textfield__label--float-above {
         font-size: medium;
     }
@@ -42,6 +45,7 @@
 }
 
 .pref-title {
+    @extend .page-title;
     flex: 1;
 }
 

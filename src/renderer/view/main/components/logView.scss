@@ -1,4 +1,5 @@
 #main-revision-log {
+    @include mdc-typography(subheading2);
     .vlist-row:nth-child(2n) {
         background-color: #282828;
     }
@@ -18,6 +19,7 @@
     .vtable-row, .vtable-row-selected {
         .cell-id, .cell-date {
             font-family: monospace;
+            font-size: small;
         }
         .cell-graph {
             padding-left: 12px;

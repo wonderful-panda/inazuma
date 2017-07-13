@@ -4,8 +4,6 @@
 @import "./modal/styles";
 
 #welcome-repo-list {
-    @include mdc-typography-base;
-
     padding: 0 0.5em;
 
     .mdc-list-item {
@@ -22,6 +20,7 @@
         @include mdc-typography(title);
         height: 24px;
         margin-right: auto;
+        text-transform: none !important;
     }
 
     .mdc-list-item__text__secondary {
@@ -33,4 +32,10 @@
     .mdc-list-divider {
         margin: 1em 0;
     }
+}
+
+.page-title {
+    @include mdc-typography(headline);
+    margin-top: 1em;
+    margin-bottom: 0.5em;
 }

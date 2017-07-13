@@ -1,11 +1,10 @@
 $mdc-theme-primary: #64B5F6;    // blue-300
 $mdc-theme-accent: #aeea00;     // lime-A700
 $mdc-theme-background: #222;
-$mdc-theme-background: #222;
 
 @import "material-components-web/material-components-web";
 
-$toolbar-height: 40px;
+$toolbar-height: 36px;
 
 :root {
     --mdc-theme-text-primary-on-primary: black;
@@ -24,3 +23,6 @@ $toolbar-height: 40px;
     }
 }
 
+:root {
+    @include mdc-typography-base;
+}
