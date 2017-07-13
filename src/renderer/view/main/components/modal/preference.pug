@@ -4,24 +4,24 @@ transition
         div.left-overlay-wide.pref-container(@click.stop)
             div.pref-header
                 h3.pref-title PREFERENCE
-                icon-button(style="color:#888", @click.native.stop="back")  close
+                close-button(@click.native.stop="back")
             div.pref-content
                 form(action="#")
                     text-field.pref-path-input(
-                        input-id="externaldiff",
+                        type="text", input-id="externaldiff", autofocus,
                         label="Path of external diff tool",
-                        :use-floating-label="true",
-                        :required="true",
-                        v-model="config.externalDiffTool")
-                    text-field(
-                        type="number",
-                        input-id="recentListCount",
-                        label="Number of recent opened",
-                        :use-floating-label="true",
-                        :min="0",
-                        :max="20",
-                        v-model.number="config.recentListCount")
+                        v-model="config.externalDiffTool",
+                        @validation="error.externalDiffTool = $event.message")
+                    text-field-helptext(persistent) {{ error.externalDiffTool }}
+
+                    text-field.pref-input(
+                        type="number", input-id="recentListCount",
+                        label="Number of recent opened list",
+                        :min="0", :max="20",
+                        v-model.number="config.recentListCount",
+                        @validation="error.recentListCount = $event.message")
+                    text-field-helptext(persistent) {{ error.recentListCount }}
             div.pref-footer
                 div(style="flex: 1")
-                text-button.footer-text-button(text="SAVE", color="primary", @click.native="onOk")
+                text-button.footer-text-button(primary, dense, @click.native="onOk") SAVE
 

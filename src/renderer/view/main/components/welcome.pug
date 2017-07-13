@@ -1,23 +1,24 @@
 main-layout(title="Inazuma")
     template(slot="drawer-navigations")
-        navigation-router-link(name="preference", text="Preference", icon="settings", :replace="false")
+        navigation-link(text="Preference", icon="settings", :navigate-to="{ path: 'preference', append: true }")
         navigation-link(text="Version", icon="info_outline")
 
     div(style="flex: 1; padding: 0 1em;")
-        h3 SELECT REPOSITORY
+        h3.page-title SELECT REPOSITORY
         div(style="display: inline-block;")
-            ul.mdl-list.mdl-list__item--two-line(style="padding-left:1em;")
-                li.mdl-list__item(v-for="repo in recentOpened")
-                    span.mdl-list__item-primary-content(style="padding-right: 2em;")
-                        span {{ getFileName(repo) }}
-                        span.mdl-list__item-sub-title {{ repo }}
-                    span.mdl-list__item-secondary-action
-                        fab-button(@click.native="openRepository(repo)") folder_open
-                li.mdl-list__item
-                    span.mdl-list__item-primary-content(style="padding-right: 2em;")
-                        span OTHERS ...
-                        span.mdl-list__item-sub-title Select other repositories by folder browser
-                    span.mdl-list__item-secondary-action()
-                        fab-button(:accent="true", @click.native="selectRepository") add
+            ul#welcome-repo-list.mdc-list.mdc-list--two-line
+                li.mdc-list-item(v-for="repo in recentOpened")
+                    span.mdc-list-item__text
+                        text-button.repo-name(
+                            primary, compact, dense, @click.native="openRepository(repo)")
+                                | {{ getFileName(repo) }}
+                        span.mdc-list-item__text__secondary {{ repo }}
+                li.mdc-list-divider(role="separator")
+                li.mdc-list-item
+                    span.mdc-list-item__text(style="padding-right: 2em;")
+                        text-button.repo-name(
+                            primary, compact, dense, @click.native="selectRepository")
+                                | BROWSE...
+                        span.mdc-list-item__text__secondary Select other repositories by folder browser
 
     router-view(slot="overlay")

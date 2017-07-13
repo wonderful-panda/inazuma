@@ -1,4 +1,4 @@
-@import "./mdl-custom";
+@import "./mdc";
 @import "./scrollbar";
 @import "../src/renderer/view/main/components/styles";
 
@@ -15,39 +15,71 @@ body {
     box-sizing: border-box;
     height: 100%;
     flex: 1;
-    background-color: #222;
+    background-color: $mdc-theme-background;
     color: white;
 }
 
-.mdl-layout__drawer-button {
+main {
+    position: relative;
+    flex: 1;
+}
+
+.main-container {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+}
+
+#main-title {
+    margin: 0;
+}
+
+.mdc-toolbar__icon {
+    @include mdc-theme-prop(color, text-primary-on-accent);
     margin: auto 4px !important;
-    line-height: $layout-header-desktop-row-height !important;
-    .material-icons {
-        margin-top: ($layout-drawer-button-desktop-size - 24px) / 2;
-        margin-bottom: ($layout-drawer-button-desktop-size - 24px) / 2;
+    height: 24px !important;
+    line-height: 24px !important;
+    padding: ($toolbar-height - 24px) / 2 !important;
+    cursor: pointer;
+    border-radius: 50%;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
     }
 }
 
-.mdl-navigation__link {
-    span {
-        padding-left: 1em;
+.custom-button__icon--close {
+    background-color: transparent;
+    color: #888;
+    height: 24px;
+    line-height: 24px;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: 50%;
+    text-decoration: none;
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
     }
 }
-.mdl-navigation__link:hover {
-    color: $layout-drawer-bg-color !important;
-}
 
-.mdl-textfield__input {
-    border-color: rgba(255, 255, 255, 0.4);
+.custom-drawer {
+    max-width: 240px;
+    .mdc-list-item {
+        cursor: pointer;
+        i {
+            padding: 0;
+            margin-right: 0.5em;
+        }
+        i, span {
+        }
+        &:hover {
+            @include mdc-theme-prop(background-color, accent);
+            @include mdc-theme-prop(color, text-primary-on-accent);
+            i {
+                @include mdc-theme-prop(color, text-primary-on-accent);
+            }
+        }
+    }
 }
-.mdl-textfield__label {
-    color: rgba(255, 255, 255, 0.26);
-}
-
-.mdl-layout__header .mdl-textfield__label {
-    color: rgba(0, 0, 0, 0.26);
-}
-
 
 .main-content {
     display: flex;
@@ -99,6 +131,5 @@ body {
 }
 
 .footer-text-button {
-    font-size: large;
     font-weight: bold;
 }

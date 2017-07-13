@@ -2,3 +2,40 @@
 @import "./logView";
 @import "./sidebar/styles";
 @import "./modal/styles";
+
+#welcome-repo-list {
+    padding: 0 0.5em;
+
+    .mdc-list-item {
+        height: 40px;
+        margin-bottom: 0.6em;
+    }
+
+    .mdc-list-item__text {
+        padding-left: 0.3em;
+        padding-right: 2em;
+    }
+
+    .repo-name {
+        @include mdc-typography(title);
+        height: 24px;
+        margin-right: auto;
+        text-transform: none !important;
+    }
+
+    .mdc-list-item__text__secondary {
+        @include mdc-typography(subheading1);
+        height: 16px;
+        padding: 0 1em;
+        color: #666;
+    }
+    .mdc-list-divider {
+        margin: 1em 0;
+    }
+}
+
+.page-title {
+    @include mdc-typography(headline);
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}

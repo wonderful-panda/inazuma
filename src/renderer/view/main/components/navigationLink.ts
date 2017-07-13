@@ -1,11 +1,35 @@
 import Vue from "vue";
+import VueRouter from "vue-router";
+import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
 
-export const NavigationLink = Vue.extend({
+interface NavigationLinkProps {
+    icon: string;
+    text: string;
+    navigateTo: VueRouter.RawLocation | undefined;
+}
+
+@typed.component<NavigationLinkProps>({
     name: "NavigationLink",
-    ...<CompiledTemplate>require("./navigationLink.pug"),
     props: {
         icon: p.Str.Required,
-        text: p.Str.Required
+        text: p.Str.Required,
+        navigateTo: p.Any
     }
-});
+})
+export class NavigationLink extends typed.TypedComponent<NavigationLinkProps> {
+    render(h: Vue.CreateElement) {
+        const p = this.$props;
+        const name = p.navigateTo ? "router-link" : "span";
+        const children = [
+            h("i", { class: ["material-icons", "mdc-list-item__start-detail"]}, p.icon),
+            h("span", { class: "mdc-typography--title" }, p.text)
+        ];
+        if (p.navigateTo) {
+            return h("router-link", { class: "mdc-list-item", props: { to: p.navigateTo } }, children);
+        }
+        else {
+            return h("div", { class: "mdc-list-item" }, children);
+        }
+    }
+}
