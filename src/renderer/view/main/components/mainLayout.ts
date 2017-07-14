@@ -24,7 +24,6 @@ export class MainLayout extends typed.TypedComponent<MainLayoutProps> {
         this.$refs.drawer.MDCTemporaryDrawer.open = true;
     }
     closeDrawer() {
-        console.log("closeDrawer");
         this.$refs.drawer.MDCTemporaryDrawer.open = false;
     }
 }

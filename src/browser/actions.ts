@@ -32,9 +32,7 @@ const browserCommand: BrowserCommand = {
         return Promise.resolve(null);
     },
     runInteractiveShell(cwd: string): Promise<null> {
-        console.log("runInteractiveShell", cwd);
         const [command, ...args] = config.data.interactiveShell.split(/\s+/g);
-        console.log(command, args);
         if (command) {
             cp.spawn(command, args, {
                 cwd,
