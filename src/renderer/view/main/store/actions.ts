@@ -46,6 +46,9 @@ const actions: Actions = {
         ctx.commit("setCommitDetail", commit);
     },
     async setSelectedIndex(ctx, index) {
+        if (ctx.state.selectedIndex === index) {
+            return;
+        }
         ctx.commit("setSelectedIndex", index);
         const { repoPath, items } = ctx.state;
         const detail = await browserCommand.getCommitDetail({ repoPath, sha: items[index].commit.id });
