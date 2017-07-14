@@ -36,7 +36,7 @@ main {
 }
 
 .mdc-toolbar__icon {
-    margin: 0 !important;
+    margin: 0 4px !important;
     padding: ($toolbar-height - 24px) / 2 !important;
     border-radius: 50%;
     &.icon-button--disabled {
@@ -45,9 +45,6 @@ main {
     &:not(.icon-button--disabled) {
         @include mdc-theme-prop(color, text-primary-on-accent);
         cursor: pointer;
-        &:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
     }
 }
 
@@ -141,3 +138,8 @@ main {
 .footer-text-button {
     font-weight: bold;
 }
+
+.fontfamily--monospace {
+    font-family: monospace;
+}
+

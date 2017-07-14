@@ -4,10 +4,11 @@ div.commit-detail(:class="className")
     table.commit-detail-attrs
         tr
             td.attr-name id
-            td.attr-value {{ commit.id.substring(0, 8) }}
+            td.attr-value.fontfamily--monospace
+                | {{ commit.id.substring(0, 8) }}
         tr
             td.attr-name parents
-            td.attr-value
+            td.attr-value.fontfamily--monospace
                 div(v-for="p in commit.parentIds") {{ p.substring(0, 8) }}
         tr
             td.attr-name author
