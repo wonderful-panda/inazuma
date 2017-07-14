@@ -7,11 +7,11 @@ interface LogKeyword {
 }
 
 const _logKeywords: LogKeyword[] = [
-    { name: "id", format: "%H", proc: (c, v) => { c.id = v } },
-    { name: "parents", format: "%P", proc: (c, v) => { c.parentIds = v.split(" ") } },
-    { name: "author", format: "%an", proc: (c, v) => { c.author = v } },
-    { name: "date", format: "%at", proc: (c, v) => { c.date = parseInt(v) * 1000 } },
-    { name: "summary", format: "%s", proc: (c, v) => { c.summary = v } },
+    { name: "id", format: "%H", proc: (c, v) => { c.id = v; } },
+    { name: "parents", format: "%P", proc: (c, v) => { c.parentIds = v.split(" "); } },
+    { name: "author", format: "%an", proc: (c, v) => { c.author = v; } },
+    { name: "date", format: "%at", proc: (c, v) => { c.date = parseInt(v) * 1000; } },
+    { name: "summary", format: "%s", proc: (c, v) => { c.summary = v; } },
 ];
 
 const _logFormat = _logKeywords.map(k => `${ k.name } ${ k.format }`).join("%n");

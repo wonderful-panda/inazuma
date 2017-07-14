@@ -9,14 +9,14 @@ class WindowManager {
         this._wins[id] = win;
         win.on("closed", () => {
             delete(this._wins[id]);
-        })
+        });
         return win;
     }
 
     broadcast(type: string, payload: any) {
         Object.keys(this._wins).forEach(id => {
             this._wins[id].webContents.send("action", type, payload);
-        })
+        });
     }
 }
 

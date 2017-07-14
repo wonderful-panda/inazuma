@@ -36,7 +36,7 @@ export class CommitDetail extends Vue {
         return (this.commit.id ? undefined : "commit-detail-inactive");
     }
     get commitSummary() {
-        return this.commit.summary || "No commit selected"
+        return this.commit.summary || "No commit selected";
     }
     get commitDate() {
         if (this.commit.id) {

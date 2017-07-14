@@ -25,12 +25,12 @@ export async function status(repoPath: string): Promise<FileEntry[]> {
             oldPath = undefined;
             path = value.slice(3);
         }
-        if (statusCode[0] !== ' ' && statusCode !== "??") {
+        if (statusCode[0] !== " " && statusCode !== "??") {
             ret.push({ path, oldPath, statusCode: statusCode[0], inIndex: true });
         }
-        if (statusCode[1] !== ' ') {
+        if (statusCode[1] !== " ") {
             ret.push({ path, statusCode: statusCode[1], inWorkingTree: true });
         }
-    };
+    }
     return ret;
 }

@@ -79,7 +79,7 @@ export function tryExec(repoPath: string, command: string, args: string[], stdou
                 resolve({ command, args, exitCode, stdout, stderr });
             });
         }
-    })
+    });
 }
 
 export function exec(repoPath: string, command: string, args: string[], stdoutCb: EachLineCallback): Promise<ExecResult>;

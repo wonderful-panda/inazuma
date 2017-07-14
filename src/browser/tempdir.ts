@@ -19,5 +19,5 @@ export function setup() {
                 console.log("Failed to cleanup temporary directory", err);
             }
         }
-    }
+    };
 }

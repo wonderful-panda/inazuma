@@ -60,7 +60,7 @@ function showMainWindow() {
     const mainWindow = wm.create({
         autoHideMenuBar: true
     });
-    mainWindow.setMenu(Electron.Menu.buildFromTemplate(template))
+    mainWindow.setMenu(Electron.Menu.buildFromTemplate(template));
     mainWindow.loadURL(`file://${__dirname}/${html}`);
 }
 

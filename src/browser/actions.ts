@@ -47,7 +47,7 @@ const browserCommand: BrowserCommand = {
 export function setupBrowserCommands() {
     Object.keys(browserCommand).forEach(key => {
         ipcPromise.on(key, browserCommand[key]);
-    })
+    });
 }
 
 function getWtreePseudoCommit(headId: string): Commit {
