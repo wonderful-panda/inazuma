@@ -1,0 +1,21 @@
+doctype html
+transition(name="modal")
+    div.fullscreen-overlay.modal-mask(@click="onCancel")
+        div.modal-container(@click.stop)
+            div.modal-header
+                div.modal-title {{ title }}
+                close-button(
+                    ref="firstButton",
+                    @keydown.native.capture.tab="onFirstButtonTabDown",
+                    @click.native.stop="onCancel")
+            div.modal-content
+                slot
+            div.modal-footer
+                div(style="flex: 1")
+                slot(name="footer-buttons")
+                text-button.footer-text-button(
+                    ref="lastButton", dense,
+                    @keydown.native.capture.tab="onLastButtonTabDown",
+                    @click.native="onCancel")
+                        | CANCEL
+

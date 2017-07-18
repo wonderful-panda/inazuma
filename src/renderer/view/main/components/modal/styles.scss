@@ -1,60 +1,20 @@
-.modal-mask {
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9998;
-    transition: all 0.5s ease;
+#preference-panel {
+    .modal-container {
+        @extend .left-overlay-wide;
+        transition: all 0.5s ease;
 
-    &.v-enter, &.v-leave-active {
-        background-color: rgba(0, 0, 0, 0);
-
-        .pref-container {
-            transform: translateX(-800px);
+        .mdc-textfield {
+            margin-top: 8px !important;
+        }
+        .mdc-textfield__label--float-above {
+            font-size: medium;
         }
     }
-}
-
-.pref-container {
-    flex: 1;
-    max-width: 800px;
-    display: flex;
-    flex-flow: column nowrap;
-    padding: 0 0 1em 1em;
-    box-sizing: border-box;
-    @include mdc-theme-prop(background-color, background);
-    transition: all 0.5s ease;
-
-    .mdc-textfield {
-        margin-top: 8px !important;
+    &.modal-enter, &.modal-leave-active {
+        .modal-container {
+            transform: translateX(-100%);
+        }
     }
-    .mdc-textfield__label--float-above {
-        font-size: medium;
-    }
-}
-
-.pref-header {
-    display: flex;
-    flex-flow: row nowrap;
-}
-
-.pref-footer {
-    display: flex;
-    flex-direction: row;
-    padding-right: 1em;
-    button {
-        @include mdc-typography(title);
-    }
-}
-
-.pref-title {
-    @extend .page-title;
-    flex: 1;
-}
-
-.pref-content {
-    padding-left: 0.5em;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    overflow: scroll;
 }
 
 .pref-path-input {

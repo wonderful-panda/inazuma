@@ -1,30 +1,24 @@
 doctype html
-transition
-    div.fullscreen-overlay.modal-mask(@click="back")
-        div.left-overlay-wide.pref-container(@click.stop)
-            div.pref-header
-                h3.pref-title PREFERENCE
-                close-button(@click.native.stop="back")
-            div.pref-content
-                form(action="#")
-                    text-field.pref-path-input(
-                        type="text", input-id="externaldiff", autofocus,
-                        label="Path of external diff tool",
-                        v-model="config.externalDiffTool")
+modal#preference-panel(title="PREFERENCE", @close="back")
+    form(action="#")
+        text-field.pref-path-input(
+            type="text", input-id="externaldiff",
+            label="Path of external diff tool",
+            v-model="config.externalDiffTool")
 
-                    text-field.pref-path-input(
-                        type="text", input-id="interactiveShell",
-                        label="Interactive shell command",
-                        v-model="config.interactiveShell")
+        text-field.pref-path-input(
+            type="text", input-id="interactiveShell",
+            label="Interactive shell command",
+            v-model="config.interactiveShell")
 
-                    text-field.pref-input(
-                        type="number", input-id="recentListCount",
-                        label="Number of recent opened list",
-                        :min="0", :max="20",
-                        v-model.number="config.recentListCount",
-                        @validation="error.recentListCount = $event.message")
-                    text-field-helptext(persistent) {{ error.recentListCount }}
-            div.pref-footer
-                div(style="flex: 1")
-                text-button.footer-text-button(primary, dense, @click.native="onOk") SAVE
+        text-field.pref-input(
+            type="number", input-id="recentListCount",
+            label="Number of recent opened list",
+            :min="0", :max="20",
+            v-model.number="config.recentListCount",
+            @validation="error.recentListCount = $event.message")
+        text-field-helptext(persistent) {{ error.recentListCount }}
+
+    template(slot="footer-buttons")
+        text-button.footer-text-button(primary, dense, @click.native="onOk") SAVE
 

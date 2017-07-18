@@ -1,5 +1,4 @@
 import Vue from "vue";
-import * as mdc from "material-components-web";
 import * as typed from "vue-typed-component";
 import { AppStore } from "../../mainTypes";
 
@@ -12,12 +11,7 @@ interface PreferenceData {
 
 @typed.component<{}>({
     ...<CompiledTemplate>require("./preference.pug"),
-    props: {},
-    created() {
-        Vue.nextTick(() => {
-            mdc.autoInit(this.$el, () => {});
-        });
-    }
+    props: {}
 })
 export class Preference extends typed.StatefulTypedComponent<{}, PreferenceData> {
     $store: AppStore;
@@ -29,6 +23,11 @@ export class Preference extends typed.StatefulTypedComponent<{}, PreferenceData>
                 "recentListCount": undefined
             }
         };
+    }
+    mounted() {
+        Vue.nextTick(() => {
+            this.$el.querySelector("input").focus();
+        });
     }
     back() {
         this.$router.back();
