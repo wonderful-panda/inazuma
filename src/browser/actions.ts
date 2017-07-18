@@ -4,6 +4,7 @@ import * as ipcPromise from "ipc-promise";
 import * as path from "path";
 import * as cp from "child_process";
 import { environment, config } from "./persistentData";
+import { splitCommandline } from "./utils";
 import git from "./git/index";
 import wm from "./windowManager";
 
@@ -32,11 +33,12 @@ const browserCommand: BrowserCommand = {
         return Promise.resolve(null);
     },
     runInteractiveShell(cwd: string): Promise<null> {
-        const [command, ...args] = config.data.interactiveShell.split(/\s+/g);
+        const [command, ...args] = splitCommandline(config.data.interactiveShell);
         if (command) {
             cp.spawn(command, args, {
                 cwd,
                 detached: true,
+                shell: true,
                 stdio: "ignore"
             }).unref();
         }
