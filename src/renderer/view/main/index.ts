@@ -30,6 +30,7 @@ const app = new Vue({
             const repoPath = repoPathEncoded ? decodeURIComponent(repoPathEncoded) : undefined;
             if (store.state.repoPath !== repoPath) {
                 store.commit("setRepoPath", repoPath);
+                document.title = repoPath ? `Inazuma (${ repoPath })` : "Inazuma";
                 if (repoPath) {
                     const commits = await browserCommand.openRepository(repoPath);
                     store.dispatch("showCommits", commits);
