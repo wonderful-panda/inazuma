@@ -20,7 +20,6 @@ interface NavigationLinkProps {
 export class NavigationLink extends typed.TypedComponent<NavigationLinkProps> {
     render(h: Vue.CreateElement) {
         const p = this.$props;
-        const name = p.navigateTo ? "router-link" : "span";
         const children = [
             h("i", { class: ["material-icons", "mdc-list-item__start-detail"]}, p.icon),
             h("span", { class: "mdc-typography--title" }, p.text)
@@ -29,7 +28,7 @@ export class NavigationLink extends typed.TypedComponent<NavigationLinkProps> {
             return h("router-link", { class: "mdc-list-item", props: { to: p.navigateTo } }, children);
         }
         else {
-            return h("div", { class: "mdc-list-item" }, children);
+            return h("a", { class: "mdc-list-item", attrs: { href: "javascript:void(0)" } }, children);
         }
     }
 }
