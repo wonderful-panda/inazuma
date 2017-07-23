@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { AppStore } from "../../mainTypes";
+import { AppStore } from "../../store";
 import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
 
@@ -17,7 +17,7 @@ export class Sidebar extends typed.TypedComponent<SidebarProps> {
     $store: AppStore;
 
     close() {
-        this.$store.dispatch("hideSidebar", null);
+        this.$store.actions.hideSidebar();
     }
 }
 

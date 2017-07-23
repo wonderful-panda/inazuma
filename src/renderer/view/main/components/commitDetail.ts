@@ -3,7 +3,7 @@ import component from "vue-class-component";
 import * as moment from "moment";
 import { Vtable, VtableColumn } from "vue-vtable";
 import { store } from "../store";
-import { AppStore } from "../mainTypes";
+import { AppStore } from "../store";
 
 const fileColumns: VtableColumn<FileEntry>[] = [
     {
@@ -24,8 +24,7 @@ const fileColumns: VtableColumn<FileEntry>[] = [
 
 @component<CommitDetail>({
     ...<CompiledTemplate>require("./commitDetail.pug"),
-    components: { Vtable },
-    store
+    components: { Vtable }
 })
 export class CommitDetail extends Vue {
     $store: AppStore;

@@ -1,8 +1,7 @@
 import Vue from "vue";
 import component from "vue-class-component";
 import { Vtable, VtableColumn } from "vue-vtable";
-import { store } from "../store";
-import { AppStore } from "../mainTypes";
+import { AppStore } from "../store";
 
 const fileColumns: VtableColumn<FileEntry>[] = [
     {
@@ -23,8 +22,7 @@ const fileColumns: VtableColumn<FileEntry>[] = [
 
 @component<WorkingTreeStatus>({
     ...<CompiledTemplate>require("./workingTreeStatus.pug"),
-    components: { Vtable },
-    store
+    components: { Vtable }
 })
 export class WorkingTreeStatus extends Vue {
     $store: AppStore;

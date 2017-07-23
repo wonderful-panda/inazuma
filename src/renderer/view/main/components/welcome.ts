@@ -1,6 +1,6 @@
 import Vue from "vue";
 import component from "vue-class-component";
-import { AppStore } from "../mainTypes";
+import { AppStore } from "../store";
 import { MainLayout } from "./mainLayout";
 import { getFileName } from "core/utils";
 import { NavigationLink } from "./navigationLink";
@@ -18,9 +18,9 @@ export class Welcome extends Vue {
         return this.$store.state.environment.recentOpened;
     }
     openRepository(repoPath: string) {
-        this.$store.dispatch("navigateToLog", repoPath);
+        this.$store.actions.navigateToLog(repoPath);
     }
     selectRepository() {
-        this.$store.dispatch("showRepositorySelectDialog", null);
+        this.$store.actions.showRepositorySelectDialog();
     }
 }

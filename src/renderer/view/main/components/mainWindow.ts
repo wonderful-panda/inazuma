@@ -1,7 +1,7 @@
 import Vue from "vue";
 import component from "vue-class-component";
 import { store } from "../store";
-import { AppStore } from "../mainTypes";
+import { AppStore } from "../store";
 import { MainLayout } from "./mainLayout";
 import { NavigationLink } from "./navigationLink";
 import { BranchesBar, RemotesBar } from "./sidebar";
@@ -39,6 +39,6 @@ export class MainWindow extends Vue {
         location.reload();
     }
     runInteractiveShell() {
-        this.$store.dispatch("runInteractiveShell", null);
+        this.$store.actions.runInteractiveShell();
     }
 }

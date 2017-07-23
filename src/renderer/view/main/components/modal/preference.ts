@@ -1,6 +1,6 @@
 import Vue from "vue";
 import * as typed from "vue-typed-component";
-import { AppStore } from "../../mainTypes";
+import { AppStore } from "../../store";
 
 interface PreferenceData {
     config: Config;
@@ -33,7 +33,7 @@ export class Preference extends typed.StatefulTypedComponent<{}, PreferenceData>
         this.$router.back();
     }
     async onOk() {
-        await this.$store.dispatch("resetConfig", this.$data.config);
+        await this.$store.actions.resetConfig(this.$data.config);
         this.$router.back();
     }
 }

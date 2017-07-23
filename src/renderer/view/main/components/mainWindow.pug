@@ -5,8 +5,8 @@ main-layout(:title="repoName")
         toolbar-button(@click.native.left="reload") refresh
 
     template(slot="drawer-navigations")
-        navigation-link(text="Branches", icon="local_offer", @click.native="$store.dispatch('showSidebar', 'branches')")
-        navigation-link(text="Remotes", icon="cloud", @click.native="$store.dispatch('showSidebar', 'remotes')")
+        navigation-link(text="Branches", icon="local_offer", @click.native="$store.actions.showSidebar('branches')")
+        navigation-link(text="Remotes", icon="cloud", @click.native="$store.actions.showSidebar('remotes')")
         navigation-link(text="Back to Home", icon="home", :navigate-to="{ name: 'root', replace: true }")
         navigation-link(text="Preference", icon="settings", :navigate-to="{ path: 'preference', append: true }")
         navigation-link(text="Version", icon="info_outline")

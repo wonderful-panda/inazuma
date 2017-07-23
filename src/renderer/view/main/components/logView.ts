@@ -1,12 +1,11 @@
 import Vue from "vue";
 import component from "vue-class-component";
 import { Vtable, VtableProps } from "vue-vtable";
-import { store } from "../store";
-import { LogItem, AppStore } from "../mainTypes";
+import { AppStore } from "../store";
+import { LogItem } from "../mainTypes";
 
 @component<LogView>({
     components: { Vtable },
-    store,
     render(h) {
         const { items, columns, rowHeight, selectedIndex } = this.$store.state;
         const props: Partial<VtableProps<LogItem>> = {
@@ -21,7 +20,7 @@ import { LogItem, AppStore } from "../mainTypes";
         };
         const on = {
             "row-click": ({item, index}) => {
-                this.$store.dispatch("setSelectedIndex", index);
+                this.$store.actions.setSelectedIndex(index);
             }
         };
         const attrs = {
