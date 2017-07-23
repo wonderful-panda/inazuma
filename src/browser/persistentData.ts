@@ -55,6 +55,9 @@ export const configSchema = {
         },
         interactiveShell: {
             type: "string"
+        },
+        vueDevTool: {
+            type: "string"
         }
     }
 };
@@ -65,7 +68,7 @@ class ConfigObject {
 }
 
 function loadConfig(): Config {
-    const defaultData: Config = { recentListCount: 5, externalDiffTool: "", interactiveShell: "" };
+    const defaultData: Config = { recentListCount: 5, externalDiffTool: "", interactiveShell: "", vueDevTool: "" };
     const ret = load(configJsonPath, configSchema);
     if (!ret) {
         return defaultData;

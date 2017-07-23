@@ -19,6 +19,11 @@ modal#preference-panel(title="PREFERENCE", @close="back")
             @validation="error.recentListCount = $event.message")
         text-field-helptext(persistent) {{ error.recentListCount }}
 
+        text-field.pref-path-input(
+            type="text", input-id="vueDevTool",
+            label="Path of vue dev tool",
+            v-model="config.vueDevTool")
+
     template(slot="footer-buttons")
         text-button.footer-text-button(primary, dense, @click.native="onOk") SAVE
 

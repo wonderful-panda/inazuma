@@ -18,6 +18,8 @@ Electron.app.on("window-all-closed", () => {
     persist.saveConfig();
     persist.saveEnvironment();
     tempdir.creanup();
+    const devtools = Electron.BrowserWindow.getDevToolsExtensions() as { [name: string]: any };
+    Object.keys(devtools).map(Electron.BrowserWindow.removeDevToolsExtension);
     if (process.platform !== "darwin") {
         Electron.app.quit();
     }
@@ -65,5 +67,13 @@ function showMainWindow() {
 }
 
 Electron.app.on("ready", () => {
+    if (persist.config.data.vueDevTool) {
+        try {
+            Electron.BrowserWindow.addDevToolsExtension(persist.config.data.vueDevTool);
+        }
+        catch(e) {
+            console.log("failed to load devtools extension");
+        }
+    }
     showMainWindow();
 });
