@@ -1,7 +1,7 @@
 main-layout(title="Inazuma")
     template(slot="drawer-navigations")
         navigation-link(text="Preference", icon="settings", :navigate-to="{ path: 'preference', append: true }")
-        navigation-link(text="Version", icon="info_outline")
+        navigation-link(text="Version", icon="info_outline", @click.native="$store.actions.showVersionDialog()")
 
     div(style="flex: 1; padding: 0 1em;")
         h3.page-title SELECT REPOSITORY

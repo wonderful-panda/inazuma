@@ -1,27 +1,37 @@
 .modal-mask {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 9998;
-    transition: all 0.5s ease;
+    transition: all 0.3s ease;
+    overflow: hidden;
 
     &.modal-enter, &.modal-leave-active {
         background-color: rgba(0, 0, 0, 0);
-
-        .left-overlay-wide {
-            transform: translateX(-100%);
-        }
     }
 }
 
 .modal-container {
-    flex: 1;
-    max-width: 800px;
     display: flex;
-    flex-flow: column nowrap;
     padding: 0 0 1em 1em;
+    flex-flow: column nowrap;
     box-sizing: border-box;
     @include mdc-theme-prop(background-color, background);
-
 }
+
+.dialog-base {
+    .modal-container {
+        margin: auto;
+        min-width: 400px;
+        box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.4);
+        transition: all 0.2s ease;
+    }
+    &.modal-enter, &.modal-leave-active {
+        .modal-container {
+            transform: scale(1.05);
+            opacity: 0;
+        }
+    }
+}
+
 
 .modal-header {
     display: flex;
@@ -49,3 +59,4 @@
     flex-direction: column;
     overflow: scroll;
 }
+

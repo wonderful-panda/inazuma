@@ -1,7 +1,8 @@
 #preference-panel {
     .modal-container {
         @extend .left-overlay-wide;
-        transition: all 0.5s ease;
+        flex: 1;
+        transition: all 0.3s ease;
 
         .mdc-textfield {
             margin-top: 8px !important;

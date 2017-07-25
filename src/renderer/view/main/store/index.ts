@@ -5,8 +5,10 @@ import { AppState, LogItem } from "../mainTypes";
 import * as columns from "./logColumns";
 import { navigate } from "../route";
 import { Grapher } from "core/grapher";
-const { BrowserWindow, dialog } = Electron.remote;
 import { browserCommand } from "core/browser";
+import { dialogModule } from "view/common/storeModules/dialog";
+
+const { BrowserWindow, dialog } = Electron.remote;
 
 const emptyCommit: CommitDetail = {
     id: "",
@@ -17,6 +19,8 @@ const emptyCommit: CommitDetail = {
     date: 0,
     files: []
 };
+
+const injected = sinai.inject("dialog", dialogModule);
 
 class State implements AppState {
     environment = <Environment>Electron.remote.getGlobal("environment");
@@ -30,7 +34,7 @@ class State implements AppState {
     sidebar = "";
 }
 
-class Mutations extends sinai.Mutations<State>() {
+class Mutations extends injected.Mutations<State>() {
     resetItems(items: LogItem[]) {
         const state = this.state;
         state.items = items;
@@ -72,9 +76,8 @@ class Mutations extends sinai.Mutations<State>() {
     }
 }
 
-class Actions extends sinai.Actions<State, any, Mutations>() {
-    error(e) {
-        // TODO
+class Actions extends injected.Actions<State, any, Mutations>() {
+    error(e: Error) {
         console.log(e);
     }
 
@@ -143,6 +146,15 @@ class Actions extends sinai.Actions<State, any, Mutations>() {
         await browserCommand.runInteractiveShell(this.state.repoPath);
         return;
     }
+
+    async showVersionDialog(): Promise<boolean> {
+        const ret = await this.modules.dialog.actions.show({
+            title: "Version",
+            renderContent: h => "Version dialog: Not implemented",
+            buttons: []
+        });
+        return ret.accepted;
+    }
 }
 
 export const store = sinai.store(
@@ -150,7 +162,9 @@ export const store = sinai.store(
         state: State,
         mutations: Mutations,
         actions: Actions
-    })
+    }).child(
+        "dialog", dialogModule
+    )
 );
 
 export type AppStore = typeof store;

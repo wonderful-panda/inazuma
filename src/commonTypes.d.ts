@@ -2,6 +2,8 @@
  * Type definitions needed by both browser and renderer
  */
 
+declare type Resolve<T> = (arg: T) => void;
+
 /**
  * Auto updated parsistent data written to .environment.json
  */

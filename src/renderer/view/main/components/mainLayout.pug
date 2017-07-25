@@ -17,4 +17,6 @@ div.main-container.mdc-theme--dark.mdc-typography
         slot
 
     slot(name="overlay")
+    dialog-base(:state="$store.state.dialog",
+                :actions="$store.actions.dialog")
 

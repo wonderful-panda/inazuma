@@ -32,7 +32,7 @@ export class GitError extends Error {
     public readonly stderr: string;
 
     public constructor(result: TryExecResult) {
-        super(`\`git ${ result.command }\` fails with exit code(${ result.exitCode })`);
+        super();
         this.command = result.command;
         this.args = result.args;
         this.exitCode = result.exitCode;
