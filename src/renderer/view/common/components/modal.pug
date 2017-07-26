@@ -1,7 +1,7 @@
 doctype html
 transition(name="modal")
     div.fullscreen-overlay.modal-mask(@click="onCancel")
-        div.modal-container(@click.stop)
+        div.modal-container(@click.stop, @keydown.esc="onCancel")
             div.modal-header
                 div.modal-title {{ title }}
                 close-button(
@@ -10,7 +10,7 @@ transition(name="modal")
                     @click.native.stop="onCancel")
             div.modal-content
                 slot
-            div.modal-footer
+            div.modal-footer(ref="footer")
                 div(style="flex: 1")
                 slot(name="footer-buttons")
                 text-button.footer-text-button(

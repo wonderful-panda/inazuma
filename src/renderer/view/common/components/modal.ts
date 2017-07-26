@@ -18,11 +18,19 @@ interface ModalEvents {
     }
 })
 export class Modal extends typed.EvTypedComponent<ModalProps, ModalEvents> {
-    $refs: { firstButton: Vue, lastButton: Vue }
+    $refs: { footer: HTMLDivElement, firstButton: Vue, lastButton: Vue }
 
     mounted() {
         Vue.nextTick(() => {
             mdc.autoInit(this.$el, () => {});
+            const footerButtons = this.$refs.footer.querySelectorAll("button, input");
+            for (let i = 0; i < footerButtons.length; ++i) {
+                const el = footerButtons[i] as HTMLInputElement | HTMLButtonElement;
+                el.focus();
+                if (document.activeElement === el) {
+                    break;
+                }
+            }
         });
     }
 
