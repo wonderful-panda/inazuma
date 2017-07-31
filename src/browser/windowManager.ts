@@ -1,7 +1,7 @@
 import * as Electron from "electron";
 
 class WindowManager {
-    private _wins: { [id: string]: Electron.BrowserWindow } = {};
+    private _wins: Dict<Electron.BrowserWindow> = {};
 
     create(opts?: Electron.BrowserWindowConstructorOptions): Electron.BrowserWindow {
         const win = new Electron.BrowserWindow(opts);

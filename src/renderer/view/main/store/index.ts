@@ -37,7 +37,7 @@ class State implements AppState {
 }
 
 class Mutations extends injected.Mutations<State>() {
-    resetItems(commits: Commit[], graphs: { [id: string]: GraphFragment }, refs: { [id: string]: Ref[] }) {
+    resetItems(commits: Commit[], graphs: Dict<GraphFragment>, refs: Dict<Ref[]>) {
         const state = this.state;
         state.commits = commits;
         state.graphs = graphs;

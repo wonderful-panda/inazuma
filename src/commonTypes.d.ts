@@ -3,6 +3,7 @@
  */
 
 declare type Resolve<T> = (arg: T) => void;
+declare type Dict<T> = { [key: string]: T };
 
 /**
  * Auto updated parsistent data written to .environment.json
@@ -46,7 +47,7 @@ declare interface Refs {
     remotes: { [remote: string]: { [name: string]: string } };
     heads: { [name: string]: string };
     tags: { [name: string]: string };
-    refsById: { [id: string]: Ref[] };
+    refsById: Dict<Ref[]>;
 }
 
 declare interface DagNode {

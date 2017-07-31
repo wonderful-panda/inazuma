@@ -13,8 +13,8 @@ export interface AppState {
     config: Config;
     columns: VtableColumn<LogItem>[];
     commits: Commit[];
-    graphs: { [id: string]: GraphFragment };
-    refs: { [id: string]: Ref[] };
+    graphs: Dict<GraphFragment>;
+    refs: Dict<Ref[]>;
     selectedIndex: number;
     selectedCommit: CommitDetail;
     rowHeight: number;
