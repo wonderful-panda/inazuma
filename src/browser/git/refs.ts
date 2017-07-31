@@ -44,7 +44,7 @@ export async function getRefs(repoPath: string): Promise<Refs> {
         const refNameComponents = fullname.split("/");
         let type = refNameComponents.shift();
         if (type === "HEAD") {
-            addRef(refs, { type, id });
+            addRef(refs, { fullname, type, id });
         }
         else if (type === "refs") {
             let type = refNameComponents.shift();
@@ -52,16 +52,16 @@ export async function getRefs(repoPath: string): Promise<Refs> {
             switch (type) {
                 case "heads":
                     name = refNameComponents.join("/");
-                    addRef(refs, { type, name, id, current: (fullname === currentBranch) });
+                    addRef(refs, { fullname, type, name, id, current: (fullname === currentBranch) });
                     break;
                 case "tags":
                     name = refNameComponents.join("/");
-                    addRef(refs, { type, name, id });
+                    addRef(refs, { fullname, type, name, id });
                     break;
                 case "remotes":
                     const remote = refNameComponents.shift();
                     name = refNameComponents.join("/");
-                    addRef(refs, { type, remote, name, id });
+                    addRef(refs, { fullname, type, remote, name, id });
                     break;
                 default:
                     // TODO: handle unexpected line
@@ -78,7 +78,9 @@ export async function getRefs(repoPath: string): Promise<Refs> {
     if (await fs.exists(mergeHeadsFile)) {
         const type = "MERGE_HEAD";
         const data = await fs.readFile(mergeHeadsFile);
-        data.toString().replace("\n$", "").split("\n").forEach(id => addRef(refs, { type, id }));
+        data.toString().replace("\n$", "").split("\n").forEach(
+            (id, index) => addRef(refs, { fullname: `MERGE_HEAD/${ index }`, type, id })
+        );
     }
     return refs;
 }

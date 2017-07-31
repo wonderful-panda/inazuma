@@ -3,6 +3,7 @@ import component from "vue-class-component";
 import * as vtable from "view/common/components/vtable";
 import { AppStore } from "../store";
 import { LogItem } from "../mainTypes";
+import { dragdrop } from "../dragdrop";
 
 const Vtable = vtable.of<LogItem>();
 
@@ -15,7 +16,9 @@ const Vtable = vtable.of<LogItem>();
                     rowStyleCycle={ 2 }
                     getItemKey={ item => item.commit.id }
                     getRowClass={ (item, index) => index === selectedIndex ? "vtable-row-selected" : "vtable-row" }
-                    onRowclick={ args => this.$store.actions.setSelectedIndex(args.index) }
+                    onRowclick={ arg => this.$store.actions.setSelectedIndex(arg.index) }
+                    onRowdragover={ arg => this.onRowdragover(arg.item, arg.event) }
+                    onRowdrop={ arg => this.onRowdrop(arg.item, arg.event) }
                 />;
     }
 })
@@ -29,5 +32,23 @@ export class LogView extends Vue {
             const refs = (state.refs[commit.id] || []).filter(r => r.type !== "MERGE_HEAD");
             return { commit, graph, refs };
         });
+    }
+
+    onRowdragover(item: LogItem, event: DragEvent) {
+        if (item.commit.id === "--") {
+            return;
+        }
+        if (dragdrop.isDataPresent(event, "git/branch")) {
+            event.dataTransfer.dropEffect = "move";
+            event.preventDefault();
+        }
+    }
+
+    onRowdrop(item: LogItem, event: DragEvent) {
+        if (item.commit.id === "--") {
+            return;
+        }
+        const data = dragdrop.getData(event, "git/branch");
+        console.log("drop", data);
     }
 }

@@ -23,23 +23,22 @@ declare interface Config {
 }
 
 declare type Ref = {
+    id: string,
+    fullname: string
+} & ({
     type: "HEAD" | "MERGE_HEAD",
-    id: string
 } | {
     type: "heads",
     name: string,
-    id: string,
     current: boolean
 } | {
     type: "tags",
     name: string,
-    id: string
 } | {
     type: "remotes",
     remote: string,
     name: string,
-    id: string
-};
+});
 
 declare interface Refs {
     head?: string;

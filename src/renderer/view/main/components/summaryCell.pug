@@ -1,3 +1,3 @@
 transition-group(tag="div", :style="{ display: 'flex', flexFlow: 'row nowrap' }")
-    div.ref-label(v-for="ref in refs", :key="'ref:' + refText(ref)" :class="refClass(ref)") {{ refText(ref) }}
+    ref-label(v-for="ref in refs", :key="ref.fullname", :ref_="ref")
     span(key="summary") {{ commit.summary }}
