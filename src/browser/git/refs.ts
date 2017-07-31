@@ -2,54 +2,37 @@ import * as path from "path";
 import * as fs from "fs-extra";
 import { exec } from "./process";
 
-export class Refs {
-    private readonly _idMap: { [id: string]: Ref[] } = {};
-    readonly head?: string;
-    readonly mergeHeads: string[] = [];
-    readonly remotes: { [remote: string]: { [name: string]: string } } = {};
-    readonly heads: { [name: string]: string } = {};
-    readonly tags: { [name: string]: string } = {};
-
-    constructor(refs: Ref[]) {
-        let head: string;
-        refs.forEach(ref => {
-            const refsOfId = this._idMap[ref.id] || (this._idMap[ref.id] = []);
-            refsOfId.push(ref);
-            switch (ref.type) {
-                case "HEAD":
-                    head = ref.id;
-                    break;
-                case "MERGE_HEAD":
-                    this.mergeHeads.push(ref.id);
-                    break;
-                case "heads":
-                    this.heads[ref.name] = ref.id;
-                    break;
-                case "tags":
-                    this.tags[ref.name] = ref.id;
-                    break;
-                case "remotes":
-                    const remote = this.remotes[ref.remote] || (this.remotes[ref.remote] = {});
-                    remote[ref.name] = ref.id;
-                    break;
-                default:
-                    throw "Invalid ref type";
-            }
-        });
-        this.head = head;
-    }
-
-    getRefsById(id: string): Ref[] {
-        return this._idMap[id];
-    }
-
-    getAllIds(): string[] {
-        return Object.keys(this._idMap);
+function addRef(refs: Refs, r: Ref): void {
+    (refs.refsById[r.id] || (refs.refsById[r.id] = [])).push(r);
+    switch (r.type) {
+        case "HEAD":
+            refs.head = r.id;
+            break;
+        case "MERGE_HEAD":
+            refs.mergeHeads.push(r.id);
+            break;
+        case "heads":
+            refs.heads[r.name] = r.id;
+            break;
+        case "remotes":
+            (refs.remotes[r.remote] || (refs.remotes[r.remote] = {}))[r.name] = r.id;
+            break;
+        case "tags":
+            refs.tags[r.name] = r.id;
+            break;
+        default:
+            throw "Unknown ref type";
     }
 }
 
 export async function getRefs(repoPath: string): Promise<Refs> {
-    const refs: Ref[] = [];
+    const refs: Refs = {
+        mergeHeads: [],
+        remotes: {},
+        heads: {},
+        tags: {},
+        refsById: {}
+    };
     const currentBranch = (await exec(repoPath, "symbolic-ref", ["HEAD", "-q"])).stdout.replace(/\n$/, "");
     await exec(repoPath, "show-ref", ["--head"], line => {
         const p = line.indexOf(" ");
@@ -61,7 +44,7 @@ export async function getRefs(repoPath: string): Promise<Refs> {
         const refNameComponents = fullname.split("/");
         let type = refNameComponents.shift();
         if (type === "HEAD") {
-            refs.push({ type, id });
+            addRef(refs, { type, id });
         }
         else if (type === "refs") {
             let type = refNameComponents.shift();
@@ -69,16 +52,16 @@ export async function getRefs(repoPath: string): Promise<Refs> {
             switch (type) {
                 case "heads":
                     name = refNameComponents.join("/");
-                    refs.push({ type, name, id, current: (fullname === currentBranch) });
+                    addRef(refs, { type, name, id, current: (fullname === currentBranch) });
                     break;
                 case "tags":
                     name = refNameComponents.join("/");
-                    refs.push({ type, name, id });
+                    addRef(refs, { type, name, id });
                     break;
                 case "remotes":
                     const remote = refNameComponents.shift();
                     name = refNameComponents.join("/");
-                    refs.push({ type, remote, name, id });
+                    addRef(refs, { type, remote, name, id });
                     break;
                 default:
                     // TODO: handle unexpected line
@@ -95,7 +78,7 @@ export async function getRefs(repoPath: string): Promise<Refs> {
     if (await fs.exists(mergeHeadsFile)) {
         const type = "MERGE_HEAD";
         const data = await fs.readFile(mergeHeadsFile);
-        data.toString().replace("\n$", "").split("\n").forEach(id => refs.push({ type, id }));
+        data.toString().replace("\n$", "").split("\n").forEach(id => addRef(refs, { type, id }));
     }
-    return new Refs(refs);
+    return refs;
 }

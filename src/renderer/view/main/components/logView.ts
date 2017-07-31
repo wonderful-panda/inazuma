@@ -7,9 +7,9 @@ import { LogItem } from "../mainTypes";
 @component<LogView>({
     components: { Vtable },
     render(h) {
-        const { items, columns, rowHeight, selectedIndex } = this.$store.state;
+        const { columns, rowHeight, selectedIndex } = this.$store.state;
         const props: Partial<VtableProps<LogItem>> = {
-            items,
+            items: this.items,
             columns,
             rowHeight,
             rowStyleCycle: 2,
@@ -31,4 +31,13 @@ import { LogItem } from "../mainTypes";
 })
 export class LogView extends Vue {
     $store: AppStore;
+
+    get items(): LogItem[] {
+        const state = this.$store.state;
+        return state.commits.map(commit => {
+            const graph = state.graphs[commit.id]
+            const refs = (state.refs[commit.id] || []).filter(r => r.type !== "MERGE_HEAD");
+            return { commit, graph, refs };
+        });
+    }
 }

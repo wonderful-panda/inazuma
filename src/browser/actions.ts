@@ -5,7 +5,7 @@ import * as path from "path";
 import * as cp from "child_process";
 import { environment, config } from "./persistentData";
 import { splitCommandline } from "./utils";
-import git from "./git/index";
+import git from "./git";
 import wm from "./windowManager";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
@@ -16,12 +16,12 @@ export function broadcast<K extends keyof BroadcastAction>(
 }
 
 const browserCommand: BrowserCommand = {
-    async openRepository(repoPath: string): Promise<Commit[]> {
-        const commits = await fetchHistory(repoPath, 1000);
+    async openRepository(repoPath: string): Promise<{ commits: Commit[], refs: Refs }> {
+        const ret = await fetchHistory(repoPath, 1000);
         if (environment.addRecentOpened(repoPath)) {
             broadcast("environmentChanged", environment.data);
         }
-        return commits;
+        return ret;
     },
     async getCommitDetail(arg: { repoPath: string, sha: string }): Promise<CommitDetail> {
         const detail = await getCommitDetail(arg.repoPath, arg.sha);
@@ -62,16 +62,15 @@ function getWtreePseudoCommit(headId: string): Commit {
     };
 }
 
-async function fetchHistory(repoPath: string, num: number): Promise<Commit[]> {
+async function fetchHistory(repoPath: string, num: number): Promise<{ commits: Commit[], refs: Refs }> {
     const refs = await git.getRefs(repoPath);
     const headId = refs.head;
 
     const commits = [getWtreePseudoCommit(headId)];
-    const ret = await git.log(repoPath, num, refs.getAllIds(), commit => {
-        commit.refs = refs.getRefsById(commit.id);
+    const ret = await git.log(repoPath, num, Object.keys(refs.refsById), commit => {
         commits.push(commit);
     });
-    return commits;
+    return { commits, refs };
 }
 
 async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {

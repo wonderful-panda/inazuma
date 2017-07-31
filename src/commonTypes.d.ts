@@ -40,6 +40,15 @@ declare type Ref = {
     id: string
 };
 
+declare interface Refs {
+    head?: string;
+    mergeHeads: string[];
+    remotes: { [remote: string]: { [name: string]: string } };
+    heads: { [name: string]: string };
+    tags: { [name: string]: string };
+    refsById: { [id: string]: Ref[] };
+}
+
 declare interface DagNode {
     id: string;
     parentIds: string[];
@@ -49,7 +58,6 @@ declare interface Commit extends DagNode {
     summary: string;
     date: number;
     author: string;
-    refs?: Ref[];
 }
 
 declare interface FileEntry {
@@ -71,7 +79,7 @@ declare interface BroadcastAction {
 }
 
 declare interface BrowserCommand {
-    openRepository(repoPath: string): Promise<Commit[]>;
+    openRepository(repoPath: string): Promise<{ commits: Commit[], refs: Refs }>;
     getCommitDetail(params: { repoPath: string, sha: string }): Promise<CommitDetail>;
     resetConfig(config: Config): Promise<null>;
     runInteractiveShell(curdir: string): Promise<null>;

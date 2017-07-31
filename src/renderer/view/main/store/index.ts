@@ -4,7 +4,7 @@ import * as Electron from "electron";
 import { AppState, LogItem } from "../mainTypes";
 import * as columns from "./logColumns";
 import { navigate } from "../route";
-import { Grapher } from "core/grapher";
+import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
 import { dialogModule } from "view/common/storeModules/dialog";
 
@@ -27,7 +27,9 @@ class State implements AppState {
     config = <Config>Electron.remote.getGlobal("config");
     columns = columns.detail;
     repoPath = "";
-    items = [];
+    commits = [];
+    graphs = {};
+    refs = {};
     selectedIndex = -1;
     selectedCommit = emptyCommit;
     rowHeight = 24;
@@ -35,11 +37,17 @@ class State implements AppState {
 }
 
 class Mutations extends injected.Mutations<State>() {
-    resetItems(items: LogItem[]) {
+    resetItems(commits: Commit[], graphs: { [id: string]: GraphFragment }, refs: { [id: string]: Ref[] }) {
         const state = this.state;
-        state.items = items;
+        state.commits = commits;
+        state.graphs = graphs;
+        state.refs = refs;
         state.selectedIndex = -1;
         state.selectedCommit = emptyCommit;
+    }
+
+    resetRefs(refs: Refs) {
+        this.state.refs = refs.refsById;
     }
 
     resetEnvironment(env: Environment) {
@@ -53,7 +61,9 @@ class Mutations extends injected.Mutations<State>() {
     setRepoPath(repoPath: string) {
         const state = this.state;
         state.repoPath = repoPath;
-        state.items = [];
+        state.commits = [];
+        state.graphs = {};
+        state.graphs = {};
         state.selectedIndex = -1;
         state.selectedCommit = emptyCommit;
     }
@@ -65,8 +75,8 @@ class Mutations extends injected.Mutations<State>() {
     }
 
     setCommitDetail(commit: CommitDetail) {
-        const { items, selectedIndex } = this.state;
-        if (items[selectedIndex].commit.id === commit.id) {
+        const { commits, selectedIndex } = this.state;
+        if (commits[selectedIndex].id === commit.id) {
             this.state.selectedCommit = commit;
         }
     }
@@ -106,12 +116,13 @@ class Actions extends injected.Actions<State, any, Mutations>() {
         navigate.root();
     }
 
-    showCommits(commits: Commit[]) {
+    showCommits(commits: Commit[], refs: Refs) {
         const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
-        const logItems: LogItem[] = commits.map(c => {
-            return { commit: c, graph: grapher.proceed(c) };
+        const graphs = {};
+        commits.forEach(c => {
+            graphs[c.id] = grapher.proceed(c);
         });
-        this.mutations.resetItems(logItems);
+        this.mutations.resetItems(commits, graphs, refs.refsById);
     }
 
     showCommitDetail(commit: CommitDetail) {
@@ -123,8 +134,8 @@ class Actions extends injected.Actions<State, any, Mutations>() {
             return;
         }
         this.mutations.setSelectedIndex(index);
-        const { repoPath, items } = this.state;
-        const detail = await browserCommand.getCommitDetail({ repoPath, sha: items[index].commit.id });
+        const { repoPath, commits } = this.state;
+        const detail = await browserCommand.getCommitDetail({ repoPath, sha: commits[index].id });
         this.showCommitDetail(detail);
         return;
     }

@@ -4,6 +4,7 @@ import { VtableColumn } from "vue-vtable";
 export interface LogItem {
     graph: GraphFragment;
     commit: Commit;
+    refs: Ref[];
 }
 
 export interface AppState {
@@ -11,7 +12,9 @@ export interface AppState {
     environment: Environment;
     config: Config;
     columns: VtableColumn<LogItem>[];
-    items: LogItem[];
+    commits: Commit[];
+    graphs: { [id: string]: GraphFragment };
+    refs: { [id: string]: Ref[] };
     selectedIndex: number;
     selectedCommit: CommitDetail;
     rowHeight: number;

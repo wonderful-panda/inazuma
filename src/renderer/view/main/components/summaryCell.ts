@@ -3,24 +3,17 @@ import * as p from "vue-typed-component/lib/props";
 
 export interface SummaryCellProps {
     commit: Commit;
+    refs: Ref[];
 }
 
 @typed.component<SummaryCellProps>({
     ...<CompiledTemplate>require("./summaryCell.pug"),
     props: {
-        commit: p.Obj
+        commit: p.Obj,
+        refs: p.Arr
     }
 })
 export class SummaryCell extends typed.TypedComponent<SummaryCellProps> {
-    get refs(): Ref[] {
-        const { refs } = this.$props.commit;
-        if (refs) {
-            return refs.filter(r => r.type !== "MERGE_HEAD");
-        }
-        else {
-            return [];
-        }
-    }
     refClass(ref: Ref): string {
         switch (ref.type) {
             case "HEAD":
