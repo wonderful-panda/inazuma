@@ -38,42 +38,44 @@
         background-color: #888;
     }
 
-    span.ref-label {
+    .ref-label {
         vertical-align: middle;
-        font-size: xx-small;
-        font-weight: bold;
-        border: 2px solid;
-        margin-right: 4px;
-        padding-left: 0.4em;
-        padding-right: 0.4em;
+        height: 1.3em;
+        line-height: 1.3em;
+        font-size: smaller;
+        border: 1px solid;
+        margin: auto 4px auto 0;
+        padding: 0 0.4em 0 0.4em;
         border-radius: 1em;
+        cursor: default;
     }
 
-    span.ref-label-head {
-        font-size: smaller;
+    .ref-label-head {
         border-radius: 0;
+        font-weight: bold;
         color: darkorange;
-        border-color: darkorange;
+        border: 2px solid darkorange;
     }
 
-    span.ref-label-branch {
-        color: darkcyan;
-        border-color: darkcyan;
+    .ref-label-branch {
+        color: cyan;
+        border-color: cyan;
+        cursor: pointer;
     }
 
-    span.ref-label-branch-current {
-        font-size: smaller;
+    .ref-label-branch-current {
+        font-weight: bold;
+        color: cyan;
+        border: 2px solid cyan;
+    }
+
+    .ref-label-tag {
+        border-radius: 0;
         color: cyan;
         border-color: cyan;
     }
 
-    span.ref-label-tag {
-        border-radius: 0;
-        color: darkcyan;
-        border-color: darkcyan;
-    }
-
-    span.ref-label-remote {
+    .ref-label-remote {
         color: #888;
         border-color: #888;
     }
