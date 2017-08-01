@@ -2,6 +2,7 @@ import Vue from "vue";
 import * as mdc from "material-components-web";
 import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
+import { queryFocusableElements } from "view/common/domutils";
 
 interface ModalProps {
     title: string | undefined;
@@ -18,19 +19,9 @@ interface ModalEvents {
     }
 })
 export class Modal extends typed.EvTypedComponent<ModalProps, ModalEvents> {
-    $refs: { footer: HTMLDivElement, firstButton: Vue, lastButton: Vue }
-
     mounted() {
         Vue.nextTick(() => {
             mdc.autoInit(this.$el, () => {});
-            const footerButtons = this.$refs.footer.querySelectorAll("button, input");
-            for (let i = 0; i < footerButtons.length; ++i) {
-                const el = footerButtons[i] as HTMLInputElement | HTMLButtonElement;
-                el.focus();
-                if (document.activeElement === el) {
-                    break;
-                }
-            }
         });
     }
 
@@ -38,17 +29,22 @@ export class Modal extends typed.EvTypedComponent<ModalProps, ModalEvents> {
         this.$events.emit("close", null);
     }
 
-    onFirstButtonTabDown(event: KeyboardEvent) {
-        if (event.shiftKey) {
-            this.$refs.lastButton.$el.focus();
-            event.preventDefault();
+    onTabKeyDown(event: KeyboardEvent) {
+        const focusable = queryFocusableElements(this.$el);
+        if (focusable.length === 0) {
+            return;
         }
-    }
-
-    onLastButtonTabDown(event: KeyboardEvent) {
-        if (!event.shiftKey) {
-            this.$refs.firstButton.$el.focus();
-            event.preventDefault();
+        if (event.shiftKey) {
+            if (event.target === focusable[0]) {
+                focusable[focusable.length - 1].focus();
+                event.preventDefault();
+            }
+        }
+        else {
+            if (event.target === focusable[focusable.length - 1]) {
+                focusable[0].focus();
+                event.preventDefault();
+            }
         }
     }
 }

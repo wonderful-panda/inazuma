@@ -36,6 +36,9 @@ export class DialogBase extends typed.TypedComponent<DialogBaseProps> {
                 { opt.renderContent(h) }
                 <template slot="footer-buttons">
                     { buttons }
+                    <TextButton class="footer-text-button" key="__CANCEL__" dense nativeOnClick={ actions.cancel }>
+                        CANCEL
+                    </TextButton>
                 </template>
             </Modal>
         );
