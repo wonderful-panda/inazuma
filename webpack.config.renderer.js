@@ -13,7 +13,7 @@ module.exports = {
     },
     devtool: 'source-map',
     resolve: {
-        extensions: [".ts", ".js"],
+        extensions: [".ts", ".tsx", ".js"],
         modules: [
             path.join(__dirname, "src/renderer"),
             "node_modules"
@@ -21,7 +21,7 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.ts$/, loader: "ts-loader" },
+            { test: /\.tsx?$/, loader: "babel-loader!ts-loader" },
             { test: /\.pug$/, loader: "vue-template-compiler-loader!./simple-pug-loader" }
         ]
     },

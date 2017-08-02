@@ -1,0 +1,10 @@
+{
+    "presets": ["latest"],
+    "plugins": [
+        "transform-vue-jsx",
+        ["transform-runtime", {
+            "polyfill": false,
+            "regenerator": true
+        }]
+    ]
+}
