@@ -14,6 +14,7 @@ interface SidebarProps {
     }
 })
 export class Sidebar extends typed.TypedComponent<SidebarProps> {
+    _tsxattrs: TsxComponentAttrs<SidebarProps>;
     $store: AppStore;
 
     close() {
@@ -23,17 +24,13 @@ export class Sidebar extends typed.TypedComponent<SidebarProps> {
 
 export const BranchesBar = Vue.extend({
     render(h) {
-        return h(Sidebar, { props: { title: "Branches & Tags" } }, [
-            "not implemented"
-        ]);
+        return <Sidebar title="Branches & Tags">not implemented</Sidebar>;
     }
 });
 
 export const RemotesBar = Vue.extend({
     render(h) {
-        return h(Sidebar, { props: { title: "Remotes" } }, [
-            "not implemented"
-        ]);
+        return <Sidebar title="Remotes">not implemented</Sidebar>;
     }
 });
 

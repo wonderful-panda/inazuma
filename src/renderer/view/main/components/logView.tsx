@@ -1,32 +1,22 @@
 import Vue from "vue";
 import component from "vue-class-component";
-import { Vtable, VtableProps } from "vue-vtable";
+import * as vtable from "view/common/components/vtable";
 import { AppStore } from "../store";
 import { LogItem } from "../mainTypes";
 
+const Vtable = vtable.of<LogItem>();
+
 @component<LogView>({
-    components: { Vtable },
     render(h) {
         const { columns, rowHeight, selectedIndex } = this.$store.state;
-        const props: Partial<VtableProps<LogItem>> = {
-            items: this.items,
-            columns,
-            rowHeight,
-            rowStyleCycle: 2,
-            getItemKey: item => item.commit.id,
-            getRowClass(item, index) {
-                return index === selectedIndex ? "vtable-row-selected" : "vtable-row";
-            }
-        };
-        const on = {
-            "row-click": ({item, index}) => {
-                this.$store.actions.setSelectedIndex(index);
-            }
-        };
-        const attrs = {
-            id: "main-revision-log"
-        };
-        return h(Vtable, { attrs, props, on });
+        return <Vtable
+                    id="main-revision-log"
+                    items={ this.items } columns={ columns } rowHeight={ rowHeight }
+                    rowStyleCycle={ 2 }
+                    getItemKey={ item => item.commit.id }
+                    getRowClass={ (item, index) => index === selectedIndex ? "vtable-row-selected" : "vtable-row" }
+                    onRowclick={ args => this.$store.actions.setSelectedIndex(args.index) }
+                />;
     }
 })
 export class LogView extends Vue {

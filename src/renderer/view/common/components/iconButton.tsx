@@ -1,47 +1,36 @@
 import Vue from "vue";
 import * as p from "vue-typed-component/lib/props";
 
-export const IconButton = Vue.extend({
+export const IconButton = $tsx.createComponent<{ disabled?: false }>({
     name: "IconButton",
     props: {
         disabled: p.Bool.Default(false)
     },
-    render(h) {
-        return h("button", {
+    render(this: Vue, h) {
+        const data = {
             class: {
                 "material-icons": true,
                 "icon-button--disabled": this.$props.disabled
             },
-            domProps: {
-                disabled: this.$props.disabled
-            }
-        }, [
-            this.$slots.default
-        ]);
+            disabled: this.$props.disabled
+        };
+        return <button { ...data }>{ this.$slots.default }</button>;
     }
 });
 
-export const ToolbarButton = Vue.extend({
+export const ToolbarButton = $tsx.createComponent({
     name: "ToolbarButton",
     functional: true,
     render(h, { data, children }) {
-        if (!data.class) {
-            data.class = [];
-        }
-        data.class.push("mdc-toolbar__icon");
-        return h(IconButton, data, children);
+        return <IconButton class="mdc-toolbar__icon" { ...data }>{ children }</IconButton>;
     }
 });
 
-export const CloseButton = Vue.extend({
+export const CloseButton = $tsx.createComponent({
     name: "CloseButton",
     functional: true,
     render(h, { data }) {
-        if (!data.class) {
-            data.class = [];
-        }
-        data.class.push("custom-button__icon--close");
-        return h(IconButton, data, "close");
+        return <IconButton class="custom-button__icon--close" { ...data }>close</IconButton>;
     }
 });
 
