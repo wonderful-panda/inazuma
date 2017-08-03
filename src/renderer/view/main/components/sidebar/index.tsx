@@ -8,7 +8,7 @@ interface SidebarProps {
 }
 
 @typed.component<SidebarProps>({
-    ...<CompiledTemplate>require("./sidebar.pug"),
+    ...(require("./sidebar.pug") as CompiledTemplate),
     props: {
         title: p.Str.Required
     }
