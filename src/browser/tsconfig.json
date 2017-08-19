@@ -8,7 +8,8 @@
     "allowSyntheticDefaultImports": true
   },
   "filesGlob": [
-    "**/*.ts"
+    "**/*.ts",
+    "../commonTypes.d.ts"
   ],
   "exclude": [
     "node_modules"

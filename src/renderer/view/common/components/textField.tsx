@@ -4,15 +4,15 @@ import * as p from "vue-typed-component/lib/props";
 
 interface TextFieldProps {
     type: "text" | "number" | "email" | "password" | "url" | "search";
-    value: string | number | undefined;
-    autofocus: boolean;
-    required: boolean;
-    disabled: boolean;
-    min: number | undefined;
-    max: number | undefined;
-    pattern: string | undefined;
-    inputId: string | undefined;
-    label: string | undefined;
+    value?: string | number;
+    autofocus?: boolean;
+    required?: boolean;
+    disabled?: boolean;
+    min?: number;
+    max?: number;
+    pattern?: string;
+    inputId?: string;
+    label?: string;
 }
 
 interface Validation {
@@ -23,6 +23,11 @@ interface Validation {
 interface TextFieldEvents {
     input: string;
     validation: Validation;
+}
+
+interface TextFieldEventsOn {
+    onInput: string;
+    onValidation: Validation;
 }
 
 @typed.component<TextFieldProps, TextField>({
@@ -44,6 +49,7 @@ interface TextFieldEvents {
     }
 })
 export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldEvents> {
+    _tsxattrs: TsxComponentAttrs<TextFieldProps, TextFieldEventsOn>;
     $refs: { input: HTMLInputElement };
 
     get containerData() {
@@ -76,20 +82,25 @@ export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldE
         };
         return { ref, class: class_, style, attrs, domProps, on };
     }
-    get labelData() {
-        const p = this.$props;
-        const class_ = "mdc-textfield__label";
-        const attrs = { for: p.inputId };
-        const style = { "white-space": "nowrap" };
-        return { class: class_, style, attrs };
-    }
     render(h: Vue.CreateElement) {
-        const { label } = this.$props;
-
-        return h(label ? "label" : "div", this.containerData, [
-            h("input", this.inputData),
-            label ? h("span", this.labelData, label) : undefined
-        ]);
+        const p = this.$props;
+        if (p.label) {
+            return (
+                <label { ...this.containerData }>
+                    <input { ...this.inputData } />
+                    <span class="mdc-textfield__label" for={ p.inputId } style="white-space: nowrap;">
+                        { p.label }
+                    </span>
+                </label>
+            );
+        }
+        else {
+            return (
+                <div { ...this.containerData }>
+                    <input { ...this.inputData } />
+                </div>
+            );
+        }
     }
     onInput(event: Event) {
         this.$emit("input", this.$refs.input.value);
@@ -111,6 +122,7 @@ interface TextFieldHelpTextProps {
     }
 })
 export class TextFieldHelptext extends typed.TypedComponent<TextFieldHelpTextProps> {
+    _tsxattrs: TsxComponentAttrs<TextFieldHelpTextProps>;
     get classes() {
         return {
             "mdc-textfield-helptext": true,
@@ -118,6 +130,6 @@ export class TextFieldHelptext extends typed.TypedComponent<TextFieldHelpTextPro
         };
     }
     render(h: Vue.CreateElement) {
-        return h("p", { class: this.classes }, this.$slots.default);
+        return <p class={ this.classes }>{ this.$slots.default }</p>;
     }
 }

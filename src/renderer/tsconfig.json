@@ -8,10 +8,13 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "jsx": "preserve"
   },
   "filesGlob": [
-    "**/*.ts"
+    "**/*.ts",
+    "**/*.tsx",
+    "../commonTypes.d.ts"
   ],
   "exclude": [
     "node_modules"

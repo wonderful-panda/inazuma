@@ -6,7 +6,7 @@ import * as p from "vue-typed-component/lib/props";
 interface NavigationLinkProps {
     icon: string;
     text: string;
-    navigateTo: VueRouter.RawLocation | undefined;
+    navigateTo?: VueRouter.RawLocation;
 }
 
 @typed.component<NavigationLinkProps>({
@@ -18,17 +18,18 @@ interface NavigationLinkProps {
     }
 })
 export class NavigationLink extends typed.TypedComponent<NavigationLinkProps> {
+    _tsxattrs: TsxComponentAttrs<NavigationLinkProps>;
     render(h: Vue.CreateElement) {
         const p = this.$props;
         const children = [
-            h("i", { class: ["material-icons", "mdc-list-item__start-detail"]}, p.icon),
-            h("span", { class: "mdc-typography--title" }, p.text)
+            <i class="material-icons mdc-list-item__start-detail">{ p.icon }</i>,
+            <span class="mdc-typography--title">{ p.text }</span>
         ];
         if (p.navigateTo) {
-            return h("router-link", { class: "mdc-list-item", props: { to: p.navigateTo } }, children);
+            return <router-link class="mdc-list-item" to={ p.navigateTo }>{ children }</router-link>;
         }
         else {
-            return h("a", { class: "mdc-list-item", attrs: { href: "javascript:void(0)" } }, children);
+            return <a class="mdc-list-item" href="javascript:void(0)">{ children }</a>;
         }
     }
 }

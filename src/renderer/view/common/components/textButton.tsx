@@ -3,12 +3,12 @@ import * as typed from "vue-typed-component";
 import * as p from "vue-typed-component/lib/props";
 
 interface TextButtonProps {
-    compact: boolean;
-    dense: boolean;
-    raised: boolean;
-    primary: boolean;
-    accent: boolean;
-    disabled: boolean;
+    compact?: boolean;
+    dense?: boolean;
+    raised?: boolean;
+    primary?: boolean;
+    accent?: boolean;
+    disabled?: boolean;
 }
 
 @typed.component<TextButtonProps>({
@@ -22,6 +22,7 @@ interface TextButtonProps {
     }
 })
 export class TextButton extends typed.TypedComponent<TextButtonProps> {
+    _tsxattrs: TsxComponentAttrs<TextButtonProps>;
     get classes() {
         const { compact, dense, raised, primary, accent } = this.$props;
         return {
@@ -35,10 +36,11 @@ export class TextButton extends typed.TypedComponent<TextButtonProps> {
     }
     render(h: Vue.CreateElement) {
         const disabled = this.$props.disabled || undefined;
-        return h("button", {
-            class: this.classes,
-            attrs: { disabled: disabled }
-        }, this.$slots.default);
+        return (
+            <button class={ this.classes } disabled={ disabled }>
+                { this.$slots.default }
+            </button>
+        );
     }
 }
 
