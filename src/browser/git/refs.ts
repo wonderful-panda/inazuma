@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from "fs-extra";
-import { exec } from "./process";
+import { exec, tryExec } from "./process";
 
 function addRef(refs: Refs, r: Ref): void {
     (refs.refsById[r.id] || (refs.refsById[r.id] = [])).push(r);
@@ -33,7 +33,9 @@ export async function getRefs(repoPath: string): Promise<Refs> {
         tags: {},
         refsById: {}
     };
-    const currentBranch = (await exec(repoPath, "symbolic-ref", ["HEAD", "-q"])).stdout.replace(/\n$/, "");
+    // if HEAD is detached, `git symbolic-ref HEAD -q` returns non zero.
+    const ret = await tryExec(repoPath, "symbolic-ref", ["HEAD", "-q"]);
+    const currentBranch = ret.exitCode === 0 ? ret.stdout.replace(/\n$/, "") : "";
     await exec(repoPath, "show-ref", ["--head"], line => {
         const p = line.indexOf(" ");
         if (p <= 0) {
