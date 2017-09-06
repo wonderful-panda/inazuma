@@ -41,10 +41,10 @@ main {
     padding: ($toolbar-height - 24px) / 2 !important;
     border-radius: 50%;
     &.icon-button--disabled {
-        @include mdc-theme-prop(color, text-disabled-on-accent);
+        @include mdc-theme-prop(color, text-disabled-on-secondary);
     }
     &:not(.icon-button--disabled) {
-        @include mdc-theme-prop(color, text-primary-on-accent);
+        @include mdc-theme-prop(color, text-primary-on-secondary);
         cursor: pointer;
     }
 }
@@ -78,10 +78,10 @@ main {
         i, span {
         }
         &:hover {
-            @include mdc-theme-prop(background-color, accent);
-            @include mdc-theme-prop(color, text-primary-on-accent);
+            @include mdc-theme-prop(background-color, secondary);
+            @include mdc-theme-prop(color, text-primary-on-secondary);
             i {
-                @include mdc-theme-prop(color, text-primary-on-accent);
+                @include mdc-theme-prop(color, text-primary-on-secondary);
             }
         }
     }

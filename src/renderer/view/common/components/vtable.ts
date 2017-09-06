@@ -12,5 +12,5 @@ interface VtableEventsOn<T> {
 }
 
 export function of<T>() {
-    return $tsx.of<VtableProps<T>, VtableEventsOn<T>>().convert(Vtable);
+    return $tsx.ofType<VtableProps<T>, VtableEventsOn<T>>().convert(Vtable);
 }

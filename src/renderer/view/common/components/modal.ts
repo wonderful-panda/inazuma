@@ -19,6 +19,7 @@ interface ModalEvents {
     }
 })
 export class Modal extends typed.EvTypedComponent<ModalProps, ModalEvents> {
+    _tsxattrs: TsxComponentAttrs<ModalProps, { onClose: void }>;
     mounted() {
         Vue.nextTick(() => {
             mdc.autoInit(this.$el, () => {});

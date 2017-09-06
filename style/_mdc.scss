@@ -14,8 +14,8 @@ $toolbar-height: 36px;
 }
 
 .mdc-toolbar {
-    @include mdc-theme-prop(background-color, accent);
-    @include mdc-theme-prop(color, text-primary-on-accent);
+    @include mdc-theme-prop(background-color, secondary);
+    @include mdc-theme-prop(color, text-primary-on-secondary);
     height: $toolbar-height;
     .mdc-toolbar__row {
         min-height: $toolbar-height;

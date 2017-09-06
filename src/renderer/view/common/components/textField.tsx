@@ -88,7 +88,7 @@ export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldE
             return (
                 <label { ...this.containerData }>
                     <input { ...this.inputData } />
-                    <span class="mdc-textfield__label" for={ p.inputId } style="white-space: nowrap;">
+                    <span class="mdc-textfield__label" style="white-space: nowrap;">
                         { p.label }
                     </span>
                 </label>

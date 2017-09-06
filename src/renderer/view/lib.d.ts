@@ -1,4 +1,5 @@
 import * as tsx from "vue-tsx-support";
+import "vue-tsx-support/options/enable-nativeon";
 
 declare global {
     interface CompiledTemplate {
@@ -10,7 +11,7 @@ declare global {
         [K in keyof Payload]?: (arg: Payload[K]) => void;
     };
 
-    type TsxComponentAttrs<Props = {}, Events = {}> = tsx.TsxComponentAttrs;
+    type TsxComponentAttrs<Props extends object = {}, Events = {}> = tsx.TsxComponentAttrs<Props, Events>;
 
     let $tsx: typeof tsx;
 }
