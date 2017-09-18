@@ -5,10 +5,10 @@ import { CssProperties } from "vue-css-definition";
 
 export interface SplitterPanelProps {
     direction: "horizontal" | "vertical";
-    splitterWidth: number;
-    initialRatio: number;
-    minSizeFirst: any;
-    minSizeSecond: any;
+    splitterWidth?: number;
+    initialRatio?: number;
+    minSizeFirst?: any;
+    minSizeSecond?: any;
 }
 
 interface SplitterPanelData {
@@ -19,7 +19,6 @@ interface SplitterPanelData {
 const FLEX_SUM = 1000;
 
 @typed.component<SplitterPanelProps>({
-    ...<CompiledTemplate>require("./splitterPanel.pug"),
     props: {
         direction: p.Str.Required,
         splitterWidth: p.Num.Default(3).$positive(),
@@ -29,6 +28,7 @@ const FLEX_SUM = 1000;
     }
 })
 export class SplitterPanel extends typed.StatefulTypedComponent<SplitterPanelProps, SplitterPanelData> {
+    _tsxattrs: TsxComponentAttrs<SplitterPanelProps>;
     data(): SplitterPanelData {
         return { flexFirst: Math.floor(FLEX_SUM * this.$props.initialRatio), dragging: false };
     }
@@ -116,5 +116,20 @@ export class SplitterPanel extends typed.StatefulTypedComponent<SplitterPanelPro
         };
         window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("mouseup", onMouseUp);
+    }
+
+    render() {
+        const { first, second } = this.$slots;
+        return (
+            <div class="splitter-panel-container" style={ this.containerStyle }>
+              <div class="splitter-panel-first" style={ this.firstPanelStyle }>
+                { first }
+              </div>
+              <div class={ this.splitterClass } style={ this.splitterStyle } onMousedown={ this.onSplitterMouseDown } />
+              <div class="splitter-panel-second" style={ this.secondPanelStyle }>
+                { second }
+              </div>
+            </div>
+        );
     }
 }
