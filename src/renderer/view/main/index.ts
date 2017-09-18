@@ -1,10 +1,9 @@
 import Vue from "vue";
 import * as sinai from "sinai";
 import VueRouter from "vue-router";
-import * as tsx from "vue-tsx-support";
+import "../globals";
 Vue.use(sinai.install);
 Vue.use(VueRouter);
-global["$tsx"] = tsx;
 
 import * as Electron from "electron";
 import { store, AppStore } from "./store";

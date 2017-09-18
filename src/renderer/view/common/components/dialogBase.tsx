@@ -27,7 +27,7 @@ export class DialogBase extends typed.TypedComponent<DialogBaseProps> {
         const buttons = opt.buttons.map(b =>
             <TextButton class="footer-text-button" key={ b.name }
                         dense primary={ b.primary } accent={ b.accent }
-                        nativeOnClick={ () => actions.accept(b.name) }>
+                        onClick={ () => actions.accept(b.name) }>
                 { b.text }
             </TextButton>
         );
@@ -36,7 +36,7 @@ export class DialogBase extends typed.TypedComponent<DialogBaseProps> {
                 { opt.renderContent(h) }
                 <template slot="footer-buttons">
                     { buttons }
-                    <TextButton class="footer-text-button" key="__CANCEL__" dense nativeOnClick={ actions.cancel }>
+                    <TextButton class="footer-text-button" key="__CANCEL__" dense onClick={ actions.cancel }>
                         CANCEL
                     </TextButton>
                 </template>

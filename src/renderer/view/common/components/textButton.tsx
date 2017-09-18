@@ -11,6 +11,10 @@ interface TextButtonProps {
     disabled?: boolean;
 }
 
+interface TextButtonEvents {
+    onClick: MouseEvent;
+}
+
 @typed.component<TextButtonProps>({
     props: {
         compact: p.Bool.Default(false),
@@ -22,7 +26,7 @@ interface TextButtonProps {
     }
 })
 export class TextButton extends typed.TypedComponent<TextButtonProps> {
-    _tsxattrs: TsxComponentAttrs<TextButtonProps>;
+    _tsxattrs: TsxComponentAttrs<TextButtonProps, TextButtonEvents>;
     get classes() {
         const { compact, dense, raised, primary, accent } = this.$props;
         return {
@@ -37,7 +41,7 @@ export class TextButton extends typed.TypedComponent<TextButtonProps> {
     render(h: Vue.CreateElement) {
         const disabled = this.$props.disabled || undefined;
         return (
-            <button class={ this.classes } disabled={ disabled }>
+            <button class={ this.classes } disabled={ disabled } onClick={ e => this.$emit("click", e) }>
                 { this.$slots.default }
             </button>
         );

@@ -1,7 +1,7 @@
 main-layout(title="Inazuma")
     template(slot="drawer-navigations")
         navigation-link(text="Preference", icon="settings", :navigate-to="{ path: 'preference', append: true }")
-        navigation-link(text="Version", icon="info_outline", @click.native="$store.actions.showVersionDialog()")
+        navigation-link(text="Version", icon="info_outline", @click="$store.actions.showVersionDialog()")
 
     div(style="flex: 1; padding: 0 1em;")
         h3.page-title SELECT REPOSITORY
@@ -10,14 +10,14 @@ main-layout(title="Inazuma")
                 li.mdc-list-item(v-for="repo in recentOpened")
                     span.mdc-list-item__text
                         text-button.repo-name(
-                            primary, compact, dense, @click.native="openRepository(repo)")
+                            primary, compact, dense, @click="openRepository(repo)")
                                 | {{ getFileName(repo) }}
                         span.mdc-list-item__text__secondary {{ repo }}
                 li.mdc-list-divider(role="separator")
                 li.mdc-list-item
                     span.mdc-list-item__text(style="padding-right: 2em;")
                         text-button.repo-name(
-                            primary, compact, dense, @click.native="selectRepository")
+                            primary, compact, dense, @click="selectRepository")
                                 | BROWSE...
                         span.mdc-list-item__text__secondary Select other repositories by folder browser
 

@@ -4,7 +4,7 @@ transition(name="modal")
         div.modal-container(@click.stop, @keydown.esc="onCancel")
             div.modal-header
                 div.modal-title {{ title }}
-                close-button(@click.native.stop="onCancel")
+                close-button(@click.stop="onCancel")
             div.modal-content
                 slot
             div.modal-footer

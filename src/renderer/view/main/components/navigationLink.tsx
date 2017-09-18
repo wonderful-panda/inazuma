@@ -9,6 +9,10 @@ interface NavigationLinkProps {
     navigateTo?: VueRouter.RawLocation;
 }
 
+interface NavigationLinkEvents {
+    click: MouseEvent;
+}
+
 @typed.component<NavigationLinkProps>({
     name: "NavigationLink",
     props: {
@@ -18,7 +22,7 @@ interface NavigationLinkProps {
     }
 })
 export class NavigationLink extends typed.TypedComponent<NavigationLinkProps> {
-    _tsxattrs: TsxComponentAttrs<NavigationLinkProps>;
+    _tsxattrs: TsxComponentAttrs<NavigationLinkProps, NavigationLinkEvents>;
     render(h: Vue.CreateElement) {
         const p = this.$props;
         const children = [
@@ -26,10 +30,13 @@ export class NavigationLink extends typed.TypedComponent<NavigationLinkProps> {
             <span class="mdc-typography--title">{ p.text }</span>
         ];
         if (p.navigateTo) {
-            return <router-link class="mdc-list-item" to={ p.navigateTo }>{ children }</router-link>;
+            return <router-link class="mdc-list-item" to={ p.navigateTo } nativeOn-click={ this.onClick }>{ children }</router-link>;
         }
         else {
-            return <a class="mdc-list-item" href="javascript:void(0)">{ children }</a>;
+            return <a class="mdc-list-item" href="javascript:void(0)" onClick={ this.onClick }>{ children }</a>;
         }
+    }
+    onClick(e: MouseEvent) {
+        this.$emit("click", e);
     }
 }

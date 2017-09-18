@@ -25,8 +25,8 @@ modal#preference-panel(title="PREFERENCE", @close="back")
             v-model="config.vueDevTool")
 
     template(slot="footer-buttons")
-        text-button.footer-text-button(primary, dense, @click.native="onOk")
+        text-button.footer-text-button(primary, dense, @click="onOk")
             | SAVE
-        text-button.footer-text-button(dense, @click.native="back")
+        text-button.footer-text-button(dense, @click="back")
             | CANCEL
 

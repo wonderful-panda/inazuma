@@ -3,6 +3,6 @@ transition(name="sidebar", mode="out-in")
         div.sidebar-container
             div.sidebar-titlebar
                 span.sidebar-title {{ title }}
-                close-button(@click.native.stop="close")
+                close-button(@click.stop="close")
             div.sidebar-content
                 slot
