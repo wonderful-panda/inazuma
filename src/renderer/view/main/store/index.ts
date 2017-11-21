@@ -27,9 +27,9 @@ class State implements AppState {
     config = <Config>Electron.remote.getGlobal("config");
     columns = columns.detail;
     repoPath = "";
-    commits = [];
-    graphs = {};
-    refs = {};
+    commits: Commit[] = [];
+    graphs: Dict<GraphFragment> = {};
+    refs: Dict<Ref[]> = {};
     selectedIndex = -1;
     selectedCommit = emptyCommit;
     rowHeight = 24;
@@ -108,7 +108,7 @@ class Actions extends injected.Actions<State, any, Mutations>() {
         navigate.log(repoPath);
     }
 
-    navigateToLog(repoPath) {
+    navigateToLog(repoPath: string) {
         navigate.log(repoPath);
     }
 
@@ -118,7 +118,7 @@ class Actions extends injected.Actions<State, any, Mutations>() {
 
     showCommits(commits: Commit[], refs: Refs) {
         const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
-        const graphs = {};
+        const graphs = {} as { [id: string]: GraphFragment };
         commits.forEach(c => {
             graphs[c.id] = grapher.proceed(c);
         });

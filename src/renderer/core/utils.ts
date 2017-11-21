@@ -17,3 +17,11 @@ export function clamp(value: number, min: number, max: number) {
         return value;
     }
 }
+
+export function ensureNotUndefined<T>(value: T | undefined): T {
+    if (value === undefined) {
+        throw "value is undefined";
+    }
+    return value;
+}
+

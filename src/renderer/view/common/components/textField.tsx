@@ -1,6 +1,7 @@
-import Vue from "vue";
+import { VNode } from "vue";
+import * as tsx from "vue-tsx-support";
 import * as typed from "vue-typed-component";
-import * as p from "vue-typed-component/lib/props";
+import p from "vue-strict-prop";
 
 interface TextFieldProps {
     type: "text" | "number" | "email" | "password" | "url" | "search";
@@ -30,26 +31,25 @@ interface TextFieldEventsOn {
     onValidation: Validation;
 }
 
-@typed.component<TextFieldProps, TextField>({
+@typed.component(TextField, {
     props: {
-        type: p.Str.Default("text"),
-        value: p.ofType([String, Number]),
-        autofocus: p.Bool.Default(false),
-        required: p.Bool.Default(false),
-        disabled: p.Bool.Default(false),
-        min: p.Num,
-        max: p.Num,
-        pattern: p.Str,
-        inputId: p.Str,
-        label: p.Str,
+        type: p.ofStringLiterals("text", "number", "email", "password", "url", "search").default("text"),
+        value: p(String, Number).optional,
+        autofocus: p(Boolean).default(false),
+        required: p(Boolean).default(false),
+        disabled: p(Boolean).default(false),
+        min: p(Number).optional,
+        max: p(Number).optional,
+        pattern: p(String).optional,
+        inputId: p(String).optional,
+        label: p(String).optional
     },
     mounted() {
         this.validate();
         this.$el.classList.add("mdc-textfield--upgraded");
     }
 })
-export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldEvents> {
-    _tsxattrs: TsxComponentAttrs<TextFieldProps, TextFieldEventsOn>;
+export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldEvents, TextFieldEventsOn> {
     $refs: { input: HTMLInputElement };
 
     get containerData() {
@@ -82,7 +82,7 @@ export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldE
         };
         return { ref, class: class_, style, attrs, domProps, on };
     }
-    render(h: Vue.CreateElement) {
+    render(): VNode {
         const p = this.$props;
         if (p.label) {
             return (
@@ -112,24 +112,21 @@ export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldE
     }
 }
 
-interface TextFieldHelpTextProps {
-    persistent: boolean;
-}
 
-@typed.component<TextFieldHelpTextProps>({
+export const TextFieldHelptext = tsx.component({
     props: {
-        persistent: p.Bool.Default(false),
-    }
-})
-export class TextFieldHelptext extends typed.TypedComponent<TextFieldHelpTextProps> {
-    _tsxattrs: TsxComponentAttrs<TextFieldHelpTextProps>;
-    get classes() {
-        return {
-            "mdc-textfield-helptext": true,
-            "mdc-textfield-helptext--persistent": this.$props.persistent,
-        };
-    }
-    render(h: Vue.CreateElement) {
+        persistent: p(Boolean).default(false)
+    },
+    computed: {
+        classes(): object {
+            return {
+                "mdc-textfield-helptext": true,
+                "mdc-textfield-helptext--persistent": this.persistent
+            };
+        }
+    },
+    render(): VNode {
         return <p class={ this.classes }>{ this.$slots.default }</p>;
     }
-}
+});
+

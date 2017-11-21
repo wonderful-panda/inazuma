@@ -1,4 +1,4 @@
-import Vue from "vue";
+import Vue, { CreateElement, VNode } from "vue";
 import * as sinai from "sinai";
 
 export interface ButtonOptions {
@@ -10,7 +10,7 @@ export interface ButtonOptions {
 
 export interface DialogOptions {
     title: string;
-    renderContent: (h: Vue.CreateElement) => string | Vue.VNode | Vue.VNode[];
+    renderContent: (h: CreateElement) => string | VNode | VNode[];
     buttons: ButtonOptions[];
 }
 
@@ -38,7 +38,7 @@ export class DialogMutations extends sinai.Mutations<DialogState>() {
         if (this.state.resolve) {
             this.state.resolve(ret);
         }
-        this.state.options = this.state.resolve = null;
+        this.state.options = this.state.resolve = undefined;
     }
 }
 

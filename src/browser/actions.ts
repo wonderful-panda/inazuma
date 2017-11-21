@@ -48,14 +48,14 @@ const browserCommand: BrowserCommand = {
 
 export function setupBrowserCommands() {
     Object.keys(browserCommand).forEach(key => {
-        ipcPromise.on(key, browserCommand[key]);
+        ipcPromise.on(key, (browserCommand as any)[key]);
     });
 }
 
-function getWtreePseudoCommit(headId: string): Commit {
+function getWtreePseudoCommit(headId: string | undefined): Commit {
     return <Commit>{
         id: PSEUDO_COMMIT_ID_WTREE,
-        parentIds: [headId],
+        parentIds: headId ? [headId] : [],
         author: "--",
         summary: "<Working tree>",
         date: new Date().getTime()
@@ -66,7 +66,7 @@ async function fetchHistory(repoPath: string, num: number): Promise<{ commits: C
     const refs = await git.getRefs(repoPath);
     const headId = refs.head;
 
-    const commits = [getWtreePseudoCommit(headId)];
+    const commits = headId ? [getWtreePseudoCommit(headId)] : [];
     const ret = await git.log(repoPath, num, Object.keys(refs.refsById), commit => {
         commits.push(commit);
     });

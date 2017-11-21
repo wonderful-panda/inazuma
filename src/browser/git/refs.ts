@@ -62,8 +62,10 @@ export async function getRefs(repoPath: string): Promise<Refs> {
                     break;
                 case "remotes":
                     const remote = refNameComponents.shift();
-                    name = refNameComponents.join("/");
-                    addRef(refs, { fullname, type, remote, name, id });
+                    if (remote) {
+                        name = refNameComponents.join("/");
+                        addRef(refs, { fullname, type, remote, name, id });
+                    }
                     break;
                 default:
                     // TODO: handle unexpected line

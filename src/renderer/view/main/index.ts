@@ -1,7 +1,6 @@
 import Vue from "vue";
 import * as sinai from "sinai";
-import VueRouter from "vue-router";
-import "../globals";
+import VueRouter, { Route } from "vue-router";
 Vue.use(sinai.install);
 Vue.use(VueRouter);
 
@@ -13,8 +12,8 @@ const { render, staticRenderFns } = require("./app.pug");
 
 import "../common/components/index";
 
-Electron.ipcRenderer.on("action", (event, name, payload) => {
-    store.actions[name](payload);
+Electron.ipcRenderer.on("action", (event: string, name: string, payload: any) => {
+    (store.actions as any)[name](payload);
 });
 
 const app = new Vue({
@@ -25,9 +24,9 @@ const app = new Vue({
     staticRenderFns,
     methods: {
         async onRouteChanged() {
-            const route: VueRouter.Route = this.$route;
+            const route: Route = this.$route;
             const { repoPathEncoded } = route.params;
-            const repoPath = repoPathEncoded ? decodeURIComponent(repoPathEncoded) : undefined;
+            const repoPath = repoPathEncoded ? decodeURIComponent(repoPathEncoded) : "";
             if (store.state.repoPath !== repoPath) {
                 store.mutations.setRepoPath(repoPath);
                 document.title = repoPath ? `Inazuma (${ repoPath })` : "Inazuma";

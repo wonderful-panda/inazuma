@@ -11,7 +11,7 @@ export interface AppState {
     repoPath: string;
     environment: Environment;
     config: Config;
-    columns: VtableColumn<LogItem>[];
+    columns: ReadonlyArray<VtableColumn>;
     commits: Commit[];
     graphs: Dict<GraphFragment>;
     refs: Dict<Ref[]>;

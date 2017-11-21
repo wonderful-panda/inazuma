@@ -19,3 +19,5 @@ div.commit-detail
             :columns="fileColumns",
             :row-height="24",
             :get-item-key="getFileKey")
+                template(slot="cell", slot-scope="p")
+                    | {{ renderCell(p.columnId, p.item) }}

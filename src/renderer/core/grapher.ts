@@ -1,4 +1,6 @@
 import * as _ from "lodash";
+import { ensureNotUndefined } from "./utils";
+import * as assert from "assert";
 
 export interface InterEdge {
     index: number;
@@ -23,7 +25,7 @@ export interface GraphFragment {
     id: string;
     interEdges: InterEdge[];
     nodeEdges: NodeEdge[];
-    node?: NodeSymbol;
+    node: NodeSymbol;
     width: number;
 }
 
@@ -31,9 +33,10 @@ export interface GraphFragment {
  * Color chooser for graph edges.
  */
 class ColorPallete {
-    _used: { [color: string]: number };
+    _used: Dict<number>;
     _queue: string[];
     constructor(public colors: string[]) {
+        assert(colors.length > 0);
         this._queue = [ ...colors ];
         this._used = {};
         colors.forEach(c => this._used[c] = 0);
@@ -42,7 +45,7 @@ class ColorPallete {
         if (this._queue.length === 0) {
             this._queue.splice(0, 0, ...this.colors);
         }
-        const ret = this._queue.shift();
+        const ret = ensureNotUndefined(this._queue.shift());
         this._used[ret] += 1;
         return ret;
     }
@@ -58,7 +61,7 @@ class ColorPallete {
  * Build graph fragments from dag nodes.
  */
 export class Grapher {
-    _prev: GraphFragment;
+    _prev: GraphFragment | null;
     _pallete: ColorPallete;
     constructor(public colors: string[]) {
         this._prev = null;
@@ -79,10 +82,10 @@ export class Grapher {
                 }
             });
         }
-        let node: NodeSymbol = undefined;
-        const interEdges = <InterEdge[]>[];
-        const nodeEdges = <NodeEdge[]>[];
-        const occupied = <boolean[]>[];
+        let node: NodeSymbol | undefined = undefined;
+        const interEdges: InterEdge[] = [];
+        const nodeEdges: NodeEdge[] = [];
+        const occupied: boolean[] = [];
         prevEdges.forEach(e => {
             const { id, childId, index, color } = e;
             if (id === dagNode.id) {
@@ -110,20 +113,28 @@ export class Grapher {
                 }
             }
         });
-        for (let index = 0; !node || secondaryParents.length > 0; ++index) {
+        for (let index = 0; ; ++index) {
             if (occupied[index]) {
                 continue;
             }
-            occupied[index] = true;
-            const color = this._pallete.pop();
             if (!node) {
+                occupied[index] = true;
+                const color = this._pallete.pop();
                 node = { index, color };
                 if (primaryParent) {
                     nodeEdges.push({ type: "P", index, id: primaryParent, color });
                 }
             }
             else {
-                nodeEdges.push({ type: "P", index, id: secondaryParents.shift(), color });
+                const parentId = secondaryParents.shift();
+                if (parentId) {
+                    occupied[index] = true;
+                    const color = this._pallete.pop();
+                    nodeEdges.push({ type: "P", index, id: parentId, color });
+                }
+                else {
+                    break;
+                }
             }
         }
         this._prev = {

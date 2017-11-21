@@ -1,25 +1,25 @@
 import Vue from "vue";
-import * as mdc from "material-components-web";
 import * as typed from "vue-typed-component";
-import * as p from "vue-typed-component/lib/props";
+import p from "vue-strict-prop";
 import { queryFocusableElements } from "view/common/domutils";
+
+const mdc: any = require("material-components-web");
 
 interface ModalProps {
     title: string | undefined;
 }
 
 interface ModalEvents {
-    close: void;
+    close: null;
 }
 
-@typed.component<ModalProps>({
+@typed.component(Modal, {
     ...<CompiledTemplate>require("./modal.pug"),
     props: {
-        title: p.Str.Required
+        title: p(String).required
     }
 })
-export class Modal extends typed.EvTypedComponent<ModalProps, ModalEvents> {
-    _tsxattrs: TsxComponentAttrs<ModalProps, { onClose: void }>;
+export class Modal extends typed.EvTypedComponent<ModalProps, { close: null }, { onClose: null }> {
     mounted() {
         Vue.nextTick(() => {
             mdc.autoInit(this.$el, () => {});

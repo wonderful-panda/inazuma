@@ -1,16 +1,17 @@
 import Vue from "vue";
-import * as mdc from "material-components-web";
 import * as typed from "vue-typed-component";
-import * as p from "vue-typed-component/lib/props";
+import p from "vue-strict-prop";
+
+const mdc: any = require("material-components-web");
 
 interface MainLayoutProps {
     title: string;
 }
 
-@typed.component<MainLayoutProps>({
+@typed.component(MainLayout, {
     ...<CompiledTemplate>require("./mainLayout.pug"),
     props: {
-        title: p.Str.Required
+        title: p(String).required
     },
     created() {
         Vue.nextTick(() => {

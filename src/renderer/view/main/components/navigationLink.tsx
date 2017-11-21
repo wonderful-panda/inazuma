@@ -1,42 +1,30 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import * as typed from "vue-typed-component";
-import * as p from "vue-typed-component/lib/props";
+import { VNode } from "vue";
+import { RawLocation } from "vue-router";
+import * as tsx from "vue-tsx-support";
+import p from "vue-strict-prop";
 
-interface NavigationLinkProps {
-    icon: string;
-    text: string;
-    navigateTo?: VueRouter.RawLocation;
-}
-
-interface NavigationLinkEvents {
-    click: MouseEvent;
-}
-
-@typed.component<NavigationLinkProps>({
+export const NavigationLink = tsx.componentFactoryOf<{ onClick: MouseEvent }>().create({
     name: "NavigationLink",
     props: {
-        icon: p.Str.Required,
-        text: p.Str.Required,
-        navigateTo: p.Any
-    }
-})
-export class NavigationLink extends typed.TypedComponent<NavigationLinkProps> {
-    _tsxattrs: TsxComponentAttrs<NavigationLinkProps, NavigationLinkEvents>;
-    render(h: Vue.CreateElement) {
-        const p = this.$props;
-        const children = [
-            <i class="material-icons mdc-list-item__start-detail">{ p.icon }</i>,
-            <span class="mdc-typography--title">{ p.text }</span>
-        ];
-        if (p.navigateTo) {
-            return <router-link class="mdc-list-item" to={ p.navigateTo } nativeOn-click={ this.onClick }>{ children }</router-link>;
+        icon: p(String).required,
+        text: p(String).required,
+        navigateTo: p.ofAny().optional
+    },
+    methods: {
+        onClick(e: MouseEvent) {
+            this.$emit("click", e);
         }
-        else {
+    },
+    render(): VNode {
+        const children = [
+            <i class="material-icons mdc-list-item__start-detail">{ this.icon }</i>,
+            <span class="mdc-typography--title">{ this.text }</span>
+        ];
+        if (this.navigateTo) {
+            return <router-link class="mdc-list-item" to={ this.navigateTo } nativeOn-click={ this.onClick }>{ children }</router-link>;
+        } else {
             return <a class="mdc-list-item" href="javascript:void(0)" onClick={ this.onClick }>{ children }</a>;
         }
     }
-    onClick(e: MouseEvent) {
-        this.$emit("click", e);
-    }
-}
+}, ["icon", "text"]);
+

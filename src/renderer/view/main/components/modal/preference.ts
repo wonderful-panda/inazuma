@@ -26,7 +26,10 @@ export class Preference extends typed.StatefulTypedComponent<{}, PreferenceData>
     }
     mounted() {
         Vue.nextTick(() => {
-            this.$el.querySelector("input").focus();
+            const input = this.$el.querySelector("input") as HTMLInputElement;
+            if (input) {
+                input.focus();
+            }
         });
     }
     back() {

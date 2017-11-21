@@ -1,7 +1,7 @@
 import Vue from "vue";
 import { AppStore } from "../../store";
 import * as typed from "vue-typed-component";
-import * as p from "vue-typed-component/lib/props";
+import p from "vue-strict-prop";
 
 interface SidebarProps {
     title: string;
@@ -10,11 +10,10 @@ interface SidebarProps {
 @typed.component<SidebarProps>({
     ...(require("./sidebar.pug") as CompiledTemplate),
     props: {
-        title: p.Str.Required
+        title: p(String).required
     }
 })
 export class Sidebar extends typed.TypedComponent<SidebarProps> {
-    _tsxattrs: TsxComponentAttrs<SidebarProps>;
     $store: AppStore;
 
     close() {

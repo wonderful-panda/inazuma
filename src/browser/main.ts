@@ -7,8 +7,8 @@ import { setup as setupTempdir } from "./tempdir";
 import { setupBrowserCommands } from "./actions";
 setupBrowserCommands();
 
-global["environment"] = persist.environment.data;
-global["config"] = persist.config.data;
+(global as any)["environment"] = persist.environment.data;
+(global as any)["config"] = persist.config.data;
 
 const html = "../static/index.html";
 

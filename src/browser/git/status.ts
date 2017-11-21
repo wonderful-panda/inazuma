@@ -15,7 +15,7 @@ export async function status(repoPath: string): Promise<FileEntry[]> {
         }
         const statusCode = value.slice(0, 2);
         let path: string;
-        let oldPath: string;
+        let oldPath: string | undefined;
         if (statusCode[0] === "R") {
             // if renamed, next value is new path
             oldPath = value.slice(3);

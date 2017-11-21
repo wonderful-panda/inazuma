@@ -1,18 +1,11 @@
 import Vue from "vue";
-import * as p from "vue-typed-component/lib/props";
+import * as tsx from "vue-tsx-support";
+import p from "vue-strict-prop";
 
-interface IconButtonProps {
-    disabled?: boolean;
-}
-
-interface IconButtonEvents {
-    click: MouseEvent;
-}
-
-export const IconButton = $tsx.createComponent<IconButtonProps, IconButtonEvents>({
+export const IconButton = tsx.component({
     name: "IconButton",
     props: {
-        disabled: p.Bool.Default(false)
+        disabled: p(Boolean).default(false)
     },
     render(this: Vue, h) {
         const data = {

@@ -4,14 +4,14 @@
     "target": "es6",
     "module": "commonjs",
     "outDir": ".temp",
-    "noImplicitAny": false,
+    "strict": true,
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "preserve"
   },
-  "filesGlob": [
+  "include": [
     "**/*.ts",
     "**/*.tsx",
     "../commonTypes.d.ts"

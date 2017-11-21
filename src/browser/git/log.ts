@@ -80,7 +80,7 @@ export async function getCommitDetail(repoPath: string, commitId: string): Promi
 
      */
     const args = [commitId, "--name-status", "--find-renames", "-z", `--format=${ _commitDetailFormat }`];
-    const ret = { body: "", files: [] } as CommitDetail;
+    const ret = { body: "", files: [] as FileEntry[] } as CommitDetail;
     let region: "PROPS" | "BODY" | "FILES" = "PROPS";
     await exec(repoPath, "show", args, line => {
         if (region === "PROPS") {

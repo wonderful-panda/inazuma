@@ -22,7 +22,7 @@ const routes = [
 export const router = new VueRouter({ routes });
 
 export const navigate = {
-    log(repoPath) {
+    log(repoPath: string) {
         router.push({ name: "log", params: { repoPathEncoded: encodeURIComponent(repoPath) } });
     },
     root() {

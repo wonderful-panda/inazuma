@@ -1,29 +1,26 @@
-import Vue from "vue";
-import * as typed from "vue-typed-component";
-import * as p from "vue-typed-component/lib/props";
+import { VNode } from "vue";
+import * as tsx from "vue-tsx-support";
+import p from "vue-strict-prop";
 import { DialogState, DialogActions } from "../storeModules/dialog";
 import { TextButton } from "./textButton";
 import { Modal } from "./modal";
 
 interface DialogBaseProps {
-    state: DialogState | undefined;
-    actions: DialogActions | undefined;
+    state: DialogState;
+    actions: DialogActions;
 }
 
-@typed.component<DialogBaseProps>({
+export const DialogBase = tsx.component({
     props: {
-        state: p.Obj,
-        actions: p.Obj
-    }
-})
-export class DialogBase extends typed.TypedComponent<DialogBaseProps> {
-    _tsxattrs: TsxComponentAttrs<DialogBaseProps>;
-    render(h: Vue.CreateElement) {
-        const opt = this.$props.state.options;
-        const actions = this.$props.actions;
+        state: p.ofObject<DialogState>().required,
+        actions: p.ofObject<DialogActions>().required
+    },
+    render(): VNode {
+        const opt = this.state.options;
         if (!opt) {
-            return "";
+            return <div />;
         }
+        const actions = this.actions;
         const buttons = opt.buttons.map(b =>
             <TextButton class="footer-text-button" key={ b.name }
                         dense primary={ b.primary } accent={ b.accent }
@@ -33,7 +30,7 @@ export class DialogBase extends typed.TypedComponent<DialogBaseProps> {
         );
         return (
             <Modal class="dialog-base" title={ opt.title } onClose={ actions.cancel }>
-                { opt.renderContent(h) }
+                { opt.renderContent(this.$createElement) }
                 <template slot="footer-buttons">
                     { buttons }
                     <TextButton class="footer-text-button" key="__CANCEL__" dense onClick={ actions.cancel }>
@@ -43,4 +40,5 @@ export class DialogBase extends typed.TypedComponent<DialogBaseProps> {
             </Modal>
         );
     }
-}
+}, ["state", "actions"]);
+

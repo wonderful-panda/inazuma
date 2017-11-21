@@ -59,7 +59,7 @@ export function tryExec(repoPath: string, command: string, args: string[], stdou
                 if (lastLine) {
                     lines[0] = lastLine + lines[0];
                 }
-                lastLine = lines.pop();
+                lastLine = lines.pop() || "";
                 lines.forEach(stdoutCb);
             });
             proc.on("close", exitCode => {
@@ -85,7 +85,8 @@ export function tryExec(repoPath: string, command: string, args: string[], stdou
 export function exec(repoPath: string, command: string, args: string[], stdoutCb: EachLineCallback): Promise<ExecResult>;
 export function exec(repoPath: string, command: string, args: string[]): Promise<ExecResultWithStdout>;
 export function exec(repoPath: string, command: string, args: string[], stdoutCb?: EachLineCallback): Promise<ExecResult | ExecResultWithStdout> {
-    return tryExec(repoPath, command, args, stdoutCb).then(result => {
+    const promise = stdoutCb ? tryExec(repoPath, command, args, stdoutCb) : tryExec(repoPath, command, args);
+    return promise.then(result => {
         if (result.exitCode !== 0) {
             throw new GitError(result);
         }
