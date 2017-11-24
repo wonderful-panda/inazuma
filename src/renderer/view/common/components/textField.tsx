@@ -46,7 +46,7 @@ interface TextFieldEventsOn {
     },
     mounted() {
         this.validate();
-        this.$el.classList.add("mdc-textfield--upgraded");
+        this.$el.classList.add("mdc-text-field--upgraded");
     }
 })
 export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldEvents, TextFieldEventsOn> {
@@ -55,20 +55,20 @@ export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldE
     get containerData() {
         return {
             class: {
-                "mdc-textfield": true,
-                "mdc-textfield--disabled": this.$props.disabled,
+                "mdc-text-field": true,
+                "mdc-text-field--disabled": this.$props.disabled,
             },
             attrs: {
-                "data-mdc-auto-init": "MDCTextfield",
+                "data-mdc-auto-init": "MDCTextField",
             }
         };
     }
     get inputData() {
         const p = this.$props;
         const ref = "input";
-        const class_ = ["mdc-textfield__input"];
+        const class_ = ["mdc-text-field__input"];
         if (p.disabled) {
-            class_.push("mdc-textfield--disabled");
+            class_.push("mdc-text-field--disabled");
         }
         const style = { flex: 1 };
         const attrs = {
@@ -88,7 +88,7 @@ export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldE
             return (
                 <label { ...this.containerData }>
                     <input { ...this.inputData } />
-                    <span class="mdc-textfield__label" style="white-space: nowrap;">
+                    <span class="mdc-text-field__label" style="white-space: nowrap;">
                         { p.label }
                     </span>
                 </label>
