@@ -11,6 +11,7 @@ interface DialogBaseProps {
 }
 
 export const DialogBase = tsx.component({
+    name: "DialogBase",
     props: {
         state: p.ofObject<DialogState>().required,
         actions: p.ofObject<DialogActions>().required

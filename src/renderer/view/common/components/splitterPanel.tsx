@@ -7,6 +7,7 @@ import { CssProperties } from "vue-css-definition";
 const FLEX_SUM = 1000;
 
 export const SplitterPanel = tsx.component({
+    name: "SplitterPanel",
     // prettier-ignore
     props: {
         direction: p.ofStringLiterals("horizontal", "vertical").required,

@@ -114,6 +114,7 @@ export class TextField extends typed.EvTypedComponent<TextFieldProps, TextFieldE
 
 
 export const TextFieldHelptext = tsx.component({
+    name: "TextFieldHelptext",
     props: {
         persistent: p(Boolean).default(false)
     },

@@ -4,6 +4,7 @@ import { WorkingTreeStatus } from "./workingTreeStatus";
 import { AppStore } from "view/main/store";
 
 export const DetailPanel = Vue.extend({
+    name: "DetailPanel",
     render(): VNode {
         const store = this.$store as AppStore;
         if (store.state.selectedCommit.id === "--") {

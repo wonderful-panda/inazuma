@@ -3,6 +3,7 @@ import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 
 export const TextButton = tsx.componentFactoryOf<{ onClick: MouseEvent }>().create({
+    name: "TextButton",
     props: {
         compact: p(Boolean).default(false),
         dense: p(Boolean).default(false),

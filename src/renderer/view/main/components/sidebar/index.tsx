@@ -22,12 +22,14 @@ export class Sidebar extends typed.TypedComponent<SidebarProps> {
 }
 
 export const BranchesBar = Vue.extend({
+    name: "BranchesBar",
     render(h) {
         return <Sidebar title="Branches & Tags">not implemented</Sidebar>;
     }
 });
 
 export const RemotesBar = Vue.extend({
+    name: "RemotesBar",
     render(h) {
         return <Sidebar title="Remotes">not implemented</Sidebar>;
     }

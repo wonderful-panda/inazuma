@@ -5,6 +5,7 @@ import p from "vue-strict-prop";
 import { dragdrop } from "../dragdrop";
 
 const RefLabel = tsx.component({
+    name: "RefLabel",
     props: { ref_: p.ofObject<Ref>().required },
     computed: {
         className(): string {
@@ -65,6 +66,7 @@ const RefLabel = tsx.component({
 }, ["ref_"]);
 
 export const SummaryCell = tsx.component({
+    name: "SummaryCell",
     props: {
         commit: p.ofObject<Commit>().required,
         refs: p.ofRoArray<Ref>().required
