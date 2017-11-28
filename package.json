@@ -29,6 +29,7 @@
     "sinai": "^0.1.7",
     "vue": "^2.5.8",
     "vue-class-component": "^6.1.0",
+    "vue-material": "^1.0.0-beta-5",
     "vue-router": "^3.0.1",
     "vue-strict-prop": "^0.1.1",
     "vue-template-compiler": "^2.5.8",
