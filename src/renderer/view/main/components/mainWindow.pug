@@ -5,11 +5,21 @@ main-layout(:title="repoName")
         toolbar-button(@click="reload") refresh
 
     template(slot="drawer-navigations")
-        navigation-link(text="Branches", icon="local_offer", @click="$store.actions.showSidebar('branches')")
-        navigation-link(text="Remotes", icon="cloud", @click="$store.actions.showSidebar('remotes')")
-        navigation-link(text="Back to Home", icon="home", :navigate-to="{ name: 'root', replace: true }")
-        navigation-link(text="Preference", icon="settings", :navigate-to="{ path: 'preference', append: true }")
-        navigation-link(text="Version", icon="info_outline")
+        md-list-item(:to="{ path: 'preference', append: true }")
+            md-icon.md-dense settings
+            span.md-list-item-text Preference
+
+        md-list-item(:to="{ name: 'root', replace: true }")
+            md-icon.md-dense home
+            span.md-list-item-text Back to Home
+
+        md-list-item(@click="$store.actions.showVersionDialog()")
+            md-icon.md-dense info_outline
+            span.md-list-item-text About
+
+        //-
+            navigation-link(text="Branches", icon="local_offer", @click="$store.actions.showSidebar('branches')")
+            navigation-link(text="Remotes", icon="cloud", @click="$store.actions.showSidebar('remotes')")
 
     div.main-content
         keep-alive

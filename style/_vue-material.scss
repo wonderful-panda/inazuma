@@ -1,0 +1,27 @@
+@import "~vue-material/dist/theme/engine";
+@include md-register-theme("default", (
+    primary: md-get-palette-color(lime, A700),
+    accent: md-get-palette-color(amber, 500),
+    theme: dark
+));
+@import "~vue-material/dist/theme/all";
+
+.md-app-content {
+    @include md-theme-component() {
+        @include md-theme-property-darken(background, background, background, 15%);
+    }
+}
+.md-app-toolbar {
+    min-height: 40px !important;
+    max-height: 40px !important;
+}
+
+.md-app-drawer {
+    @include md-theme-component() {
+        @include md-theme-property-darken(background, background, background, 10%);
+    }
+    .md-list {
+        @include md-theme-property-darken(background, background, background, 10%);
+    }
+    max-width: 240px !important;
+}

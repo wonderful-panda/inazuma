@@ -1,7 +1,12 @@
 main-layout(title="Inazuma")
     template(slot="drawer-navigations")
-        navigation-link(text="Preference", icon="settings", :navigate-to="{ path: 'preference', append: true }")
-        navigation-link(text="Version", icon="info_outline", @click="$store.actions.showVersionDialog()")
+        md-list-item(:to="{ path: 'preference', append: true }")
+            md-icon.md-dense settings
+            span.md-list-item-text Preference
+
+        md-list-item(@click="$store.actions.showVersionDialog()")
+            md-icon.md-dense info_outline
+            span.md-list-item-text About
 
     div(style="flex: 1; padding: 0 1em;")
         h3.page-title SELECT REPOSITORY
