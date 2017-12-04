@@ -1,9 +1,9 @@
 @import "./mdc";
+@import "./vue-material";
 @import "./scrollbar";
 @import "./font";
 @import "../src/renderer/view/common/components/styles";
 @import "../src/renderer/view/main/components/styles";
-@import "./vue-material";
 
 html, body {
     font-family: Meiryo, Helvetica , "Yu Gothic" , sans-serif;
