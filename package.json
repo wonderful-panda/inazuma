@@ -6,13 +6,13 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
-    "build:renderer": "webpack --config webpack.config.renderer.js",
-    "build:browser": "webpack --config webpack.config.browser.js",
+    "build:renderer": "webpack --config src/renderer/webpack.config.js",
+    "build:browser": "webpack --config src/browser/webpack.config.js",
     "build:style": "webpack --config webpack.config.style.js",
     "lint": "tslint -c tslint.json --fix src/**/*.ts",
     "watch": "webpack -w",
-    "watch:renderer": "webpack -w --config webpack.config.renderer.js",
-    "watch:browser": "webpack -w --config webpack.config.browser.js",
+    "watch:renderer": "webpack -w --config src/renderer/webpack.config.js",
+    "watch:browser": "webpack -w --config src/browser/webpack.config.js",
     "watch:style": "webpack -w --config webpack.config.style.js",
     "start": "electron ."
   },

@@ -3,10 +3,10 @@ var path = require("path");
 
 module.exports = {
     // bundle for browser process
-    context: path.join(__dirname, "src/browser"),
+    context: __dirname,
     entry: "./main.ts",
     output: {
-        path: path.join(__dirname, "dist"),
+        path: path.join(__dirname, "../../dist"),
         filename: "browser.js"
     },
     target: "node",
@@ -17,8 +17,8 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".js"],
         modules: [
-            path.join(__dirname, "src"),
-            "node_modules"
+            __dirname,
+            "../../node_modules"
         ]
     },
     module: {

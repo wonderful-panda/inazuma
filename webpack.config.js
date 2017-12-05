@@ -1,5 +1,5 @@
 module.exports = [
-    require("./webpack.config.renderer"),
-    require("./webpack.config.browser"),
+    require("./src/renderer/webpack.config"),
+    require("./src/browser/webpack.config"),
     require("./webpack.config.style")
 ];
