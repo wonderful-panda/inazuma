@@ -14,6 +14,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "../ipc-promise.d.ts",
     "../commonTypes.d.ts"
   ],
   "exclude": [
