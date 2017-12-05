@@ -1,5 +1,6 @@
-import Vue from "vue";
+import Vue, { VueConstructor } from "vue";
 import * as sinai from "sinai";
+import * as tsx from "vue-tsx-support";
 import * as Electron from "electron";
 import { AppState, LogItem } from "../mainTypes";
 import * as columns from "./logColumns";
@@ -179,3 +180,5 @@ export const store = sinai.store(
 );
 
 export type AppStore = typeof store;
+export const VueWithStore: VueConstructor<Vue & { $store: AppStore }> = Vue as any;
+export const componentWithStore = tsx.extendFrom(VueWithStore).create;
