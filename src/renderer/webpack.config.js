@@ -20,9 +20,40 @@ module.exports = {
         ]
     },
     module: {
-        loaders: [
-            { test: /\.tsx?$/, loader: "babel-loader!ts-loader" },
-            { test: /\.pug$/, loader: "vue-template-compiler-loader!./simple-pug-loader" }
+        rules: [
+            {
+                test: /\.vue$/,
+                use: [
+                    {
+                        loader: "vue-loader",
+                        options: {
+                            loaders: {
+                                tsx: "babel-loader!ts-loader",
+                                ts: "babel-loader!ts-loader"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.tsx?$/,
+                use: [
+                    "babel-loader",
+                    {
+                        loader: "ts-loader",
+                        options: {
+                            appendTsxSuffixTo: [/\.vue$/]
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.pug$/,
+                use: [
+                    "vue-template-compiler-loader",
+                    "./simple-pug-loader"
+                 ]
+            }
         ]
     },
     plugins: [

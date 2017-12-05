@@ -3,13 +3,13 @@ import VueRouter from "vue-router";
 
 const routes = [
     {
-        name: "root", path: "/", component: () => import("./components/welcome"),
+        name: "root", path: "/", component: () => import("./components/TheWelcomePage.vue"),
         children: [
             { name: "preference", path: "preference", component: () => import("./components/modal/preference") }
         ]
     },
     {
-        name: "log", path: "/:repoPathEncoded", component: () => import("./components/mainWindow"),
+        name: "log", path: "/:repoPathEncoded", component: () => import("./components/TheRevisionLogPage.vue"),
         children: [
             { name: "log/preference", path: "preference", component: () => import("./components/modal/preference")}
         ]

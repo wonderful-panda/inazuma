@@ -1,0 +1,88 @@
+<template lang="pug">
+    main-layout(:title="repoName")
+        template(slot="titlebar-buttons")
+            toolbar-button(:disabled="!$store.state.config.interactiveShell",
+                        @click="runInteractiveShell") input
+            toolbar-button(@click="reload") refresh
+
+        template(slot="drawer-navigations")
+            md-list-item(@click="$store.actions.showSidebar('branches')")
+                md-icon.md-dense local_offer
+                span.md-list-item-text Branches
+
+            md-list-item(@click="$store.actions.showSidebar('remotes')")
+                md-icon.md-dense cloud
+                span.md-list-item-text Remotes
+
+            md-list-item(:to="{ path: 'preference', append: true }")
+                md-icon.md-dense settings
+                span.md-list-item-text Preference
+
+            md-list-item(:to="{ name: 'root', replace: true }")
+                md-icon.md-dense home
+                span.md-list-item-text Back to Home
+
+            md-list-item(@click="$store.actions.showVersionDialog()")
+                md-icon.md-dense info_outline
+                span.md-list-item-text About
+
+        div.main-content
+            keep-alive
+                transition(name="sidebar")
+                    component(:is="sidebar")
+            splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :initial-ratio="0.6")
+                log-view(slot="first")
+                detail-panel(slot="second")
+
+        router-view(slot="overlay")
+</template>
+
+<script lang="ts">
+import Vue from "vue";
+import { componentWithStore } from "../store";
+import { MainLayout } from "./mainLayout";
+import { NavigationLink } from "./navigationLink";
+import { LogView } from "./logView";
+import { DetailPanel } from "./detailPanel";
+import SideBarBranches from "./SideBarBranches.vue";
+import SideBarRemotes from "./SideBarRemotes.vue";
+import { getFileName } from "core/utils";
+
+export default componentWithStore({
+    components: {
+        MainLayout,
+        NavigationLink,
+        LogView,
+        DetailPanel
+    },
+    computed: {
+        repoPath(): string {
+            return this.$store.state.repoPath;
+        },
+        repoPathEncoded(): string {
+            return encodeURIComponent(this.repoPath);
+        },
+        repoName(): string {
+            return getFileName(this.repoPath) || this.repoPath;
+        },
+        sidebar(): typeof Vue | undefined {
+            switch (this.$store.state.sidebar) {
+                case "branches":
+                    return SideBarBranches;
+                case "remotes":
+                    return SideBarRemotes;
+                default:
+                    return undefined;
+            }
+        }
+    },
+    methods: {
+        reload() {
+            location.reload();
+        },
+        runInteractiveShell() {
+            this.$store.actions.runInteractiveShell();
+        }
+    }
+});
+</script>

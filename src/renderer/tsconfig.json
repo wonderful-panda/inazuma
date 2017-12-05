@@ -14,6 +14,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "**/*.vue",
     "../ipc-promise.d.ts",
     "../commonTypes.d.ts"
   ],

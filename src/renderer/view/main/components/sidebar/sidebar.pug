@@ -1,8 +1,0 @@
-transition(name="sidebar", mode="out-in")
-    div.sidebar-wrapper
-        div.sidebar-container
-            div.sidebar-titlebar
-                span.sidebar-title {{ title }}
-                close-button(@click.stop="close")
-            div.sidebar-content
-                slot

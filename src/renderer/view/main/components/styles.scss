@@ -1,31 +1,6 @@
 @import "./commitDetail";
 @import "./logView";
-@import "./sidebar/styles";
 @import "./modal/styles";
-
-#welcome-repo-list {
-    background: var(--md-theme-default-background-on-background);
-    padding: 0 0.5em;
-
-    .md-list-item-content {
-        min-height: 32px !important;
-    }
-    .md-subheader {
-        min-height: 32px !important;
-    }
-    .repo-name {
-        height: 20px;
-        margin-right: auto;
-        text-transform: none !important;
-    }
-    .repo-description {
-        text-transform: none !important;
-        font-size: 75%;
-    }
-    .md-icon {
-        margin-right: 0.5em;
-    }
-}
 
 .page-title {
     margin-top: 1em;
