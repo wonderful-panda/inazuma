@@ -1,20 +1,17 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import { Welcome } from "./components/welcome";
-import { MainWindow } from "./components/mainWindow";
-import { Preference } from "./components/modal/preference";
 
 const routes = [
     {
-        name: "root", path: "/", component: Welcome,
+        name: "root", path: "/", component: () => import("./components/welcome"),
         children: [
-            { name: "preference", path: "preference", component: Preference }
+            { name: "preference", path: "preference", component: () => import("./components/modal/preference") }
         ]
     },
     {
-        name: "log", path: "/:repoPathEncoded", component: MainWindow,
+        name: "log", path: "/:repoPathEncoded", component: () => import("./components/mainWindow"),
         children: [
-            { name: "log/preference", path: "preference", component: Preference }
+            { name: "log/preference", path: "preference", component: () => import("./components/modal/preference")}
         ]
     },
 ];

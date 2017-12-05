@@ -14,7 +14,7 @@ import { getFileName } from "core/utils";
     ...<CompiledTemplate>require("./mainWindow.pug"),
     store
 })
-export class MainWindow extends Vue {
+export default class MainWindow extends Vue {
     $store: AppStore;
     get repoPath () {
         return this.$store.state.repoPath;

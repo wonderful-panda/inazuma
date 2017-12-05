@@ -12,7 +12,7 @@ import { NavigationLink } from "./navigationLink";
         getFileName
     }
 })
-export class Welcome extends Vue {
+export default class Welcome extends Vue {
     $store: AppStore;
     get recentOpened() {
         return this.$store.state.environment.recentOpened;

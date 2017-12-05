@@ -13,7 +13,7 @@ interface PreferenceData {
     ...<CompiledTemplate>require("./preference.pug"),
     props: {}
 })
-export class Preference extends typed.StatefulTypedComponent<{}, PreferenceData> {
+export default class Preference extends typed.StatefulTypedComponent<{}, PreferenceData> {
     $store: AppStore;
     data(): PreferenceData {
         // don't pass state.config directly.
