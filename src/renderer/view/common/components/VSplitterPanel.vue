@@ -1,3 +1,4 @@
+<script lang="tsx">
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
@@ -6,8 +7,8 @@ import { CssProperties } from "vue-css-definition";
 
 const FLEX_SUM = 1000;
 
-export const SplitterPanel = tsx.component({
-    name: "SplitterPanel",
+export default tsx.component({
+    name: "VSplitterPanel",
     // prettier-ignore
     props: {
         direction: p.ofStringLiterals("horizontal", "vertical").required,
@@ -115,4 +116,13 @@ export const SplitterPanel = tsx.component({
         );
     }
 }, ["direction"]);
+</script>
 
+<style lang="scss">
+.splitter-panel-splitter-horizontal, .splitter-panel-splitter-vertical {
+    margin: 0 2px;
+    &:hover {
+        background-color: #383838;
+    }
+}
+</style>

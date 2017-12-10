@@ -5,13 +5,13 @@ const routes = [
     {
         name: "root", path: "/", component: () => import("./components/TheWelcomePage.vue"),
         children: [
-            { name: "preference", path: "preference", component: () => import("./components/modal/preference") }
+            { name: "preference", path: "preference", component: () => import("./components/ThePreferencePage.vue") }
         ]
     },
     {
         name: "log", path: "/:repoPathEncoded", component: () => import("./components/TheRevisionLogPage.vue"),
         children: [
-            { name: "log/preference", path: "preference", component: () => import("./components/modal/preference")}
+            { name: "log/preference", path: "preference", component: () => import("./components/ThePreferencePage.vue")}
         ]
     },
 ];

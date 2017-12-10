@@ -1,9 +1,9 @@
 <template lang="pug">
-    main-layout(:title="repoName")
+    base-layout(:title="repoName")
         template(slot="titlebar-buttons")
-            toolbar-button(:disabled="!$store.state.config.interactiveShell",
-                        @click="runInteractiveShell") input
-            toolbar-button(@click="reload") refresh
+            v-icon-button(mini, :disabled="!$store.state.config.interactiveShell",
+                          @click="runInteractiveShell") input
+            v-icon-button(mini, @click="reload") refresh
 
         template(slot="drawer-navigations")
             md-list-item(@click="$store.actions.showSidebar('branches')")
@@ -26,34 +26,37 @@
                 md-icon.md-dense info_outline
                 span.md-list-item-text About
 
-        div.main-content
-            keep-alive
-                transition(name="sidebar")
-                    component(:is="sidebar")
-            splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :initial-ratio="0.6")
-                log-view(slot="first")
-                detail-panel(slot="second")
-
-        router-view(slot="overlay")
+        keep-alive
+            transition(name="sidebar")
+                component(:is="sidebar")
+        v-splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :initial-ratio="0.6")
+            log-table(slot="first")
+            keep-alive(slot="second")
+                revision-log-working-tree(v-if="$store.state.selectedCommit.id === '--'")
+                revision-log-commit-detail(v-else)
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { componentWithStore } from "../store";
-import { MainLayout } from "./mainLayout";
-import { NavigationLink } from "./navigationLink";
-import { LogView } from "./logView";
-import { DetailPanel } from "./detailPanel";
+import RevisionLogWorkingTree from "./RevisionLogWorkingTree.vue";
+import RevisionLogCommitDetail from "./RevisionLogCommitDetail.vue";
+import BaseLayout from "./BaseLayout.vue";
+import LogTable from "./LogTable.vue";
 import SideBarBranches from "./SideBarBranches.vue";
 import SideBarRemotes from "./SideBarRemotes.vue";
+import VIconButton from "view/common/components/VIconButton.vue";
+import VSplitterPanel from "view/common/components/VSplitterPanel.vue";
 import { getFileName } from "core/utils";
 
 export default componentWithStore({
     components: {
-        MainLayout,
-        NavigationLink,
-        LogView,
-        DetailPanel
+        BaseLayout,
+        LogTable,
+        RevisionLogWorkingTree,
+        RevisionLogCommitDetail,
+        VIconButton,
+        VSplitterPanel
     },
     computed: {
         repoPath(): string {
@@ -86,3 +89,10 @@ export default componentWithStore({
     }
 });
 </script>
+
+<style>
+#main-splitter-panel {
+    flex: 1;
+    margin: 2px;
+}
+</style>

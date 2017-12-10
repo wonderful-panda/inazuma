@@ -12,8 +12,6 @@ import { router } from "./route";
 import { browserCommand } from "core/browser";
 const { render, staticRenderFns } = require("./app.pug");
 
-import "../common/components/index";
-
 Electron.ipcRenderer.on("action", (event: string, name: string, payload: any) => {
     (store.actions as any)[name](payload);
 });

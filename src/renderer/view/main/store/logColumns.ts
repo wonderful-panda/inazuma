@@ -1,8 +1,4 @@
-import * as moment from "moment";
 import { VtableColumn } from "vue-vtable";
-import { LogItem } from "../mainTypes";
-import { GraphCell, GraphCellProps } from "../components/graphCell";
-import { SummaryCell } from "../components/summaryCell";
 
 export const detail: VtableColumn[] = [
     {

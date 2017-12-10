@@ -4,7 +4,7 @@
             div.sidebar-container
                 div.sidebar-titlebar
                     span.sidebar-title {{ title }}
-                    close-button(@click.stop="close")
+                    v-close-button(@click="close")
                 div.sidebar-content
                     slot
 </template>
@@ -13,9 +13,13 @@
 import Vue from "vue";
 import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
+import VCloseButton from "view/common/components/VCloseButton.vue";
 
 export default componentWithStore({
     name: "SideBarBase",
+    components: {
+        VCloseButton
+    },
     props: {
         title: p(String).required
     },

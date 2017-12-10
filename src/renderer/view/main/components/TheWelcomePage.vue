@@ -1,5 +1,5 @@
 <template lang="pug">
-    main-layout(title="Inazuma")
+    base-layout(title="Inazuma")
         template(slot="drawer-navigations")
             md-list-item(:to="{ path: 'preference', append: true }")
                 md-icon.md-dense settings
@@ -10,7 +10,7 @@
                 span.md-list-item-text About
 
         div(style="flex: 1; padding: 0 1em;")
-            h3.page-title.md-headline SELECT REPOSITORY
+            h3.md-title SELECT REPOSITORY
             div(style="display: inline-block; min-width: 30%;")
                 md-list#welcome-repo-list.md-double-line
                     md-list-item(@click="selectRepository")
@@ -28,19 +28,17 @@
                         div.md-list-item-text
                             span.repo-name.md-subheading {{ getFileName(repo) }}
                             span.repo-description.md-caption {{ repo }}
-
-        router-view(slot="overlay")
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { componentWithStore } from "../store";
-import { MainLayout } from "./mainLayout";
+import BaseLayout from "./BaseLayout.vue";
 import { getFileName } from "core/utils";
 
 export default componentWithStore({
     name: "TheWelcomePage",
-    components: { MainLayout },
+    components: { BaseLayout },
     computed: {
         recentOpened(): string[] {
             return this.$store.state.environment.recentOpened;
