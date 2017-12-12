@@ -9,13 +9,13 @@ const Vtable = vtableOf<FileEntry>();
 const fileColumns: VtableColumn[] = [
     {
         title: "",
-        className: "cell-stat",
+        className: "cell-stat md-body-2",
         defaultWidth: 24,
         minWidth: 24
     },
     {
         title: "path",
-        className: "cell-path",
+        className: "cell-path md-body-2",
         defaultWidth: 200,
         minWidth: 100
     }
@@ -69,7 +69,7 @@ export default tsx.component({
         .vlist-row {
             font-family: monospace;
             &:hover {
-                background-color: #383838;
+                background-color: #4c4c4c;
             }
         }
 

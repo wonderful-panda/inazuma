@@ -24,6 +24,9 @@ export default componentWithStore({
         }
     },
     render(): VNode {
+        const drawerEventListener = {
+            "update:mdActive": (v: boolean) => { this.menuVisible = v; }
+        };
         return (
             <div staticClass="main-container">
                 <md-app md-mode="fixed">
@@ -39,7 +42,7 @@ export default componentWithStore({
                         </div>
                     </md-app-toolbar>
 
-                    <md-app-drawer md-active={this.menuVisible} md-fixed>
+                    <md-app-drawer md-fixed md-active={this.menuVisible} {...{ on: drawerEventListener }}>
                         <md-toolbar staticClass="md-transparent" md-elevation={0}>
                             <div staticClass="md-toolbar-section-end">
                                 <VIconButton mini onClick={this.toggleMenu}>

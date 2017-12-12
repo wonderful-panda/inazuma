@@ -3,11 +3,11 @@
         template(slot="drawer-navigations")
             md-list-item(:to="{ path: 'preference', append: true }")
                 md-icon.md-dense settings
-                span.md-list-item-text Preference
+                span.md-list-item-text.md-subheading Preference
 
             md-list-item(@click="$store.actions.showVersionDialog()")
                 md-icon.md-dense info_outline
-                span.md-list-item-text About
+                span.md-list-item-text.md-subheading About
 
         div(style="flex: 1; padding: 0 1em;")
             h3.md-title SELECT REPOSITORY

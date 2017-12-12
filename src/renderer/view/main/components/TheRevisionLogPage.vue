@@ -8,23 +8,23 @@
         template(slot="drawer-navigations")
             md-list-item(@click="$store.actions.showSidebar('branches')")
                 md-icon.md-dense local_offer
-                span.md-list-item-text Branches
+                span.md-list-item-text.md-subheading Branches
 
             md-list-item(@click="$store.actions.showSidebar('remotes')")
                 md-icon.md-dense cloud
-                span.md-list-item-text Remotes
+                span.md-list-item-text.md-subheading Remotes
 
             md-list-item(:to="{ path: 'preference', append: true }")
                 md-icon.md-dense settings
-                span.md-list-item-text Preference
+                span.md-list-item-text.md-subheading Preference
 
             md-list-item(:to="{ name: 'root', replace: true }")
                 md-icon.md-dense home
-                span.md-list-item-text Back to Home
+                span.md-list-item-text.md-subheading Back to Home
 
             md-list-item(@click="$store.actions.showVersionDialog()")
                 md-icon.md-dense info_outline
-                span.md-list-item-text About
+                span.md-list-item-text.md-subheading About
 
         keep-alive
             transition(name="sidebar")

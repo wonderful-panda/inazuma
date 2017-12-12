@@ -25,7 +25,7 @@ export default tsx.component({
         const { accept, cancel } = this.actions;
         const buttons = opt.buttons.map(b =>
             <VButton key={b.name} mini primary={b.primary} accent={b.accent} onClick={() => accept(b.name)}>
-                { b.text }
+                <span staticClass="md-title">{b.text}</span>
             </VButton>
         );
         return (
@@ -34,7 +34,7 @@ export default tsx.component({
                 <template slot="footer-buttons">
                     { buttons }
                     <VButton key="__CANCEL__" mini onClick={cancel}>
-                        CANCEL
+                        <span staticClass="md-title">CANCEL</span>
                     </VButton>
                 </template>
             </VModal>

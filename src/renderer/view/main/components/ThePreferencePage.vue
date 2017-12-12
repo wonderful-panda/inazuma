@@ -22,9 +22,9 @@
 
         template(slot="footer-buttons")
             v-button(primary, mini, @click="onOk")
-                | SAVE
+                span.md-title SAVE
             v-button(mini, @click="back")
-                | CANCEL
+                span.md-title CANCEL
 </template>
 
 <script lang="ts">

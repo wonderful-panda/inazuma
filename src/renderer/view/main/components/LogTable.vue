@@ -78,7 +78,7 @@ export default componentWithStore({
 <style lang="scss">
 .revision-log {
     .vlist-row:nth-child(2n) {
-        background-color: #111;
+        background-color: #282828;
     }
 
     .vlist-row:hover {
