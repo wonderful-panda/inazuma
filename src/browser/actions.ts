@@ -52,10 +52,10 @@ export function setupBrowserCommands() {
     });
 }
 
-function getWtreePseudoCommit(headId: string | undefined): Commit {
+function getWtreePseudoCommit(headId: string | undefined, mergeHeads: string[]): Commit {
     return <Commit>{
         id: PSEUDO_COMMIT_ID_WTREE,
-        parentIds: headId ? [headId] : [],
+        parentIds: headId ? [headId, ...mergeHeads] : mergeHeads,
         author: "--",
         summary: "<Working tree>",
         date: new Date().getTime()
@@ -66,7 +66,7 @@ async function fetchHistory(repoPath: string, num: number): Promise<{ commits: C
     const refs = await git.getRefs(repoPath);
     const headId = refs.head;
 
-    const commits = headId ? [getWtreePseudoCommit(headId)] : [];
+    const commits = headId ? [getWtreePseudoCommit(headId, refs.mergeHeads)] : [];
     const ret = await git.log(repoPath, num, Object.keys(refs.refsById), commit => {
         commits.push(commit);
     });
@@ -77,7 +77,7 @@ async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDet
     if (sha === PSEUDO_COMMIT_ID_WTREE) {
         const refs = await git.getRefs(repoPath);
         const files = await git.status(repoPath);
-        return Object.assign(getWtreePseudoCommit(refs.head), { body: "", files });
+        return Object.assign(getWtreePseudoCommit(refs.head, refs.mergeHeads), { body: "", files });
     }
     else {
         return await git.getCommitDetail(repoPath, sha);

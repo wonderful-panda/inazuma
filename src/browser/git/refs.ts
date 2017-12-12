@@ -79,10 +79,10 @@ export async function getRefs(repoPath: string): Promise<Refs> {
     });
     // Get merge head list from .git/MERGE_HEAD
     const mergeHeadsFile = path.join(repoPath, ".git/MERGE_HEAD");
-    if (await fs.exists(mergeHeadsFile)) {
+    if (await fs.pathExists(mergeHeadsFile)) {
         const type = "MERGE_HEAD";
         const data = await fs.readFile(mergeHeadsFile);
-        data.toString().replace("\n$", "").split("\n").forEach(
+        data.toString().replace(/\n$/, "").split("\n").forEach(
             (id, index) => addRef(refs, { fullname: `MERGE_HEAD/${ index }`, type, id })
         );
     }

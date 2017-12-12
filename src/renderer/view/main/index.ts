@@ -1,16 +1,16 @@
 import Vue from "vue";
 import * as sinai from "sinai";
 import VueRouter, { Route } from "vue-router";
+import VueMaterial from "vue-material";
 Vue.use(sinai.install);
 Vue.use(VueRouter);
+Vue.use(VueMaterial);
 
 import * as Electron from "electron";
 import { store, AppStore } from "./store";
 import { router } from "./route";
 import { browserCommand } from "core/browser";
 const { render, staticRenderFns } = require("./app.pug");
-
-import "../common/components/index";
 
 Electron.ipcRenderer.on("action", (event: string, name: string, payload: any) => {
     (store.actions as any)[name](payload);
