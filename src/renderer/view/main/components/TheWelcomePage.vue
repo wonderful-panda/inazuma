@@ -1,13 +1,13 @@
 <template lang="pug">
     base-layout(title="Inazuma")
         template(slot="drawer-navigations")
-            md-list-item(:to="{ path: 'preference', append: true }")
-                md-icon.md-dense settings
-                span.md-list-item-text.md-subheading Preference
+            drawer-navigation(
+                icon="settings", text="Preference",
+                :to="{ path: 'preference', append: true }")
 
-            md-list-item(@click="$store.actions.showVersionDialog()")
-                md-icon.md-dense info_outline
-                span.md-list-item-text.md-subheading About
+            drawer-navigation(
+                icon="info_outline", text="About",
+                @click="$store.actions.showVersionDialog()")
 
         div(style="flex: 1; padding: 0 1em;")
             h3.md-title SELECT REPOSITORY
@@ -34,11 +34,15 @@
 import Vue from "vue";
 import { componentWithStore } from "../store";
 import BaseLayout from "./BaseLayout.vue";
+import DrawerNavigation from "./DrawerNavigation.vue";
 import { getFileName } from "core/utils";
 
 export default componentWithStore({
     name: "TheWelcomePage",
-    components: { BaseLayout },
+    components: {
+        BaseLayout,
+        DrawerNavigation
+    },
     computed: {
         recentOpened(): string[] {
             return this.$store.state.environment.recentOpened;

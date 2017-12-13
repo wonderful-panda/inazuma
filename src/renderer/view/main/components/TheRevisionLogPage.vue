@@ -7,25 +7,25 @@
             v-icon-button(mini, tooltip="reload", @click="reload") refresh
 
         template(slot="drawer-navigations")
-            md-list-item(@click="$store.actions.showSidebar('branches')")
-                md-icon.md-dense local_offer
-                span.md-list-item-text.md-subheading Branches
+            drawer-navigation(
+                icon="local_offer", text="Branches",
+                @click="$store.actions.showSidebar('branches')")
 
-            md-list-item(@click="$store.actions.showSidebar('remotes')")
-                md-icon.md-dense cloud
-                span.md-list-item-text.md-subheading Remotes
+            drawer-navigation(
+                icon="cloud", text="Remotes",
+                @click="$store.actions.showSidebar('remotes')")
 
-            md-list-item(:to="{ path: 'preference', append: true }")
-                md-icon.md-dense settings
-                span.md-list-item-text.md-subheading Preference
+            drawer-navigation(
+                icon="settings", text="Preferences",
+                :to="{ path: 'preference', append: true }")
 
-            md-list-item(:to="{ name: 'root', replace: true }")
-                md-icon.md-dense home
-                span.md-list-item-text.md-subheading Back to Home
+            drawer-navigation(
+                icon="home", text="Back to Home",
+                :to="{ name: 'root', replace: true }")
 
-            md-list-item(@click="$store.actions.showVersionDialog()")
-                md-icon.md-dense info_outline
-                span.md-list-item-text.md-subheading About
+            drawer-navigation(
+                icon="info_outline", text="About",
+                @click="$store.actions.showVersionDialog()")
 
         keep-alive
             transition(name="sidebar")
@@ -48,12 +48,14 @@ import SideBarBranches from "./SideBarBranches.vue";
 import SideBarRemotes from "./SideBarRemotes.vue";
 import VIconButton from "view/common/components/VIconButton.vue";
 import VSplitterPanel from "view/common/components/VSplitterPanel.vue";
+import DrawerNavigation from "./DrawerNavigation.vue";
 import { getFileName } from "core/utils";
 
 export default componentWithStore({
     components: {
         BaseLayout,
         LogTable,
+        DrawerNavigation,
         RevisionLogWorkingTree,
         RevisionLogCommitDetail,
         VIconButton,
