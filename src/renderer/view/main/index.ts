@@ -10,7 +10,6 @@ import * as Electron from "electron";
 import { store, AppStore } from "./store";
 import { router } from "./route";
 import { browserCommand } from "core/browser";
-const { render, staticRenderFns } = require("./app.pug");
 
 Electron.ipcRenderer.on("action", (event: string, name: string, payload: any) => {
     (store.actions as any)[name](payload);
@@ -20,8 +19,6 @@ const app = new Vue({
     el: "#app",
     store,
     router,
-    render,
-    staticRenderFns,
     methods: {
         async onRouteChanged() {
             const route: Route = this.$route;
@@ -42,6 +39,9 @@ const app = new Vue({
     },
     watch: {
         "$route": "onRouteChanged"
+    },
+    render(h) {
+        return h("router-view");
     }
 });
 

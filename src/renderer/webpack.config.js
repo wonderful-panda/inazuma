@@ -46,13 +46,6 @@ module.exports = {
                         }
                     }
                 ]
-            },
-            {
-                test: /\.pug$/,
-                use: [
-                    "vue-template-compiler-loader",
-                    "./simple-pug-loader"
-                 ]
             }
         ]
     },
