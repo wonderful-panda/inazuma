@@ -2,8 +2,9 @@
     base-layout(:title="repoName")
         template(slot="titlebar-buttons")
             v-icon-button(mini, :disabled="!$store.state.config.interactiveShell",
+                          tooltip="launch interactive shell",
                           @click="runInteractiveShell") input
-            v-icon-button(mini, @click="reload") refresh
+            v-icon-button(mini, tooltip="reload", @click="reload") refresh
 
         template(slot="drawer-navigations")
             md-list-item(@click="$store.actions.showSidebar('branches')")

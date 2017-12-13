@@ -9,6 +9,7 @@ export default tsx.componentFactoryOf<{
     name: "VButton",
     props: {
         href: p(String).optional,
+        tooltip: p(String).optional,
         mini: p(Boolean).default(false),
         raised: p(Boolean).default(false),
         disabled: p(Boolean).default(false),
@@ -32,6 +33,7 @@ export default tsx.componentFactoryOf<{
         }
     },
     render(): VNode {
+        const tooltip = this.tooltip ? <md-tooltip>{this.tooltip}</md-tooltip> : undefined;
         return (
             <md-button
                 class={this.classes}
@@ -40,6 +42,7 @@ export default tsx.componentFactoryOf<{
                 onClick={this.onClick}
             >
                 {this.$slots.default}
+                {tooltip}
             </md-button>
         );
     }
