@@ -3,6 +3,7 @@ import { VNode } from "vue";
 import { componentWithStore } from "../store";
 import FileTable from "./FileTable.vue";
 
+// @vue/component
 export default componentWithStore({
     name: "RevisionLogWorkingTree",
     computed: {

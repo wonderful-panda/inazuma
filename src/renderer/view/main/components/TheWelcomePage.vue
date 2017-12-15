@@ -37,6 +37,7 @@ import BaseLayout from "./BaseLayout.vue";
 import DrawerNavigation from "./DrawerNavigation.vue";
 import { getFileName } from "core/utils";
 
+// @vue/component
 export default componentWithStore({
     name: "TheWelcomePage",
     components: {

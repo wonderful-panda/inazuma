@@ -63,5 +63,3 @@ export const dialogModule = sinai.module({
     mutations: DialogMutations,
     actions: DialogActions
 });
-
-

@@ -34,6 +34,7 @@ import VButton from "view/common/components/VButton.vue";
 import VModal from "view/common/components/VModal.vue";
 import VTextField from "view/common/components/VTextField.vue";
 
+// @vue/component
 export default componentWithStore({
     name: "ThePreferencePage",
     components: {

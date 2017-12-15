@@ -9,19 +9,9 @@ export function px(value: number) {
 export function clamp(value: number, min: number, max: number) {
     if (value < min) {
         return min;
-    }
-    else if (max < value) {
+    } else if (max < value) {
         return max;
-    }
-    else {
+    } else {
         return value;
     }
 }
-
-export function ensureNotUndefined<T>(value: T | undefined): T {
-    if (value === undefined) {
-        throw "value is undefined";
-    }
-    return value;
-}
-

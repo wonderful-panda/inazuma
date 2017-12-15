@@ -32,5 +32,3 @@ export const detail: VtableColumn[] = [
         minWidth: 200
     }
 ];
-
-

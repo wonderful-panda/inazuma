@@ -2,6 +2,7 @@
 import Vue, { VNode } from "vue";
 import VButton from "./VButton.vue";
 
+// @vue/component
 export default Vue.extend({
     name: "VIconButton",
     functional: true,

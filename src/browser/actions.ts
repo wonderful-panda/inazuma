@@ -53,7 +53,7 @@ export function setupBrowserCommands() {
 }
 
 function getWtreePseudoCommit(headId: string | undefined, mergeHeads: string[]): Commit {
-    return <Commit>{
+    return {
         id: PSEUDO_COMMIT_ID_WTREE,
         parentIds: headId ? [headId, ...mergeHeads] : mergeHeads,
         author: "--",
@@ -78,9 +78,8 @@ async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDet
         const refs = await git.getRefs(repoPath);
         const files = await git.status(repoPath);
         return Object.assign(getWtreePseudoCommit(refs.head, refs.mergeHeads), { body: "", files });
-    }
-    else {
-        return await git.getCommitDetail(repoPath, sha);
+    } else {
+        const commits = await git.getCommitDetail(repoPath, sha);
+        return commits;
     }
 }
-

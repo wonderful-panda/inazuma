@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import { ensureNotUndefined } from "./utils";
 import * as assert from "assert";
 
 export interface InterEdge {
@@ -39,13 +38,15 @@ class ColorPallete {
         assert(colors.length > 0);
         this._queue = [ ...colors ];
         this._used = {};
-        colors.forEach(c => this._used[c] = 0);
+        colors.forEach(c => {
+            this._used[c] = 0;
+        });
     }
     pop(): string {
         if (this._queue.length === 0) {
             this._queue.splice(0, 0, ...this.colors);
         }
-        const ret = ensureNotUndefined(this._queue.shift());
+        const ret = this._queue.shift()!;
         this._used[ret] += 1;
         return ret;
     }
@@ -71,7 +72,7 @@ export class Grapher {
     proceed(dagNode: DagNode): GraphFragment {
         const primaryParent = dagNode.parentIds[0];
         const secondaryParents = dagNode.parentIds.slice(1);
-        const prevEdges = <InterEdge[]>[];
+        const prevEdges = [] as InterEdge[];
         if (this._prev) {
             this._prev.interEdges.forEach(e => {
                 prevEdges[e.index] = e;
@@ -82,7 +83,7 @@ export class Grapher {
                 }
             });
         }
-        let node: NodeSymbol | undefined = undefined;
+        let node: NodeSymbol | undefined;
         const interEdges: InterEdge[] = [];
         const nodeEdges: NodeEdge[] = [];
         const occupied: boolean[] = [];
@@ -102,8 +103,7 @@ export class Grapher {
                 if (!edgeGoingOn) {
                     this._pallete.push(color);
                 }
-            }
-            else {
+            } else {
                 interEdges.push(e);
                 occupied[index] = true;
                 const pidx = secondaryParents.indexOf(id);
@@ -124,15 +124,13 @@ export class Grapher {
                 if (primaryParent) {
                     nodeEdges.push({ type: "P", index, id: primaryParent, color });
                 }
-            }
-            else {
+            } else {
                 const parentId = secondaryParents.shift();
                 if (parentId) {
                     occupied[index] = true;
                     const color = this._pallete.pop();
                     nodeEdges.push({ type: "P", index, id: parentId, color });
-                }
-                else {
+                } else {
                     break;
                 }
             }

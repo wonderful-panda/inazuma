@@ -24,13 +24,13 @@ const emptyCommit: CommitDetail = {
 const injected = sinai.inject("dialog", dialogModule);
 
 class State implements AppState {
-    environment = <Environment>Electron.remote.getGlobal("environment");
-    config = <Config>Electron.remote.getGlobal("config");
+    environment = Electron.remote.getGlobal("environment") as Environment;
+    config = Electron.remote.getGlobal("config") as Config;
     columns = columns.detail;
     repoPath = "";
-    commits: Commit[] = [];
-    graphs: Dict<GraphFragment> = {};
-    refs: Dict<Ref[]> = {};
+    commits = [] as Commit[];
+    graphs = {} as Dict<GraphFragment>;
+    refs = {} as Dict<Ref[]>;
     selectedIndex = -1;
     selectedCommit = emptyCommit;
     rowHeight = 24;
@@ -89,6 +89,7 @@ class Mutations extends injected.Mutations<State>() {
 
 class Actions extends injected.Actions<State, any, Mutations>() {
     error(e: Error) {
+        // eslint-disable-next-line no-console
         console.log(e);
     }
 
@@ -138,7 +139,6 @@ class Actions extends injected.Actions<State, any, Mutations>() {
         const { repoPath, commits } = this.state;
         const detail = await browserCommand.getCommitDetail({ repoPath, sha: commits[index].id });
         this.showCommitDetail(detail);
-        return;
     }
 
     showSidebar(name: string) {
@@ -149,14 +149,12 @@ class Actions extends injected.Actions<State, any, Mutations>() {
         this.mutations.setSidebarName("");
     }
 
-    async resetConfig(config: Config): Promise<undefined> {
-        await browserCommand.resetConfig(config);
-        return;
+    resetConfig(config: Config): Promise<null> {
+        return browserCommand.resetConfig(config);
     }
 
-    async runInteractiveShell(): Promise<undefined> {
-        await browserCommand.runInteractiveShell(this.state.repoPath);
-        return;
+    runInteractiveShell(): Promise<null> {
+        return browserCommand.runInteractiveShell(this.state.repoPath);
     }
 
     async showVersionDialog(): Promise<boolean> {

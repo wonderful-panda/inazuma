@@ -3,9 +3,8 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 
-export default tsx.componentFactoryOf<{
-    onClick: null
-}>().create({
+// @vue/component
+export default tsx.componentFactoryOf<{ onClick: null }>().create({
     name: "VButton",
     props: {
         href: p(String).optional,

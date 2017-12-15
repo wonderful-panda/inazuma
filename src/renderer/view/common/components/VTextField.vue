@@ -4,9 +4,8 @@ import * as tsx from "vue-tsx-support";
 import * as typed from "vue-typed-component";
 import p from "vue-strict-prop";
 
-export default tsx.componentFactoryOf<{
-    onInput: string | undefined
-}>().create({
+// @vue/component
+export default tsx.componentFactoryOf<{ onInput: string | undefined }>().create({
     name: "VTextField",
     props: {
         value: p(String, Number).optional,
@@ -44,7 +43,7 @@ export default tsx.componentFactoryOf<{
                 />
                 {this.helperTextNode}
             </md-field>
-        )
+        );
     }
 });
 </script>

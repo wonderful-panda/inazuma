@@ -8,7 +8,7 @@ class WindowManager {
         const id = win.id;
         this._wins[id] = win;
         win.on("closed", () => {
-            delete(this._wins[id]);
+            delete (this._wins[id]);
         });
         return win;
     }

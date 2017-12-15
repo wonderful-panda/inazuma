@@ -14,8 +14,7 @@ export function setup() {
         creanup() {
             try {
                 rimraf.sync(dirpath);
-            }
-            catch (err) {
+            } catch (err) {
                 console.log("Failed to cleanup temporary directory", err);
             }
         }

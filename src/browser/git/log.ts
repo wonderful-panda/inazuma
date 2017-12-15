@@ -11,12 +11,14 @@ const _logKeywords: LogKeyword[] = [
     { name: "parents", format: "%P", proc: (c, v) => { c.parentIds = v.split(" "); } },
     { name: "author", format: "%an", proc: (c, v) => { c.author = v; } },
     { name: "date", format: "%at", proc: (c, v) => { c.date = parseInt(v) * 1000; } },
-    { name: "summary", format: "%s", proc: (c, v) => { c.summary = v; } },
+    { name: "summary", format: "%s", proc: (c, v) => { c.summary = v; } }
 ];
 
-const _logFormat = _logKeywords.map(k => `${ k.name } ${ k.format }`).join("%n");
+const _logFormat = _logKeywords.map(k => `${k.name} ${k.format}`).join("%n");
 const _procMap: { [name: string]: (commit: Commit, value: string) => void } = {};
-_logKeywords.forEach(k => _procMap[k.name] = k.proc);
+_logKeywords.forEach(k => {
+    _procMap[k.name] = k.proc;
+});
 
 const _lastKeywordName = _logKeywords[_logKeywords.length - 1].name;
 
@@ -31,13 +33,13 @@ export async function log(repoPath: string, maxCount: number, heads: string[], c
 
      */
 
-    const args = [...heads, "--topo-order", `--format=${ _logFormat }`];
+    const args = [...heads, "--topo-order", `--format=${_logFormat}`];
     if (maxCount > 0) {
-        args.push(`-${ maxCount }`);
+        args.push(`-${maxCount}`);
     }
     let current = {} as Commit;
     let commitCount = 0;
-    await exec(repoPath, "log", args, line  => {
+    await exec(repoPath, "log", args, line => {
         const p = line.indexOf(" ");
         if (p <= 0) {
             console.log("log/unexpected output:", line);
@@ -79,7 +81,7 @@ export async function getCommitDetail(repoPath: string, commitId: string): Promi
      |M<NUL>dir/foo.txt<NUL>A<NUL>dir/bar.txt<NUL>R100<NUL>dir/baz-new.txt<NUL>dir/baz-old.txt...
 
      */
-    const args = [commitId, "--name-status", "--find-renames", "-z", `--format=${ _commitDetailFormat }`];
+    const args = [commitId, "--name-status", "--find-renames", "-z", `--format=${_commitDetailFormat}`];
     const ret = { body: "", files: [] as FileEntry[] } as CommitDetail;
     let region: "PROPS" | "BODY" | "FILES" = "PROPS";
     await exec(repoPath, "show", args, line => {
@@ -101,8 +103,7 @@ export async function getCommitDetail(repoPath: string, commitId: string): Promi
                 return;
             }
             proc(ret, line.slice(p + 1));
-        }
-        else if (region === "BODY") {
+        } else if (region === "BODY") {
             // read body of commit
             if (line === "}}}") {
                 ret.body = ret.body.replace(/\n$/, "");
@@ -114,8 +115,7 @@ export async function getCommitDetail(repoPath: string, commitId: string): Promi
                 return;
             }
             ret.body += line.slice(1) + "\n";
-        }
-        else {
+        } else {
             if (line === "") {
                 return;
             }
@@ -126,12 +126,10 @@ export async function getCommitDetail(repoPath: string, commitId: string): Promi
                     // rename
                     ret.files.push({ path: tokens[i + 2], oldPath: tokens[i + 1], statusCode });
                     i += 2;
-                }
-                else if (statusCode) {
+                } else if (statusCode) {
                     ret.files.push({ path: tokens[i + 1], statusCode });
                     i += 1;
-                }
-                else {
+                } else {
                     break;
                 }
             }

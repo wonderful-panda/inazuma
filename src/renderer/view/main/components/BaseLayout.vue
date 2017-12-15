@@ -6,10 +6,7 @@ import p from "vue-strict-prop";
 import VDialogBase from "view/common/components/VDialogBase.vue";
 import VIconButton from "view/common/components/VIconButton.vue";
 
-interface MainLayoutProps {
-    title: string;
-}
-
+// @vue/component
 export default componentWithStore({
     name: "BaseLayout",
     props: {

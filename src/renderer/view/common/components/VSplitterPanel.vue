@@ -7,9 +7,9 @@ import { CssProperties } from "vue-css-definition";
 
 const FLEX_SUM = 1000;
 
+// @vue/component
 export default tsx.component({
     name: "VSplitterPanel",
-    // prettier-ignore
     props: {
         direction: p.ofStringLiterals("horizontal", "vertical").required,
         splitterWidth: p(Number).validator(v => v > 0).default(3),
@@ -71,8 +71,7 @@ export default tsx.component({
         setMinSize(cssprops: CssProperties, value: any): CssProperties {
             if (this.horizontal) {
                 cssprops.minWidth = value;
-            }
-            else {
+            } else {
                 cssprops.minHeight = value;
             }
             return cssprops;
@@ -104,14 +103,14 @@ export default tsx.component({
     render(): VNode {
         const { first, second } = this.$slots;
         return (
-            <div class="splitter-panel-container" style={ this.containerStyle }>
-              <div class="splitter-panel-first" style={ this.firstPanelStyle }>
-                { first }
-              </div>
-              <div class={ this.splitterClass } style={ this.splitterStyle } onMousedown={ this.onSplitterMouseDown } />
-              <div class="splitter-panel-second" style={ this.secondPanelStyle }>
-                { second }
-              </div>
+            <div class="splitter-panel-container" style={this.containerStyle}>
+                <div class="splitter-panel-first" style={this.firstPanelStyle}>
+                    { first }
+                </div>
+                <div class={this.splitterClass} style={this.splitterStyle} onMousedown={this.onSplitterMouseDown} />
+                <div class="splitter-panel-second" style={this.secondPanelStyle}>
+                    { second }
+                </div>
             </div>
         );
     }

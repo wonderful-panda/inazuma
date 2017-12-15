@@ -69,8 +69,7 @@ export function tryExec(repoPath: string, command: string, args: string[], stdou
                 const stderr = stderrOutput.join("");
                 resolve({ command, args, exitCode, stderr });
             });
-        }
-        else {
+        } else {
             const stdoutOutput: string[] = [];
             proc.stdout.on("data", stdoutOutput.push.bind(stdoutOutput));
             proc.on("close", exitCode => {
@@ -94,4 +93,3 @@ export function exec(repoPath: string, command: string, args: string[], stdoutCb
         return result;
     });
 }
-

@@ -53,7 +53,7 @@ const template: Electron.MenuItemConstructorOptions[] = [
                 label: "Toggle &Developer Tools",
                 accelerator: process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
                 click: (item, focusedWindow) => { focusedWindow.webContents.toggleDevTools(); }
-            },
+            }
         ]
     }
 ];
@@ -70,8 +70,7 @@ Electron.app.on("ready", () => {
     if (persist.config.data.vueDevTool) {
         try {
             Electron.BrowserWindow.addDevToolsExtension(persist.config.data.vueDevTool);
-        }
-        catch(e) {
+        } catch (e) {
             console.log("failed to load devtools extension");
         }
     }

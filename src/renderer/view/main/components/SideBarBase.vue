@@ -15,6 +15,7 @@ import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import VCloseButton from "view/common/components/VCloseButton.vue";
 
+// @vue/component
 export default componentWithStore({
     name: "SideBarBase",
     components: {

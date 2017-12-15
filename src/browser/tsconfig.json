@@ -7,9 +7,10 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true
   },
-  "filesGlob": [
+  "include": [
     "**/*.ts",
-    "../commonTypes.d.ts"
+    "../commonTypes.d.ts",
+    "../ipc-promise.d.ts"
   ],
   "exclude": [
     "node_modules"

@@ -6,11 +6,7 @@ import { DialogState, DialogActions } from "../storeModules/dialog";
 import VButton from "./VButton.vue";
 import VModal from "./VModal.vue";
 
-interface DialogBaseProps {
-    state: DialogState;
-    actions: DialogActions;
-}
-
+// @vue/component
 export default tsx.component({
     name: "VDialogBase",
     props: {

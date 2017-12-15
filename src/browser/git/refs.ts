@@ -21,7 +21,7 @@ function addRef(refs: Refs, r: Ref): void {
             refs.tags[r.name] = r.id;
             break;
         default:
-            throw "Unknown ref type";
+            throw new Error("Unknown ref type");
     }
 }
 
@@ -47,8 +47,7 @@ export async function getRefs(repoPath: string): Promise<Refs> {
         let type = refNameComponents.shift();
         if (type === "HEAD") {
             addRef(refs, { fullname, type, id });
-        }
-        else if (type === "refs") {
+        } else if (type === "refs") {
             let type = refNameComponents.shift();
             let name: string;
             switch (type) {
@@ -71,9 +70,7 @@ export async function getRefs(repoPath: string): Promise<Refs> {
                     // TODO: handle unexpected line
                     break;
             }
-            return;
-        }
-        else {
+        } else {
             // TODO: handle unexpected line
         }
     });
@@ -83,7 +80,7 @@ export async function getRefs(repoPath: string): Promise<Refs> {
         const type = "MERGE_HEAD";
         const data = await fs.readFile(mergeHeadsFile);
         data.toString().replace(/\n$/, "").split("\n").forEach(
-            (id, index) => addRef(refs, { fullname: `MERGE_HEAD/${ index }`, type, id })
+            (id, index) => addRef(refs, { fullname: `MERGE_HEAD/${index}`, type, id })
         );
     }
     return refs;

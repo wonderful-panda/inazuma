@@ -8,9 +8,9 @@ import VCloseButton from "./VCloseButton.vue";
 
 const m = tsx.modifiers;
 
-export default tsx.componentFactoryOf<{
-    onClose: null
-}>().create({
+// @vue/component
+export default tsx.componentFactoryOf<{ onClose: null }>().create({
+    name: "VModal",
     props: {
         title: p(String).required
     },
@@ -27,8 +27,7 @@ export default tsx.componentFactoryOf<{
                 if (event.target === focusable[0]) {
                     focusable[focusable.length - 1].focus();
                 }
-            }
-            else {
+            } else {
                 if (event.target === focusable[focusable.length - 1]) {
                     focusable[0].focus();
                 }

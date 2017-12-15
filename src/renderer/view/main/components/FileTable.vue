@@ -21,6 +21,7 @@ const fileColumns: VtableColumn[] = [
     }
 ];
 
+// @vue/component
 export default tsx.component({
     name: "FileTable",
     props: {
@@ -33,8 +34,7 @@ export default tsx.component({
         renderCell(columnId: string, item: FileEntry) {
             if (columnId === "path") {
                 return item.path;
-            }
-            else {
+            } else {
                 return item.statusCode;
             }
         }
@@ -53,7 +53,7 @@ export default tsx.component({
             </div>
         );
     }
-})
+});
 </script>
 
 <style lang="scss">

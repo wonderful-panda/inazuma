@@ -6,5 +6,5 @@ export default {
     log,
     getCommitDetail,
     getRefs,
-    status,
+    status
 };

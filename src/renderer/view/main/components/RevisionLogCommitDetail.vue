@@ -5,6 +5,7 @@ import { Vtable, VtableColumn } from "vue-vtable";
 import { componentWithStore } from "../store";
 import FileTable from "./FileTable.vue";
 
+// @vue/component
 export default componentWithStore({
     name: "RevisionLogCommitDetail",
     computed: {
@@ -20,8 +21,7 @@ export default componentWithStore({
         commitDate(): string {
             if (this.commit.id) {
                 return moment(this.commit.date).local().format("llll");
-            }
-            else {
+            } else {
                 return "";
             }
         },
@@ -38,8 +38,7 @@ export default componentWithStore({
                         {this.commit.body}
                     </pre>
                 );
-            }
-            else {
+            } else {
                 return undefined;
             }
         }
@@ -75,7 +74,7 @@ export default componentWithStore({
             </div>
         );
     }
-})
+});
 </script>
 
 <style lang="scss">

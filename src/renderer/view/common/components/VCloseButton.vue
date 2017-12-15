@@ -4,9 +4,8 @@ import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import VIconButton from "./VIconButton.vue";
 
-export default tsx.componentFactoryOf<{
-    onClick: null
-}>().create({
+// @vue/component
+export default tsx.componentFactoryOf<{ onClick: null }>().create({
     name: "VCloseButton",
     functional: true,
     props: {
@@ -19,7 +18,7 @@ export default tsx.componentFactoryOf<{
             </VIconButton>
         );
     }
-})
+});
 </script>
 
 <style lang="scss">
@@ -33,4 +32,3 @@ export default tsx.componentFactoryOf<{
     }
 }
 </style>
-

@@ -41,6 +41,7 @@ import * as typed from "vue-typed-component";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 
+// @vue/component
 export default tsx.component({
     name: "LogTableCellGraph",
     props: {
@@ -65,10 +66,10 @@ export default tsx.component({
             return this.graph.node.index;
         },
         nodeMaskId(): string {
-            return `mask-node-${ this.graph.id.substring(0, 8) }`;
+            return `mask-node-${this.graph.id.substring(0, 8)}`;
         },
         lineMaskId(): string {
-            return `mask-line-${ this.graph.id.substring(0, 8) }`;
+            return `mask-line-${this.graph.id.substring(0, 8)}`;
         },
         foregroundEdges(): NodeEdge[] {
             const edges = this.graph.nodeEdges;
@@ -102,13 +103,12 @@ export default tsx.component({
             return `M ${x1},${y1} a ${rx},${ry} 0 0,${sweep} ${ex},${ey} H ${x2}`;
         },
         maskUrl(id: string) {
-            return `url(#${ id })`;
+            return `url(#${id})`;
         },
         nodeEdgeMask(edge: NodeEdge, index: number): string {
             if (index === 0 || index === this.graph.nodeEdges.length - 1) {
                 return this.maskUrl(this.nodeMaskId);
-            }
-            else {
+            } else {
                 return this.maskUrl(this.lineMaskId);
             }
         },
@@ -117,7 +117,7 @@ export default tsx.component({
         },
         interEdgeKey(edge: InterEdge): string {
             return `I:${edge.index}`;
-        },
+        }
     }
 }, ["graph", "gridWidth", "height"]);
 </script>

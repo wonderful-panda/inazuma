@@ -6,4 +6,3 @@ export const browserCommand = new Proxy({}, {
         return (params: any) => ipcPromise.send(name, params);
     }
 }) as BrowserCommand;
-

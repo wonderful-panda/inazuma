@@ -51,6 +51,7 @@ import VSplitterPanel from "view/common/components/VSplitterPanel.vue";
 import DrawerNavigation from "./DrawerNavigation.vue";
 import { getFileName } from "core/utils";
 
+// @vue/component
 export default componentWithStore({
     components: {
         BaseLayout,

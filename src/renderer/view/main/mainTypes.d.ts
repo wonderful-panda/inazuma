@@ -20,4 +20,3 @@ export interface AppState {
     rowHeight: number;
     sidebar: string;
 }
-

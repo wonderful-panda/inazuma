@@ -17,13 +17,11 @@ function load(file: string, schema: any) {
         const result = validator.validate(obj, schema);
         if (result.errors.length === 0) {
             return obj;
-        }
-        else {
+        } else {
             console.error(`invalid JSON data found in ${name}`, result.errors);
             return undefined;
         }
-    }
-    catch (e) {
+    } catch (e) {
         console.error(`failed to load JSON data from ${name}`, e);
         return undefined;
     }
@@ -72,8 +70,7 @@ function loadConfig(): Config {
     const ret = load(configJsonPath, configSchema);
     if (!ret) {
         return defaultData;
-    }
-    else {
+    } else {
         return Object.assign(defaultData, ret);
     }
 }
@@ -94,7 +91,7 @@ const environmentSchema = {
     properties: {
         recentOpened: {
             type: "array",
-            items: { type: "string"}
+            items: { type: "string" }
         }
     }
 };
@@ -108,8 +105,7 @@ class EnvironmentObject {
         const idx = recents.indexOf(repoPath);
         if (idx === 0) {
             return false;
-        }
-        else if (0 < idx) {
+        } else if (0 < idx) {
             recents.splice(idx, 1);
         }
         recents.unshift(repoPath);
@@ -121,14 +117,12 @@ class EnvironmentObject {
     }
 }
 
-
 function loadEnvironment(): Environment {
     const defaultData: Environment = { recentOpened: [] };
     const ret = load(environmentJsonPath, environmentSchema);
     if (!ret) {
         return defaultData;
-    }
-    else {
+    } else {
         return Object.assign(defaultData, ret);
     }
 }
@@ -138,4 +132,3 @@ export function saveEnvironment() {
 }
 
 export const environment = new EnvironmentObject(loadEnvironment(), config.data);
-

@@ -84,4 +84,3 @@ declare interface BrowserCommand {
     resetConfig(config: Config): Promise<null>;
     runInteractiveShell(curdir: string): Promise<null>;
 }
-

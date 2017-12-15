@@ -4,6 +4,7 @@ import * as tsx from "vue-tsx-support";
 import { dragdrop } from "../dragdrop";
 import p from "vue-strict-prop";
 
+// @vue/component
 export default tsx.component({
     name: "LogTableCellSummaryRef",
     props: {
@@ -56,12 +57,12 @@ export default tsx.component({
     render(): VNode {
         return (
             <div
-              staticClass="ref-label"
-              class={this.className}
-              domProps-draggable={this.draggable}
-              onDragstart={this.onDragStart}
+                staticClass="ref-label"
+                class={this.className}
+                domProps-draggable={this.draggable}
+                onDragstart={this.onDragStart}
             >
-              { this.text }
+                { this.text }
             </div>
         );
     }

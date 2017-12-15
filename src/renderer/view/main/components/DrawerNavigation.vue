@@ -4,9 +4,8 @@ import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { Location } from "vue-router";
 
-export default tsx.componentFactoryOf<{
-    onClick: null
-}>().create({
+// @vue/component
+export default tsx.componentFactoryOf<{ onClick: null }>().create({
     name: "DrawerNavigation",
     props: {
         icon: p(String).required,
@@ -25,5 +24,5 @@ export default tsx.componentFactoryOf<{
             </md-list-item>
         );
     }
-})
+});
 </script>

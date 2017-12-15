@@ -4,6 +4,7 @@ import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import LogTableCellSummaryRef from "./LogTableCellSummaryRef.vue";
 
+// @vue/component
 export default tsx.component({
     name: "LogTableCellSummary",
     props: {
@@ -13,10 +14,10 @@ export default tsx.component({
     render(): VNode {
         return (
             <transition-group tag="div" style={{ display: "flex", flexFlow: "row nowrap" }}>
-              { this.refs.map(r => <LogTableCellSummaryRef key={r.fullname} refObject={r} />) }
+                { this.refs.map(r => <LogTableCellSummaryRef key={r.fullname} refObject={r} />) }
                 <span key="summary">{this.commit.summary}</span>)
             </transition-group>
-        )
+        );
     }
 });
 </script>

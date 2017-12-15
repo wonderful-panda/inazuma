@@ -1,8 +1,8 @@
 export function queryFocusableElements(root?: HTMLElement): HTMLElement[] {
     const elements = [...(root || document).querySelectorAll("*")];
     return elements.filter(el => {
-        if (el instanceof HTMLInputElement || el instanceof HTMLButtonElement
-            || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) {
+        if (el instanceof HTMLInputElement || el instanceof HTMLButtonElement ||
+            el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) {
             return !el.disabled;
         }
         if (el instanceof HTMLAnchorElement || el instanceof HTMLAreaElement) {

@@ -20,8 +20,7 @@ export async function status(repoPath: string): Promise<FileEntry[]> {
             // if renamed, next value is new path
             oldPath = value.slice(3);
             path = values[++i];
-        }
-        else {
+        } else {
             oldPath = undefined;
             path = value.slice(3);
         }

@@ -17,4 +17,3 @@ export const dragdrop = {
         return JSON.parse(data) as DragData[K];
     }
 };
-
