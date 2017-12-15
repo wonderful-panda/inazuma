@@ -32,9 +32,10 @@ module.exports = {
         "semi": ["error", "always"],
         "quotes": ["error", "double", { allowTemplateLiterals: true } ],
         "space-before-function-paren": ["error", "never"],
-        "jsx-quotes": ["error", "prefer-double"],
+        "linebreak-style": ["error", "unix"],
 
         // jsx
+        "jsx-quotes": ["error", "prefer-double"],
         "react/jsx-indent": ["error", 4],
         "react/jsx-indent-props": ["error", 4],
 
