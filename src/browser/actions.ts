@@ -1,7 +1,4 @@
-import * as Electron from "electron";
-import * as _ from "lodash";
 import * as ipcPromise from "ipc-promise";
-import * as path from "path";
 import * as cp from "child_process";
 import { environment, config } from "./persistentData";
 import { splitCommandline } from "./utils";
@@ -67,7 +64,7 @@ async function fetchHistory(repoPath: string, num: number): Promise<{ commits: C
     const headId = refs.head;
 
     const commits = headId ? [getWtreePseudoCommit(headId, refs.mergeHeads)] : [];
-    const ret = await git.log(repoPath, num, Object.keys(refs.refsById), commit => {
+    await git.log(repoPath, num, Object.keys(refs.refsById), commit => {
         commits.push(commit);
     });
     return { commits, refs };

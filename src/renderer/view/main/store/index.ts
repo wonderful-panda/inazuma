@@ -2,7 +2,7 @@ import Vue, { VueConstructor } from "vue";
 import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
 import * as Electron from "electron";
-import { AppState, LogItem } from "../mainTypes";
+import { AppState } from "../mainTypes";
 import * as columns from "./logColumns";
 import { navigate } from "../route";
 import { GraphFragment, Grapher } from "core/grapher";
@@ -160,7 +160,7 @@ class Actions extends injected.Actions<State, any, Mutations>() {
     async showVersionDialog(): Promise<boolean> {
         const ret = await this.modules.dialog.actions.show({
             title: "Version",
-            renderContent: h => "Version dialog: Not implemented",
+            renderContent: _h => "Version dialog: Not implemented",
             buttons: []
         });
         return ret.accepted;

@@ -5,13 +5,13 @@ module.exports = {
     // bundle for renderer process (per windows)
     context: __dirname,
     entry: {
-        main: "./view/main/index.ts",
+        main: "./view/main/index.ts"
     },
     output: {
         path: path.join(__dirname, "../../dist"),
         filename: "renderer_[name].js"
     },
-    devtool: 'source-map',
+    devtool: "source-map",
     resolve: {
         extensions: [".ts", ".tsx", ".js"],
         modules: [

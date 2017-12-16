@@ -10,7 +10,6 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
 import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import VCloseButton from "view/common/components/VCloseButton.vue";

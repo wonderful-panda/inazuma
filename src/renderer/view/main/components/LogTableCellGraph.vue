@@ -30,14 +30,13 @@
                 :key="nodeEdgeKey(edge)",
                 :d="nodeEdgePath(edge)",
                 :stroke="edge.color", :stroke-width="2", fill="none",
-                :mask="nodeEdgeMask(edge, i)")
+                :mask="nodeEdgeMask(i)")
 
         circle(:cx="nodeX", :cy="nodeY", :r="radius", :fill="graph.node.color")
 </template>
 
 <script lang="ts">
 import { NodeEdge, InterEdge, GraphFragment } from "core/grapher";
-import * as typed from "vue-typed-component";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 
@@ -105,7 +104,7 @@ export default tsx.component({
         maskUrl(id: string) {
             return `url(#${id})`;
         },
-        nodeEdgeMask(edge: NodeEdge, index: number): string {
+        nodeEdgeMask(index: number): string {
             if (index === 0 || index === this.graph.nodeEdges.length - 1) {
                 return this.maskUrl(this.nodeMaskId);
             } else {

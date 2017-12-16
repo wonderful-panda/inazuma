@@ -1,7 +1,6 @@
 <script lang="tsx">
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import * as typed from "vue-typed-component";
 import p from "vue-strict-prop";
 
 // @vue/component

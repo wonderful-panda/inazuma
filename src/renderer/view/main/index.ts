@@ -3,15 +3,16 @@ import Vue from "vue";
 import { Route } from "vue-router";
 
 import * as Electron from "electron";
-import { store, AppStore } from "./store";
+import { store } from "./store";
 import { router } from "./route";
 import { browserCommand } from "core/browser";
 
-Electron.ipcRenderer.on("action", (event: string, name: string, payload: any) => {
+Electron.ipcRenderer.on("action", (_event: string, name: string, payload: any) => {
     (store.actions as any)[name](payload);
 });
 
-const app = new Vue({
+// eslint-disable-next-line no-new
+new Vue({
     el: "#app",
     store,
     router,

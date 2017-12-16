@@ -1,4 +1,4 @@
-import Vue, { CreateElement, VNode } from "vue";
+import { CreateElement, VNode } from "vue";
 import * as sinai from "sinai";
 
 export interface ButtonOptions {

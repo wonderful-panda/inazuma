@@ -1,7 +1,6 @@
 <script lang="tsx">
 import { VNode } from "vue";
 import * as moment from "moment";
-import { Vtable, VtableColumn } from "vue-vtable";
 import { componentWithStore } from "../store";
 import FileTable from "./FileTable.vue";
 

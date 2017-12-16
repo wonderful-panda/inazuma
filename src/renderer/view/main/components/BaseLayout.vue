@@ -1,6 +1,5 @@
 <script lang="tsx">
-import Vue, { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import { VNode } from "vue";
 import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import VDialogBase from "view/common/components/VDialogBase.vue";

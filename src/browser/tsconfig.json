@@ -4,6 +4,8 @@
     "module": "commonjs",
     "outDir": ".temp",
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true
   },

@@ -1,5 +1,5 @@
 <script lang="tsx">
-import Vue, { VNode } from "vue";
+import { VNode } from "vue";
 import * as moment from "moment";
 import { componentWithStore } from "../store";
 import { vtableOf } from "vue-vtable";
@@ -38,6 +38,7 @@ export default componentWithStore({
                 return;
             }
             const data = dragdrop.getData(event, "git/branch");
+            console.log(data);
         },
         renderCell(columnId: string, item: LogItem): VNode | string {
             switch (columnId) {
@@ -63,7 +64,7 @@ export default componentWithStore({
             items={this.items} columns={columns} rowHeight={rowHeight}
             rowStyleCycle={2}
             getItemKey={item => item.commit.id}
-            getRowClass={(item, index) => index === selectedIndex ? "vtable-row-selected" : "vtable-row"}
+            getRowClass={(_item, index) => index === selectedIndex ? "vtable-row-selected" : "vtable-row"}
             onRowclick={arg => this.$store.actions.setSelectedIndex(arg.index)}
             onRowdragover={arg => this.onRowdragover(arg.item, arg.event)}
             onRowdrop={arg => this.onRowdrop(arg.item, arg.event)}

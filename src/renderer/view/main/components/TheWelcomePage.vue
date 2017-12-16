@@ -31,7 +31,6 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
 import { componentWithStore } from "../store";
 import BaseLayout from "./BaseLayout.vue";
 import DrawerNavigation from "./DrawerNavigation.vue";

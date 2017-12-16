@@ -3,7 +3,6 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { queryFocusableElements } from "view/common/domutils";
-import VIconButton from "./VIconButton.vue";
 import VCloseButton from "./VCloseButton.vue";
 
 const m = tsx.modifiers;

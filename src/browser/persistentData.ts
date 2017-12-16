@@ -10,7 +10,6 @@ function load(file: string, schema: any) {
     if (!fs.existsSync(file)) {
         return undefined;
     }
-    let obj: any;
     try {
         const data = fs.readFileSync(file, "utf8");
         const obj = JSON.parse(data);

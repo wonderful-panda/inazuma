@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import * as Electron from "electron";
 import * as persist from "./persistentData";
 import wm from "./windowManager";
@@ -47,12 +46,12 @@ const template: Electron.MenuItemConstructorOptions[] = [
             {
                 label: "&Reload",
                 accelerator: "Ctrl+R",
-                click: (item, focusedWindow) => { focusedWindow.reload(); }
+                click: (_item, focusedWindow) => { focusedWindow.reload(); }
             },
             {
                 label: "Toggle &Developer Tools",
                 accelerator: process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
-                click: (item, focusedWindow) => { focusedWindow.webContents.toggleDevTools(); }
+                click: (_item, focusedWindow) => { focusedWindow.webContents.toggleDevTools(); }
             }
         ]
     }
