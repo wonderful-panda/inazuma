@@ -19,25 +19,27 @@ module.exports = {
         }
     },
     rules: {
-        // disable rules which does not work in TypeScript
+        // disable rules which don't work in TypeScript
         "no-undef": "off",
         "no-unused-vars": "off",
         "space-infix-ops": "off",
         "no-useless-constructor": "off",
         "import/export": "off",
 
-        // code style
+        // disable rules which conflict with Prettier
+        "indent": "off",
+        "semi": "off",
+        "quotes": "off",
+        "space-before-function-paren": "off",
+        "react/jsx-indent": "off",
+        "react/jsx-indent-props": "off",
+
+        // other code style
         "yoda": "off",
-        "indent": ["error", 4, { SwitchCase: 1 }],
-        "semi": ["error", "always"],
-        "quotes": ["error", "double", { allowTemplateLiterals: true } ],
-        "space-before-function-paren": ["error", "never"],
         "linebreak-style": ["error", "unix"],
 
         // jsx
         "jsx-quotes": ["error", "prefer-double"],
-        "react/jsx-indent": ["error", 4],
-        "react/jsx-indent-props": ["error", 4],
 
         // vue
         "vue/require-default-prop": "off"
