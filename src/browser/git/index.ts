@@ -3,8 +3,8 @@ import { getRefs } from "./refs";
 import { status } from "./status";
 
 export default {
-    log,
-    getCommitDetail,
-    getRefs,
-    status
+  log,
+  getCommitDetail,
+  getRefs,
+  status
 };

@@ -5,13 +5,9 @@ import SideBarBase from "./SideBarBase.vue";
 
 // @vue/component
 export default tsx.component({
-    name: "SideBarRemotes",
-    render(): VNode {
-        return (
-            <SideBarBase title="Remotes">
-                Not implemented
-            </SideBarBase>
-        );
-    }
+  name: "SideBarRemotes",
+  render(): VNode {
+    return <SideBarBase title="Remotes">Not implemented</SideBarBase>;
+  }
 });
 </script>

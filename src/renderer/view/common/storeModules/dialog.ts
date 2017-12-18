@@ -2,64 +2,70 @@ import { CreateElement, VNode } from "vue";
 import * as sinai from "sinai";
 
 export interface ButtonOptions {
-    name: string;
-    text: string;
-    primary?: boolean;
-    accent?: boolean;
+  name: string;
+  text: string;
+  primary?: boolean;
+  accent?: boolean;
 }
 
 export interface DialogOptions {
-    title: string;
-    renderContent: (h: CreateElement) => string | VNode | VNode[];
-    buttons: ButtonOptions[];
+  title: string;
+  renderContent: (h: CreateElement) => string | VNode | VNode[];
+  buttons: ButtonOptions[];
 }
 
-export type DialogResult = {
-    accepted: true,
-    buttonId: string
-} | {
-    accepted: false
-};
+export type DialogResult =
+  | {
+      accepted: true;
+      buttonId: string;
+    }
+  | {
+      accepted: false;
+    };
 
 export class DialogState {
-    options?: DialogOptions = undefined;
-    resolve?: Resolve<DialogResult> = undefined;
+  options?: DialogOptions = undefined;
+  resolve?: Resolve<DialogResult> = undefined;
 }
 
 export class DialogMutations extends sinai.Mutations<DialogState>() {
-    init(options: DialogOptions, resolve: Resolve<DialogResult>) {
-        if (this.state.resolve) {
-            this.state.resolve({ accepted: false });
-        }
-        this.state.options = options;
-        this.state.resolve = resolve;
+  init(options: DialogOptions, resolve: Resolve<DialogResult>) {
+    if (this.state.resolve) {
+      this.state.resolve({ accepted: false });
     }
-    setResult(ret: DialogResult) {
-        if (this.state.resolve) {
-            this.state.resolve(ret);
-        }
-        this.state.options = this.state.resolve = undefined;
+    this.state.options = options;
+    this.state.resolve = resolve;
+  }
+  setResult(ret: DialogResult) {
+    if (this.state.resolve) {
+      this.state.resolve(ret);
     }
+    this.state.options = this.state.resolve = undefined;
+  }
 }
 
-export class DialogActions extends sinai.Actions<DialogState, any, DialogMutations>() {
-    show(options: DialogOptions): Promise<DialogResult> {
-        return new Promise<DialogResult>(resolve => {
-            this.mutations.init(options, resolve);
-        });
-    }
+export class DialogActions extends sinai.Actions<
+  DialogState,
+  any,
+  DialogMutations
+>() {
+  show(options: DialogOptions): Promise<DialogResult> {
+    return new Promise<DialogResult>(resolve => {
+      this.mutations.init(options, resolve);
+    });
+  }
 
-    accept(buttonId: string) {
-        this.mutations.setResult({ accepted: true, buttonId });
-    }
+  accept(buttonId: string) {
+    this.mutations.setResult({ accepted: true, buttonId });
+  }
 
-    cancel() {
-        this.mutations.setResult({ accepted: false });
-    }
+  cancel() {
+    this.mutations.setResult({ accepted: false });
+  }
 }
 
 export const dialogModule = sinai.module({
-    state: DialogState,
-    mutations: DialogMutations,
-    actions: DialogActions
+  state: DialogState,
+  mutations: DialogMutations,
+  actions: DialogActions
 });

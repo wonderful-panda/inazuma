@@ -7,62 +7,72 @@ import VIconButton from "view/common/components/VIconButton.vue";
 
 // @vue/component
 export default componentWithStore({
-    name: "BaseLayout",
-    props: {
-        title: p(String).required
-    },
-    data() {
-        return { menuVisible: false };
-    },
-    methods: {
-        toggleMenu(): void {
-            this.menuVisible = !this.menuVisible;
-        }
-    },
-    render(): VNode {
-        const drawerEventListener = {
-            "update:mdActive": (v: boolean) => { this.menuVisible = v; }
-        };
-        return (
-            <div staticClass="main-container">
-                <md-app md-mode="fixed">
-                    <md-app-toolbar staticClass="md-primary" md-dense>
-                        <VIconButton mini onClick={this.toggleMenu}>
-                            menu
-                        </VIconButton>
-                        <span staticClass="main-title md-title" style={{margin: 0, flex: 1}}>
-                            {this.title}
-                        </span>
-                        <div staticClass="md-toolbar-section-end">
-                            {this.$slots["titlebar-buttons"]}
-                        </div>
-                    </md-app-toolbar>
-
-                    <md-app-drawer md-fixed md-active={this.menuVisible} {...{ on: drawerEventListener }}>
-                        <md-toolbar staticClass="md-transparent" md-elevation={0}>
-                            <div staticClass="md-toolbar-section-end">
-                                <VIconButton mini onClick={this.toggleMenu}>
-                                    keyboard_arrow_left
-                                </VIconButton>
-                            </div>
-                        </md-toolbar>
-                        <md-list {...{ on: { "!click": this.toggleMenu } }}>
-                            {this.$slots["drawer-navigations"]}
-                        </md-list>
-                    </md-app-drawer>
-
-                    <md-app-content style={{position: "relative", padding: "1px"}}>
-                        <div staticClass="main-content">
-                            {this.$slots["default"]}
-                        </div>
-                    </md-app-content>
-                </md-app>
-
-                <router-view />
-                <VDialogBase state={this.$store.state.dialog} actions={this.$store.actions.dialog} />
-            </div>
-        );
+  name: "BaseLayout",
+  props: {
+    title: p(String).required
+  },
+  data() {
+    return { menuVisible: false };
+  },
+  methods: {
+    toggleMenu(): void {
+      this.menuVisible = !this.menuVisible;
     }
+  },
+  render(): VNode {
+    const drawerEventListener = {
+      "update:mdActive": (v: boolean) => {
+        this.menuVisible = v;
+      }
+    };
+    return (
+      <div staticClass="main-container">
+        <md-app md-mode="fixed">
+          <md-app-toolbar staticClass="md-primary" md-dense>
+            <VIconButton mini onClick={this.toggleMenu}>
+              menu
+            </VIconButton>
+            <span
+              staticClass="main-title md-title"
+              style={{ margin: 0, flex: 1 }}
+            >
+              {this.title}
+            </span>
+            <div staticClass="md-toolbar-section-end">
+              {this.$slots["titlebar-buttons"]}
+            </div>
+          </md-app-toolbar>
+
+          <md-app-drawer
+            md-fixed
+            md-active={this.menuVisible}
+            {...{ on: drawerEventListener }}
+          >
+            <md-toolbar staticClass="md-transparent" md-elevation={0}>
+              <div staticClass="md-toolbar-section-end">
+                <VIconButton mini onClick={this.toggleMenu}>
+                  keyboard_arrow_left
+                </VIconButton>
+              </div>
+            </md-toolbar>
+            <md-list {...{ on: { "!click": this.toggleMenu } }}>
+              {this.$slots["drawer-navigations"]}
+            </md-list>
+          </md-app-drawer>
+
+          <md-app-content style={{ position: "relative", padding: "1px" }}>
+            <div staticClass="main-content">{this.$slots["default"]}</div>
+          </md-app-content>
+        </md-app>
+
+        <router-view />
+        <VDialogBase
+          state={this.$store.state.dialog}
+          actions={this.$store.actions.dialog}
+        />
+      </div>
+    );
+  }
 });
 </script>
 
