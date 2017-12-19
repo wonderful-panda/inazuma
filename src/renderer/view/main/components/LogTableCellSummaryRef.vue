@@ -14,17 +14,16 @@ export default tsx.component(
     computed: {
       className(): string {
         const ref = this.refObject;
+        const s = this.$style;
         switch (ref.type) {
           case "HEAD":
-            return "ref-label-head";
+            return s.head;
           case "heads":
-            return ref.current
-              ? "ref-label-branch-current"
-              : "ref-label-branch";
+            return ref.current ? s.currentBranch : s.branch;
           case "remotes":
-            return "ref-label-remote";
+            return s.remote;
           case "tags":
-            return "ref-label-tag";
+            return s.tag;
           default:
             return "";
         }
@@ -77,8 +76,8 @@ export default tsx.component(
 );
 </script>
 
-<style lang="scss">
-.ref-label {
+<style lang="scss" module>
+.base {
   vertical-align: middle;
   height: 1.3em;
   line-height: 1.3em;
@@ -90,33 +89,38 @@ export default tsx.component(
   cursor: default;
 }
 
-.ref-label-head {
+.head {
+  composes: base;
   border-radius: 0;
   font-weight: bold;
   color: darkorange;
   border: 2px solid darkorange;
 }
 
-.ref-label-branch {
+.branch {
+  composes: base;
   color: cyan;
   border-color: cyan;
   cursor: pointer;
 }
 
-.ref-label-branch-current {
+.currentBranch {
+  composes: base;
   font-weight: bold;
   color: cyan;
   border: 2px solid cyan;
   cursor: pointer;
 }
 
-.ref-label-tag {
+.tag {
+  composes: base;
   border-radius: 0;
   color: cyan;
   border-color: cyan;
 }
 
-.ref-label-remote {
+.remote {
+  composes: base;
   color: #888;
   border-color: #888;
 }
