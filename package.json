@@ -9,7 +9,7 @@
     "build:renderer": "webpack --config src/renderer/webpack.config.js",
     "build:browser": "webpack --config src/browser/webpack.config.js",
     "build:style": "webpack --config webpack.config.style.js",
-    "format": "node ./format.js \"*.js\" \"src/**/*.*\" \"style/*.*\"",
+    "format": "node ./format.js \"*.js\" \"src/**/*.{ts,js,vue}\" \"style/*.*\"",
     "lint": "eslint src/**/*.{ts,vue}",
     "watch": "webpack -w",
     "watch:renderer": "webpack -w --config src/renderer/webpack.config.js",
