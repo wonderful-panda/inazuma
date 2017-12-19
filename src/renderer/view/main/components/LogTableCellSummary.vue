@@ -13,16 +13,21 @@ export default tsx.component({
   },
   render(): VNode {
     return (
-      <transition-group
-        tag="div"
-        style={{ display: "flex", flexFlow: "row nowrap" }}
-      >
+      <div class={this.$style.container}>
         {this.refs.map(r => (
           <LogTableCellSummaryRef key={r.fullname} refObject={r} />
         ))}
-        <span key="summary">{this.commit.summary}</span>)
-      </transition-group>
+        <span key="summary">{this.commit.summary}</span>
+      </div>
     );
   }
 });
 </script>
+
+<style lang="scss" module>
+.container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: baseline;
+}
+</style>

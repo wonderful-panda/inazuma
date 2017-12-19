@@ -61,14 +61,13 @@ export default tsx.component(
     },
     render(): VNode {
       return (
-        <div
-          staticClass="ref-label"
+        <span
           class={this.className}
           domProps-draggable={this.draggable}
           onDragstart={this.onDragStart}
         >
           {this.text}
-        </div>
+        </span>
       );
     }
   },
@@ -79,48 +78,48 @@ export default tsx.component(
 <style lang="scss" module>
 .base {
   vertical-align: middle;
-  height: 1.3em;
-  line-height: 1.3em;
+  height: 1.2em;
+  line-height: 1.2em;
   font-size: smaller;
   border: 1px solid;
   margin: auto 4px auto 0;
   padding: 0 0.4em 0 0.4em;
   border-radius: 1em;
+  box-sizing: content-box;
   cursor: default;
 }
 
 .head {
-  composes: base;
-  border-radius: 0;
-  font-weight: bold;
+  @extend .base;
+  border-radius: 2px;
   color: darkorange;
+  font-weight: bolder;
   border: 2px solid darkorange;
 }
 
 .branch {
-  composes: base;
+  @extend .base;
   color: cyan;
   border-color: cyan;
   cursor: pointer;
 }
 
 .currentBranch {
-  composes: base;
-  font-weight: bold;
+  @extend .base;
   color: cyan;
   border: 2px solid cyan;
   cursor: pointer;
 }
 
 .tag {
-  composes: base;
+  @extend .base;
   border-radius: 0;
   color: cyan;
   border-color: cyan;
 }
 
 .remote {
-  composes: base;
+  @extend .base;
   color: #888;
   border-color: #888;
 }

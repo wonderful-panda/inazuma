@@ -1,4 +1,5 @@
 <script lang="tsx">
+import * as md from "view/common/md-classes";
 import { VNode } from "vue";
 import * as moment from "moment";
 import { componentWithStore } from "../store";
@@ -11,8 +12,12 @@ export default componentWithStore({
     commit(): CommitDetail {
       return this.$store.state.selectedCommit;
     },
-    className(): string | undefined {
-      return this.commit.id ? undefined : "commit-detail-inactive";
+    classes(): object {
+      return {
+        [this.$style.container]: true,
+        [md.SUBHEADING]: true,
+        [this.$style.inactive]: !this.commit.id
+      };
     },
     commitSummary(): string {
       return this.commit.summary || "No commit selected";
@@ -34,39 +39,30 @@ export default componentWithStore({
     },
     body(): VNode | undefined {
       if (this.commit.body) {
-        return <pre staticClass="commit-detail-body">{this.commit.body}</pre>;
+        return <pre staticClass={this.$style.body}>{this.commit.body}</pre>;
       } else {
         return undefined;
       }
     }
   },
   methods: {
-    commitAttr(
-      name: string,
-      value: string | VNode[],
-      monospace?: boolean
-    ): VNode {
-      const valueClass = {
-        "attr-value": true,
-        "fontfamily--monospace": monospace
-      };
+    commitAttr(name: string, value: string | VNode[]): VNode {
       return (
         <tr>
-          <td staticClass="attr-name">{name}</td>
-          <td class={valueClass}>{value}</td>
+          <td staticClass={this.$style.attrName}>{name}</td>
+          <td staticClass={this.$style.attrValue}>{value}</td>
         </tr>
       );
     }
   },
   render(): VNode {
+    const s = this.$style;
     return (
-      <div staticClass="commit-detail md-subheading" class={this.className}>
-        <div staticClass="commit-detail-summary md-title">
-          {this.commitSummary}
-        </div>
-        <table staticClass="commit-detail-attrs">
-          {this.commitAttr("id", this.shortCommitId, true)}
-          {this.commitAttr("parents", this.shortParentIds, true)}
+      <div class={this.classes}>
+        <div class={[s.summary, md.TITLE]}>{this.commitSummary}</div>
+        <table staticClass={s.attrTable}>
+          {this.commitAttr("id", this.shortCommitId)}
+          {this.commitAttr("parents", this.shortParentIds)}
           {this.commitAttr("author", this.commit.author)}
           {this.commitAttr("date", this.commitDate)}
         </table>
@@ -78,49 +74,48 @@ export default componentWithStore({
 });
 </script>
 
-<style lang="scss">
-.commit-detail {
+<style lang="scss" module>
+.container {
   display: flex;
   flex: 1;
   flex-flow: column nowrap;
   padding: 8px;
-
-  .commit-detail-summary {
-    padding: 4px;
-    margin-bottom: 8px;
-  }
-
-  table {
-    width: 100%;
-    margin-bottom: 8px;
-  }
-
-  td {
-    background-color: #333;
-    padding: 0 8px;
-  }
-
-  .attr-name {
-    vertical-align: middle;
-  }
-
-  .attr-value {
-    width: 100%;
-  }
-
-  .commit-detail-body {
-    margin: 0px 2px 8px 2px;
-    font-size: small;
-    background-color: #333;
-    padding: 0.2em;
-    min-height: 1em;
-    max-height: 12em;
-    white-space: pre-wrap;
-    overflow: auto;
-  }
 }
 
-.commit-detail-inactive {
+.inactive {
   color: #666;
+}
+
+.summary {
+  padding: 4px;
+  margin-bottom: 8px;
+}
+
+.attrTable {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.attrName {
+  background-color: #333;
+  padding: 0 8px;
+  vertical-align: middle;
+  font-family: monospace;
+}
+
+.attrValue {
+  @extend .attrName;
+  width: 100%;
+}
+
+.body {
+  margin: 0px 2px 8px 2px;
+  font-size: small;
+  background-color: #333;
+  padding: 0.2em;
+  min-height: 1em;
+  max-height: 12em;
+  white-space: pre-wrap;
+  overflow: auto;
 }
 </style>
