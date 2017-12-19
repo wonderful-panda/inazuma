@@ -96,7 +96,7 @@ export default componentWithStore({
 
 <style>
 #main-splitter-panel {
-    flex: 1;
-    margin: 2px;
+  flex: 1;
+  margin: 2px;
 }
 </style>

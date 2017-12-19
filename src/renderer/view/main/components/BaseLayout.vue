@@ -78,32 +78,32 @@ export default componentWithStore({
 
 <style>
 .md-app {
-    flex: 1;
+  flex: 1;
 }
 
 .md-app-toolbar {
-    padding: 0 4px;
+  padding: 0 4px;
 }
 
 .main-container {
-    display: flex;
-    flex-flow: column nowrap;
-    flex: 1;
+  display: flex;
+  flex-flow: column nowrap;
+  flex: 1;
 }
 
 .main-content {
-    display: flex;
-    flex-direction: row;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    box-sizing: border-box;
-    padding: 4px;
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  padding: 4px;
 }
 
 .main-title {
-    margin: 0;
+  margin: 0;
 }
 </style>
