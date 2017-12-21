@@ -2,7 +2,7 @@
 import { VNode } from "vue";
 import * as moment from "moment";
 import { componentWithStore } from "../store";
-import { vtableOf } from "vue-vtable";
+import { vtableOf, VtableColumn } from "vue-vtable";
 import LogTableCellGraph from "./LogTableCellGraph.vue";
 import LogTableCellSummary from "./LogTableCellSummary.vue";
 import { LogItem } from "../mainTypes";
@@ -14,6 +14,41 @@ const Vtable = vtableOf<LogItem>();
 export default componentWithStore({
   name: "LogTable",
   computed: {
+    columns(): VtableColumn[] {
+      const s = this.$style;
+      return [
+        {
+          title: "graph",
+          className: s.graphCell,
+          defaultWidth: 120,
+          minWidth: 40
+        },
+        {
+          title: "id",
+          className: s.idCell,
+          defaultWidth: 80,
+          minWidth: 40
+        },
+        {
+          title: "author",
+          className: s.authorCell,
+          defaultWidth: 120,
+          minWidth: 40
+        },
+        {
+          title: "date",
+          className: s.dateCell,
+          defaultWidth: 100,
+          minWidth: 40
+        },
+        {
+          title: "comment",
+          className: s.commentCell,
+          defaultWidth: 600,
+          minWidth: 200
+        }
+      ];
+    },
     items(): LogItem[] {
       const state = this.$store.state;
       return state.commits.map(commit => {
@@ -64,18 +99,18 @@ export default componentWithStore({
     }
   },
   render(): VNode {
-    const { columns, rowHeight, selectedIndex } = this.$store.state;
+    const { rowHeight, selectedIndex } = this.$store.state;
+    const s = this.$style;
     return (
       <Vtable
-        staticClass="revision-log"
+        staticClass={s.container}
         items={this.items}
-        columns={columns}
+        columns={this.columns}
         rowHeight={rowHeight}
         rowStyleCycle={2}
         getItemKey={item => item.commit.id}
         getRowClass={(_item, index) =>
-          index === selectedIndex ? "vtable-row-selected" : "vtable-row"
-        }
+          index === selectedIndex ? s.selectedRow : ""}
         onRowclick={arg => this.$store.actions.setSelectedIndex(arg.index)}
         onRowdragover={arg => this.onRowdragover(arg.item, arg.event)}
         onRowdrop={arg => this.onRowdrop(arg.item, arg.event)}
@@ -88,46 +123,46 @@ export default componentWithStore({
 });
 </script>
 
-<style lang="scss">
-.revision-log {
-  .vlist-row:nth-child(2n) {
-    background-color: #282828;
+<style lang="scss" module>
+.container {
+  :global {
+    .vlist-row:nth-child(2n) {
+      background-color: #282828;
+    }
+
+    .vlist-row:hover {
+      background-color: #383838;
+    }
+
+    .vlist-header-row {
+      border-bottom: solid 1px #aaa;
+    }
+
+    .vtable-splitter {
+      border-left: solid 1px #555;
+    }
+
+    .vtable-dragging-splitter {
+      background-color: #888;
+    }
   }
 
-  .vlist-row:hover {
-    background-color: #383838;
-  }
-
-  .vtable-row-selected {
+  .selectedRow {
     background-color: #484848;
   }
 
-  .vlist-header-row {
-    border-bottom: solid 1px #aaa;
+  .idCell,
+  .dateCell {
+    font-family: monospace;
+    font-size: small;
   }
 
-  .vtable-row,
-  .vtable-row-selected {
-    .cell-id,
-    .cell-date {
-      font-family: monospace;
-      font-size: small;
-    }
-    .cell-graph {
-      padding-left: 12px;
-    }
+  .graphCell {
+    padding-left: 12px;
   }
 
-  .cell-comment {
+  .commentCell {
     flex: 1;
-  }
-
-  .vtable-splitter {
-    border-left: solid 1px #555;
-  }
-
-  .vtable-dragging-splitter {
-    background-color: #888;
   }
 }
 </style>

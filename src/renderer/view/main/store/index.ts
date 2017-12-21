@@ -3,7 +3,6 @@ import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
 import * as Electron from "electron";
 import { AppState } from "../mainTypes";
-import * as columns from "./logColumns";
 import { navigate } from "../route";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
@@ -26,7 +25,6 @@ const injected = sinai.inject("dialog", dialogModule);
 class State implements AppState {
   environment = Electron.remote.getGlobal("environment") as Environment;
   config = Electron.remote.getGlobal("config") as Config;
-  columns = columns.detail;
   repoPath = "";
   commits = [] as Commit[];
   graphs = {} as Dict<GraphFragment>;
