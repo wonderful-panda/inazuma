@@ -78,9 +78,10 @@ export default tsx.component(
 <style lang="scss" module>
 .base {
   vertical-align: middle;
-  height: 1.2em;
-  line-height: 1.2em;
-  font-size: smaller;
+  height: 14px;
+  line-height: 14px;
+  font-family: monospace;
+  font-size: 12px;
   border: 1px solid;
   margin: auto 4px auto 0;
   padding: 0 0.4em 0 0.4em;
@@ -91,6 +92,7 @@ export default tsx.component(
 
 .head {
   @extend .base;
+  line-height: 16px;
   border-radius: 2px;
   color: darkorange;
   font-weight: bolder;

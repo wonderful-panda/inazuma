@@ -3,19 +3,20 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { vtableOf, VtableColumn } from "vue-vtable";
+import * as md from "view/common/md-classes";
 
 const Vtable = vtableOf<FileEntry>();
 
 const fileColumns: VtableColumn[] = [
   {
     title: "",
-    className: "cell-stat md-body-2",
+    className: md.BODY2,
     defaultWidth: 24,
     minWidth: 24
   },
   {
     title: "path",
-    className: "cell-path md-body-2",
+    className: "flex--expand " + md.BODY2,
     defaultWidth: 200,
     minWidth: 100
   }
@@ -41,7 +42,7 @@ export default tsx.component({
   },
   render(): VNode {
     return (
-      <div staticClass="commit-detail-files">
+      <div staticClass={this.$style.container}>
         <Vtable
           items={this.files}
           columns={fileColumns}
@@ -57,15 +58,17 @@ export default tsx.component({
 });
 </script>
 
-<style lang="scss">
-.commit-detail-files {
+<style lang="scss" module>
+.container {
   display: flex;
   flex: 1;
 
-  div.vlist-container {
-    display: flex;
-    margin: 4px 2px;
-    background-color: #333;
+  :global {
+    .vlist-container {
+      display: flex;
+      margin: 4px 2px;
+      background-color: #333;
+    }
 
     .vlist-row {
       font-family: monospace;
@@ -88,10 +91,6 @@ export default tsx.component({
 
     .vlist-header-row {
       border-bottom: solid 2px #222;
-    }
-
-    .cell-path {
-      flex: 1;
     }
   }
 }

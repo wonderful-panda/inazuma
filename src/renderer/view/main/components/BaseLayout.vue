@@ -4,6 +4,7 @@ import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import VDialogBase from "view/common/components/VDialogBase.vue";
 import VIconButton from "view/common/components/VIconButton.vue";
+import * as md from "view/common/md-classes";
 
 // @vue/component
 export default componentWithStore({
@@ -26,14 +27,14 @@ export default componentWithStore({
       }
     };
     return (
-      <div staticClass="main-container">
+      <div staticClass={this.$style.container}>
         <md-app md-mode="fixed">
           <md-app-toolbar staticClass="md-primary" md-dense>
             <VIconButton mini onClick={this.toggleMenu}>
               menu
             </VIconButton>
             <span
-              staticClass="main-title md-title"
+              class={[this.$style.title, md.TITLE]}
               style={{ margin: 0, flex: 1 }}
             >
               {this.title}
@@ -61,7 +62,9 @@ export default componentWithStore({
           </md-app-drawer>
 
           <md-app-content style={{ position: "relative", padding: "1px" }}>
-            <div staticClass="main-content">{this.$slots["default"]}</div>
+            <div staticClass={this.$style.content}>
+              {this.$slots["default"]}
+            </div>
           </md-app-content>
         </md-app>
 
@@ -76,22 +79,27 @@ export default componentWithStore({
 });
 </script>
 
-<style>
-.md-app {
-  flex: 1;
-}
-
-.md-app-toolbar {
-  padding: 0 4px;
-}
-
-.main-container {
+<style lang="scss" module>
+.container {
   display: flex;
   flex-flow: column nowrap;
   flex: 1;
+  :global {
+    .md-app {
+      flex: 1;
+    }
+
+    .md-app-toolbar {
+      padding: 0 4px;
+    }
+  }
 }
 
-.main-content {
+.main-title {
+  margin: 0;
+}
+
+.content {
   display: flex;
   flex-direction: row;
   position: absolute;
@@ -101,9 +109,5 @@ export default componentWithStore({
   bottom: 0;
   box-sizing: border-box;
   padding: 4px;
-}
-
-.main-title {
-  margin: 0;
 }
 </style>

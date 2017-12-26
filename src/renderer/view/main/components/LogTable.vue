@@ -15,36 +15,31 @@ export default componentWithStore({
   name: "LogTable",
   computed: {
     columns(): VtableColumn[] {
-      const s = this.$style;
       return [
         {
           title: "graph",
-          className: s.graphCell,
           defaultWidth: 120,
           minWidth: 40
         },
         {
           title: "id",
-          className: s.idCell,
           defaultWidth: 80,
           minWidth: 40
         },
         {
           title: "author",
-          className: s.authorCell,
           defaultWidth: 120,
           minWidth: 40
         },
         {
           title: "date",
-          className: s.dateCell,
           defaultWidth: 100,
           minWidth: 40
         },
         {
           title: "comment",
-          className: s.commentCell,
           defaultWidth: 600,
+          className: "flex--expand",
           minWidth: 200
         }
       ];
@@ -84,13 +79,21 @@ export default componentWithStore({
             <LogTableCellGraph graph={item.graph} gridWidth={12} height={24} />
           );
         case "id":
-          return item.commit.id.substring(0, 8);
+          return (
+            <span class="fontfamily--monospace" title={item.commit.id}>
+              {item.commit.id.substring(0, 8)}
+            </span>
+          );
         case "author":
           return item.commit.author;
         case "date":
-          return moment(item.commit.date)
-            .local()
-            .format("L");
+          return (
+            <span class="fontfamily--monospace">
+              {moment(item.commit.date)
+                .local()
+                .format("L")}
+            </span>
+          );
         case "comment":
           return <LogTableCellSummary commit={item.commit} refs={item.refs} />;
         default:
@@ -110,7 +113,8 @@ export default componentWithStore({
         rowStyleCycle={2}
         getItemKey={item => item.commit.id}
         getRowClass={(_item, index) =>
-          index === selectedIndex ? s.selectedRow : ""}
+          index === selectedIndex ? s.selectedRow : ""
+        }
         onRowclick={arg => this.$store.actions.setSelectedIndex(arg.index)}
         onRowdragover={arg => this.onRowdragover(arg.item, arg.event)}
         onRowdrop={arg => this.onRowdrop(arg.item, arg.event)}
@@ -149,20 +153,6 @@ export default componentWithStore({
 
   .selectedRow {
     background-color: #484848;
-  }
-
-  .idCell,
-  .dateCell {
-    font-family: monospace;
-    font-size: small;
-  }
-
-  .graphCell {
-    padding-left: 12px;
-  }
-
-  .commentCell {
-    flex: 1;
   }
 }
 </style>
