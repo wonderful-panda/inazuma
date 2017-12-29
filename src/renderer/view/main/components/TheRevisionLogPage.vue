@@ -28,8 +28,7 @@
         @click="$store.actions.showVersionDialog()")
 
     keep-alive
-      transition(name="sidebar")
-        component(:is="sidebar")
+      component(:is="sidebar")
     v-splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :initial-ratio="0.6")
       log-table(slot="first")
       keep-alive(slot="second")
