@@ -1,22 +1,23 @@
 <template lang="pug">
   doctype html
-  v-modal#preference-panel(title="PREFERENCE", @close="back")
-    form(action="#")
-      v-text-field.pref-path-input(
+  v-modal(:class="$style.modalBase", title="PREFERENCE", :container-class="$style.container" @close="back")
+    form(:class="$style.modalContent", action="#")
+      v-text-field(
         label="Path of external diff tool",
         v-model="config.externalDiffTool")
 
-      v-text-field.pref-path-input(
+      v-text-field(
         label="Interactive shell command",
         v-model="config.interactiveShell")
 
-      v-text-field.pref-input(
+      v-text-field(
+        :class="$style.numberInput",
         input-id="recentListCount",
         label="Number of recent opened list",
         :input-attrs="{ type: 'number', min: 0, max: 20 }",
         v-model.number="config.recentListCount")
 
-      v-text-field.pref-path-input(
+      v-text-field(
         label="Path of vue dev tool",
         v-model="config.vueDevTool")
 
@@ -68,38 +69,35 @@ export default componentWithStore({
 });
 </script>
 
-<style lang="scss">
-#preference-panel {
-  .modal-container {
-    display: flex;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 80%;
-    height: 100%;
-    bottom: 0;
-    box-shadow: 4px 0 4px rgba(0, 0, 0, 0.4);
+<style lang="scss" module>
+.container {
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80%;
+  height: 100%;
+  bottom: 0;
+  box-shadow: 4px 0 4px rgba(0, 0, 0, 0.4);
 
-    flex: 1;
-    transition: all 0.3s ease;
-  }
-  &.modal-enter,
-  &.modal-leave-active {
-    .modal-container {
-      transform: translateX(-100%);
-    }
-  }
+  flex: 1;
+  transition: all 0.3s ease;
+}
 
-  .modal-content {
-    padding-right: 32px;
+.modalBase:global(.modal-enter),
+.modalBase:global(.modal-leave-to) {
+  .container {
+    transform: translateX(-100%);
   }
+}
 
-  .pref-path-input {
-    min-width: 90%;
-  }
+.modalContent {
+  padding-left: 8px;
+  padding-right: 32px;
+}
 
-  .pref-input {
-    min-width: 200px;
-  }
+.numberInput {
+  min-width: 200px;
+  width: 200px;
 }
 </style>

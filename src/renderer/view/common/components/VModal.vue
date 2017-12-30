@@ -1,88 +1,103 @@
 <script lang="tsx">
-import { VNode } from "vue";
+import Vue, { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { queryFocusableElements } from "view/common/domutils";
 import VCloseButton from "./VCloseButton.vue";
+import * as md from "view/common/md-classes";
 
 const m = tsx.modifiers;
 
-export default tsx.componentFactoryOf<{ onClose: null }>().create(
-  // @vue/component
-  {
-    name: "VModal",
-    props: {
-      title: p(String).required
-    },
-    methods: {
-      cancel(): void {
-        this.$emit("close", null);
+export default tsx
+  .componentFactoryOf<{ onClose: null }>()
+  .create(
+    // @vue/component
+    {
+      name: "VModal",
+      props: {
+        title: p(String).required,
+        containerClass: p(String).optional
       },
-      onTabKeyDown(event: KeyboardEvent): void {
-        const focusable = queryFocusableElements(this.$el);
-        if (focusable.length === 0) {
-          return;
-        }
-        if (event.shiftKey) {
-          if (event.target === focusable[0]) {
-            focusable[focusable.length - 1].focus();
-          }
-        } else {
-          if (event.target === focusable[focusable.length - 1]) {
+      mounted() {
+        Vue.nextTick(() => {
+          const focusable = queryFocusableElements(this.$el);
+          if (focusable) {
             focusable[0].focus();
           }
+        });
+      },
+      methods: {
+        cancel(): void {
+          this.$emit("close", null);
+        },
+        onTabKeyDown(event: KeyboardEvent): void {
+          const focusable = queryFocusableElements(this.$el);
+          if (focusable.length === 0) {
+            return;
+          }
+          if (event.shiftKey) {
+            if (event.target === focusable[0]) {
+              focusable[focusable.length - 1].focus();
+              event.preventDefault();
+            }
+          } else {
+            if (event.target === focusable[focusable.length - 1]) {
+              focusable[0].focus();
+              event.preventDefault();
+            }
+          }
         }
-      }
-    },
-    render(): VNode {
-      const maskListeners = {
-        click: this.cancel,
-        "!keydown": m.tab(this.onTabKeyDown)
-      };
-      return (
-        <transition name="modal">
-          <div
-            staticClass="fullscreen-overlay modal-mask"
-            {...{ on: maskListeners }}
-          >
+      },
+      render(): VNode {
+        const s = this.$style;
+        const maskListeners = {
+          click: this.cancel,
+          "!keydown": m.tab(this.onTabKeyDown)
+        };
+        return (
+          <transition name="modal">
             <div
-              staticClass="modal-container"
-              onClick={m.stop}
-              onKeydown={m.esc(this.cancel)}
+              class={["fullscreen-overlay", s.mask]}
+              {...{ on: maskListeners }}
             >
-              <div staticClass="modal-header">
-                <div staticClass="modal-title md-title">{this.title}</div>
-                <VCloseButton onClick={this.cancel} />
-              </div>
-              <div staticClass="modal-content">{this.$slots.default}</div>
-              <div staticClass="modal-footer">
-                <div style={{ flex: 1 }} />
-                {this.$slots["footer-buttons"]}
+              <div
+                class={[s.container, this.containerClass]}
+                onClick={m.stop}
+                onKeydown={m.esc(this.cancel)}
+              >
+                <div staticClass={s.header}>
+                  <div class={[s.title, md.TITLE]}>{this.title}</div>
+                  <VCloseButton onClick={this.cancel} />
+                </div>
+                <div staticClass={s.content}>{this.$slots.default}</div>
+                <div staticClass={s.footer}>
+                  <div staticClass="flex--expand" />
+                  {this.$slots["footer-buttons"]}
+                </div>
               </div>
             </div>
-          </div>
-        </transition>
-      );
-    }
-  },
-  ["title"]
-);
+          </transition>
+        );
+      }
+    },
+    ["title"]
+  );
 </script>
 
-<style lang="scss">
-.modal-mask {
+<style lang="scss" module>
+.mask {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 9998;
   transition: all 0.3s ease;
   overflow: hidden;
-
-  &.modal-enter,
-  &.modal-leave-active {
-    background-color: rgba(0, 0, 0, 0);
-  }
 }
 
-.modal-container {
+.mask:global(.modal-enter),
+.mask:global(.modal-leave-active) {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.container {
   display: flex;
   padding-left: 1em;
   flex-flow: column nowrap;
@@ -90,25 +105,24 @@ export default tsx.componentFactoryOf<{ onClose: null }>().create(
   background: var(--md-theme-default-background);
 }
 
-.modal-title {
+.title {
   margin-top: 1em;
   margin-bottom: 0.5em;
   flex: 1;
 }
 
-.modal-header {
+.header {
   display: flex;
   flex-flow: row nowrap;
 }
 
-.modal-footer {
+.footer {
   display: flex;
   flex-direction: row;
   padding-right: 1em;
 }
 
-.modal-content {
-  padding-left: 0.5em;
+.content {
   display: flex;
   flex: 1;
   flex-direction: column;

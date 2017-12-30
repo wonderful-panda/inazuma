@@ -31,8 +31,14 @@ export default tsx.component(
           <span staticClass="md-title">{b.text}</span>
         </VButton>
       ));
+      const s = this.$style;
       return (
-        <VModal staticClass="dialog-base" title={opt.title} onClose={cancel}>
+        <VModal
+          staticClass={s.dialogBase}
+          title={opt.title}
+          containerClass={s.container}
+          onClose={cancel}
+        >
           {opt.renderContent(this.$createElement)}
           <template slot="footer-buttons">
             {buttons}
@@ -48,23 +54,19 @@ export default tsx.component(
 );
 </script>
 
-<style lang="scss">
-.dialog-base {
-  .modal-container {
-    margin: auto;
-    min-width: 400px;
-    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.4);
-    transition: all 0.2s ease;
-  }
-  &.modal-enter,
-  &.modal-leave-active {
-    .modal-container {
-      transform: scale(1.05);
-      opacity: 0;
-    }
-  }
-  .modal-footer .md-button {
-    font-weight: bold;
+<style lang="scss" module>
+.container {
+  margin: auto;
+  min-width: 400px;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.dialogBase:global(.modal-enter),
+.dialogBase:global(.modal-leave-to) {
+  .container {
+    transform: scale(1.05);
+    opacity: 0;
   }
 }
 </style>
