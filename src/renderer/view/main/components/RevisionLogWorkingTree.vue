@@ -2,6 +2,7 @@
 import { VNode } from "vue";
 import { componentWithStore } from "../store";
 import FileTable from "./FileTable.vue";
+import * as md from "view/common/md-classes";
 
 // @vue/component
 export default componentWithStore({
@@ -22,28 +23,24 @@ export default componentWithStore({
     }
   },
   render(): VNode {
+    const s = this.$style;
     return (
-      <div staticClass="commit-detail">
-        <div staticClass="md-title">Changes to be committed</div>
-        <FileTable staticClass="staged-files" files={this.stagedFiles} />
-        <div staticClass="md-title">Changes not staged</div>
-        <FileTable staticClass="unstaged-files" files={this.unstagedFiles} />
+      <div staticClass={s.container}>
+        <div staticClass={md.TITLE}>Changes to be committed</div>
+        <FileTable files={this.stagedFiles} />
+        <div staticClass={md.TITLE}>Changes not staged</div>
+        <FileTable files={this.unstagedFiles} />
       </div>
     );
   }
 });
 </script>
 
-<style lang="scss">
-.commit-detail {
+<style lang="scss" module>
+.container {
   display: flex;
   flex: 1;
   flex-flow: column nowrap;
   padding: 8px;
-
-  .commit-detail-summary {
-    padding: 4px;
-    margin-bottom: 8px;
-  }
 }
 </style>

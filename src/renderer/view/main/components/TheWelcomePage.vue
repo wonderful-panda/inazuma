@@ -9,25 +9,25 @@
         icon="info_outline", text="About",
         @click="$store.actions.showVersionDialog()")
 
-    div(style="flex: 1; padding: 0 1em;")
+    div(:class="$style.content")
       h3.md-title SELECT REPOSITORY
-      div(style="display: inline-block; min-width: 30%;")
-        md-list#welcome-repo-list.md-double-line
+      div(:class="$style.leftPanel")
+        md-list.md-double-line
           md-list-item(@click="selectRepository")
             md-icon.md-dense search
             div.md-list-item-text
-              span.repo-name.md-subheading BROWSE...
-              span.repo-description.md-caption Select repositories by folder browser
+              span.md-subheading(:class="$style.repoName") BROWSE...
+              span.md-caption(:class="$style.repoDescription") Select repositories by folder browser
 
-          md-divider(style="margin: 0.5em 0")
+          md-divider(:class="$style.divider")
 
           md-subheader.md-primary Recent opened
 
           md-list-item(v-for="repo in recentOpened", :key="repo", @click="openRepository(repo)")
             md-icon history
             div.md-list-item-text
-              span.repo-name.md-subheading {{ getFileName(repo) }}
-              span.repo-description.md-caption {{ repo }}
+              span.md-subheading(:class="$style.repoName") {{ getFileName(repo) }}
+              span.md-caption(:class="$style.repoDescription") {{ repo }}
 </template>
 
 <script lang="ts">
@@ -60,28 +60,43 @@ export default componentWithStore({
 });
 </script>
 
-<style lang="scss">
-#welcome-repo-list {
-  background: var(--md-theme-default-background-on-background);
-  padding: 0 0.5em;
+<style lang="scss" module>
+.content {
+  flex: 1;
+  padding: 0 1em;
+}
 
-  .md-list-item-content {
-    min-height: 32px !important;
+.leftPanel {
+  display: inline-block;
+  min-width: 40%;
+
+  :global {
+    .md-list {
+      background-color: var(--md-theme-default-background-on-background);
+      padding: 0 0.5em;
+    }
+    .md-list-item-content {
+      min-height: 32px !important;
+    }
+    .md-subheader {
+      min-height: 32px !important;
+    }
+    .md-icon {
+      margin-right: 0.5em !important;
+    }
   }
-  .md-subheader {
-    min-height: 32px !important;
-  }
-  .repo-name {
-    height: 20px;
-    margin-right: auto;
-    text-transform: none !important;
-  }
-  .repo-description {
-    text-transform: none !important;
-    font-size: 75%;
-  }
-  .md-icon {
-    margin-right: 0.5em;
-  }
+}
+
+.repoName {
+  height: 20px;
+  margin-right: auto;
+  text-transform: none !important;
+}
+.repoDescription {
+  text-transform: none !important;
+  font-size: 75%;
+}
+.divider {
+  margin: 0.5em 0 !important;
 }
 </style>

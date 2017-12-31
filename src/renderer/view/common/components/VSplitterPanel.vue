@@ -143,9 +143,15 @@ export default tsx.component(
 </script>
 
 <style lang="scss">
-.splitter-panel-splitter-horizontal,
-.splitter-panel-splitter-vertical {
+.splitter-panel-splitter-horizontal {
   margin: 0 2px;
+  &:hover {
+    background-color: #383838;
+  }
+}
+
+.splitter-panel-splitter-vertical {
+  margin: 2 0px;
   &:hover {
     background-color: #383838;
   }

@@ -1,15 +1,5 @@
-<template lang="pug">
-  transition(name="sidebar", mode="out-in")
-    div.sidebar-wrapper
-      div.sidebar-container
-        div.sidebar-titlebar
-          span.sidebar-title {{ title }}
-          v-close-button(@click="close")
-        div.sidebar-content
-          slot
-</template>
-
-<script lang="ts">
+<script lang="tsx">
+import { VNode } from "vue";
 import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import VCloseButton from "view/common/components/VCloseButton.vue";
@@ -27,23 +17,39 @@ export default componentWithStore({
     close() {
       this.$store.actions.hideSidebar();
     }
+  },
+  render(): VNode {
+    const s = this.$style;
+    return (
+      <transition name="sidebar" mode="out-in">
+        <div staticClass={s.wrapper}>
+          <div staticClass={s.container}>
+            <div staticClass={s.titlebar}>
+              <span staticClass={s.title}>{this.title}</span>
+              <VCloseButton onClick={this.close} />
+            </div>
+            <div staticClass={s.content}>{this.$slots.default}</div>
+          </div>
+        </div>
+      </transition>
+    );
   }
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" module>
 $sidebar-width: 200px;
 
-.sidebar-wrapper {
+.wrapper {
   display: flex;
   flex-flow: row-reverse nowrap;
   overflow-x: hidden;
   width: $sidebar-width;
   max-width: $sidebar-width;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
-.sidebar-container {
+.container {
   display: flex;
   flex-flow: column nowrap;
   flex: 1;
@@ -53,12 +59,12 @@ $sidebar-width: 200px;
   max-width: $sidebar-width;
 }
 
-.sidebar-titlebar {
+.titlebar {
   display: flex;
   flex-flow: row nowrap;
 }
 
-.sidebar-title {
+.title {
   font-size: large;
   vertical-align: bottom;
   margin: auto;
@@ -67,14 +73,14 @@ $sidebar-width: 200px;
   flex: 1;
 }
 
-.sidebar-content {
+.content {
   display: flex;
   padding: 0.5em;
   flex: 1;
 }
 
-.sidebar-enter,
-.sidebar-leave-active {
+.wrapper:global(.sidebar-enter),
+.wrapper:global(.sidebar-leave-to) {
   width: 0;
   max-width: 0;
 }
