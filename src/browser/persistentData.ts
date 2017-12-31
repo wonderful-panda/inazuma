@@ -60,7 +60,7 @@ export const configSchema = {
 };
 
 class ConfigObject {
-  constructor(public data: Config) {}
+  constructor(public data: Config) { }
 }
 
 function loadConfig(): Config {
@@ -95,12 +95,27 @@ const environmentSchema = {
     recentOpened: {
       type: "array",
       items: { type: "string" }
+    },
+    windowSize: {
+      type: "Object",
+      required: false,
+      properties: {
+        width: {
+          type: "integer"
+        },
+        height: {
+          type: "integer"
+        },
+        maximized: {
+          type: "boolean"
+        }
+      }
     }
   }
 };
 
 class EnvironmentObject {
-  constructor(public data: Environment, public config: Config) {}
+  constructor(public data: Environment, public config: Config) { }
 
   addRecentOpened(repoPath: string): boolean {
     const recents = [...this.data.recentOpened];
@@ -116,6 +131,9 @@ class EnvironmentObject {
     }
     this.data.recentOpened = recents;
     return true;
+  }
+  setWindowSize(width: number, height: number, maximized: boolean) {
+    this.data.windowSize = { width, height, maximized };
   }
 }
 

@@ -66,11 +66,30 @@ const template: Electron.MenuItemConstructorOptions[] = [
 ];
 
 function showMainWindow() {
+  const opts: Electron.BrowserWindowConstructorOptions = { autoHideMenuBar: true };
   const mainWindow = wm.create({
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
+    show: false
   });
+  // restore window size
+  const size = persist.environment.data.windowSize;
+  if (size) {
+    mainWindow.setSize(size.width, size.height);
+  }
+  mainWindow.center();
+  if (size && size.maximized) {
+    mainWindow.maximize();
+  }
+  mainWindow.on("close", () => {
+    // save window size
+    const maximized = mainWindow.isMaximized();
+    mainWindow.restore();
+    const [width, height] = mainWindow.getSize();
+    persist.environment.setWindowSize(width, height, maximized);
+  })
   mainWindow.setMenu(Electron.Menu.buildFromTemplate(template));
   mainWindow.loadURL(`file://${__dirname}/${html}`);
+  mainWindow.show();
 }
 
 Electron.app.on("ready", () => {

@@ -10,6 +10,11 @@ declare type Dict<T> = { [key: string]: T };
  */
 declare interface Environment {
   recentOpened: string[];
+  windowSize?: {
+    width: number;
+    height: number;
+    maximized: boolean;
+  }
 }
 
 /**
@@ -26,19 +31,19 @@ declare type Ref = {
   id: string;
   fullname: string;
 } & (
-  | {
+    | {
       type: "HEAD" | "MERGE_HEAD";
     }
-  | {
+    | {
       type: "heads";
       name: string;
       current: boolean;
     }
-  | {
+    | {
       type: "tags";
       name: string;
     }
-  | {
+    | {
       type: "remotes";
       remote: string;
       name: string;
