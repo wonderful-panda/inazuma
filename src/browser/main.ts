@@ -1,9 +1,9 @@
 import * as Electron from "electron";
 import * as persist from "./persistentData";
 import wm from "./windowManager";
-import { setup as setupTempdir } from "./tempdir";
-
+import { setupRepositorySessions } from "./repositorySession";
 import { setupBrowserCommands } from "./actions";
+const repoSessions = setupRepositorySessions();
 setupBrowserCommands();
 
 (global as any)["environment"] = persist.environment.data;
@@ -11,12 +11,10 @@ setupBrowserCommands();
 
 const html = "../static/index.html";
 
-const tempdir = setupTempdir();
-
 Electron.app.on("window-all-closed", () => {
   persist.saveConfig();
   persist.saveEnvironment();
-  tempdir.creanup();
+  repoSessions.dispose();
   const devtools = Electron.BrowserWindow.getDevToolsExtensions() as {
     [name: string]: any;
   };
@@ -66,7 +64,9 @@ const template: Electron.MenuItemConstructorOptions[] = [
 ];
 
 function showMainWindow() {
-  const opts: Electron.BrowserWindowConstructorOptions = { autoHideMenuBar: true };
+  const opts: Electron.BrowserWindowConstructorOptions = {
+    autoHideMenuBar: true
+  };
   const mainWindow = wm.create({
     autoHideMenuBar: true,
     show: false
@@ -86,7 +86,7 @@ function showMainWindow() {
     mainWindow.restore();
     const [width, height] = mainWindow.getSize();
     persist.environment.setWindowSize(width, height, maximized);
-  })
+  });
   mainWindow.setMenu(Electron.Menu.buildFromTemplate(template));
   mainWindow.loadURL(`file://${__dirname}/${html}`);
   mainWindow.show();
