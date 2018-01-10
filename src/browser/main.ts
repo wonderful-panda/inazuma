@@ -64,9 +64,6 @@ const template: Electron.MenuItemConstructorOptions[] = [
 ];
 
 function showMainWindow() {
-  const opts: Electron.BrowserWindowConstructorOptions = {
-    autoHideMenuBar: true
-  };
   const mainWindow = wm.create({
     autoHideMenuBar: true,
     show: false
