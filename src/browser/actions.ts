@@ -4,6 +4,7 @@ import { environment, config } from "./persistentData";
 import { splitCommandline } from "./utils";
 import git from "./git";
 import wm from "./windowManager";
+import { RepositorySessions } from "./repositorySession";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
@@ -14,48 +15,51 @@ export function broadcast<K extends keyof BroadcastAction>(
   wm.broadcast(type, payload);
 }
 
-const browserCommand: BrowserCommand = {
-  async openRepository(
-    repoPath: string
-  ): Promise<{ commits: Commit[]; refs: Refs }> {
-    const ret = await fetchHistory(repoPath, 1000);
-    if (environment.addRecentOpened(repoPath)) {
-      broadcast("environmentChanged", environment.data);
+export function setupBrowserCommands(
+  _repoSessions: RepositorySessions
+): BrowserCommand {
+  const bc: BrowserCommand = {
+    async openRepository(
+      repoPath: string
+    ): Promise<{ commits: Commit[]; refs: Refs }> {
+      const ret = await fetchHistory(repoPath, 1000);
+      if (environment.addRecentOpened(repoPath)) {
+        broadcast("environmentChanged", environment.data);
+      }
+      return ret;
+    },
+    async getCommitDetail(arg: {
+      repoPath: string;
+      sha: string;
+    }): Promise<CommitDetail> {
+      const detail = await getCommitDetail(arg.repoPath, arg.sha);
+      return detail;
+    },
+    resetConfig(cfg: Config): Promise<null> {
+      config.data = cfg;
+      broadcast("configChanged", cfg);
+      return Promise.resolve(null);
+    },
+    runInteractiveShell(cwd: string): Promise<null> {
+      const [command, ...args] = splitCommandline(config.data.interactiveShell);
+      if (command) {
+        cp
+          .spawn(command, args, {
+            cwd,
+            detached: true,
+            shell: true,
+            stdio: "ignore"
+          })
+          .unref();
+      }
+      return Promise.resolve(null);
     }
-    return ret;
-  },
-  async getCommitDetail(arg: {
-    repoPath: string;
-    sha: string;
-  }): Promise<CommitDetail> {
-    const detail = await getCommitDetail(arg.repoPath, arg.sha);
-    return detail;
-  },
-  resetConfig(cfg: Config): Promise<null> {
-    config.data = cfg;
-    broadcast("configChanged", cfg);
-    return Promise.resolve(null);
-  },
-  runInteractiveShell(cwd: string): Promise<null> {
-    const [command, ...args] = splitCommandline(config.data.interactiveShell);
-    if (command) {
-      cp
-        .spawn(command, args, {
-          cwd,
-          detached: true,
-          shell: true,
-          stdio: "ignore"
-        })
-        .unref();
-    }
-    return Promise.resolve(null);
-  }
-};
-
-export function setupBrowserCommands() {
-  Object.keys(browserCommand).forEach(key => {
-    ipcPromise.on(key, (browserCommand as any)[key]);
+  };
+  // register each methods as Electron ipc handlers
+  Object.keys(bc).forEach(key => {
+    ipcPromise.on(key, (bc as any)[key]);
   });
+  return bc;
 }
 
 function getWtreePseudoCommit(

@@ -4,7 +4,7 @@ import wm from "./windowManager";
 import { setupRepositorySessions } from "./repositorySession";
 import { setupBrowserCommands } from "./actions";
 const repoSessions = setupRepositorySessions();
-setupBrowserCommands();
+setupBrowserCommands(repoSessions);
 
 (global as any)["environment"] = persist.environment.data;
 (global as any)["config"] = persist.config.data;
