@@ -1,4 +1,4 @@
-import { exec } from "./process";
+import { exec } from "./exec";
 
 interface LogKeyword {
   name: string;
@@ -55,7 +55,7 @@ _logKeywords.forEach(k => {
 const _lastKeywordName = _logKeywords[_logKeywords.length - 1].name;
 
 export async function log(
-  repoPath: string,
+  repository: string,
   maxCount: number,
   heads: string[],
   commitCb: (c: Commit) => any
@@ -76,23 +76,27 @@ export async function log(
   }
   let current = {} as Commit;
   let commitCount = 0;
-  await exec(repoPath, "log", args, line => {
-    const p = line.indexOf(" ");
-    if (p <= 0) {
-      console.log("log/unexpected output:", line);
-      return;
-    }
-    const name = line.slice(0, p);
-    const proc = _procMap[name];
-    if (!proc) {
-      console.log("log/unexpected output:", line);
-      return;
-    }
-    proc(current, line.slice(p + 1));
-    if (name === _lastKeywordName) {
-      commitCount++;
-      commitCb(current);
-      current = {} as Commit;
+  await exec("log", {
+    repository,
+    args,
+    onEachLine: line => {
+      const p = line.indexOf(" ");
+      if (p <= 0) {
+        console.log("log/unexpected output:", line);
+        return;
+      }
+      const name = line.slice(0, p);
+      const proc = _procMap[name];
+      if (!proc) {
+        console.log("log/unexpected output:", line);
+        return;
+      }
+      proc(current, line.slice(p + 1));
+      if (name === _lastKeywordName) {
+        commitCount++;
+        commitCb(current);
+        current = {} as Commit;
+      }
     }
   });
   return commitCount;
@@ -101,7 +105,7 @@ export async function log(
 const _commitDetailFormat = _logFormat + "%nbody {{{%n%w(0,1,1)%b%n%w(0)}}}%n";
 
 export async function getCommitDetail(
-  repoPath: string,
+  repository: string,
   commitId: string
 ): Promise<CommitDetail> {
   /* Output format
@@ -130,57 +134,61 @@ export async function getCommitDetail(
   ];
   const ret = { body: "", files: [] as FileEntry[] } as CommitDetail;
   let region: "PROPS" | "BODY" | "FILES" = "PROPS";
-  await exec(repoPath, "show", args, line => {
-    if (region === "PROPS") {
-      // read props of commit (id, parents, author, date, summary)
-      const p = line.indexOf(" ");
-      if (p <= 0) {
-        console.log("show/unexpected output:", line);
-        return;
-      }
-      const name = line.slice(0, p);
-      if (name === "body") {
-        region = "BODY";
-        return;
-      }
-      const proc = _procMap[name];
-      if (!proc) {
-        console.log("show/unexpected output:", line);
-        return;
-      }
-      proc(ret, line.slice(p + 1));
-    } else if (region === "BODY") {
-      // read body of commit
-      if (line === "}}}") {
-        ret.body = ret.body.replace(/\n$/, "");
-        region = "FILES";
-        return;
-      }
-      if (line.length === 0) {
-        console.log("show/unexpected output:", line);
-        return;
-      }
-      ret.body += line.slice(1) + "\n";
-    } else {
-      if (line === "") {
-        return;
-      }
-      const tokens = line.split("\0");
-      for (let i = 0; i < tokens.length; ++i) {
-        const statusCode = tokens[i];
-        if (statusCode.startsWith("R")) {
-          // rename
-          ret.files.push({
-            path: tokens[i + 2],
-            oldPath: tokens[i + 1],
-            statusCode
-          });
-          i += 2;
-        } else if (statusCode) {
-          ret.files.push({ path: tokens[i + 1], statusCode });
-          i += 1;
-        } else {
-          break;
+  await exec("show", {
+    repository,
+    args,
+    onEachLine: line => {
+      if (region === "PROPS") {
+        // read props of commit (id, parents, author, date, summary)
+        const p = line.indexOf(" ");
+        if (p <= 0) {
+          console.log("show/unexpected output:", line);
+          return;
+        }
+        const name = line.slice(0, p);
+        if (name === "body") {
+          region = "BODY";
+          return;
+        }
+        const proc = _procMap[name];
+        if (!proc) {
+          console.log("show/unexpected output:", line);
+          return;
+        }
+        proc(ret, line.slice(p + 1));
+      } else if (region === "BODY") {
+        // read body of commit
+        if (line === "}}}") {
+          ret.body = ret.body.replace(/\n$/, "");
+          region = "FILES";
+          return;
+        }
+        if (line.length === 0) {
+          console.log("show/unexpected output:", line);
+          return;
+        }
+        ret.body += line.slice(1) + "\n";
+      } else {
+        if (line === "") {
+          return;
+        }
+        const tokens = line.split("\0");
+        for (let i = 0; i < tokens.length; ++i) {
+          const statusCode = tokens[i];
+          if (statusCode.startsWith("R")) {
+            // rename
+            ret.files.push({
+              path: tokens[i + 2],
+              oldPath: tokens[i + 1],
+              statusCode
+            });
+            i += 2;
+          } else if (statusCode) {
+            ret.files.push({ path: tokens[i + 1], statusCode });
+            i += 1;
+          } else {
+            break;
+          }
         }
       }
     }

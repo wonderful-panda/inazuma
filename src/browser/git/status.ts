@@ -1,9 +1,9 @@
-import { exec } from "./process";
+import { exec } from "./exec";
 
-export async function status(repoPath: string): Promise<FileEntry[]> {
+export async function status(repository: string): Promise<FileEntry[]> {
   const ret: FileEntry[] = [];
-  const { stdout } = await exec(repoPath, "status", ["-z"]);
-  const values = stdout.split("\0");
+  const { stdout } = await exec("status", { repository, args: ["-z"] });
+  const values = stdout.toString("utf8").split("\0");
   for (let i = 0; i < values.length; ++i) {
     const value = values[i];
     if (value.length === 0) {
