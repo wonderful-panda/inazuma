@@ -93,6 +93,6 @@ declare interface BrowserCommand {
     repoPath: string;
     sha: string;
   }): Promise<CommitDetail>;
-  resetConfig(config: Config): Promise<null>;
-  runInteractiveShell(curdir: string): Promise<null>;
+  resetConfig(config: Config): Promise<void>;
+  runInteractiveShell(curdir: string): Promise<void>;
 }

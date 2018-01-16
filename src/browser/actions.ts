@@ -35,12 +35,12 @@ export function setupBrowserCommands(
       const detail = await getCommitDetail(arg.repoPath, arg.sha);
       return detail;
     },
-    resetConfig(cfg: Config): Promise<null> {
+    resetConfig(cfg: Config): Promise<void> {
       config.data = cfg;
       broadcast("configChanged", cfg);
-      return Promise.resolve(null);
+      return Promise.resolve();
     },
-    runInteractiveShell(cwd: string): Promise<null> {
+    runInteractiveShell(cwd: string): Promise<void> {
       const [command, ...args] = splitCommandline(config.data.interactiveShell);
       if (command) {
         cp
@@ -52,7 +52,7 @@ export function setupBrowserCommands(
           })
           .unref();
       }
-      return Promise.resolve(null);
+      return Promise.resolve();
     }
   };
   // register each methods as Electron ipc handlers

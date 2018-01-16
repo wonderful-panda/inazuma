@@ -135,7 +135,7 @@ class Actions extends injected.Actions<State, any, Mutations>() {
     this.mutations.setCommitDetail(commit);
   }
 
-  async setSelectedIndex(index: number): Promise<undefined> {
+  async setSelectedIndex(index: number): Promise<void> {
     if (this.state.selectedIndex === index) {
       return;
     }
@@ -156,11 +156,11 @@ class Actions extends injected.Actions<State, any, Mutations>() {
     this.mutations.setSidebarName("");
   }
 
-  resetConfig(config: Config): Promise<null> {
+  resetConfig(config: Config): Promise<void> {
     return browserCommand.resetConfig(config);
   }
 
-  runInteractiveShell(): Promise<null> {
+  runInteractiveShell(): Promise<void> {
     return browserCommand.runInteractiveShell(this.state.repoPath);
   }
 
@@ -187,5 +187,5 @@ export const store = sinai.store(
 export type AppStore = typeof store;
 export const VueWithStore: VueConstructor<
   Vue & { $store: AppStore }
-> = Vue as any;
+  > = Vue as any;
 export const componentWithStore = tsx.extendFrom(VueWithStore).create;
