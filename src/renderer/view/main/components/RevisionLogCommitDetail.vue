@@ -67,7 +67,10 @@ export default componentWithStore({
           {this.commitAttr("date", this.commitDate)}
         </table>
         {this.body}
-        <FileTable files={this.commit.files} />
+        <FileTable
+          files={this.commit.files}
+          onRowdblclick={arg => this.$store.actions.showExternalDiff(arg.item)}
+        />
       </div>
     );
   }

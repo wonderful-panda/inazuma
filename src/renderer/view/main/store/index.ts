@@ -172,6 +172,38 @@ class Actions extends injected.Actions<State, any, Mutations>() {
     });
     return ret.accepted;
   }
+
+  async showExternalDiff(item: FileEntry, cached?: boolean): Promise<void> {
+    if (!this.state.config.externalDiffTool) {
+      return;
+    }
+    if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
+      return;
+    }
+    const c = this.state.selectedCommit;
+    const parentId = c.parentIds[0];
+    if (!parentId) {
+      return;
+    }
+    let sha: [string, string];
+    if (c.id !== "--") {
+      sha = [parentId, c.id];
+    } else {
+      if (cached) {
+        sha = [parentId, "STAGED"];
+      } else {
+        sha = ["STAGED", "UNSTAGED"];
+      }
+    }
+    return browserCommand.showExternalDiff({
+      repoPath: this.state.repoPath,
+      left: {
+        path: item.oldPath || item.path,
+        sha: sha[0]
+      },
+      right: { path: item.path, sha: sha[1] }
+    });
+  }
 }
 
 export const store = sinai.store(

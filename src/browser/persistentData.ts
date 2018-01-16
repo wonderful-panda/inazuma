@@ -60,7 +60,7 @@ export const configSchema = {
 };
 
 class ConfigObject {
-  constructor(public data: Config) { }
+  constructor(public data: Config) {}
 }
 
 function loadConfig(): Config {
@@ -115,7 +115,7 @@ const environmentSchema = {
 };
 
 class EnvironmentObject {
-  constructor(public data: Environment, public config: Config) { }
+  constructor(public data: Environment, public config: Config) {}
 
   addRecentOpened(repoPath: string): boolean {
     const recents = [...this.data.recentOpened];

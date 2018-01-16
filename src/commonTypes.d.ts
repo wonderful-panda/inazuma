@@ -14,7 +14,7 @@ declare interface Environment {
     width: number;
     height: number;
     maximized: boolean;
-  }
+  };
 }
 
 /**
@@ -31,19 +31,19 @@ declare type Ref = {
   id: string;
   fullname: string;
 } & (
-    | {
+  | {
       type: "HEAD" | "MERGE_HEAD";
     }
-    | {
+  | {
       type: "heads";
       name: string;
       current: boolean;
     }
-    | {
+  | {
       type: "tags";
       name: string;
     }
-    | {
+  | {
       type: "remotes";
       remote: string;
       name: string;
@@ -87,6 +87,11 @@ declare interface BroadcastAction {
   configChanged: Config;
 }
 
+declare interface DiffFile {
+  path: string;
+  sha: string;
+}
+
 declare interface BrowserCommand {
   openRepository(repoPath: string): Promise<{ commits: Commit[]; refs: Refs }>;
   getCommitDetail(params: {
@@ -95,4 +100,9 @@ declare interface BrowserCommand {
   }): Promise<CommitDetail>;
   resetConfig(config: Config): Promise<void>;
   runInteractiveShell(curdir: string): Promise<void>;
+  showExternalDiff(params: {
+    repoPath: string;
+    left: DiffFile;
+    right: DiffFile;
+  }): Promise<void>;
 }

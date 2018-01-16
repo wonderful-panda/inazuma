@@ -1,10 +1,12 @@
 import * as ipcPromise from "ipc-promise";
 import * as cp from "child_process";
+import * as path from "path";
+import * as fs from "fs-extra";
 import { environment, config } from "./persistentData";
-import { splitCommandline } from "./utils";
+import { splitCommandline, randomName } from "./utils";
 import git from "./git";
 import wm from "./windowManager";
-import { RepositorySessions } from "./repositorySession";
+import { RepositorySessions, RepositorySession } from "./repositorySession";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
@@ -28,11 +30,8 @@ export function setupBrowserCommands(
       }
       return ret;
     },
-    async getCommitDetail(arg: {
-      repoPath: string;
-      sha: string;
-    }): Promise<CommitDetail> {
-      const detail = await getCommitDetail(arg.repoPath, arg.sha);
+    async getCommitDetail({ repoPath, sha }): Promise<CommitDetail> {
+      const detail = await getCommitDetail(repoPath, sha);
       return detail;
     },
     resetConfig(cfg: Config): Promise<void> {
@@ -53,6 +52,10 @@ export function setupBrowserCommands(
           .unref();
       }
       return Promise.resolve();
+    },
+    showExternalDiff({ repoPath, left, right }) {
+      const rs = _repoSessions.prepare(repoPath);
+      return showExternalDiff(rs, left, right);
     }
   };
   // register each methods as Electron ipc handlers
@@ -103,5 +106,69 @@ async function getCommitDetail(
   } else {
     const commits = await git.getCommitDetail(repoPath, sha);
     return commits;
+  }
+}
+
+async function showExternalDiff(
+  rs: RepositorySession,
+  left: DiffFile,
+  right: DiffFile
+): Promise<void> {
+  const externalDiffTool = config.data.externalDiffTool;
+  if (!externalDiffTool) {
+    return;
+  }
+  const [command, ...args] = splitCommandline(externalDiffTool);
+  const [leftPath, rightPath] = await Promise.all([
+    prepareDiffFile(rs, left),
+    prepareDiffFile(rs, right)
+  ]);
+  replaceOrPush(args, "%1", leftPath);
+  replaceOrPush(args, "%2", rightPath);
+  cp
+    .spawn(command, args, {
+      detached: true,
+      shell: true,
+      stdio: "ignore"
+    })
+    .unref();
+}
+
+async function prepareDiffFile(
+  rs: RepositorySession,
+  file: DiffFile
+): Promise<string> {
+  if (file.sha === "UNSTAGED") {
+    // use file in the repository directly
+    return path.join(rs.repoPath, file.path);
+  }
+
+  let absPath: string;
+  if (file.sha === "STAGED") {
+    const fileName = path.basename(file.path);
+    const tempFileName = `STAGED-${randomName(6)}-${fileName}`;
+    // TODO: check file name conflict
+    absPath = path.join(rs.tempdir, tempFileName);
+  } else {
+    // TODO: shorten path
+    absPath = path.join(rs.tempdir, file.sha, file.path);
+    const parentDir = path.dirname(absPath);
+    if (!await fs.pathExists(parentDir)) {
+      await fs.mkdirs(parentDir);
+    }
+  }
+  if (await fs.pathExists(absPath)) {
+    return absPath;
+  }
+  await git.saveTo(rs.repoPath, file.path, file.sha, absPath);
+  return absPath;
+}
+
+function replaceOrPush(array: string[], value: string, newValue: string): void {
+  const index = array.indexOf(value);
+  if (index < 0) {
+    array.push(newValue);
+  } else {
+    array[index] = newValue;
   }
 }

@@ -24,12 +24,19 @@ export default componentWithStore({
   },
   render(): VNode {
     const s = this.$style;
+    const a = this.$store.actions;
     return (
       <div staticClass={s.container}>
         <div staticClass={md.TITLE}>Changes to be committed</div>
-        <FileTable files={this.stagedFiles} />
+        <FileTable
+          files={this.stagedFiles}
+          onRowdblclick={arg => a.showExternalDiff(arg.item, true)}
+        />
         <div staticClass={md.TITLE}>Changes not staged</div>
-        <FileTable files={this.unstagedFiles} />
+        <FileTable
+          files={this.unstagedFiles}
+          onRowdblclick={arg => a.showExternalDiff(arg.item, false)}
+        />
       </div>
     );
   }

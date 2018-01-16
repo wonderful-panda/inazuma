@@ -2,7 +2,7 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
-import { vtableOf, VtableColumn } from "vue-vtable";
+import { vtableOf, VtableColumn, VtableEventsOn } from "vue-vtable";
 import * as md from "view/common/md-classes";
 
 const Vtable = vtableOf<FileEntry>();
@@ -23,7 +23,7 @@ const fileColumns: VtableColumn[] = [
 ];
 
 // @vue/component
-export default tsx.component({
+export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
   name: "FileTable",
   props: {
     files: p.ofRoArray<FileEntry>().required
@@ -51,6 +51,7 @@ export default tsx.component({
           scopedSlots={{
             cell: p => this.renderCell(p.columnId, p.item)
           }}
+          {...{ on: this.$listeners }}
         />
       </div>
     );
