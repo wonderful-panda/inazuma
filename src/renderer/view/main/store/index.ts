@@ -219,5 +219,5 @@ export const store = sinai.store(
 export type AppStore = typeof store;
 export const VueWithStore: VueConstructor<
   Vue & { $store: AppStore }
-  > = Vue as any;
+> = Vue as any;
 export const componentWithStore = tsx.extendFrom(VueWithStore).create;

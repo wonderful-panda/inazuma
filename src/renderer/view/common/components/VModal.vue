@@ -8,80 +8,78 @@ import * as md from "view/common/md-classes";
 
 const m = tsx.modifiers;
 
-export default tsx
-  .componentFactoryOf<{ onClose: null }>()
-  .create(
-    // @vue/component
-    {
-      name: "VModal",
-      props: {
-        title: p(String).required,
-        containerClass: p(String).optional
+export default tsx.componentFactoryOf<{ onClose: null }>().create(
+  // @vue/component
+  {
+    name: "VModal",
+    props: {
+      title: p(String).required,
+      containerClass: p(String).optional
+    },
+    mounted() {
+      Vue.nextTick(() => {
+        const focusable = queryFocusableElements(this.$el);
+        if (focusable) {
+          focusable[0].focus();
+        }
+      });
+    },
+    methods: {
+      cancel(): void {
+        this.$emit("close", null);
       },
-      mounted() {
-        Vue.nextTick(() => {
-          const focusable = queryFocusableElements(this.$el);
-          if (focusable) {
+      onTabKeyDown(event: KeyboardEvent): void {
+        const focusable = queryFocusableElements(this.$el);
+        if (focusable.length === 0) {
+          return;
+        }
+        if (event.shiftKey) {
+          if (event.target === focusable[0]) {
+            focusable[focusable.length - 1].focus();
+            event.preventDefault();
+          }
+        } else {
+          if (event.target === focusable[focusable.length - 1]) {
             focusable[0].focus();
-          }
-        });
-      },
-      methods: {
-        cancel(): void {
-          this.$emit("close", null);
-        },
-        onTabKeyDown(event: KeyboardEvent): void {
-          const focusable = queryFocusableElements(this.$el);
-          if (focusable.length === 0) {
-            return;
-          }
-          if (event.shiftKey) {
-            if (event.target === focusable[0]) {
-              focusable[focusable.length - 1].focus();
-              event.preventDefault();
-            }
-          } else {
-            if (event.target === focusable[focusable.length - 1]) {
-              focusable[0].focus();
-              event.preventDefault();
-            }
+            event.preventDefault();
           }
         }
-      },
-      render(): VNode {
-        const s = this.$style;
-        const maskListeners = {
-          click: this.cancel,
-          "!keydown": m.tab(this.onTabKeyDown)
-        };
-        return (
-          <transition name="modal">
-            <div
-              class={["fullscreen-overlay", s.mask]}
-              {...{ on: maskListeners }}
-            >
-              <div
-                class={[s.container, this.containerClass]}
-                onClick={m.stop}
-                onKeydown={m.esc(this.cancel)}
-              >
-                <div staticClass={s.header}>
-                  <div class={[s.title, md.TITLE]}>{this.title}</div>
-                  <VCloseButton onClick={this.cancel} />
-                </div>
-                <div staticClass={s.content}>{this.$slots.default}</div>
-                <div staticClass={s.footer}>
-                  <div staticClass="flex--expand" />
-                  {this.$slots["footer-buttons"]}
-                </div>
-              </div>
-            </div>
-          </transition>
-        );
       }
     },
-    ["title"]
-  );
+    render(): VNode {
+      const s = this.$style;
+      const maskListeners = {
+        click: this.cancel,
+        "!keydown": m.tab(this.onTabKeyDown)
+      };
+      return (
+        <transition name="modal">
+          <div
+            class={["fullscreen-overlay", s.mask]}
+            {...{ on: maskListeners }}
+          >
+            <div
+              class={[s.container, this.containerClass]}
+              onClick={m.stop}
+              onKeydown={m.esc(this.cancel)}
+            >
+              <div staticClass={s.header}>
+                <div class={[s.title, md.TITLE]}>{this.title}</div>
+                <VCloseButton onClick={this.cancel} />
+              </div>
+              <div staticClass={s.content}>{this.$slots.default}</div>
+              <div staticClass={s.footer}>
+                <div staticClass="flex--expand" />
+                {this.$slots["footer-buttons"]}
+              </div>
+            </div>
+          </div>
+        </transition>
+      );
+    }
+  },
+  ["title"]
+);
 </script>
 
 <style lang="scss" module>
