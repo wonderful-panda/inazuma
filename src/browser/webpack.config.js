@@ -1,5 +1,6 @@
 var webpack = require("webpack");
 var path = require("path");
+var ForkTsCheckerPlugin = require("fork-ts-checker-webpack-plugin");
 
 module.exports = {
   // bundle for browser process
@@ -16,10 +17,26 @@ module.exports = {
   devtool: "source-map",
   resolve: {
     extensions: [".ts", ".js"],
-    modules: [__dirname, "../../node_modules"]
+    modules: [__dirname, "node_modules"]
   },
   module: {
-    loaders: [{ test: /\.ts$/, loader: "ts-loader" }]
+    rules: [
+      {
+        test: /\.ts$/,
+        use: [
+          "cache-loader",
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true
+            }
+          }
+        ]
+      }
+    ]
   },
-  plugins: [new webpack.ExternalsPlugin("commonjs", ["electron", "nodegit"])]
+  plugins: [
+    new webpack.ExternalsPlugin("commonjs", ["electron", "nodegit"]),
+    new ForkTsCheckerPlugin()
+  ]
 };
