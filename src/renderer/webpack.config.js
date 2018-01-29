@@ -1,5 +1,18 @@
 var webpack = require("webpack");
 var path = require("path");
+var ForkTsCheckerPlugin = require("fork-ts-checker-webpack-plugin");
+
+var loadersForTs = [
+  "cache-loader",
+  "babel-loader",
+  {
+    loader: "ts-loader",
+    options: {
+      appendTsxSuffixTo: [/\.vue$/],
+      transpileOnly: true
+    }
+  }
+];
 
 module.exports = {
   // bundle for renderer process (per windows)
@@ -14,19 +27,20 @@ module.exports = {
   devtool: "source-map",
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
-    modules: [__dirname, "../../node_modules"]
+    modules: [__dirname, "node_modules"]
   },
   module: {
     rules: [
       {
         test: /\.vue$/,
         use: [
+          "cache-loader",
           {
             loader: "vue-loader",
             options: {
               loaders: {
-                tsx: "babel-loader!ts-loader",
-                ts: "babel-loader!ts-loader"
+                ts: loadersForTs,
+                tsx: loadersForTs
               }
             }
           }
@@ -34,17 +48,12 @@ module.exports = {
       },
       {
         test: /\.tsx?$/,
-        use: [
-          "babel-loader",
-          {
-            loader: "ts-loader",
-            options: {
-              appendTsxSuffixTo: [/\.vue$/]
-            }
-          }
-        ]
+        use: loadersForTs
       }
     ]
   },
-  plugins: [new webpack.ExternalsPlugin("commonjs", ["electron"])]
+  plugins: [
+    new webpack.ExternalsPlugin("commonjs", ["electron"]),
+    new ForkTsCheckerPlugin({ vue: true })
+  ]
 };
