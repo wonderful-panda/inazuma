@@ -29,6 +29,9 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
     files: p.ofRoArray<FileEntry>().required,
     widths: p.ofRoArray<number>().optional
   },
+  data() {
+    return { selectedFile: "" };
+  },
   methods: {
     getFileKey(item: FileEntry): string {
       return item.path;
@@ -51,6 +54,12 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
           rowHeight={24}
           getItemKey={this.getFileKey}
           onColumnresize={args => this.$emit("update:widths", args.widths)}
+          getRowClass={arg => {
+            return arg.path === this.selectedFile ? "vtable-row-selected" : "vtable-row";
+          }}
+          onRowclick={arg => {
+            this.selectedFile = arg.item.path;
+          }}
           scopedSlots={{
             cell: p => this.renderCell(p.columnId, p.item)
           }}

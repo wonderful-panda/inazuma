@@ -3,6 +3,7 @@ import * as md from "view/common/md-classes";
 import { VNode } from "vue";
 import * as moment from "moment";
 import { componentWithStore } from "../store";
+import * as bridge from "view/common/electron-bridge";
 import FileTable from "./FileTable.vue";
 import { updater } from "view/common/renderutils";
 import * as ds from "view/common/displayState";
@@ -63,6 +64,38 @@ export default componentWithStore({
           <td staticClass={this.$style.attrValue}>{value}</td>
         </tr>
       );
+    },
+    showExternalDiff(item: FileEntry) {
+      if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
+        return;
+      }
+      this.$store.actions.showExternalDiff(
+        { path: item.oldPath || item.path, sha: this.commit.id + "~1" },
+        { path: item.path, sha: this.commit.id }
+      );
+    },
+    showContextMenu(item: FileEntry, event: Event) {
+      event.preventDefault();
+      if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
+        return;
+      }
+      bridge.showContextMenu([
+        {
+          label: "Compare with previous revision",
+          click: () => {
+            this.showExternalDiff(item);
+          }
+        },
+        {
+          label: "Compare with working tree",
+          click: () => {
+            this.$store.actions.showExternalDiff(
+              { path: item.path, sha: this.commit.id },
+              { path: item.path, sha: "UNSTAGED" }
+            );
+          }
+        }
+      ]);
     }
   },
   render(): VNode {
@@ -80,8 +113,9 @@ export default componentWithStore({
         <FileTable
           files={this.commit.files}
           widths={this.displayState.columnWidths}
-          onRowdblclick={arg => this.$store.actions.showExternalDiff(arg.item)}
           {...{ on: updater("widths", this.displayState, "columnWidths") }}
+          onRowdblclick={arg => this.showExternalDiff(arg.item)}
+          onRowcontextmenu={arg => this.showContextMenu(arg.item, arg.event)}
         />
       </div>
     );
