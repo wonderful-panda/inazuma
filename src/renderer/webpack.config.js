@@ -3,8 +3,15 @@ var path = require("path");
 var ForkTsCheckerPlugin = require("fork-ts-checker-webpack-plugin");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
+var cacheLoader = {
+  loader: "cache-loader",
+  options: {
+    cacheDirectory: path.resolve(__dirname, ".cache-loader")
+  }
+};
+
 var loadersForTs = [
-  "cache-loader",
+  cacheLoader,
   "babel-loader",
   {
     loader: "ts-loader",
@@ -36,7 +43,7 @@ module.exports = {
       {
         test: /\.vue$/,
         use: [
-          "cache-loader",
+          cacheLoader,
           {
             loader: "vue-loader",
             options: {
@@ -55,7 +62,7 @@ module.exports = {
       {
         test: /\.(scss|css)$/,
         use: ExtractTextPlugin.extract([
-          "cache-loader",
+          cacheLoader,
           "css-loader",
           "sass-loader"
         ])

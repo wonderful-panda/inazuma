@@ -24,7 +24,12 @@ module.exports = {
       {
         test: /\.ts$/,
         use: [
-          "cache-loader",
+          {
+            loader: "cache-loader",
+            options: {
+              cacheDirectory: path.resolve(__dirname, ".cache-loader")
+            }
+          },
           {
             loader: "ts-loader",
             options: {
