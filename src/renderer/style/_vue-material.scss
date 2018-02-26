@@ -1,10 +1,13 @@
 @import "~vue-material/dist/theme/engine";
-@include md-register-theme("default", (
+@include md-register-theme(
+  "default",
+  (
     primary: md-get-palette-color(lime, A700),
     accent: md-get-palette-color(orange, 500),
     background: #222,
     theme: dark
-));
+  )
+);
 @import "~vue-material/dist/theme/all";
 
 .md-app-toolbar {
