@@ -3,6 +3,7 @@ import { VNode } from "vue";
 import * as moment from "moment";
 import { componentWithStore } from "../store";
 import { vtableOf, VtableColumn } from "vue-vtable";
+import p from "vue-strict-prop";
 import LogTableCellGraph from "./LogTableCellGraph.vue";
 import LogTableCellSummary from "./LogTableCellSummary.vue";
 import { LogItem } from "../mainTypes";
@@ -13,6 +14,9 @@ const Vtable = vtableOf<LogItem>();
 // @vue/component
 export default componentWithStore({
   name: "LogTable",
+  props: {
+    widths: p.ofRoArray<number>().optional
+  },
   computed: {
     columns(): VtableColumn[] {
       return [
@@ -109,6 +113,7 @@ export default componentWithStore({
         staticClass={s.container}
         items={this.items}
         columns={this.columns}
+        initialWidths={this.widths}
         rowHeight={rowHeight}
         rowStyleCycle={2}
         getItemKey={item => item.commit.id}
@@ -118,6 +123,7 @@ export default componentWithStore({
         onRowclick={arg => this.$store.actions.setSelectedIndex(arg.index)}
         onRowdragover={arg => this.onRowdragover(arg.item, arg.event)}
         onRowdrop={arg => this.onRowdrop(arg.item, arg.event)}
+        onColumnresize={arg => this.$emit("update:widths", arg.widths)}
         scopedSlots={{
           cell: p => [this.renderCell(p.columnId, p.item)]
         }}

@@ -16,19 +16,19 @@ export default tsx.component(
       splitterWidth: p(Number)
         .validator(v => v > 0)
         .default(3),
-      initialRatio: p(Number)
-        .validator(v => 0 <= v && v <= 1)
-        .default(0.5),
+      ratio: p(Number).validator(v => 0 <= v && v <= 1).required,
       minSizeFirst: p(String, Number).default("10%"),
       minSizeSecond: p(String, Number).default("10%")
     },
     data() {
       return {
-        flexFirst: Math.floor(FLEX_SUM * this.initialRatio),
         dragging: false
       };
     },
     computed: {
+      flexFirst(): number {
+        return Math.floor(FLEX_SUM * this.ratio);
+      },
       horizontal(): boolean {
         return this.direction === "horizontal";
       },
@@ -36,7 +36,7 @@ export default tsx.component(
         return {
           "splitter-panel-splitter-horizontal": this.horizontal,
           "splitter-panel-splitter-vertical": !this.horizontal,
-          "splitter-panel-splitter-dragging": this.$data.dragging
+          "splitter-panel-splitter-dragging": this.dragging
         };
       },
       containerStyle(): CssProperties {
@@ -64,7 +64,7 @@ export default tsx.component(
         return this.setMinSize(
           {
             display: "flex",
-            flex: FLEX_SUM - this.$data.flexFirst,
+            flex: FLEX_SUM - this.flexFirst,
             flexDirection: this.horizontal ? "column" : "row",
             alignItems: "stretch",
             overflow: "auto"
@@ -99,19 +99,17 @@ export default tsx.component(
           ? b.left + el.clientLeft
           : b.top + el.clientTop;
         const totalLength = this.horizontal ? el.clientWidth : el.clientHeight;
-        this.$data.dragging = true;
+        this.dragging = true;
         const onMouseMove = (e: MouseEvent) => {
           e.stopPropagation();
           e.preventDefault();
           const currentOffset =
             (this.horizontal ? e.clientX : e.clientY) - basePosition;
-          const flexFirst = Math.floor(
-            clamp(currentOffset / totalLength, 0, 1) * FLEX_SUM
-          );
-          this.$data.flexFirst = flexFirst;
+          const newRatio = clamp(currentOffset / totalLength, 0, 1);
+          this.$emit("update:ratio", newRatio);
         };
         const onMouseUp = () => {
-          this.$data.dragging = false;
+          this.dragging = false;
           window.removeEventListener("mousemove", onMouseMove);
           window.removeEventListener("mouseup", onMouseUp);
         };

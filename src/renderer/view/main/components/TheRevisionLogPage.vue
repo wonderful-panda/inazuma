@@ -29,8 +29,8 @@
 
     keep-alive
       component(:is="sidebar")
-    v-splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :initial-ratio="0.6")
-      log-table(slot="first")
+    v-splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :ratio.sync="displayState.splitterPosition")
+      log-table(slot="first", :widths.sync="displayState.columnWidths")
       keep-alive(slot="second")
         revision-log-working-tree(v-if="$store.state.selectedCommit.id === '--'")
         revision-log-commit-detail(v-else)
@@ -39,6 +39,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { componentWithStore } from "../store";
+import * as ds from "view/common/displayState";
 import RevisionLogWorkingTree from "./RevisionLogWorkingTree.vue";
 import RevisionLogCommitDetail from "./RevisionLogCommitDetail.vue";
 import BaseLayout from "./BaseLayout.vue";
@@ -60,6 +61,15 @@ export default componentWithStore({
     RevisionLogCommitDetail,
     VIconButton,
     VSplitterPanel
+  },
+  mixins: [ds.createMixin("main/TheRevisionLogPage")],
+  data() {
+    return {
+      displayState: {
+        splitterPosition: 0.6,
+        columnWidths: undefined as number[] | undefined
+      }
+    };
   },
   computed: {
     repoPath(): string {

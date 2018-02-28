@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as Electron from "electron";
 import * as fs from "fs";
-import { Validator } from "jsonschema";
+import { Validator, Schema } from "jsonschema";
 
 const validator = new Validator();
 const folder = Electron.app.getPath("userData");
@@ -39,13 +39,13 @@ function save(file: string, schema: any, data: any) {
  * config
  */
 const configJsonPath = path.join(folder, "config.json");
-export const configSchema = {
+export const configSchema: Schema = {
   id: "/Config",
   type: "Object",
   properties: {
     recentListCount: {
       type: "integer",
-      minimum: "0"
+      minimum: 0
     },
     externalDiffTool: {
       type: "string"
@@ -88,7 +88,7 @@ export const config = new ConfigObject(loadConfig());
  * environment
  */
 const environmentJsonPath = path.join(folder, ".environment.json");
-const environmentSchema = {
+const environmentSchema: Schema = {
   id: "/Environment",
   type: "Object",
   properties: {
@@ -98,7 +98,6 @@ const environmentSchema = {
     },
     windowSize: {
       type: "Object",
-      required: false,
       properties: {
         width: {
           type: "integer"
@@ -110,8 +109,12 @@ const environmentSchema = {
           type: "boolean"
         }
       }
+    },
+    displayState: {
+      type: "Object"
     }
-  }
+  },
+  required: ["recentOpened"]
 };
 
 class EnvironmentObject {

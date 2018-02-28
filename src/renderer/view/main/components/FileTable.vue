@@ -26,7 +26,8 @@ const fileColumns: VtableColumn[] = [
 export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
   name: "FileTable",
   props: {
-    files: p.ofRoArray<FileEntry>().required
+    files: p.ofRoArray<FileEntry>().required,
+    widths: p.ofRoArray<number>().optional
   },
   methods: {
     getFileKey(item: FileEntry): string {
@@ -46,8 +47,10 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
         <Vtable
           items={this.files}
           columns={fileColumns}
+          initialWidths={this.widths}
           rowHeight={24}
           getItemKey={this.getFileKey}
+          onColumnresize={args => this.$emit("update:widths", args.widths)}
           scopedSlots={{
             cell: p => this.renderCell(p.columnId, p.item)
           }}

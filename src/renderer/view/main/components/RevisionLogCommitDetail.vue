@@ -4,10 +4,20 @@ import { VNode } from "vue";
 import * as moment from "moment";
 import { componentWithStore } from "../store";
 import FileTable from "./FileTable.vue";
+import { updater } from "view/common/renderutils";
+import * as ds from "view/common/displayState";
 
 // @vue/component
 export default componentWithStore({
   name: "RevisionLogCommitDetail",
+  mixins: [ds.createMixin("main/RevisionLogCommitDetail")],
+  data() {
+    return {
+      displayState: {
+        columnWidths: undefined as number[] | undefined
+      }
+    };
+  },
   computed: {
     commit(): CommitDetail {
       return this.$store.state.selectedCommit;
@@ -69,7 +79,9 @@ export default componentWithStore({
         {this.body}
         <FileTable
           files={this.commit.files}
+          widths={this.displayState.columnWidths}
           onRowdblclick={arg => this.$store.actions.showExternalDiff(arg.item)}
+          {...{ on: updater("widths", this.displayState, "columnWidths") }}
         />
       </div>
     );
