@@ -5,6 +5,7 @@ import p from "vue-strict-prop";
 import VDialogBase from "view/common/components/VDialogBase.vue";
 import VIconButton from "view/common/components/VIconButton.vue";
 import * as md from "view/common/md-classes";
+import { __capture } from "view/common/modifiers";
 
 // @vue/component
 export default componentWithStore({
@@ -56,7 +57,7 @@ export default componentWithStore({
                 </VIconButton>
               </div>
             </md-toolbar>
-            <md-list {...{ on: { "!click": this.toggleMenu } }}>
+            <md-list onClick={__capture(this.toggleMenu)}>
               {this.$slots["drawer-navigations"]}
             </md-list>
           </md-app-drawer>

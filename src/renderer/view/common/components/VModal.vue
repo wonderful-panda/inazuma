@@ -5,6 +5,7 @@ import p from "vue-strict-prop";
 import { queryFocusableElements } from "view/common/domutils";
 import VCloseButton from "./VCloseButton.vue";
 import * as md from "view/common/md-classes";
+import { __capture } from "view/common/modifiers";
 
 const m = tsx.modifiers;
 
@@ -48,15 +49,12 @@ export default tsx.componentFactoryOf<{ onClose: null }>().create(
     },
     render(): VNode {
       const s = this.$style;
-      const maskListeners = {
-        click: this.cancel,
-        "!keydown": m.tab(this.onTabKeyDown)
-      };
       return (
         <transition name="modal">
           <div
             class={["fullscreen-overlay", s.mask]}
-            {...{ on: maskListeners }}
+            onClick={this.cancel}
+            onKeydown={__capture(m.tab(this.onTabKeyDown))}
           >
             <div
               class={[s.container, this.containerClass]}

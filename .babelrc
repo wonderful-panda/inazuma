@@ -1,10 +1,14 @@
 {
-    "presets": ["env"],
-    "plugins": [
-        "transform-vue-jsx",
-        ["transform-runtime", {
-            "polyfill": false,
-            "regenerator": true
-        }]
+  "presets": ["env"],
+  "plugins": [
+    "vue-jsx-modifier",
+    "transform-vue-jsx",
+    [
+      "transform-runtime",
+      {
+        "polyfill": false,
+        "regenerator": true
+      }
     ]
+  ]
 }

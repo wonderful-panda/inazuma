@@ -5,8 +5,8 @@ import * as moment from "moment";
 import { componentWithStore } from "../store";
 import * as bridge from "view/common/electron-bridge";
 import FileTable from "./FileTable.vue";
-import { updater } from "view/common/renderutils";
 import * as ds from "view/common/displayState";
+import { __sync } from "view/common/modifiers";
 
 // @vue/component
 export default componentWithStore({
@@ -112,8 +112,7 @@ export default componentWithStore({
         {this.body}
         <FileTable
           files={this.commit.files}
-          widths={this.displayState.columnWidths}
-          {...{ on: updater("widths", this.displayState, "columnWidths") }}
+          widths={__sync(this.displayState.columnWidths)}
           onRowdblclick={arg => this.showExternalDiff(arg.item)}
           onRowcontextmenu={arg => this.showContextMenu(arg.item, arg.event)}
         />

@@ -4,8 +4,8 @@ import { componentWithStore } from "../store";
 import VSplitterPanel from "view/common/components/VSplitterPanel.vue";
 import FileTable from "./FileTable.vue";
 import * as md from "view/common/md-classes";
-import { updater } from "view/common/renderutils";
 import * as ds from "view/common/displayState";
+import { __sync } from "view/common/modifiers";
 
 // @vue/component
 export default componentWithStore({
@@ -61,17 +61,13 @@ export default componentWithStore({
         direction="vertical"
         minSizeFirst="20%"
         minSizeSecond="20%"
-        ratio={this.displayState.splitterPosition}
-        {...{ on: updater("ratio", this.displayState, "splitterPosition") }}
+        ratio={__sync(this.displayState.splitterPosition)}
       >
         <div slot="first" staticClass={s.splitterPane}>
           <div staticClass={md.TITLE}>Changes to be committed</div>
           <FileTable
             files={this.stagedFiles}
-            widths={this.displayState.stagedColumnWidths}
-            {...{
-              on: updater("widths", this.displayState, "stagedColumnWidths")
-            }}
+            widths={__sync(this.displayState.stagedColumnWidths)}
             onRowdblclick={arg => this.showExternalDiff(arg.item, true)}
           />
         </div>
@@ -79,10 +75,7 @@ export default componentWithStore({
           <div staticClass={md.TITLE}>Changes not staged</div>
           <FileTable
             files={this.unstagedFiles}
-            widths={this.displayState.unstagedColumnWidths}
-            {...{
-              on: updater("widths", this.displayState, "unstagedColumnWidths")
-            }}
+            widths={__sync(this.displayState.unstagedColumnWidths)}
             onRowdblclick={arg => this.showExternalDiff(arg.item, false)}
           />
         </div>
