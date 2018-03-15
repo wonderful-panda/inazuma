@@ -2,13 +2,13 @@
 import { VNode } from "vue";
 import * as moment from "moment";
 import * as tsx from "vue-tsx-support";
-import { vtableOf, VtableColumn, VtableEventsOn } from "vue-vtable";
+import { vtableOf, VtableColumn, Vtable, VtableEventsOn } from "vue-vtable";
 import p from "vue-strict-prop";
 import LogTableCellGraph from "./LogTableCellGraph.vue";
 import LogTableCellSummary from "./LogTableCellSummary.vue";
 import { LogItem } from "../mainTypes";
 
-const Vtable = vtableOf<LogItem>();
+const VtableT = vtableOf<LogItem>();
 
 export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create(
   // @vue/component
@@ -52,6 +52,11 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create(
         ];
       }
     },
+    watch: {
+      selectedIndex(newValue: number) {
+        (this.$refs["vtable"] as Vtable<LogItem>).ensureVisible(newValue);
+      }
+    },
     methods: {
       renderCell(columnId: string, item: LogItem): VNode | string {
         switch (columnId) {
@@ -92,7 +97,8 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create(
       const { rowHeight, selectedIndex } = this;
       const s = this.$style;
       return (
-        <Vtable
+        <VtableT
+          ref="vtable"
           staticClass={s.container}
           items={this.items}
           columns={this.columns}
