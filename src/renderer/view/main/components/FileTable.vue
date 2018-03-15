@@ -55,7 +55,9 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
           getItemKey={this.getFileKey}
           onColumnresize={args => this.$emit("update:widths", args.widths)}
           getRowClass={arg => {
-            return arg.path === this.selectedFile ? "vtable-row-selected" : "vtable-row";
+            return arg.path === this.selectedFile
+              ? "vtable-row-selected"
+              : "vtable-row";
           }}
           onRowclick={arg => {
             this.selectedFile = arg.item.path;
