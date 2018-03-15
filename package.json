@@ -35,7 +35,7 @@
     "vue-template-compiler": "^2.5.13",
     "vue-tsx-support": "^1.2.0",
     "vue-typed-component": "^0.10.1",
-    "vue-vtable": "^0.9.4"
+    "vue-vtable": "^0.10.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.0",
