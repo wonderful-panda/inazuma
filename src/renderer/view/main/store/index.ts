@@ -2,7 +2,7 @@ import Vue, { VueConstructor } from "vue";
 import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
 import * as Electron from "electron";
-import { AppState } from "../mainTypes";
+import { AppState, LogItem } from "../mainTypes";
 import { navigate } from "../route";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
@@ -89,7 +89,20 @@ class Mutations extends injected.Mutations<State>() {
   }
 }
 
-class Actions extends injected.Actions<State, any, Mutations>() {
+class Getters extends injected.Getters<State>() {
+  get items(): LogItem[] {
+    const { commits, graphs, refs: allRefs } = this.state;
+    return commits.map(commit => {
+      const graph = graphs[commit.id];
+      const refs = (allRefs[commit.id] || []).filter(
+        r => r.type !== "MERGE_HEAD"
+      );
+      return { commit, graph, refs };
+    });
+  }
+}
+
+class Actions extends injected.Actions<State, Getters, Mutations>() {
   error(e: Error) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -178,7 +191,9 @@ class Actions extends injected.Actions<State, any, Mutations>() {
       return;
     }
     return browserCommand.showExternalDiff({
-      repoPath: this.state.repoPath, left, right
+      repoPath: this.state.repoPath,
+      left,
+      right
     });
   }
 }
@@ -188,6 +203,7 @@ export const store = sinai.store(
     .module({
       state: State,
       mutations: Mutations,
+      getters: Getters,
       actions: Actions
     })
     .child("dialog", dialogModule)

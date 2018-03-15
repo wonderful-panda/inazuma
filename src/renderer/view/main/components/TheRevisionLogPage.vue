@@ -30,7 +30,15 @@
     keep-alive
       component(:is="sidebar")
     v-splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :ratio.sync="displayState.splitterPosition")
-      log-table(slot="first", :widths.sync="displayState.columnWidths")
+      log-table(
+        slot="first",
+        :items="$store.getters.items",
+        :row-height="$store.state.rowHeight",
+        :selected-index="$store.state.selectedIndex",
+        :widths.sync="displayState.columnWidths",
+        @rowclick="$store.actions.setSelectedIndex($event.index)",
+        @rowdragover="onRowdragover",
+        @rowdrop="onRowdrop")
       keep-alive(slot="second")
         revision-log-working-tree(v-if="$store.state.selectedCommit.id === '--'")
         revision-log-commit-detail(v-else)
@@ -38,6 +46,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { RowEventArgs } from "vue-vtable";
 import { componentWithStore } from "../store";
 import * as ds from "view/common/displayState";
 import RevisionLogWorkingTree from "./RevisionLogWorkingTree.vue";
@@ -50,6 +59,8 @@ import VIconButton from "view/common/components/VIconButton.vue";
 import VSplitterPanel from "view/common/components/VSplitterPanel.vue";
 import DrawerNavigation from "./DrawerNavigation.vue";
 import { getFileName } from "core/utils";
+import { dragdrop } from "../dragdrop";
+import { LogItem } from "../mainTypes";
 
 // @vue/component
 export default componentWithStore({
@@ -93,6 +104,22 @@ export default componentWithStore({
     }
   },
   methods: {
+    onRowdragover({ item, event }: RowEventArgs<LogItem, DragEvent>) {
+      if (item.commit.id === "--") {
+        return;
+      }
+      if (dragdrop.isDataPresent(event, "git/branch")) {
+        event.dataTransfer.dropEffect = "move";
+        event.preventDefault();
+      }
+    },
+    onRowdrop({ item, event }: RowEventArgs<LogItem, DragEvent>) {
+      if (item.commit.id === "--") {
+        return;
+      }
+      const data = dragdrop.getData(event, "git/branch");
+      console.log(data);
+    },
     reload() {
       location.reload();
     },
