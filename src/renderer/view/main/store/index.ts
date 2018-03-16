@@ -28,7 +28,7 @@ class State implements AppState {
   repoPath = "";
   commits = [] as Commit[];
   graphs = {} as Dict<GraphFragment>;
-  refs = {} as Dict<Ref[]>;
+  refs = {} as Refs;
   selectedIndex = -1;
   selectedCommit = emptyCommit;
   rowHeight = 24;
@@ -36,11 +36,7 @@ class State implements AppState {
 }
 
 class Mutations extends injected.Mutations<State>() {
-  resetItems(
-    commits: Commit[],
-    graphs: Dict<GraphFragment>,
-    refs: Dict<Ref[]>
-  ) {
+  resetItems(commits: Commit[], graphs: Dict<GraphFragment>, refs: Refs) {
     const state = this.state;
     state.commits = commits;
     state.graphs = graphs;
@@ -50,7 +46,7 @@ class Mutations extends injected.Mutations<State>() {
   }
 
   resetRefs(refs: Refs) {
-    this.state.refs = refs.refsById;
+    this.state.refs = refs;
   }
 
   resetEnvironment(env: Environment) {
@@ -91,13 +87,14 @@ class Mutations extends injected.Mutations<State>() {
 
 class Getters extends injected.Getters<State>() {
   get items(): LogItem[] {
-    const { commits, graphs, refs: allRefs } = this.state;
+    const { commits, graphs, refs } = this.state;
     return commits.map(commit => {
       const graph = graphs[commit.id];
-      const refs = (allRefs[commit.id] || []).filter(
+      const { refsById } = refs;
+      const refsOfThis = (refsById[commit.id] || []).filter(
         r => r.type !== "MERGE_HEAD"
       );
-      return { commit, graph, refs };
+      return { commit, graph, refs: refsOfThis };
     });
   }
 }
@@ -141,7 +138,7 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     commits.forEach(c => {
       graphs[c.id] = grapher.proceed(c);
     });
-    this.mutations.resetItems(commits, graphs, refs.refsById);
+    this.mutations.resetItems(commits, graphs, refs);
   }
 
   showCommitDetail(commit: CommitDetail) {

@@ -12,7 +12,7 @@ export interface AppState {
   config: Config;
   commits: Commit[];
   graphs: Dict<GraphFragment>;
-  refs: Dict<Ref[]>;
+  refs: Refs;
   selectedIndex: number;
   selectedCommit: CommitDetail;
   rowHeight: number;

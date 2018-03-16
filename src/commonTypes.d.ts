@@ -54,9 +54,9 @@ declare type Ref = {
 declare interface Refs {
   head?: string;
   mergeHeads: string[];
-  remotes: { [remote: string]: { [name: string]: string } };
-  heads: { [name: string]: string };
-  tags: { [name: string]: string };
+  remotes: { [remote: string]: Ref[] };
+  heads: Ref[];
+  tags: Ref[];
   refsById: Dict<Ref[]>;
 }
 

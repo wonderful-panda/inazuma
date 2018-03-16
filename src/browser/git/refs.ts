@@ -12,13 +12,13 @@ function addRef(refs: Refs, r: Ref): void {
       refs.mergeHeads.push(r.id);
       break;
     case "heads":
-      refs.heads[r.name] = r.id;
+      refs.heads.push(r);
       break;
     case "remotes":
-      (refs.remotes[r.remote] || (refs.remotes[r.remote] = {}))[r.name] = r.id;
+      (refs.remotes[r.remote] || (refs.remotes[r.remote] = [])).push(r);
       break;
     case "tags":
-      refs.tags[r.name] = r.id;
+      refs.tags.push(r);
       break;
     default:
       throw new Error("Unknown ref type");
@@ -29,8 +29,8 @@ export async function getRefs(repository: string): Promise<Refs> {
   const refs: Refs = {
     mergeHeads: [],
     remotes: {},
-    heads: {},
-    tags: {},
+    heads: [],
+    tags: [],
     refsById: {}
   };
   // if HEAD is detached, `git symbolic-ref HEAD -q` returns non zero.
