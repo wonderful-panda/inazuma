@@ -158,6 +158,15 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     this.showCommitDetail(detail);
   }
 
+  selectCommit(commitId: string): Promise<void> {
+    const index = this.state.commits.findIndex(c => c.id === commitId);
+    if (0 <= index) {
+      return this.setSelectedIndex(index);
+    } else {
+      return Promise.resolve();
+    }
+  }
+
   showSidebar(name: string) {
     this.mutations.setSidebarName(name);
   }
