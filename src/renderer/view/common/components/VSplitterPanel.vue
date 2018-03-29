@@ -2,8 +2,9 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
-import { px, clamp } from "core/utils";
+import { clamp } from "core/utils";
 import { CssProperties } from "vue-css-definition";
+import VSplitter, { SplitterEventArgs } from "./VSplitter.vue";
 
 const FLEX_SUM = 1000;
 
@@ -13,9 +14,7 @@ export default tsx.component(
     name: "VSplitterPanel",
     props: {
       direction: p.ofStringLiterals("horizontal", "vertical").required,
-      splitterWidth: p(Number)
-        .validator(v => v > 0)
-        .default(3),
+      splitterWidth: p(Number).validator(v => v > 0).required,
       ratio: p(Number).validator(v => 0 <= v && v <= 1).required,
       minSizeFirst: p(String, Number).default("10%"),
       minSizeSecond: p(String, Number).default("10%")
@@ -29,15 +28,11 @@ export default tsx.component(
       flexFirst(): number {
         return Math.floor(FLEX_SUM * this.ratio);
       },
+      flexSecond(): number {
+        return FLEX_SUM - this.flexFirst;
+      },
       horizontal(): boolean {
         return this.direction === "horizontal";
-      },
-      splitterClass(): object {
-        return {
-          "splitter-panel-splitter-horizontal": this.horizontal,
-          "splitter-panel-splitter-vertical": !this.horizontal,
-          "splitter-panel-splitter-dragging": this.dragging
-        };
       },
       containerStyle(): CssProperties {
         return {
@@ -49,109 +44,85 @@ export default tsx.component(
         };
       },
       firstPanelStyle(): CssProperties {
-        return this.setMinSize(
-          {
-            display: "flex",
-            flex: this.flexFirst,
-            flexDirection: this.horizontal ? "column" : "row",
-            alignItems: "stretch",
-            overflow: "auto"
-          },
-          this.minSizeFirst
-        );
+        const horizontal = this.horizontal;
+        return {
+          display: "flex",
+          flex: this.flexFirst,
+          flexDirection: horizontal ? "column" : "row",
+          alignItems: "stretch",
+          overflow: "auto",
+          minWidth: horizontal ? this.minSizeFirst : undefined,
+          minHeight: horizontal ? undefined : this.minSizeFirst
+        };
       },
       secondPanelStyle(): CssProperties {
-        return this.setMinSize(
-          {
-            display: "flex",
-            flex: FLEX_SUM - this.flexFirst,
-            flexDirection: this.horizontal ? "column" : "row",
-            alignItems: "stretch",
-            overflow: "auto"
-          },
-          this.minSizeSecond
-        );
-      },
-      splitterStyle(): CssProperties {
+        const horizontal = this.horizontal;
         return {
-          flexBasis: px(this.splitterWidth),
-          flexGrow: 0,
-          flexShrink: 0,
-          cursor: this.horizontal ? "col-resize" : "row-resize"
+          display: "flex",
+          flex: this.flexSecond,
+          flexDirection: horizontal ? "column" : "row",
+          alignItems: "stretch",
+          overflow: "auto",
+          minWidth: horizontal ? this.minSizeSecond : undefined,
+          minHeight: horizontal ? undefined : this.minSizeSecond
         };
       }
     },
     methods: {
-      setMinSize(cssprops: CssProperties, value: any): CssProperties {
+      onSplitterMove({ pagePosition }: SplitterEventArgs) {
+        const docBound = document.body.getBoundingClientRect();
+        const first = this.$refs.first as HTMLDivElement;
+        const second = this.$refs.second as HTMLDivElement;
+        const firstBound = first.getBoundingClientRect();
+        let newRatio: number;
         if (this.horizontal) {
-          cssprops.minWidth = value;
+          const firstClientWidth = first.clientWidth;
+          const sum = firstClientWidth + second.clientWidth;
+          const newFirstClientWidth =
+            pagePosition -
+            (firstBound.left - docBound.left) /* pageX of first panel */ -
+            (firstBound.width - firstClientWidth); /* maybe scrollbar width */
+          newRatio = newFirstClientWidth / sum;
         } else {
-          cssprops.minHeight = value;
+          const firstClientHeight = first.clientHeight;
+          const sum = firstClientHeight + second.clientHeight;
+          const newFirstClientHeight =
+            pagePosition -
+            (firstBound.top - docBound.top) /* pageY of first panel */ -
+            (firstBound.height -
+              firstClientHeight); /* maybe scrollbar height */
+          newRatio = newFirstClientHeight / sum;
         }
-        return cssprops;
-      },
-      onSplitterMouseDown(event: MouseEvent): void {
-        event.stopPropagation();
-        event.preventDefault();
-        const el = this.$el;
-        const b = el.getBoundingClientRect();
-        const basePosition = this.horizontal
-          ? b.left + el.clientLeft
-          : b.top + el.clientTop;
-        const totalLength = this.horizontal ? el.clientWidth : el.clientHeight;
-        this.dragging = true;
-        const onMouseMove = (e: MouseEvent) => {
-          e.stopPropagation();
-          e.preventDefault();
-          const currentOffset =
-            (this.horizontal ? e.clientX : e.clientY) - basePosition;
-          const newRatio = clamp(currentOffset / totalLength, 0, 1);
-          this.$emit("update:ratio", newRatio);
-        };
-        const onMouseUp = () => {
-          this.dragging = false;
-          window.removeEventListener("mousemove", onMouseMove);
-          window.removeEventListener("mouseup", onMouseUp);
-        };
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
+        this.$emit("update:ratio", clamp(newRatio, 0, 1));
       }
     },
     render(): VNode {
       const { first, second } = this.$slots;
       return (
         <div class="splitter-panel-container" style={this.containerStyle}>
-          <div class="splitter-panel-first" style={this.firstPanelStyle}>
+          <div
+            ref="first"
+            class="splitter-panel-first"
+            style={this.firstPanelStyle}
+          >
             {first}
           </div>
-          <div
-            class={this.splitterClass}
-            style={this.splitterStyle}
-            onMousedown={this.onSplitterMouseDown}
+          <VSplitter
+            direction={this.direction}
+            thickness={this.splitterWidth}
+            onDragmove={this.onSplitterMove}
           />
-          <div class="splitter-panel-second" style={this.secondPanelStyle}>
+          <div
+            ref="second"
+            class="splitter-panel-second"
+            style={this.secondPanelStyle}
+          >
             {second}
           </div>
         </div>
       );
     }
   },
-  ["direction"]
+  ["direction", "splitterWidth", "ratio"]
 );
 </script>
-
-<style lang="scss">
-.splitter-panel-splitter-horizontal {
-  margin: 0 2px;
-  &:hover {
-    background-color: #383838;
-  }
-}
-
-.splitter-panel-splitter-vertical {
-  margin: 2 0px;
-  &:hover {
-    background-color: #383838;
-  }
-}
-</style>

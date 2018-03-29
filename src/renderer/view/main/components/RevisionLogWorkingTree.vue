@@ -59,6 +59,7 @@ export default componentWithStore({
       <VSplitterPanel
         staticClass={s.container}
         direction="vertical"
+        splitterWidth={5}
         minSizeFirst="20%"
         minSizeSecond="20%"
         ratio={__sync(this.displayState.splitterPosition)}
