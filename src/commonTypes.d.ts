@@ -23,6 +23,10 @@ declare interface Environment {
  * User specific parsistent data written to config.json
  */
 declare interface Config {
+  fontFamily: {
+    standard: string;
+    monospace: string;
+  };
   recentListCount: number;
   externalDiffTool: string;
   interactiveShell: string;

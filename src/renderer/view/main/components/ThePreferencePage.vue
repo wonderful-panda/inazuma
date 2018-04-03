@@ -2,14 +2,29 @@
   doctype html
   v-modal(:class="$style.modalBase", title="PREFERENCE", :container-class="$style.container" @close="back")
     form(:class="$style.modalContent", action="#")
+      md-subheader.md-primary(:class="$style.subHeader") Font settings
       v-text-field(
+        :class="$style.input",
+        label="Default font",
+        v-model="config.fontFamily.standard")
+
+      v-text-field(
+        :class="$style.input",
+        label="Monospace font",
+        v-model="config.fontFamily.monospace")
+
+      md-subheader.md-primary(:class="$style.subHeader") External tools
+      v-text-field(
+        :class="$style.input",
         label="Path of external diff tool",
         v-model="config.externalDiffTool")
 
       v-text-field(
+        :class="$style.input",
         label="Interactive shell command",
         v-model="config.interactiveShell")
 
+      md-subheader.md-primary(:class="$style.subHeader") Miscellaneous
       v-text-field(
         :class="$style.numberInput",
         input-id="recentListCount",
@@ -18,6 +33,7 @@
         v-model.number="config.recentListCount")
 
       v-text-field(
+        :class="$style.input",
         label="Path of vue dev tool",
         v-model="config.vueDevTool")
 
@@ -84,6 +100,11 @@ export default componentWithStore({
   transition: all 0.3s ease;
 }
 
+.subHeader {
+  padding: 0;
+  min-height: 26px;
+}
+
 .modalBase:global(.modal-enter),
 .modalBase:global(.modal-leave-to) {
   .container {
@@ -96,7 +117,11 @@ export default componentWithStore({
   padding-right: 32px;
 }
 
+.input {
+  margin-left: 1em;
+}
 .numberInput {
+  margin-left: 1em;
   min-width: 200px;
   width: 200px;
 }

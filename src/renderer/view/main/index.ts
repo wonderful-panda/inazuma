@@ -31,7 +31,14 @@ new Vue({
   store,
   router,
   watch: {
-    $route: "onRouteChanged"
+    $route: "onRouteChanged",
+    "$store.state.config.fontFamily": {
+      handler({ standard, monospace }: Config["fontFamily"]) {
+        document.body.style.setProperty("--default-fontfamily", standard);
+        document.body.style.setProperty("--monospace-fontfamily", monospace);
+      },
+      immediate: true
+    }
   },
   created(this: any) {
     this.onRouteChanged();

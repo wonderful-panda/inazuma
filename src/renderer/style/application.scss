@@ -1,16 +1,17 @@
 @import "./vue-material";
 @import "./scrollbar";
-@import "./font";
 
 html,
 body {
-  font-family: Meiryo, Helvetica, "Yu Gothic", sans-serif;
   font-size: small;
   width: 100%;
   height: 100%;
 }
 
 body {
+  --default-fontfamily: Meiryo, Mervetica, "Yu Gothic", sans-serif;
+  --monospace-fontfamily: monospace;
+  font-family: var(--default-fontfamily) !important;
   display: flex;
   margin: 0px;
   box-sizing: border-box;
@@ -53,7 +54,7 @@ main {
 }
 
 .fontfamily--monospace {
-  font-family: monospace;
+  font-family: var(--monospace-fontfamily) !important;
 }
 
 .flex--expand {

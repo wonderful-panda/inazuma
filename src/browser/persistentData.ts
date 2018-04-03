@@ -43,6 +43,13 @@ export const configSchema: Schema = {
   id: "/Config",
   type: "Object",
   properties: {
+    fontFamily: {
+      type: "object",
+      properties: {
+        standard: { type: "string" },
+        monospace: { type: "string" }
+      }
+    },
     recentListCount: {
       type: "integer",
       minimum: 0
@@ -65,6 +72,10 @@ class ConfigObject {
 
 function loadConfig(): Config {
   const defaultData: Config = {
+    fontFamily: {
+      standard: "Meiryo, Helvetica, Yu Gothic",
+      monospace: "monospace"
+    },
     recentListCount: 5,
     externalDiffTool: "",
     interactiveShell: "",
