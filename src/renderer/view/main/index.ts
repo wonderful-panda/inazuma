@@ -54,10 +54,14 @@ new Vue({
         store.mutations.setRepoPath(repoPath);
         document.title = repoPath ? `Inazuma (${repoPath})` : "Inazuma";
         if (repoPath) {
-          const { commits, refs } = await browserCommand.openRepository(
-            repoPath
-          );
-          store.actions.showCommits(commits, refs);
+          try {
+            const { commits, refs } = await browserCommand.openRepository(
+              repoPath
+            );
+            store.actions.showCommits(commits, refs);
+          } catch (e) {
+            store.actions.showError(e);
+          }
         }
       }
     }

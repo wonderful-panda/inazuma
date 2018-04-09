@@ -4,6 +4,7 @@ import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import VDialogBase from "view/common/components/VDialogBase.vue";
 import VIconButton from "view/common/components/VIconButton.vue";
+import VErrorReporter from "view/common/components/VErrorReporter.vue";
 import * as md from "view/common/md-classes";
 import { __capture } from "view/common/modifiers";
 
@@ -27,6 +28,7 @@ export default componentWithStore({
         this.menuVisible = v;
       }
     };
+    const { state, actions } = this.$store;
     return (
       <div staticClass={this.$style.container}>
         <md-app md-mode="fixed">
@@ -70,10 +72,11 @@ export default componentWithStore({
         </md-app>
 
         <router-view />
-        <VDialogBase
-          state={this.$store.state.dialog}
-          actions={this.$store.actions.dialog}
+        <VErrorReporter
+          error={state.errorReporter.error}
+          hide={actions.errorReporter.clear}
         />
+        <VDialogBase state={state.dialog} actions={actions.dialog} />
       </div>
     );
   }

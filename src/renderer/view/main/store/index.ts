@@ -7,6 +7,10 @@ import { navigate } from "../route";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
 import { dialogModule } from "view/common/storeModules/dialog";
+import {
+  errorReporterModule,
+  ErrorLikeObject
+} from "view/common/storeModules/errorReporter";
 
 const { BrowserWindow, dialog } = Electron.remote;
 
@@ -20,7 +24,9 @@ const emptyCommit: CommitDetail = {
   files: []
 };
 
-const injected = sinai.inject("dialog", dialogModule);
+const injected = sinai
+  .inject("dialog", dialogModule)
+  .and("errorReporter", errorReporterModule);
 
 class State implements AppState {
   environment = Electron.remote.getGlobal("environment") as Environment;
@@ -100,9 +106,8 @@ class Getters extends injected.Getters<State>() {
 }
 
 class Actions extends injected.Actions<State, Getters, Mutations>() {
-  error(e: Error) {
-    // eslint-disable-next-line no-console
-    console.log(e);
+  showError(e: ErrorLikeObject) {
+    this.modules.errorReporter.actions.show(e);
   }
 
   environmentChanged(env: Environment) {
@@ -149,13 +154,17 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     if (this.state.selectedIndex === index) {
       return;
     }
-    this.mutations.setSelectedIndex(index);
-    const { repoPath, commits } = this.state;
-    const detail = await browserCommand.getCommitDetail({
-      repoPath,
-      sha: commits[index].id
-    });
-    this.showCommitDetail(detail);
+    try {
+      this.mutations.setSelectedIndex(index);
+      const { repoPath, commits } = this.state;
+      const detail = await browserCommand.getCommitDetail({
+        repoPath,
+        sha: commits[index].id
+      });
+      this.showCommitDetail(detail);
+    } catch (e) {
+      this.showError(e);
+    }
   }
 
   selectCommit(commitId: string): Promise<void> {
@@ -196,11 +205,15 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     if (!this.state.config.externalDiffTool) {
       return;
     }
-    return browserCommand.showExternalDiff({
-      repoPath: this.state.repoPath,
-      left,
-      right
-    });
+    try {
+      return browserCommand.showExternalDiff({
+        repoPath: this.state.repoPath,
+        left,
+        right
+      });
+    } catch (e) {
+      this.showError(e);
+    }
   }
 }
 
@@ -213,6 +226,7 @@ export const store = sinai.store(
       actions: Actions
     })
     .child("dialog", dialogModule)
+    .child("errorReporter", errorReporterModule)
 );
 
 export type AppStore = typeof store;

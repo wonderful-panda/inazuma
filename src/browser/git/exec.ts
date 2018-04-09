@@ -88,5 +88,6 @@ export class GitError extends Error {
     this.signal = result.signal;
     this.stderr = result.stderr;
     this.name = "GitError";
+    this.message = `[git ${this.command}] ${this.stderr}`;
   }
 }
