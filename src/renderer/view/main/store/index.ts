@@ -206,7 +206,7 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
       return;
     }
     try {
-      return browserCommand.showExternalDiff({
+      await browserCommand.showExternalDiff({
         repoPath: this.state.repoPath,
         left,
         right
