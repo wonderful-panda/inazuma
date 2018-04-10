@@ -3,8 +3,13 @@
   "default",
   (
     primary: md-get-palette-color(lime, A700),
-    accent: md-get-palette-color(orange, 500),
+    accent: md-get-palette-color(yellow, A700),
     background: #222,
+    text-primary: rgba(#000, 0.87),
+    text-accent: rgba(#000, 0.54),
+    text-primary-on-primary: rgba(#000, 0.87),
+    text-primary-on-accent: rgba(#000, 0.87),
+    text-primary-on-background: #fff,
     theme: dark
   )
 );

@@ -2,6 +2,7 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { ErrorLikeObject } from "../storeModules/errorReporter";
+import VIconButton from "./VIconButton.vue";
 import p from "vue-strict-prop";
 import * as md from "../md-classes";
 
@@ -10,19 +11,7 @@ export default tsx.component(
     name: "VErrorReporter",
     props: {
       error: p.ofObject<ErrorLikeObject>().optional,
-      hide: p(Function).required
-    },
-    watch: {
-      error(value: ErrorLikeObject | undefined) {
-        if (value) {
-          console.log(JSON.stringify(value, null, 2));
-          setTimeout(() => {
-            if (value === this.error) {
-              this.hide();
-            }
-          }, 4000);
-        }
-      }
+      hide: p.ofFunction<() => void>().required
     },
     computed: {
       message(): string {
@@ -32,13 +21,17 @@ export default tsx.component(
     render(): VNode {
       const s = this.$style;
       return (
-        <div class={s.container}>
-          <transition name={s.transition}>
-            <md-content v-show={this.error} class={s.content}>
-              <span class={md.SUBHEADING}>{this.message}</span>
-            </md-content>
-          </transition>
-        </div>
+        <md-snackbar
+          class={s.container}
+          md-active={!!this.error}
+          {...{ on: { "update:mdActive": this.hide } }}
+        >
+          <div>
+            <md-icon>warning</md-icon>
+            <span class={[md.BODY1, s.message]}>{this.message}</span>
+          </div>
+          <VIconButton onClick={this.hide}>close</VIconButton>
+        </md-snackbar>
       );
     }
   },
@@ -48,34 +41,15 @@ export default tsx.component(
 
 <style lang="scss" module>
 .container {
-  position: absolute;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  max-height: 48px;
-  width: 80%;
-  margin: 0 auto;
-  overflow: hidden;
+  max-width: 80%;
+  padding: 12px;
+  background-color: var(--md-theme-default-accent) !important;
+  & * {
+    color: var(--md-theme-default-text-primary-on-accent) !important;
+  }
 }
 
-.content {
-  display: flex;
-  flex-flow: row nowrap;
-  height: 100%;
-  width: 100%;
-  padding: 1em;
-  background-color: #444 !important;
-}
-
-.transition {
-  &:global(-enter-active),
-  &:global(-leave-active) {
-    transition: all 0.3s ease;
-  }
-
-  &:global(-enter),
-  &:global(-leave-to) {
-    transform: translateY(100%);
-  }
+.message {
+  margin-left: 8px;
 }
 </style>
