@@ -1,8 +1,7 @@
 import "./install-vue";
 import Vue from "vue";
-import { Route } from "vue-router";
-
 import * as Electron from "electron";
+
 import { store } from "./store";
 import { router } from "./route";
 import { browserCommand } from "core/browser";
@@ -31,39 +30,18 @@ new Vue({
   store,
   router,
   watch: {
-    $route: "onRouteChanged",
     "$store.state.config.fontFamily": {
       handler({ standard, monospace }: Config["fontFamily"]) {
         document.body.style.setProperty("--default-fontfamily", standard);
         document.body.style.setProperty("--monospace-fontfamily", monospace);
       },
       immediate: true
-    }
-  },
-  created(this: any) {
-    this.onRouteChanged();
-  },
-  methods: {
-    async onRouteChanged() {
-      const route: Route = this.$route;
-      const { repoPathEncoded } = route.params;
-      const repoPath = repoPathEncoded
-        ? decodeURIComponent(repoPathEncoded)
-        : "";
-      if (store.state.repoPath !== repoPath) {
-        store.mutations.setRepoPath(repoPath);
-        document.title = repoPath ? `Inazuma (${repoPath})` : "Inazuma";
-        if (repoPath) {
-          try {
-            const { commits, refs } = await browserCommand.openRepository(
-              repoPath
-            );
-            store.actions.showCommits(commits, refs);
-          } catch (e) {
-            store.actions.showError(e);
-          }
-        }
-      }
+    },
+    "$store.state.repoPath": {
+      handler(value: string) {
+        document.title = value ? `Inazuma (${value})` : "Inazuma";
+      },
+      immediate: true
     }
   },
   render(h) {

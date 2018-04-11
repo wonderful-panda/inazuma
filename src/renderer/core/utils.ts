@@ -15,3 +15,7 @@ export function clamp(value: number, min: number, max: number) {
     return value;
   }
 }
+
+export function normalizePathSeparator(path: string): string {
+  return path.replace(/\\/g, "/").replace(/\/$/, "");
+}

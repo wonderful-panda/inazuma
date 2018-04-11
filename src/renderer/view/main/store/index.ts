@@ -3,7 +3,6 @@ import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
 import * as Electron from "electron";
 import { AppState, LogItem } from "../mainTypes";
-import { navigate } from "../route";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
 import { dialogModule } from "view/common/storeModules/dialog";
@@ -11,8 +10,6 @@ import {
   errorReporterModule,
   ErrorLikeObject
 } from "view/common/storeModules/errorReporter";
-
-const { BrowserWindow, dialog } = Electron.remote;
 
 const emptyCommit: CommitDetail = {
   id: "",
@@ -118,26 +115,24 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     this.mutations.resetConfig(config);
   }
 
-  showRepositorySelectDialog() {
-    const paths = dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
-      properties: ["openDirectory"]
-    });
-    if (typeof paths === "undefined") {
+  async setRepositoryPath(repoPath: string): Promise<void> {
+    if (store.state.repoPath === repoPath) {
       return;
     }
-    const repoPath = paths[0].replace(/\\/g, "/").replace(/\/$/, "");
-    navigate.log(repoPath);
+    if (repoPath) {
+      try {
+        const { commits, refs } = await browserCommand.openRepository(repoPath);
+        store.mutations.setRepoPath(repoPath);
+        store.actions.showCommits(commits, refs);
+      } catch (e) {
+        store.actions.showError(e);
+      }
+    } else {
+      store.mutations.setRepoPath(repoPath);
+    }
   }
 
-  navigateToLog(repoPath: string) {
-    navigate.log(repoPath);
-  }
-
-  navigateToRoot() {
-    navigate.root();
-  }
-
-  showCommits(commits: Commit[], refs: Refs) {
+  private showCommits(commits: Commit[], refs: Refs) {
     const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
     const graphs = {} as { [id: string]: GraphFragment };
     commits.forEach(c => {

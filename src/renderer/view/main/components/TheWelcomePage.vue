@@ -31,10 +31,15 @@
 </template>
 
 <script lang="ts">
+import * as Electron from "electron";
 import { componentWithStore } from "../store";
 import BaseLayout from "./BaseLayout.vue";
 import DrawerNavigation from "./DrawerNavigation.vue";
 import { getFileName } from "core/utils";
+import { navigate } from "../route";
+import { normalizePathSeparator } from "core/utils";
+
+const { dialog, BrowserWindow } = Electron.remote;
 
 // @vue/component
 export default componentWithStore({
@@ -51,10 +56,17 @@ export default componentWithStore({
   methods: {
     getFileName,
     openRepository(repoPath: string): void {
-      this.$store.actions.navigateToLog(repoPath);
+      navigate.log(repoPath);
     },
     selectRepository(): void {
-      this.$store.actions.showRepositorySelectDialog();
+      const paths = dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+        properties: ["openDirectory"]
+      });
+      if (typeof paths === "undefined") {
+        return;
+      }
+      const repoPath = normalizePathSeparator(paths[0]);
+      navigate.log(repoPath);
     }
   }
 });
