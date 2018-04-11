@@ -51,5 +51,6 @@ export default tsx.component(
 
 .message {
   margin-left: 8px;
+  font-weight: bold;
 }
 </style>
