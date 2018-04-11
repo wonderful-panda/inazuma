@@ -80,7 +80,7 @@ export default tsx.component(
   vertical-align: middle;
   height: 14px;
   line-height: 14px;
-  font-family: monospace;
+  font-family: var(--monospace-fontfamily);
   font-size: 12px;
   border: 1px solid;
   margin: auto 4px auto 0;

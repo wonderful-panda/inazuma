@@ -86,7 +86,7 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
     }
 
     .vlist-row {
-      font-family: monospace;
+      font-family: var(--monospace-fontfamily);
       &:hover {
         background-color: #4c4c4c;
       }

@@ -148,7 +148,7 @@ export default componentWithStore({
   background-color: #333;
   padding: 0 8px;
   vertical-align: middle;
-  font-family: monospace;
+  font-family: var(--monospace-fontfamily);
 }
 
 .attrValue {
