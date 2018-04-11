@@ -35,10 +35,8 @@ import * as Electron from "electron";
 import { componentWithStore } from "../store";
 import BaseLayout from "./BaseLayout.vue";
 import DrawerNavigation from "./DrawerNavigation.vue";
-import { getFileName } from "core/utils";
+import { getFileName, normalizePathSeparator } from "core/utils";
 import { navigate } from "../route";
-import { normalizePathSeparator } from "core/utils";
-
 const { dialog, BrowserWindow } = Electron.remote;
 
 // @vue/component
