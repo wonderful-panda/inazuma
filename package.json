@@ -8,13 +8,13 @@
     "build": "webpack",
     "build:renderer": "webpack --config src/renderer/webpack.config.js",
     "build:browser": "webpack --config src/browser/webpack.config.js",
-    "build:style": "webpack --config webpack.config.style.js",
+    "clean": "rimraf dist src/browser/.cache-loader src/renderer/.cache-loader",
     "format": "prettier --write \"src/**/*.{ts,js,vue,css,scss}\"",
     "lint": "eslint src/**/*.{ts,vue}",
+    "postinstall": "npm run clean",
     "watch": "webpack -w",
     "watch:renderer": "webpack -w --config src/renderer/webpack.config.js",
     "watch:browser": "webpack -w --config src/browser/webpack.config.js",
-    "watch:style": "webpack -w --config webpack.config.style.js",
     "start": "electron ."
   },
   "dependencies": {
