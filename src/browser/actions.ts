@@ -35,7 +35,7 @@ export function setupBrowserCommands(
       return detail;
     },
     resetConfig(cfg: Config): Promise<void> {
-      config.data = cfg;
+      config.updateData(cfg);
       broadcast("configChanged", cfg);
       return Promise.resolve();
     },

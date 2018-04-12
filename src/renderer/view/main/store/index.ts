@@ -26,8 +26,10 @@ const injected = sinai
   .and("errorReporter", errorReporterModule);
 
 class State implements AppState {
-  environment = Electron.remote.getGlobal("environment") as Environment;
-  config = Electron.remote.getGlobal("config") as Config;
+  environment = Object.freeze(
+    Electron.remote.getGlobal("environment")
+  ) as Environment;
+  config = Object.freeze(Electron.remote.getGlobal("config")) as Config;
   repoPath = "";
   commits = [] as Commit[];
   graphs = {} as Dict<GraphFragment>;
@@ -53,11 +55,11 @@ class Mutations extends injected.Mutations<State>() {
   }
 
   resetEnvironment(env: Environment) {
-    this.state.environment = env;
+    this.state.environment = Object.freeze(env);
   }
 
   resetConfig(config: Config) {
-    this.state.config = config;
+    this.state.config = Object.freeze(config);
   }
 
   setRepoPath(repoPath: string) {

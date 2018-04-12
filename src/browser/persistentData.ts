@@ -26,6 +26,13 @@ function load(file: string, schema: any) {
   }
 }
 
+function replaceObjectContent(dest: any, src: any) {
+  Object.getOwnPropertyNames(dest).forEach(name => {
+    delete dest[name];
+  });
+  Object.assign(dest, src);
+}
+
 function save(file: string, schema: any, data: any) {
   const result = validator.validate(data, schema);
   if (result.errors.length > 0) {
@@ -66,34 +73,29 @@ export const configSchema: Schema = {
   }
 };
 
-class ConfigObject {
-  constructor(public data: Config) {}
-}
+const defaultConfigData: Config = {
+  fontFamily: {
+    standard: "Meiryo, Helvetica, Yu Gothic",
+    monospace: "monospace"
+  },
+  recentListCount: 5,
+  externalDiffTool: "",
+  interactiveShell: "",
+  vueDevTool: ""
+};
 
-function loadConfig(): Config {
-  const defaultData: Config = {
-    fontFamily: {
-      standard: "Meiryo, Helvetica, Yu Gothic",
-      monospace: "monospace"
-    },
-    recentListCount: 5,
-    externalDiffTool: "",
-    interactiveShell: "",
-    vueDevTool: ""
-  };
-  const ret = load(configJsonPath, configSchema);
-  if (!ret) {
-    return defaultData;
-  } else {
-    return Object.assign(defaultData, ret);
+export const config = {
+  data: Object.assign(
+    defaultConfigData,
+    load(configJsonPath, configSchema)
+  ) as Config,
+  updateData(newData: Config) {
+    replaceObjectContent(this.data, newData);
+  },
+  save() {
+    save(configJsonPath, configSchema, this.data);
   }
-}
-
-export function saveConfig() {
-  save(configJsonPath, configSchema, config.data);
-}
-
-export const config = new ConfigObject(loadConfig());
+};
 
 /*
  * environment
@@ -128,9 +130,19 @@ const environmentSchema: Schema = {
   required: ["recentOpened"]
 };
 
-class EnvironmentObject {
-  constructor(public data: Environment, public config: Config) {}
+const defaultEnvironData: Environment = { recentOpened: [] };
 
+export const environment = {
+  data: Object.assign(
+    defaultEnvironData,
+    load(environmentJsonPath, environmentSchema)
+  ) as Environment,
+  updateData(newData: Environment) {
+    replaceObjectContent(this.data, newData);
+  },
+  save() {
+    save(environmentJsonPath, environmentSchema, this.data);
+  },
   addRecentOpened(repoPath: string): boolean {
     const recents = [...this.data.recentOpened];
     const idx = recents.indexOf(repoPath);
@@ -140,32 +152,13 @@ class EnvironmentObject {
       recents.splice(idx, 1);
     }
     recents.unshift(repoPath);
-    if (this.config.recentListCount < recents.length) {
-      recents.splice(this.config.recentListCount);
+    if (config.data.recentListCount < recents.length) {
+      recents.splice(config.data.recentListCount);
     }
     this.data.recentOpened = recents;
     return true;
-  }
+  },
   setWindowSize(width: number, height: number, maximized: boolean) {
     this.data.windowSize = { width, height, maximized };
   }
-}
-
-function loadEnvironment(): Environment {
-  const defaultData: Environment = { recentOpened: [] };
-  const ret = load(environmentJsonPath, environmentSchema);
-  if (!ret) {
-    return defaultData;
-  } else {
-    return Object.assign(defaultData, ret);
-  }
-}
-
-export function saveEnvironment() {
-  save(environmentJsonPath, environmentSchema, environment.data);
-}
-
-export const environment = new EnvironmentObject(
-  loadEnvironment(),
-  config.data
-);
+};

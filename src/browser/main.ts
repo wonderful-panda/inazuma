@@ -1,19 +1,19 @@
 import * as Electron from "electron";
-import * as persist from "./persistentData";
+import { config, environment } from "./persistentData";
 import wm from "./windowManager";
 import { setupRepositorySessions } from "./repositorySession";
 import { setupBrowserCommands } from "./actions";
 const repoSessions = setupRepositorySessions();
 setupBrowserCommands(repoSessions);
 
-(global as any)["environment"] = persist.environment.data;
-(global as any)["config"] = persist.config.data;
+(global as any)["environment"] = environment.data;
+(global as any)["config"] = config.data;
 
 const html = "../static/index.html";
 
 Electron.app.on("window-all-closed", () => {
-  persist.saveConfig();
-  persist.saveEnvironment();
+  config.save();
+  environment.save();
   repoSessions.dispose();
   const devtools = Electron.BrowserWindow.getDevToolsExtensions() as {
     [name: string]: any;
@@ -69,7 +69,7 @@ function showMainWindow() {
     show: false
   });
   // restore window size
-  const size = persist.environment.data.windowSize;
+  const size = environment.data.windowSize;
   if (size) {
     mainWindow.setSize(size.width, size.height);
   }
@@ -82,7 +82,7 @@ function showMainWindow() {
     const maximized = mainWindow.isMaximized();
     mainWindow.restore();
     const [width, height] = mainWindow.getSize();
-    persist.environment.setWindowSize(width, height, maximized);
+    environment.setWindowSize(width, height, maximized);
   });
   mainWindow.setMenu(Electron.Menu.buildFromTemplate(template));
   mainWindow.loadURL(`file://${__dirname}/${html}`);
@@ -90,11 +90,9 @@ function showMainWindow() {
 }
 
 Electron.app.on("ready", () => {
-  if (persist.config.data.vueDevTool) {
+  if (config.data.vueDevTool) {
     try {
-      Electron.BrowserWindow.addDevToolsExtension(
-        persist.config.data.vueDevTool
-      );
+      Electron.BrowserWindow.addDevToolsExtension(config.data.vueDevTool);
     } catch (e) {
       console.log("failed to load devtools extension");
     }

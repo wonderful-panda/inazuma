@@ -7,10 +7,14 @@ import { router } from "./route";
 import { browserCommand } from "core/browser";
 import * as ds from "view/common/displayState";
 
-const environment = Electron.remote.getGlobal("environment") as Environment;
-if (environment.displayState) {
-  ds.initDataStore(environment.displayState, "main/");
-}
+(function initDataStore() {
+  const environment = Object.freeze(
+    Electron.remote.getGlobal("environment")
+  ) as Environment;
+  if (environment.displayState) {
+    ds.initDataStore(environment.displayState, "main/");
+  }
+})();
 
 window.addEventListener("beforeunload", () => {
   browserCommand.saveDisplayState(ds.dataStore);
