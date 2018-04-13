@@ -9,7 +9,7 @@ setupBrowserCommands(repoSessions);
 (global as any)["environment"] = environment.data;
 (global as any)["config"] = config.data;
 
-const html = "../static/index.html";
+const html = "../renderer/static/index.html";
 
 Electron.app.on("window-all-closed", () => {
   config.save();

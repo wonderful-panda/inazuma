@@ -2,6 +2,7 @@ var webpack = require("webpack");
 var path = require("path");
 var ForkTsCheckerPlugin = require("fork-ts-checker-webpack-plugin");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var CopyPlugin = require("copy-webpack-plugin");
 
 var cacheLoader = {
   loader: "cache-loader",
@@ -26,11 +27,11 @@ module.exports = {
   // bundle for renderer process (per windows)
   context: __dirname,
   entry: {
-    renderer_main: "./view/main/index.ts",
+    main: "./view/main/index.ts",
     __style: "./style/main.js"
   },
   output: {
-    path: path.join(__dirname, "../../dist"),
+    path: path.join(__dirname, "../../dist/renderer"),
     filename: "[name].js"
   },
   devtool: "source-map",
@@ -69,13 +70,14 @@ module.exports = {
       },
       {
         test: /\.(eot|woff2|woff|ttf)$/,
-        loader: "file-loader?name=[name].[ext]"
+        loader: "file-loader?name=static/[name].[ext]"
       }
     ]
   },
   plugins: [
     new webpack.ExternalsPlugin("commonjs", ["electron"]),
     new ForkTsCheckerPlugin({ vue: true }),
-    new ExtractTextPlugin("application.css")
+    new ExtractTextPlugin("application.css"),
+    new CopyPlugin([{ from: "static/**/*.*", dest: "." }])
   ]
 };

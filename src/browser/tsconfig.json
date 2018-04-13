@@ -2,19 +2,13 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "outDir": ".temp",
+    "outDir": "../../dist/browser",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "**/*.ts",
-    "../commonTypes.d.ts",
-    "../ipc-promise.d.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["**/*.ts", "../commonTypes.d.ts", "../ipc-promise.d.ts"],
+  "exclude": ["node_modules"]
 }
