@@ -1,32 +1,34 @@
 import "./install-vue";
 import Vue from "vue";
 import * as Electron from "electron";
-
+import * as ds from "view/common/displayState";
 import { store } from "./store";
 import { router } from "./route";
 import { browserCommand } from "core/browser";
-import * as ds from "view/common/displayState";
 
-(function initDataStore() {
-  const environment = Object.freeze(
-    Electron.remote.getGlobal("environment")
-  ) as Environment;
+(function init() {
+  const { getPersistentAsJson } = Electron.remote.require("./remote");
+  const json = JSON.parse(getPersistentAsJson());
+  const config = json.config as Config;
+  const environment = json.environment as Environment;
   if (environment.displayState) {
     ds.initDataStore(environment.displayState, "main/");
   }
+  store.mutations.resetConfig(config);
+  store.mutations.resetEnvironment(environment);
+
+  window.addEventListener("beforeunload", () => {
+    browserCommand.saveDisplayState(ds.dataStore);
+    return undefined;
+  });
+
+  Electron.ipcRenderer.on(
+    "action",
+    (_event: string, name: string, payload: any) => {
+      (store.actions as any)[name](payload);
+    }
+  );
 })();
-
-window.addEventListener("beforeunload", () => {
-  browserCommand.saveDisplayState(ds.dataStore);
-  return undefined;
-});
-
-Electron.ipcRenderer.on(
-  "action",
-  (_event: string, name: string, payload: any) => {
-    (store.actions as any)[name](payload);
-  }
-);
 
 // eslint-disable-next-line no-new
 new Vue({
@@ -36,8 +38,14 @@ new Vue({
   watch: {
     "$store.state.config.fontFamily": {
       handler({ standard, monospace }: Config["fontFamily"]) {
-        document.body.style.setProperty("--default-fontfamily", standard);
-        document.body.style.setProperty("--monospace-fontfamily", monospace);
+        document.body.style.setProperty(
+          "--default-fontfamily",
+          standard || "Meiryo, Helvetica, Yu Gothic"
+        );
+        document.body.style.setProperty(
+          "--monospace-fontfamily",
+          monospace || "monospace"
+        );
       },
       immediate: true
     },

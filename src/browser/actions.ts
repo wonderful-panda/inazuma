@@ -2,7 +2,7 @@ import * as ipcPromise from "ipc-promise";
 import * as cp from "child_process";
 import * as path from "path";
 import * as fs from "fs-extra";
-import { environment, config } from "./persistentData";
+import { environment, config } from "./persistent";
 import { splitCommandline, randomName } from "./utils";
 import git from "./git";
 import wm from "./windowManager";

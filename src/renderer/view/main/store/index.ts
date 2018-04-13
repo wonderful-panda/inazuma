@@ -1,7 +1,6 @@
 import Vue, { VueConstructor } from "vue";
 import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
-import * as Electron from "electron";
 import { AppState, LogItem } from "../mainTypes";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
@@ -26,10 +25,8 @@ const injected = sinai
   .and("errorReporter", errorReporterModule);
 
 class State implements AppState {
-  environment = Object.freeze(
-    Electron.remote.getGlobal("environment")
-  ) as Environment;
-  config = Object.freeze(Electron.remote.getGlobal("config")) as Config;
+  config: Config = { fontFamily: {}, recentListCount: 5 };
+  environment: Environment = { recentOpened: [] };
   repoPath = "";
   commits = [] as Commit[];
   graphs = {} as Dict<GraphFragment>;

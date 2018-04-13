@@ -1,4 +1,7 @@
-export function splitCommandline(commandLine: string): string[] {
+export function splitCommandline(commandLine: string | undefined): string[] {
+  if (!commandLine) {
+    return [];
+  }
   return commandLine.match(/("(\\"|[^"])*"|[^\s]+)/g) || [];
 }
 

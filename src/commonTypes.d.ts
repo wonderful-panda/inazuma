@@ -24,13 +24,13 @@ declare interface Environment {
  */
 declare interface Config {
   fontFamily: {
-    standard: string;
-    monospace: string;
+    standard?: string;
+    monospace?: string;
   };
   recentListCount: number;
-  externalDiffTool: string;
-  interactiveShell: string;
-  vueDevTool: string;
+  externalDiffTool?: string;
+  interactiveShell?: string;
+  vueDevTool?: string;
 }
 
 declare type Ref = {

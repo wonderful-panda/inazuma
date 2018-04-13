@@ -1,13 +1,10 @@
 import * as Electron from "electron";
-import { config, environment } from "./persistentData";
+import { config, environment } from "./persistent";
 import wm from "./windowManager";
 import { setupRepositorySessions } from "./repositorySession";
 import { setupBrowserCommands } from "./actions";
 const repoSessions = setupRepositorySessions();
 setupBrowserCommands(repoSessions);
-
-(global as any)["environment"] = environment.data;
-(global as any)["config"] = config.data;
 
 const html = "../renderer/static/index.html";
 

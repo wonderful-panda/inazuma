@@ -74,10 +74,7 @@ export const configSchema: Schema = {
 };
 
 const defaultConfigData: Config = {
-  fontFamily: {
-    standard: "Meiryo, Helvetica, Yu Gothic",
-    monospace: "monospace"
-  },
+  fontFamily: {},
   recentListCount: 5,
   externalDiffTool: "",
   interactiveShell: "",
