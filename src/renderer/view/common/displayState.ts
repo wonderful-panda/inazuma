@@ -1,11 +1,10 @@
 import * as _ from "lodash";
-export const dataStore: { [key: string]: any } = {};
+export const dataStore = Object.create({});
 
-export function initDataStore(data: { [key: string]: any }, prefix: string) {
-  for (const key in data) {
-    if (key.startsWith(prefix)) {
-      dataStore[key] = _.cloneDeep(data[key]);
-    }
+export function initDataStore(data: { [key: string]: any }) {
+  const clone = _.cloneDeep(data);
+  for (const key in clone) {
+    dataStore[key] = clone[key];
   }
 }
 
@@ -13,7 +12,7 @@ export function createMixin(name: string, memberName: string = "displayState") {
   return {
     created(this: any) {
       const storedData = dataStore[name];
-      const currentData = this[memberName];
+      const currentData = this[memberName] || {};
       if (storedData !== undefined) {
         for (const key in currentData) {
           const value = storedData[key];

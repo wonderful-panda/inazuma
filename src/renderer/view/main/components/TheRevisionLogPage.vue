@@ -73,7 +73,7 @@ export default componentWithStore({
     VIconButton,
     VSplitterPanel
   },
-  mixins: [ds.createMixin("main/TheRevisionLogPage")],
+  mixins: [ds.createMixin("TheRevisionLogPage")],
   data() {
     return {
       displayState: {

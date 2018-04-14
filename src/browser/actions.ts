@@ -57,10 +57,10 @@ export function setupBrowserCommands(
       const rs = _repoSessions.prepare(repoPath);
       return showExternalDiff(rs, left, right);
     },
-    saveDisplayState(displayState: { [name: string]: any }): Promise<void> {
-      environment.data.displayState = Object.assign(
-        environment.data.displayState || {},
-        displayState
+    saveDisplayState({ key, value }): Promise<void> {
+      environment.data.displayState[key] = Object.assign(
+        environment.data.displayState[key] || {},
+        value
       );
       return Promise.resolve();
     }

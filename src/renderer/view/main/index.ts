@@ -11,14 +11,12 @@ import { browserCommand } from "core/browser";
   const json = JSON.parse(getPersistentAsJson());
   const config = json.config as Config;
   const environment = json.environment as Environment;
-  if (environment.displayState) {
-    ds.initDataStore(environment.displayState, "main/");
-  }
+  ds.initDataStore(environment.displayState.main);
   store.mutations.resetConfig(config);
   store.mutations.resetEnvironment(environment);
 
   window.addEventListener("beforeunload", () => {
-    browserCommand.saveDisplayState(ds.dataStore);
+    browserCommand.saveDisplayState({ key: "main", value: ds.dataStore });
     return undefined;
   });
 

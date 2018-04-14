@@ -10,7 +10,7 @@ import { __sync } from "view/common/modifiers";
 // @vue/component
 export default componentWithStore({
   name: "RevisionLogWorkingTree",
-  mixins: [ds.createMixin("main/RevisionLogWorkingTree")],
+  mixins: [ds.createMixin("RevisionLogWorkingTree")],
   data() {
     return {
       displayState: {

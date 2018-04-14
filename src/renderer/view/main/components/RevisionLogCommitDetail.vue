@@ -11,7 +11,7 @@ import { __sync } from "view/common/modifiers";
 // @vue/component
 export default componentWithStore({
   name: "RevisionLogCommitDetail",
-  mixins: [ds.createMixin("main/RevisionLogCommitDetail")],
+  mixins: [ds.createMixin("RevisionLogCommitDetail")],
   data() {
     return {
       displayState: {

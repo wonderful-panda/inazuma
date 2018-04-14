@@ -127,7 +127,7 @@ const environmentSchema: Schema = {
   required: ["recentOpened"]
 };
 
-const defaultEnvironData: Environment = { recentOpened: [] };
+const defaultEnvironData: Environment = { recentOpened: [], displayState: {} };
 
 export const environment = {
   data: Object.assign(
