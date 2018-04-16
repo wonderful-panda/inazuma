@@ -5,6 +5,7 @@ import p from "vue-strict-prop";
 import VDialogBase from "view/common/components/VDialogBase.vue";
 import VIconButton from "view/common/components/VIconButton.vue";
 import VErrorReporter from "view/common/components/VErrorReporter.vue";
+import ThePreferencePage from "./ThePreferencePage.vue";
 import * as md from "view/common/md-classes";
 import { __capture } from "view/common/modifiers";
 
@@ -71,7 +72,12 @@ export default componentWithStore({
           </md-app-content>
         </md-app>
 
-        <router-view />
+        {state.preferenceShown ? (
+          <ThePreferencePage />
+        ) : (
+          <div style={{ display: "none" }} />
+        )}
+
         <VErrorReporter
           error={state.errorReporter.error}
           hide={actions.errorReporter.clear}

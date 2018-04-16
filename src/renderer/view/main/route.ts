@@ -5,14 +5,7 @@ const routes = [
   {
     name: "root",
     path: "/",
-    component: () => import("./components/TheWelcomePage.vue"),
-    children: [
-      {
-        name: "preference",
-        path: "preference",
-        component: () => import("./components/ThePreferencePage.vue")
-      }
-    ]
+    component: () => import("./components/TheWelcomePage.vue")
   },
   {
     name: "log",

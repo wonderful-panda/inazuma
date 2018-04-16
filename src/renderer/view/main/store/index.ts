@@ -35,6 +35,7 @@ class State implements AppState {
   selectedCommit = emptyCommit;
   rowHeight = 24;
   sidebar = "";
+  preferenceShown = false;
 }
 
 class Mutations extends injected.Mutations<State>() {
@@ -84,6 +85,10 @@ class Mutations extends injected.Mutations<State>() {
 
   setSidebarName(name: string) {
     this.state.sidebar = name;
+  }
+
+  setPreferenceShown(value: boolean) {
+    this.state.preferenceShown = value;
   }
 }
 
@@ -208,6 +213,13 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     } catch (e) {
       this.showError(e);
     }
+  }
+
+  showPreference() {
+    this.mutations.setPreferenceShown(true);
+  }
+  hidePreference() {
+    this.mutations.setPreferenceShown(false);
   }
 }
 

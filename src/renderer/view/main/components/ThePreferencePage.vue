@@ -75,11 +75,11 @@ export default componentWithStore({
   },
   methods: {
     back() {
-      this.$router.back();
+      this.$store.actions.hidePreference();
     },
     async onOk() {
       await this.$store.actions.resetConfig(this.$data.config);
-      this.$router.back();
+      this.back();
     }
   }
 });

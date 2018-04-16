@@ -17,4 +17,5 @@ export interface AppState {
   selectedCommit: CommitDetail;
   rowHeight: number;
   sidebar: string;
+  preferenceShown: boolean;
 }

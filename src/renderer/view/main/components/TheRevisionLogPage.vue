@@ -17,7 +17,7 @@
 
       drawer-navigation(
         icon="settings", text="Preferences",
-        :to="{ path: 'preference', append: true }")
+        @click="$store.actions.showPreference")
 
       drawer-navigation(
         icon="home", text="Back to Home",
