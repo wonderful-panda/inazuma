@@ -3,21 +3,12 @@ import { store } from "./store";
 
 const routes = [
   {
-    name: "root",
     path: "/",
     component: () => import("./components/TheWelcomePage.vue")
   },
   {
-    name: "log",
     path: "/:repoPathEncoded",
-    component: () => import("./components/TheRevisionLogPage.vue"),
-    children: [
-      {
-        name: "log/preference",
-        path: "preference",
-        component: () => import("./components/ThePreferencePage.vue")
-      }
-    ]
+    component: () => import("./components/TheRepositoryPage.vue")
   }
 ];
 
@@ -36,12 +27,9 @@ router.beforeEach(async (to, _from, next) => {
 
 export const navigate = {
   log(repoPath: string) {
-    router.push({
-      name: "log",
-      params: { repoPathEncoded: encodeURIComponent(repoPath) }
-    });
+    router.push(`/${encodeURIComponent(repoPath)}`);
   },
   root() {
-    router.push({ name: "root" });
+    router.push("/");
   }
 };

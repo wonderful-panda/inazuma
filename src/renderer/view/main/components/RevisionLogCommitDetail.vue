@@ -94,6 +94,12 @@ export default componentWithStore({
               { path: item.path, sha: "UNSTAGED" }
             );
           }
+        },
+        {
+          label: "View file",
+          click: () => {
+            this.$store.actions.showFileTab(item);
+          }
         }
       ]);
     }

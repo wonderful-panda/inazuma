@@ -1,5 +1,5 @@
-export function getFileName(fullpath: string) {
-  return fullpath.split("/").pop();
+export function getFileName(fullpath: string): string {
+  return fullpath.split("/").pop()!;
 }
 
 export function px(value: number) {

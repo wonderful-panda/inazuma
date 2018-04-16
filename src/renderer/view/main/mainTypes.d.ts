@@ -1,4 +1,5 @@
 import { GraphFragment } from "core/grapher";
+import { TabDefinition } from "../common/types";
 
 export interface LogItem {
   graph: GraphFragment;

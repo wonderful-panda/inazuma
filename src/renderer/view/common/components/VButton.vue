@@ -1,5 +1,6 @@
 <script lang="tsx">
 import { VNode } from "vue";
+import { Location } from "vue-router";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 
@@ -13,7 +14,8 @@ export default tsx.componentFactoryOf<{ onClick: null }>().create({
     raised: p(Boolean).default(false),
     disabled: p(Boolean).default(false),
     primary: p(Boolean).default(false),
-    accent: p(Boolean).default(false)
+    accent: p(Boolean).default(false),
+    to: p(String).or.ofObject<Location>().optional
   },
   computed: {
     classes(): object {
@@ -43,6 +45,7 @@ export default tsx.componentFactoryOf<{ onClick: null }>().create({
         href={this.href}
         disabled={this.disabled}
         onClick={this.onClick}
+        to={this.to}
       >
         {this.$slots.default}
         {tooltip}
