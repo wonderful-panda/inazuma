@@ -29,7 +29,7 @@
 
     keep-alive
       component(:is="sidebar")
-    v-splitter-panel(id="main-splitter-panel", direction="horizontal", :splitter-width="5", :ratio.sync="displayState.splitterPosition")
+    v-splitter-panel(:class="$style.splitterPanel", direction="horizontal", :splitter-width="5", :ratio.sync="displayState.splitterPosition")
       log-table(
         slot="first",
         :items="$store.getters.items",
@@ -130,8 +130,8 @@ export default componentWithStore({
 });
 </script>
 
-<style>
-#main-splitter-panel {
+<style module>
+.splitterPanel {
   flex: 1;
   margin: 2px;
 }
