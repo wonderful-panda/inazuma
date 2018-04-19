@@ -1,10 +1,17 @@
 import { GraphFragment } from "core/grapher";
-import { TabDefinition } from "../common/types";
 
 export interface LogItem {
   graph: GraphFragment;
   commit: Commit;
   refs: Ref[];
+}
+
+export interface TabDefinition {
+  key: string;
+  kind: string;
+  params?: any;
+  text: string;
+  closable?: boolean;
 }
 
 export interface AppState {
