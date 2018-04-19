@@ -2,7 +2,7 @@
 import { VNode } from "vue";
 import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
-import VCloseButton from "view/common/components/VCloseButton.vue";
+import VCloseButton from "./base/VCloseButton.vue";
 
 // @vue/component
 export default componentWithStore({

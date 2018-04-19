@@ -2,10 +2,10 @@
 import Vue, { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
-import { queryFocusableElements } from "view/common/domutils";
+import { queryFocusableElements } from "view/utils/dom";
 import VCloseButton from "./VCloseButton.vue";
-import * as md from "view/common/md-classes";
-import { __capture } from "view/common/modifiers";
+import * as md from "view/utils/md-classes";
+import { __capture } from "view/utils/modifiers";
 
 const m = tsx.modifiers;
 

@@ -1,7 +1,7 @@
 import "./install-vue";
 import Vue from "vue";
 import * as Electron from "electron";
-import * as ds from "view/common/displayState";
+import * as ds from "view/store/displayState";
 import { store } from "./store";
 import { router } from "./route";
 import { browserCommand } from "core/browser";

@@ -27,7 +27,7 @@ module.exports = {
   // bundle for renderer process (per windows)
   context: __dirname,
   entry: {
-    main: "./view/main/index.ts",
+    main: "./view/index.ts",
     __style: "./style/main.js"
   },
   output: {

@@ -3,7 +3,7 @@
     template(slot="drawer-navigations")
       drawer-navigation(
         icon="settings", text="Preference",
-        :to="{ path: 'preference', append: true }")
+        @click="$store.actions.showPreference")
 
       drawer-navigation(
         icon="info_outline", text="About",

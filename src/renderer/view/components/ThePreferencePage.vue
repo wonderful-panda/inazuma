@@ -47,9 +47,9 @@
 <script lang="ts">
 import Vue from "vue";
 import { componentWithStore } from "../store";
-import VButton from "view/common/components/VButton.vue";
-import VModal from "view/common/components/VModal.vue";
-import VTextField from "view/common/components/VTextField.vue";
+import VButton from "./base/VButton.vue";
+import VModal from "./base/VModal.vue";
+import VTextField from "./base/VTextField.vue";
 
 // @vue/component
 export default componentWithStore({
@@ -75,11 +75,11 @@ export default componentWithStore({
   },
   methods: {
     back() {
-      this.$router.back();
+      this.$store.actions.hidePreference();
     },
     async onOk() {
       await this.$store.actions.resetConfig(this.$data.config);
-      this.$router.back();
+      this.back();
     }
   }
 });

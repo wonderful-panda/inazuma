@@ -1,12 +1,12 @@
 <script lang="tsx">
-import * as md from "view/common/md-classes";
+import * as md from "view/utils/md-classes";
 import { VNode } from "vue";
 import * as moment from "moment";
 import { componentWithStore } from "../store";
-import * as bridge from "view/common/electron-bridge";
+import { showContextMenu } from "core/browser";
 import FileTable from "./FileTable.vue";
-import * as ds from "view/common/displayState";
-import { __sync } from "view/common/modifiers";
+import * as ds from "view/store/displayState";
+import { __sync } from "view/utils/modifiers";
 
 // @vue/component
 export default componentWithStore({
@@ -79,7 +79,7 @@ export default componentWithStore({
       if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
         return;
       }
-      bridge.showContextMenu([
+      showContextMenu([
         {
           label: "Compare with previous revision",
           click: () => {
@@ -93,6 +93,12 @@ export default componentWithStore({
               { path: item.path, sha: this.commit.id },
               { path: item.path, sha: "UNSTAGED" }
             );
+          }
+        },
+        {
+          label: "View file",
+          click: () => {
+            this.$store.actions.showFileTab(item);
           }
         }
       ]);

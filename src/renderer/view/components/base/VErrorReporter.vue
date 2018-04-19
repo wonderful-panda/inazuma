@@ -1,10 +1,10 @@
 <script lang="tsx">
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import { ErrorLikeObject } from "../storeModules/errorReporter";
+import { ErrorLikeObject } from "view/mainTypes";
 import VIconButton from "./VIconButton.vue";
 import p from "vue-strict-prop";
-import * as md from "../md-classes";
+import * as md from "view/utils/md-classes";
 
 export default tsx.component(
   {

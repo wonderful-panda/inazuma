@@ -1,14 +1,13 @@
 import Vue, { VueConstructor } from "vue";
 import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
-import { AppState, LogItem } from "../mainTypes";
+import { AppState, LogItem, ErrorLikeObject } from "../mainTypes";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
-import { dialogModule } from "view/common/storeModules/dialog";
-import {
-  errorReporterModule,
-  ErrorLikeObject
-} from "view/common/storeModules/errorReporter";
+import { dialogModule } from "./dialogModule";
+import { errorReporterModule } from "./errorReporterModule";
+import { tabsModule } from "./tabsModule";
+import { getFileName } from "core/utils";
 
 const emptyCommit: CommitDetail = {
   id: "",
@@ -22,7 +21,8 @@ const emptyCommit: CommitDetail = {
 
 const injected = sinai
   .inject("dialog", dialogModule)
-  .and("errorReporter", errorReporterModule);
+  .and("errorReporter", errorReporterModule)
+  .and("tabs", tabsModule);
 
 class State implements AppState {
   config: Config = { fontFamily: {}, recentListCount: 5 };
@@ -35,6 +35,7 @@ class State implements AppState {
   selectedCommit = emptyCommit;
   rowHeight = 24;
   sidebar = "";
+  preferenceShown = false;
 }
 
 class Mutations extends injected.Mutations<State>() {
@@ -85,6 +86,9 @@ class Mutations extends injected.Mutations<State>() {
   setSidebarName(name: string) {
     this.state.sidebar = name;
   }
+  setPreferenceShown(value: boolean) {
+    this.state.preferenceShown = value;
+  }
 }
 
 class Getters extends injected.Getters<State>() {
@@ -99,10 +103,17 @@ class Getters extends injected.Getters<State>() {
       return { commit, graph, refs: refsOfThis };
     });
   }
+  get repoPathEncoded(): string {
+    return encodeURIComponent(this.state.repoPath);
+  }
+  get repoName(): string {
+    return getFileName(this.state.repoPath) || this.state.repoPath;
+  }
 }
 
 class Actions extends injected.Actions<State, Getters, Mutations>() {
   showError(e: ErrorLikeObject) {
+    console.log(e);
     this.modules.errorReporter.actions.show(e);
   }
 
@@ -122,12 +133,16 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
       try {
         const { commits, refs } = await browserCommand.openRepository(repoPath);
         store.mutations.setRepoPath(repoPath);
+        store.actions.tabs.reset([
+          { key: "log", kind: "log", text: "COMMITS" }
+        ]);
         store.actions.showCommits(commits, refs);
       } catch (e) {
         store.actions.showError(e);
       }
     } else {
       store.mutations.setRepoPath(repoPath);
+      store.actions.tabs.reset([]);
     }
   }
 
@@ -209,6 +224,23 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
       this.showError(e);
     }
   }
+
+  showPreference() {
+    this.mutations.setPreferenceShown(true);
+  }
+  hidePreference() {
+    this.mutations.setPreferenceShown(false);
+  }
+
+  showFileTab(item: FileEntry): void {
+    this.modules.tabs.actions.addOrSelect({
+      key: "file/" + item.path,
+      kind: "file",
+      text: getFileName(item.path),
+      params: { path: item.path },
+      closable: true
+    });
+  }
 }
 
 export const store = sinai.store(
@@ -221,6 +253,7 @@ export const store = sinai.store(
     })
     .child("dialog", dialogModule)
     .child("errorReporter", errorReporterModule)
+    .child("tabs", tabsModule)
 );
 
 export type AppStore = typeof store;
