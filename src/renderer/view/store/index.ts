@@ -1,15 +1,12 @@
 import Vue, { VueConstructor } from "vue";
 import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
-import { AppState, LogItem } from "../mainTypes";
+import { AppState, LogItem, ErrorLikeObject } from "../mainTypes";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
-import { dialogModule } from "view/common/storeModules/dialog";
-import {
-  errorReporterModule,
-  ErrorLikeObject
-} from "view/common/storeModules/errorReporter";
-import { tabsModule } from "view/common/storeModules/tabs";
+import { dialogModule } from "./dialogModule";
+import { errorReporterModule } from "./errorReporterModule";
+import { tabsModule } from "./tabsModule";
 import { getFileName } from "core/utils";
 
 const emptyCommit: CommitDetail = {

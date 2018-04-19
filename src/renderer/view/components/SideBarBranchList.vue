@@ -2,8 +2,8 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
-import { shortHash } from "view/common/filters";
-import * as md from "view/common/md-classes";
+import { shortHash } from "view/filters";
+import * as md from "view/utils/md-classes";
 import { CssProperties } from "vue-css-definition";
 
 export default tsx.componentFactoryOf<{ onClick: Ref }>().create(

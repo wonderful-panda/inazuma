@@ -3,7 +3,7 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { vtableOf, VtableColumn, VtableEventsOn } from "vue-vtable";
-import * as md from "view/common/md-classes";
+import * as md from "view/utils/md-classes";
 
 const Vtable = vtableOf<FileEntry>();
 

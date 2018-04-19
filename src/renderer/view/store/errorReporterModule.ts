@@ -1,8 +1,5 @@
 import * as sinai from "sinai";
-
-export interface ErrorLikeObject {
-  message: string;
-}
+import { ErrorLikeObject } from "view/mainTypes";
 
 export class ErrorReporterState {
   error: ErrorLikeObject | undefined = undefined;

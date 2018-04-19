@@ -1,5 +1,9 @@
 import { GraphFragment } from "core/grapher";
 
+export interface ErrorLikeObject {
+  message: string;
+}
+
 export interface LogItem {
   graph: GraphFragment;
   commit: Commit;

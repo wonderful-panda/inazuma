@@ -1,11 +1,11 @@
 <script lang="tsx">
 import { VNode } from "vue";
 import { componentWithStore } from "../store";
-import VSplitterPanel from "view/common/components/VSplitterPanel.vue";
+import VSplitterPanel from "./base/VSplitterPanel.vue";
 import FileTable from "./FileTable.vue";
-import * as md from "view/common/md-classes";
-import * as ds from "view/common/displayState";
-import { __sync } from "view/common/modifiers";
+import * as md from "view/utils/md-classes";
+import * as ds from "view/store/displayState";
+import { __sync } from "view/utils/modifiers";
 
 // @vue/component
 export default componentWithStore({

@@ -1,6 +1,6 @@
 import * as sinai from "sinai";
 import Vue from "vue";
-import { TabDefinition } from "../types";
+import { TabDefinition } from "view/mainTypes";
 
 export class TabsState {
   tabs: TabDefinition[] = [];

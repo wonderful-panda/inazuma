@@ -4,7 +4,7 @@ import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import VButton from "./VButton.vue";
 import VIconButton from "./VIconButton.vue";
-import { TabDefinition } from "../types";
+import { TabDefinition } from "view/mainTypes";
 
 export default tsx
   .componentFactoryOf<

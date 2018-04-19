@@ -45,8 +45,8 @@ import TabLog from "./RepositoryPageTabLog.vue";
 import TabDummy from "./RepositoryPageTabDummy.vue";
 import SideBarBranches from "./SideBarBranches.vue";
 import SideBarRemotes from "./SideBarRemotes.vue";
-import VIconButton from "view/common/components/VIconButton.vue";
-import VTabs from "view/common/components/VTabs.vue";
+import VIconButton from "./base/VIconButton.vue";
+import VTabs from "./base/VTabs.vue";
 import DrawerNavigation from "./DrawerNavigation.vue";
 
 // @vue/component

@@ -2,12 +2,12 @@
 import { VNode } from "vue";
 import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
-import VDialogBase from "view/common/components/VDialogBase.vue";
-import VIconButton from "view/common/components/VIconButton.vue";
-import VErrorReporter from "view/common/components/VErrorReporter.vue";
+import VDialogBase from "./base/VDialogBase.vue";
+import VIconButton from "./base/VIconButton.vue";
+import VErrorReporter from "./base/VErrorReporter.vue";
 import ThePreferencePage from "./ThePreferencePage.vue";
-import * as md from "view/common/md-classes";
-import { __capture } from "view/common/modifiers";
+import * as md from "view/utils/md-classes";
+import { __capture } from "view/utils/modifiers";
 
 // @vue/component
 export default componentWithStore({

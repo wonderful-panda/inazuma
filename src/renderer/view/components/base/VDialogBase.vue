@@ -2,7 +2,7 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
-import { DialogState, DialogActions } from "../storeModules/dialog";
+import { DialogState, DialogActions } from "view/store/dialogModule";
 import VButton from "./VButton.vue";
 import VModal from "./VModal.vue";
 

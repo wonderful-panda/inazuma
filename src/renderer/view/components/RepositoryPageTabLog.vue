@@ -17,12 +17,12 @@ v-splitter-panel(:class="$style.splitterPanel", direction="horizontal", :splitte
 <script lang="ts">
 import { RowEventArgs } from "vue-vtable";
 import { componentWithStore } from "../store";
-import * as ds from "view/common/displayState";
+import * as ds from "view/store/displayState";
 import RevisionLogWorkingTree from "./RevisionLogWorkingTree.vue";
 import RevisionLogCommitDetail from "./RevisionLogCommitDetail.vue";
 import LogTable from "./LogTable.vue";
-import VIconButton from "view/common/components/VIconButton.vue";
-import VSplitterPanel from "view/common/components/VSplitterPanel.vue";
+import VIconButton from "./base/VIconButton.vue";
+import VSplitterPanel from "./base/VSplitterPanel.vue";
 import { dragdrop } from "../dragdrop";
 import { LogItem } from "../mainTypes";
 
