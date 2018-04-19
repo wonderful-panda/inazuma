@@ -42,7 +42,6 @@ import Vue from "vue";
 import { componentWithStore } from "../store";
 import BaseLayout from "./BaseLayout.vue";
 import TabLog from "./RepositoryPageTabLog.vue";
-import TabDummy from "./RepositoryPageTabDummy.vue";
 import SideBarBranches from "./SideBarBranches.vue";
 import SideBarRemotes from "./SideBarRemotes.vue";
 import VIconButton from "./base/VIconButton.vue";
@@ -56,8 +55,7 @@ export default componentWithStore({
     DrawerNavigation,
     VIconButton,
     VTabs,
-    TabLog,
-    TabDummy
+    TabLog
   },
   computed: {
     sidebar(): typeof Vue | undefined {
