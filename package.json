@@ -5,7 +5,7 @@
   "author": "Iwata Hidetaka",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
+    "build": "npm-run-all build:renderer build:browser",
     "build:renderer": "webpack --config src/renderer/webpack.config.js",
     "build:browser": "tsc -p src/browser/tsconfig.json",
     "clean": "rimraf dist src/renderer/.cache-loader",
