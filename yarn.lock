@@ -3676,6 +3676,10 @@ moment@^2.22.0:
   version "2.22.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.1.tgz#529a2e9bf973f259c9643d237fda84de3a26e8ad"
 
+monaco-editor@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.12.0.tgz#cd8621017526b57746245104d764bbf52ad42283"
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -3698,6 +3702,10 @@ mute-stream@0.0.7:
 nan@^2.3.2, nan@^2.9.2:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
+
+nano-assign@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/nano-assign/-/nano-assign-1.0.0.tgz#499f4f8a1ae801f2405863e6946ca8568d666e4e"
 
 nanomatch@^1.2.9:
   version "1.2.9"
@@ -5901,6 +5909,12 @@ vue-loader@^14.2.2:
 vue-material@1.0.0-beta-8:
   version "1.0.0-beta-8"
   resolved "https://registry.yarnpkg.com/vue-material/-/vue-material-1.0.0-beta-8.tgz#88b44095a59d46df5beed722dd5e2fb962f74138"
+
+vue-monaco@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/vue-monaco/-/vue-monaco-0.1.6.tgz#b6da331ef004bed3a216698a198807843a3c2aad"
+  dependencies:
+    nano-assign "^1.0.0"
 
 vue-parser@^1.1.5:
   version "1.1.6"

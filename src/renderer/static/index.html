@@ -9,6 +9,36 @@
 
 <body>
   <div id="app"></div>
+  <!--
+    scripts in this file originate from https://github.com/Microsoft/monaco-editor-samples
+    (MIT License, Copyright (c) 2016 Microsoft Corporation)
+  -->
+  <script>
+    var nodeRequire = global.require;
+  </script>
+  <script src="../../../node_modules/monaco-editor/min/vs/loader.js"></script>
+  <script>
+    var amdRequire = global.require;
+    global.require = nodeRequire;
+
+    var path = require("path");
+    function uriFromPath(_path) {
+      var pathName = path.resolve(_path).replace(/\\/g, "/");
+      if (pathName.length > 0 && pathName[0] !== "/") {
+        pathName = "/" + pathName;
+      }
+      return encodeURI("file://" + pathName);
+    }
+    amdRequire.config({
+      paths: {
+        vs: uriFromPath(path.join(__dirname, "../../../node_modules/monaco-editor/min/vs"))
+      }
+    });
+    // workaround monaco-css not understanding the environment
+    self.module = undefined;
+    // workaround monaco-typescript not understanding the environment
+    self.process.browser = true;
+  </script>
   <script src="../main.js"></script>
 </body>
 

@@ -34,6 +34,7 @@
            @tab-close="$store.actions.tabs.remove($event.index)")
       keep-alive(slot-scope="{ tab }")
         tab-log(v-if="tab.kind === 'log'")
+        tab-file(v-if="tab.kind === 'file'", :path="tab.params.path")
         div.md-headline(v-else, :style="{ margin: 'auto', color: '#888' }") NOT IMPLEMENTED (kind: {{ tab.kind }})
 </template>
 
@@ -42,6 +43,7 @@ import Vue from "vue";
 import { componentWithStore } from "../store";
 import BaseLayout from "./BaseLayout.vue";
 import TabLog from "./RepositoryPageTabLog.vue";
+import TabFile from "./RepositoryPageTabFile.vue";
 import SideBarBranches from "./SideBarBranches.vue";
 import SideBarRemotes from "./SideBarRemotes.vue";
 import VIconButton from "./base/VIconButton.vue";
@@ -55,7 +57,8 @@ export default componentWithStore({
     DrawerNavigation,
     VIconButton,
     VTabs,
-    TabLog
+    TabLog,
+    TabFile
   },
   computed: {
     sidebar(): typeof Vue | undefined {
