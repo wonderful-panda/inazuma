@@ -8,6 +8,7 @@ import { dialogModule } from "./dialogModule";
 import { errorReporterModule } from "./errorReporterModule";
 import { tabsModule } from "./tabsModule";
 import { getFileName } from "core/utils";
+import { shortHash } from "../filters";
 
 const emptyCommit: CommitDetail = {
   id: "",
@@ -232,14 +233,25 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     this.mutations.setPreferenceShown(false);
   }
 
-  showFileTab(item: FileEntry): void {
-    this.modules.tabs.actions.addOrSelect({
-      key: "file/" + item.path,
-      kind: "file",
-      text: getFileName(item.path),
-      params: { path: item.path },
-      closable: true
-    });
+  async showFileTab(sha: string, item: FileEntry): Promise<void> {
+    try {
+      const blame = Object.freeze(
+        await browserCommand.getBlame({
+          repoPath: this.state.repoPath,
+          relPath: item.path,
+          sha
+        })
+      );
+      this.modules.tabs.actions.addOrSelect({
+        key: "file/" + item.path,
+        kind: "file",
+        text: `${getFileName(item.path)} @ ${shortHash(sha)}`,
+        params: { sha, path: item.path, blame },
+        closable: true
+      });
+    } catch (e) {
+      this.modules.errorReporter.actions.show(e);
+    }
   }
 }
 

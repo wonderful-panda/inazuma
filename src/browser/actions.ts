@@ -34,6 +34,10 @@ export function setupBrowserCommands(
       const detail = await getCommitDetail(repoPath, sha);
       return detail;
     },
+    async getBlame({ repoPath, relPath, sha }): Promise<Blame> {
+      const blame = await git.blame(repoPath, relPath, sha);
+      return blame;
+    },
     resetConfig(cfg: Config): Promise<void> {
       config.updateData(cfg);
       broadcast("configChanged", cfg);
@@ -160,7 +164,7 @@ async function prepareDiffFile(
     // TODO: shorten path
     absPath = path.join(rs.tempdir, file.sha, file.path);
     const parentDir = path.dirname(absPath);
-    if (!await fs.pathExists(parentDir)) {
+    if (!(await fs.pathExists(parentDir))) {
       await fs.mkdirs(parentDir);
     }
   }

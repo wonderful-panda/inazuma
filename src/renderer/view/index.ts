@@ -5,6 +5,8 @@ import * as ds from "view/store/displayState";
 import { store } from "./store";
 import { router } from "./route";
 import { browserCommand } from "core/browser";
+import { loadMonaco } from "./monaco";
+loadMonaco();
 
 (function init() {
   const { getPersistentAsJson } = Electron.remote.require("./remote");

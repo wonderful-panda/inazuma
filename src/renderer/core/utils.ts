@@ -2,6 +2,12 @@ export function getFileName(fullpath: string): string {
   return fullpath.split("/").pop()!;
 }
 
+export function getExtension(pathOrFileName: string): string {
+  const fileName = getFileName(pathOrFileName);
+  const p = fileName.lastIndexOf(".");
+  return 0 <= p ? fileName.slice(p) : "";
+}
+
 export function px(value: number) {
   return `${value}px`;
 }

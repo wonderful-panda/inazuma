@@ -33,8 +33,13 @@
            :selected-index.sync="selectedTabIndex",
            @tab-close="$store.actions.tabs.remove($event.index)")
       keep-alive(slot-scope="{ tab }")
-        tab-log(v-if="tab.kind === 'log'", :key="tab.key")
-        tab-file(v-if="tab.kind === 'file'", :key="tab.key", :path="tab.params.path")
+        tab-log(v-if="tab.kind === 'log'",
+                :key="tab.key")
+        tab-file(v-if="tab.kind === 'file'",
+                 :key="tab.key",
+                 :path="tab.params.path",
+                 :sha="tab.params.sha",
+                 :blame="tab.params.blame")
         div.md-headline(v-else, :style="{ margin: 'auto', color: '#888' }") NOT IMPLEMENTED (kind: {{ tab.kind }})
 </template>
 

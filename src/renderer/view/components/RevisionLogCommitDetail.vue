@@ -98,7 +98,7 @@ export default componentWithStore({
         {
           label: "View file",
           click: () => {
-            this.$store.actions.showFileTab(item);
+            this.$store.actions.showFileTab(this.commit.id, item);
           }
         }
       ]);

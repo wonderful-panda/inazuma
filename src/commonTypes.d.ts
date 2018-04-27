@@ -79,6 +79,22 @@ declare interface Commit extends DagNode {
   author: string;
 }
 
+declare interface BlameCommit {
+  id: string;
+  summary: string;
+  date: number;
+  author: string;
+}
+
+declare interface Blame {
+  commits: ReadonlyArray<BlameCommit>;
+  commitIds: ReadonlyArray<string>;
+  content: {
+    text: string;
+    encoding: string;
+  };
+}
+
 declare interface FileEntry {
   path: string;
   oldPath?: string;
@@ -108,6 +124,11 @@ declare interface BrowserCommand {
     repoPath: string;
     sha: string;
   }): Promise<CommitDetail>;
+  getBlame(params: {
+    repoPath: string;
+    relPath: string;
+    sha: string;
+  }): Promise<Blame>;
   resetConfig(config: Config): Promise<void>;
   runInteractiveShell(curdir: string): Promise<void>;
   showExternalDiff(params: {

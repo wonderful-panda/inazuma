@@ -18,8 +18,10 @@
     "start": "electron ."
   },
   "dependencies": {
+    "chardet": "^0.5.0",
     "electron": "1.8.4",
     "fs-extra": "^5.0.0",
+    "iconv-lite": "^0.4.21",
     "ipc-promise": "^0.1.4",
     "jsonschema": "^1.2.2",
     "lodash": "^4.17.5",
@@ -40,7 +42,9 @@
     "vue-vtable": "^0.10.0"
   },
   "devDependencies": {
+    "@types/chardet": "^0.5.0",
     "@types/fs-extra": "^5.0.1",
+    "@types/iconv-lite": "^0.0.1",
     "@types/lodash": "^4.14.106",
     "@types/rimraf": "^2.0.2",
     "babel-core": "^6.26.0",
