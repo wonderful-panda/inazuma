@@ -185,13 +185,12 @@ export default componentWithStore(
           .filter(v => v >= 0);
         const ranges = lineIndicesToRanges(lineIndices);
         const options: monaco.editor.IModelDecorationOptions = {
-          className: "blame-selected",
-          marginClassName: "blame-selected",
+          linesDecorationsClassName: "blame-selected-linesdecorations",
           isWholeLine: true,
           overviewRuler: {
-            color: "rgba(255, 140, 0, 0.4)",
-            darkColor: "rgba(255, 140, 0, 0.4)",
-            hcColor: "rgba(255, 140, 0, 0.4)",
+            color: "rgba(255, 140, 0, 0.6)",
+            darkColor: "rgba(255, 140, 0, 0.6)",
+            hcColor: "rgba(255, 140, 0, 0.6)",
             position: monaco.editor.OverviewRulerLane.Right
           }
         };
@@ -235,14 +234,17 @@ export default componentWithStore(
   :global {
     .line-numbers {
       cursor: pointer !important;
+      padding-left: 8px;
     }
 
     .blame-boundary {
       border-bottom: 1px dotted #444;
     }
 
-    .blame-selected {
-      background-color: #333;
+    .blame-selected-linesdecorations {
+      background-color: rgba(255, 140, 0, 0.6);
+      left: 0 !important;
+      width: 4px !important;
     }
   }
 }
