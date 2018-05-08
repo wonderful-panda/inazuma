@@ -32,11 +32,9 @@
     v-tabs(:tabs="$store.state.tabs.tabs",
            :selected-index.sync="selectedTabIndex",
            @tab-close="$store.actions.tabs.remove($event.index)")
-      keep-alive(slot-scope="{ tab }")
-        tab-log(v-if="tab.kind === 'log'",
-                :key="tab.key")
-        tab-file(v-if="tab.kind === 'file'",
-                 :key="tab.key",
+      template(slot-scope="{ tab }")
+        tab-log(v-if="tab.kind === 'log'")
+        tab-file(v-else-if="tab.kind === 'file'",
                  :path="tab.params.path",
                  :sha="tab.params.sha",
                  :blame="tab.params.blame")

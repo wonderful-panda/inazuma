@@ -51,16 +51,27 @@ export default tsx
             </VIconButton>
           </div>
         );
+      },
+      renderTabContent(tab: TabDefinition, index: number): VNode {
+        return (
+          <div
+            v-show={index === this.selectedIndex}
+            key={tab.key}
+            class={this.$style.tabContent}
+          >
+            {this.$scopedSlots.default({ tab })}
+          </div>
+        );
       }
     },
     render(): VNode {
-      const { tabs, selectedIndex, $style: s } = this;
+      const { tabs, $style: s } = this;
       return (
         <div class={s.container}>
           <div class={s.tabbar}>
             {tabs.map((tab, index) => this.renderTabButton(tab, index))}
           </div>
-          {this.$scopedSlots.default({ tab: tabs[selectedIndex] })}
+          {tabs.map((tab, index) => this.renderTabContent(tab, index))}
         </div>
       );
     }
@@ -113,6 +124,11 @@ export default tsx
     margin-right: auto;
     padding-right: 12px;
   }
+}
+
+.tabContent {
+  display: flex;
+  flex: 1;
 }
 
 .selectedTabButton {
