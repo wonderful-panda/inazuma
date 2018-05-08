@@ -243,7 +243,7 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
         })
       );
       this.modules.tabs.actions.addOrSelect({
-        key: "file/" + item.path,
+        key: `file/${item.path}:${sha}`,
         kind: "file",
         text: `${getFileName(item.path)} @ ${shortHash(sha)}`,
         params: { sha, path: item.path, blame },
