@@ -21,6 +21,9 @@ div(:class="$style.container")
       span(:class="$style.date") {{ hoveredCommitDate }}
       span(:class="$style.author") {{ hoveredCommit.author }}
       span(:class="$style.summary") {{ hoveredCommit.summary }}
+  div(:class="$style.bottomBar")
+    template(v-if="hoveredCommit")
+      span(:class="$style.filename") {{ hoveredCommit.filename }}
 </template>
 
 <script lang="ts">
@@ -45,7 +48,7 @@ export default componentWithStore(
         editorMounted: false,
         hoveredLineNumber: -1,
         selectedCommitId: "",
-        boundaryDecorationIds: [] as string[],
+        staticDecorationIds: [] as string[],
         selectedCommitDecorationIds: [] as string[]
       };
     },
@@ -56,7 +59,7 @@ export default componentWithStore(
     },
     watch: {
       blame() {
-        this.updateBoundaryDecorations();
+        this.updateStaticDecorations();
       },
       selectedCommitId() {
         this.updateSelectedCommitDecorations();
@@ -111,6 +114,9 @@ export default componentWithStore(
       },
       lineNumberFunc(): (lineno: number) => string {
         const zeros = "00000000".slice(0, this.lineNoWidth + 1);
+        const boundaryId = this.blame.commits
+          .filter(c => c.boundary)
+          .map(c => c.id)[0];
         return lineno => {
           const linenoStr = (zeros + lineno.toString()).slice(
             -1 * this.lineNoWidth
@@ -119,7 +125,11 @@ export default componentWithStore(
           if (!id) {
             return "";
           }
-          return `${linenoStr}:${shortHash(id)}`;
+          if (id === boundaryId) {
+            return `${linenoStr}:^${shortHash(id)}`;
+          } else {
+            return `${linenoStr}:${shortHash(id)}`;
+          }
         };
       }
     },
@@ -149,10 +159,10 @@ export default componentWithStore(
       },
       onEditorMount() {
         this.editorMounted = true;
-        this.updateBoundaryDecorations();
+        this.updateStaticDecorations();
         this.updateSelectedCommitDecorations();
       },
-      updateBoundaryDecorations() {
+      updateStaticDecorations() {
         const monacoEditor = this.monacoEditor;
         if (!monacoEditor) {
           return;
@@ -163,15 +173,15 @@ export default componentWithStore(
           .filter(v => v >= 0);
         const ranges = lineIndicesToRanges(lineIndices);
         const options: monaco.editor.IModelDecorationOptions = {
-          className: "blame-boundary",
-          marginClassName: "blame-boundary",
+          className: "blame-hunk-border",
+          marginClassName: "blame-hunk-border",
           isWholeLine: true
         };
         const decorationIds = monacoEditor.deltaDecorations(
-          this.boundaryDecorationIds,
+          this.staticDecorationIds,
           ranges.map(range => ({ range, options }))
         );
-        this.boundaryDecorationIds = decorationIds;
+        this.staticDecorationIds = decorationIds;
       },
       updateSelectedCommitDecorations() {
         const monacoEditor = this.monacoEditor;
@@ -216,7 +226,7 @@ export default componentWithStore(
 
 .title {
   font-family: var(--monospace-fontfamily);
-  margin-bottom: 4px;
+  padding-bottom: 4px;
   height: 24px;
   line-height: 24px;
   flex: 0;
@@ -230,6 +240,7 @@ export default componentWithStore(
 
 .editor {
   flex: 1;
+  border: 1px solid #444;
 
   :global {
     .line-numbers {
@@ -237,8 +248,8 @@ export default componentWithStore(
       padding-left: 8px;
     }
 
-    .blame-boundary {
-      border-bottom: 1px dotted #444;
+    .blame-hunk-border {
+      border-bottom: 1px dotted #666;
     }
 
     .blame-selected-linesdecorations {
@@ -250,9 +261,9 @@ export default componentWithStore(
 }
 
 .bottomBar {
-  min-height: 32px;
-  height: 32px;
-  line-height: 32px;
+  min-height: 24px;
+  height: 24px;
+  line-height: 24px;
   flex: 0;
   display: flex;
 }
@@ -276,5 +287,9 @@ export default componentWithStore(
 .author {
   color: var(--md-theme-default-primary);
   margin-right: 8px;
+}
+
+.filename {
+  font-family: var(--monospace-fontfamily);
 }
 </style>

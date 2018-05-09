@@ -84,6 +84,10 @@ declare interface BlameCommit {
   summary: string;
   date: number;
   author: string;
+  filename: string;
+  boundary: boolean;
+  previous?: string;
+  previousFilename?: string;
 }
 
 declare interface Blame {

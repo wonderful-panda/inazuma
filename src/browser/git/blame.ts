@@ -11,11 +11,13 @@ export async function blame(
   const headerPattern = /^([a-f0-9]{40}) \d+ (\d+) (\d+)$/;
   const commitIds: string[] = [];
   const commits: BlameCommit[] = [];
-  let currentCommit = {
+  let currentCommit: BlameCommit = {
     id: "",
     author: "",
     date: 0,
-    summary: ""
+    summary: "",
+    filename: "",
+    boundary: false
   };
   const promiseBlame = exec("blame", {
     repository,
@@ -29,7 +31,9 @@ export async function blame(
             id: match[1],
             author: "",
             date: 0,
-            summary: ""
+            summary: "",
+            filename: "",
+            boundary: false
           };
           commits.push(currentCommit);
         }
@@ -38,20 +42,28 @@ export async function blame(
         while (lineCount--) {
           commitIds[lineNo++] = commitId;
         }
+      } else if (line === "boundary") {
+        currentCommit.boundary = true;
       } else {
         const p = line.indexOf(" ");
         if (p < 0) {
           return;
         }
-        switch (line.slice(0, p)) {
+        const key = line.slice(0, p);
+        const value = line.slice(p + 1);
+        switch (key) {
           case "author":
-            currentCommit.author = line.slice(p + 1);
+          case "summary":
+          case "filename":
+            currentCommit[key] = value;
             break;
           case "author-time":
-            currentCommit.date = parseInt(line.slice(p + 1)) * 1000;
+            currentCommit.date = parseInt(value) * 1000;
             break;
-          case "summary":
-            currentCommit.summary = line.slice(p + 1);
+          case "previous":
+            const values = value.split(" ");
+            currentCommit.previous = values[0];
+            currentCommit.previousFilename = values[1];
             break;
           default:
             break;
