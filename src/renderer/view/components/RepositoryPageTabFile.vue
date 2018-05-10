@@ -74,7 +74,7 @@ export default componentWithStore(
       },
       options(): monaco.editor.IEditorConstructionOptions {
         return {
-          theme: "blame",
+          theme: "vs-dark",
           readOnly: true,
           automaticLayout: true,
           folding: false,
@@ -169,17 +169,33 @@ export default componentWithStore(
         }
         const { commitIds } = this.blame;
         const lineIndices = commitIds
-          .map((id, index) => (id !== commitIds[index + 1] ? index : -1))
+          .map(
+            (id, index) =>
+              0 < index && id !== commitIds[index - 1] ? index : -1
+          )
           .filter(v => v >= 0);
+        lineIndices.push(commitIds.length);
         const ranges = lineIndicesToRanges(lineIndices);
         const options: monaco.editor.IModelDecorationOptions = {
-          className: "blame-hunk-border",
-          marginClassName: "blame-hunk-border",
+          className: "blame-hunk-head",
+          marginClassName: "blame-hunk-head-margin",
           isWholeLine: true
         };
+        const decorations = ranges.map(range => ({ range, options }));
+        decorations.push({
+          range: {
+            startLineNumber: 1,
+            startColumn: 1,
+            endLineNumber: 1,
+            endColumn: 1
+          },
+          options: {
+            marginClassName: "blame-first-line-margin"
+          }
+        });
         const decorationIds = monacoEditor.deltaDecorations(
           this.staticDecorationIds,
-          ranges.map(range => ({ range, options }))
+          decorations
         );
         this.staticDecorationIds = decorationIds;
       },
@@ -244,12 +260,18 @@ export default componentWithStore(
 
   :global {
     .line-numbers {
+      color: #666;
       cursor: pointer !important;
       padding-left: 8px;
     }
 
-    .blame-hunk-border {
-      border-bottom: 1px dotted #666;
+    .blame-hunk-head,
+    .blame-hunk-head-margin {
+      border-top: 1px solid #444;
+    }
+    .blame-hunk-head-margin ~ .line-numbers,
+    .blame-first-line-margin ~ .line-numbers {
+      color: #ddd;
     }
 
     .blame-selected-linesdecorations {
@@ -266,11 +288,6 @@ export default componentWithStore(
   line-height: 24px;
   flex: 0;
   display: flex;
-}
-
-.commitInfo {
-  display: flex;
-  flex: 1;
 }
 
 .commitId {

@@ -5,15 +5,6 @@ const langMap = new Map<string, string>();
 export function loadMonaco() {
   const { amdRequire } = global as any;
   amdRequire(["vs/editor/editor.main"], () => {
-    monaco.editor.defineTheme("blame", {
-      base: "vs-dark",
-      inherit: true,
-      rules: [],
-      colors: {
-        "editorLineNumber.foreground": "#aaa"
-      }
-    });
-
     monaco.languages.getLanguages().forEach(lang => {
       if (lang.extensions) {
         lang.extensions.forEach(ext => langMap.set(ext.toLowerCase(), lang.id));
