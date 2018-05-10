@@ -238,6 +238,7 @@ export default componentWithStore(
   flex-flow: column nowrap;
   flex: 1;
   margin: 0.2em 1em;
+  overflow: hidden;
 }
 
 .title {
