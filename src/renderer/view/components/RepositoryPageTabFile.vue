@@ -78,7 +78,7 @@ export default componentWithStore(
           readOnly: true,
           automaticLayout: true,
           folding: false,
-          lineDecorationsWidth: (this.lineNoWidth + 9) * 8,
+          lineDecorationsWidth: (this.lineNoWidth + 21) * 7,
           lineNumbers: this.lineNumberFunc,
           selectOnLineNumbers: false
         };
@@ -117,6 +117,15 @@ export default componentWithStore(
         const boundaryId = this.blame.commits
           .filter(c => c.boundary)
           .map(c => c.id)[0];
+        const formatDate = (v: number) =>
+          moment(v)
+            .local()
+            .format("L");
+        const dateMap = new Map<string, string>(
+          this.blame.commits.map(
+            c => [c.id, formatDate(c.date)] as [string, string]
+          )
+        );
         return lineno => {
           const linenoStr = (zeros + lineno.toString()).slice(
             -1 * this.lineNoWidth
@@ -125,10 +134,11 @@ export default componentWithStore(
           if (!id) {
             return "";
           }
+          const date = dateMap.get(id);
           if (id === boundaryId) {
-            return `${linenoStr}:^${shortHash(id)}`;
+            return `${linenoStr} ^${id.slice(0, 7)} ${date}`;
           } else {
-            return `${linenoStr}:${shortHash(id)}`;
+            return `${linenoStr} ${shortHash(id)} ${date}`;
           }
         };
       }
@@ -264,6 +274,7 @@ export default componentWithStore(
       color: #666;
       cursor: pointer !important;
       padding-left: 8px;
+      white-space: nowrap;
     }
 
     .blame-hunk-head,
