@@ -1,4 +1,4 @@
-import { getExtension } from "../core/utils";
+import { getExtension } from "core/utils";
 
 const langMap = new Map<string, string>();
 
