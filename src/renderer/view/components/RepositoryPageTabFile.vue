@@ -34,6 +34,7 @@ import VIconButton from "./base/VIconButton.vue";
 import p from "vue-strict-prop";
 import { shortHash } from "../filters";
 import { lineIndicesToRanges, getLangIdFromPath } from "view/monaco";
+import { asTuple } from "core/utils";
 
 // @vue/component
 export default componentWithStore(
@@ -85,7 +86,7 @@ export default componentWithStore(
       },
       commitMap(): Map<string, BlameCommit> {
         return new Map<string, BlameCommit>(
-          this.blame.commits.map(c => [c.id, c] as [string, BlameCommit])
+          this.blame.commits.map(c => asTuple(c.id, c))
         );
       },
       monacoEditor(): monaco.editor.IStandaloneCodeEditor | undefined {
@@ -122,9 +123,7 @@ export default componentWithStore(
             .local()
             .format("L");
         const dateMap = new Map<string, string>(
-          this.blame.commits.map(
-            c => [c.id, formatDate(c.date)] as [string, string]
-          )
+          this.blame.commits.map(c => asTuple(c.id, formatDate(c.date)))
         );
         return lineno => {
           const linenoStr = (zeros + lineno.toString()).slice(

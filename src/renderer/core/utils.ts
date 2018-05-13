@@ -25,3 +25,10 @@ export function clamp(value: number, min: number, max: number) {
 export function normalizePathSeparator(path: string): string {
   return path.replace(/\\/g, "/").replace(/\/$/, "");
 }
+
+export function asTuple<T1, T2>(v1: T1, v2: T2): [T1, T2];
+export function asTuple<T1, T2, T3>(v1: T1, v2: T2, v3: T3): [T1, T2, T3];
+export function asTuple<T1, T2, T3, T4>(v1: T1, v2: T2, v3: T3, v4: T4): [T1, T2, T3, T4];
+export function asTuple(...values: any[]) {
+  return values;
+}
