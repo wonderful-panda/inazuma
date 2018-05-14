@@ -14,6 +14,7 @@ div(:class="$style.container")
     @mouseDown="onMouseDown",
     @mouseMove="onMouseMove",
     @mouseLeave="onMouseLeave"
+    @contextMenu="showContextMenu"
   )
   div(:class="$style.bottomBar")
     template(v-if="hoveredCommit")
@@ -27,6 +28,7 @@ div(:class="$style.container")
 </template>
 
 <script lang="ts">
+import * as Electron from "electron";
 import * as MonacoEditor from "vue-monaco";
 import * as moment from "moment";
 import { componentWithStore } from "../store";
@@ -34,6 +36,7 @@ import VIconButton from "./base/VIconButton.vue";
 import p from "vue-strict-prop";
 import { shortHash } from "../filters";
 import { lineIndicesToRanges, getLangIdFromPath } from "view/monaco";
+import { showContextMenu } from "core/browser";
 import { asTuple } from "core/utils";
 
 // @vue/component
@@ -81,7 +84,8 @@ export default componentWithStore(
           folding: false,
           lineDecorationsWidth: (this.lineNoWidth + 21) * 7,
           lineNumbers: this.lineNumberFunc,
-          selectOnLineNumbers: false
+          selectOnLineNumbers: false,
+          contextmenu: false
         };
       },
       commitMap(): Map<string, BlameCommit> {
@@ -170,6 +174,47 @@ export default componentWithStore(
         this.editorMounted = true;
         this.updateStaticDecorations();
         this.updateSelectedCommitDecorations();
+      },
+      showContextMenu(e: monaco.editor.IEditorMouseEvent) {
+        const lineNumber = e.target.position.lineNumber;
+        const commitId = this.blame.commitIds[lineNumber - 1];
+        if (!commitId) {
+          return;
+        }
+        const commit = this.commitMap.get(commitId);
+        if (!commit) {
+          return;
+        }
+        const actions = this.$store.actions;
+        const menus: Electron.MenuItemConstructorOptions[] = [];
+        menus.push({
+          label: "View this revision",
+          click: () => actions.showFileTab(commit.id, commit.filename)
+        });
+        if (commit.previous) {
+          menus.push({
+            label: "View previous revision",
+            click: () =>
+              actions.showFileTab(commit.previous!, commit.previousFilename!)
+          });
+          menus.push({
+            label: "Compare with previous revision",
+            click: () =>
+              actions.showExternalDiff(
+                { path: commit.previousFilename!, sha: commit.previous! },
+                { path: commit.filename, sha: commit.id }
+              )
+          });
+        }
+        menus.push({
+          label: "Compare with working tree",
+          click: () =>
+            actions.showExternalDiff(
+              { path: commit.filename, sha: commit.id },
+              { path: this.path, sha: "UNSTAGED" }
+            )
+        });
+        showContextMenu(menus);
       },
       updateStaticDecorations() {
         const monacoEditor = this.monacoEditor;
