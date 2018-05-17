@@ -1,0 +1,82 @@
+.container {
+  display: flex;
+  flex-flow: column nowrap;
+  flex: 1;
+  margin: 0.2em 1em;
+  overflow: hidden;
+}
+
+.title {
+  font-family: var(--monospace-fontfamily);
+  padding-bottom: 4px;
+  height: 24px;
+  line-height: 24px;
+  flex: 0;
+}
+.path {
+  padding-right: 8px;
+}
+.sha {
+  color: #888;
+}
+
+.editor {
+  flex: 1;
+  border: 1px solid #444;
+
+  :global {
+    .line-numbers {
+      color: #666;
+      cursor: pointer !important;
+      padding-left: 8px;
+      white-space: nowrap;
+    }
+
+    .blame-hunk-head,
+    .blame-hunk-head-margin {
+      border-top: 1px solid #444;
+    }
+    .blame-hunk-head-margin ~ .line-numbers,
+    .blame-first-line-margin ~ .line-numbers {
+      color: #ddd;
+    }
+
+    .blame-selected-linesdecorations {
+      background-color: rgba(255, 140, 0, 0.6);
+      left: 0 !important;
+      width: 4px !important;
+    }
+  }
+}
+
+.bottomBar {
+  min-height: 24px;
+  height: 24px;
+  line-height: 24px;
+  flex: 0;
+  display: flex;
+}
+
+.commitId {
+  color: var(--md-theme-default-accent);
+  font-family: var(--monospace-fontfamily);
+  margin-right: 8px;
+}
+
+.date {
+  font-family: var(--monospace-fontfamily);
+  margin-right: 8px;
+}
+
+.author {
+  color: var(--md-theme-default-primary);
+  margin-right: 8px;
+}
+
+.summary {
+  margin-right: 8px;
+}
+
+.filename {
+  font-family: var(--monospace-fontfamily);
+}

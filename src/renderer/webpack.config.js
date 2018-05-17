@@ -17,7 +17,6 @@ var loadersForTs = [
   {
     loader: "ts-loader",
     options: {
-      appendTsxSuffixTo: [/\.vue$/],
       transpileOnly: true
     }
   }
@@ -36,37 +35,28 @@ module.exports = {
   },
   devtool: "source-map",
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".tsx", ".js"],
     modules: [__dirname, "node_modules"]
   },
   module: {
     rules: [
       {
-        test: /\.vue$/,
-        use: [
-          cacheLoader,
-          {
-            loader: "vue-loader",
-            options: {
-              loaders: {
-                ts: loadersForTs,
-                tsx: loadersForTs
-              }
-            }
-          }
-        ]
-      },
-      {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         use: loadersForTs
       },
       {
         test: /\.(scss|css)$/,
+        exclude: [path.resolve(__dirname, "view")],
         use: ExtractTextPlugin.extract([
           cacheLoader,
           "css-loader",
           "sass-loader"
         ])
+      },
+      {
+        test: /\.scss$/,
+        include: [path.resolve(__dirname, "view")],
+        use: ["style-loader", "css-loader?modules", "sass-loader"]
       },
       {
         test: /\.(eot|woff2|woff|ttf)$/,
