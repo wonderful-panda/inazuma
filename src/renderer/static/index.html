@@ -4,7 +4,9 @@
 <head>
   <meta charset="utf-8" />
   <title>Inazuma</title>
-  <link rel="stylesheet" type="text/css" href="../application.css" />
+  <link rel="stylesheet" type="text/css" href="./material-icons.css" />
+  <link rel="stylesheet" type="text/css" href="./vue-material.min.css" />
+  <link rel="stylesheet" type="text/css" href="./application.css" />
 </head>
 
 <body>
@@ -16,7 +18,7 @@
   <script>
     var nodeRequire = global.require;
   </script>
-  <script src="../../../node_modules/monaco-editor/min/vs/loader.js"></script>
+  <script src="./vs/loader.js"></script>
   <script>
     var amdRequire = global.require;
     global.require = nodeRequire;
@@ -31,7 +33,7 @@
     }
     amdRequire.config({
       paths: {
-        vs: uriFromPath(path.join(__dirname, "../../../node_modules/monaco-editor/min/vs"))
+        vs: uriFromPath(path.join(__dirname, "./vs"))
       }
     });
     // workaround monaco-css not understanding the environment
@@ -39,7 +41,7 @@
     // workaround monaco-typescript not understanding the environment
     self.process.browser = true;
   </script>
-  <script src="../main.js"></script>
+  <script src="./main.js"></script>
 </body>
 
 </html>
