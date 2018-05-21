@@ -25,6 +25,7 @@ var loadersForTs = [
 module.exports = {
   // bundle for renderer process (per windows)
   context: __dirname,
+  mode: "development",
   entry: {
     main: "./view/index.ts",
     __style: "./style/main.js"
