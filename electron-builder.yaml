@@ -1,0 +1,10 @@
+productName: Inazuma
+appId: com.electron.inazuma
+directories:
+  output: out
+files:
+  - dist/**/*.*
+win:
+  target:
+    - nsis
+    - portable

@@ -9,7 +9,7 @@
     "build": "gulp",
     "build:renderer": "gulp renderer",
     "build:browser": "gulp browser",
-    "clean": "rimraf dist src/renderer/.cache-loader src/renderer/view/**/*.scss.d.ts",
+    "clean": "rimraf dist out src/renderer/.cache-loader src/renderer/view/**/*.scss.d.ts",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,css,scss}\"",
     "lint": "eslint src/**/*.{ts,tsx}",
     "postinstall": "rimraf src/renderer/.cache-loader",
@@ -17,7 +17,8 @@
     "watch:tcm": "gulp watch:tcm",
     "watch:renderer": "gulp watch:renderer",
     "watch:browser": "gulp watch:browser",
-    "all": "npm-run-all clean format lint build",
+    "package": "electron-builder",
+    "all": "npm-run-all clean format lint build package",
     "start": "electron ."
   },
   "dependencies": {
