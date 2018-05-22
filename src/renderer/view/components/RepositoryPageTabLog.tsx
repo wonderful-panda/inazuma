@@ -1,0 +1,87 @@
+import { VNode } from "vue";
+import { RowEventArgs } from "vue-vtable";
+import { componentWithStore } from "../store";
+import * as ds from "view/store/displayState";
+import RevisionLogWorkingTree from "./RevisionLogWorkingTree";
+import RevisionLogCommitDetail from "./RevisionLogCommitDetail";
+import LogTable from "./LogTable";
+import VSplitterPanel from "./base/VSplitterPanel";
+import { dragdrop } from "../dragdrop";
+import { LogItem } from "../mainTypes";
+import { __sync } from "view/utils/modifiers";
+
+// @vue/component
+export default componentWithStore({
+  name: "RepositoryPageTabLog",
+  mixins: [ds.createMixin("TheRevisionLogPage")],
+  data() {
+    return {
+      displayState: {
+        splitterPosition: 0.6,
+        columnWidths: undefined as number[] | undefined
+      }
+    };
+  },
+  methods: {
+    onRowdragover({ item, event }: RowEventArgs<LogItem, DragEvent>) {
+      if (item.commit.id === "--") {
+        return;
+      }
+      if (dragdrop.isDataPresent(event, "git/branch")) {
+        event.dataTransfer.dropEffect = "move";
+        event.preventDefault();
+      }
+    },
+    onRowdrop({ item, event }: RowEventArgs<LogItem, DragEvent>) {
+      if (item.commit.id === "--") {
+        return;
+      }
+      const data = dragdrop.getData(event, "git/branch");
+      console.log(data);
+    },
+    reload() {
+      location.reload();
+    },
+    runInteractiveShell() {
+      this.$store.actions.runInteractiveShell();
+    }
+  },
+  render(): VNode {
+    const { state, getters, actions } = this.$store;
+    return (
+      <VSplitterPanel
+        style={{ flex: 1, margin: "2px" }}
+        direction="horizontal"
+        splitterWidth={5}
+        ratio={__sync(this.displayState.splitterPosition)}
+      >
+        <LogTable
+          slot="first"
+          items={getters.items}
+          rowHeight={state.rowHeight}
+          selectedIndex={state.selectedIndex}
+          widths={__sync(this.displayState.columnWidths)}
+          onRowclick={e => actions.setSelectedIndex(e.index)}
+          onRowdragover={this.onRowdragover}
+          onRowdrop={this.onRowdrop}
+        />
+        <template slot="second">
+          {state.selectedCommit.id === "--" ? (
+            <RevisionLogWorkingTree />
+          ) : (
+            <RevisionLogCommitDetail />
+          )}
+        </template>
+      </VSplitterPanel>
+    );
+  }
+});
+
+/*
+<style module>
+.splitterPanel {
+  flex: 1;
+  margin: 2px;
+}
+</style>
+*/

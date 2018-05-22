@@ -1,0 +1,24 @@
+.splitter {
+  flex-grow: 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  &:hover {
+    background-color: #383838;
+  }
+}
+
+.horizontal {
+  @extend .splitter;
+  cursor: col-resize;
+  margin: 0 1px;
+}
+
+.vertical {
+  @extend .splitter;
+  cursor: row-resize;
+  margin: 1px 0;
+}
+
+.dragging {
+  background-color: #383838;
+}

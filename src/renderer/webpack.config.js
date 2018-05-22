@@ -1,8 +1,6 @@
 var webpack = require("webpack");
 var path = require("path");
 var ForkTsCheckerPlugin = require("fork-ts-checker-webpack-plugin");
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var CopyPlugin = require("copy-webpack-plugin");
 
 var cacheLoader = {
   loader: "cache-loader",
@@ -17,7 +15,6 @@ var loadersForTs = [
   {
     loader: "ts-loader",
     options: {
-      appendTsxSuffixTo: [/\.vue$/],
       transpileOnly: true
     }
   }
@@ -26,9 +23,9 @@ var loadersForTs = [
 module.exports = {
   // bundle for renderer process (per windows)
   context: __dirname,
+  mode: "development",
   entry: {
-    main: "./view/index.ts",
-    __style: "./style/main.js"
+    main: "./view/index.ts"
   },
   output: {
     path: path.join(__dirname, "../../dist/renderer"),
@@ -36,48 +33,24 @@ module.exports = {
   },
   devtool: "source-map",
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".tsx", ".js"],
     modules: [__dirname, "node_modules"]
   },
   module: {
     rules: [
       {
-        test: /\.vue$/,
-        use: [
-          cacheLoader,
-          {
-            loader: "vue-loader",
-            options: {
-              loaders: {
-                ts: loadersForTs,
-                tsx: loadersForTs
-              }
-            }
-          }
-        ]
-      },
-      {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         use: loadersForTs
       },
       {
-        test: /\.(scss|css)$/,
-        use: ExtractTextPlugin.extract([
-          cacheLoader,
-          "css-loader",
-          "sass-loader"
-        ])
-      },
-      {
-        test: /\.(eot|woff2|woff|ttf)$/,
-        loader: "file-loader?name=static/[name].[ext]"
+        test: /\.scss$/,
+        include: [path.resolve(__dirname, "view")],
+        use: ["style-loader", "css-loader?modules", "sass-loader"]
       }
     ]
   },
   plugins: [
     new webpack.ExternalsPlugin("commonjs", ["electron"]),
-    new ForkTsCheckerPlugin({ vue: true }),
-    new ExtractTextPlugin("application.css"),
-    new CopyPlugin([{ from: "static/**/*.*", dest: "." }])
+    new ForkTsCheckerPlugin()
   ]
 };

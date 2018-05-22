@@ -1,0 +1,9 @@
+.wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  flex: 1;
+  margin: 0;
+  padding: 0.5em;
+  overflow-x: hidden;
+  overflow-y: auto;
+}

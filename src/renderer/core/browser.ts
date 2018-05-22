@@ -13,5 +13,5 @@ export const browserCommand = new Proxy(
 
 export function showContextMenu(template: MenuItemConstructorOptions[]): void {
   const menu = Menu.buildFromTemplate(template);
-  menu.popup(remote.getCurrentWindow());
+  menu.popup({ window: remote.getCurrentWindow() });
 }

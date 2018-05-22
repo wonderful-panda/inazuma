@@ -6,7 +6,7 @@ import { setupBrowserCommands } from "./actions";
 const repoSessions = setupRepositorySessions();
 setupBrowserCommands(repoSessions);
 
-const html = "../renderer/static/index.html";
+const html = "../renderer/index.html";
 
 Electron.app.on("window-all-closed", () => {
   config.save();

@@ -4,11 +4,11 @@ import { store } from "./store";
 const routes = [
   {
     path: "/",
-    component: () => import("./components/TheWelcomePage.vue")
+    component: () => import("./components/TheWelcomePage")
   },
   {
     path: "/:repoPathEncoded",
-    component: () => import("./components/TheRepositoryPage.vue")
+    component: () => import("./components/TheRepositoryPage")
   }
 ];
 

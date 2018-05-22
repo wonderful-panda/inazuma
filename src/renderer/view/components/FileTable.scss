@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  flex: 1;
+
+  :global {
+    .vlist-container {
+      display: flex;
+      margin: 4px 2px;
+      background-color: #333;
+    }
+
+    .vlist-row {
+      font-family: var(--monospace-fontfamily);
+      &:hover {
+        background-color: #4c4c4c;
+      }
+    }
+
+    .vtable-row-selected {
+      background-color: #484848;
+    }
+
+    .vtable-splitter {
+      border-left: solid 1px #222;
+    }
+
+    .vtable-dragging-splitter {
+      background-color: #222;
+    }
+
+    .vlist-header-row {
+      border-bottom: solid 2px #222;
+    }
+  }
+}

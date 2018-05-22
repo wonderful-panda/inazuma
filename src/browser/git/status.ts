@@ -14,15 +14,13 @@ export async function status(repository: string): Promise<FileEntry[]> {
       continue;
     }
     const statusCode = value.slice(0, 2);
-    let path: string;
+    const path = value.slice(3);
     let oldPath: string | undefined;
     if (statusCode[0] === "R") {
-      // if renamed, next value is new path
-      oldPath = value.slice(3);
-      path = values[++i];
+      // if renamed, next value is old path
+      oldPath = values[++i];
     } else {
       oldPath = undefined;
-      path = value.slice(3);
     }
     if (statusCode[0] !== " " && statusCode !== "??") {
       ret.push({ path, oldPath, statusCode: statusCode[0], inIndex: true });
