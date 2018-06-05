@@ -38,6 +38,9 @@ export function setupBrowserCommands(
       const blame = await git.blame(repoPath, relPath, sha);
       return blame;
     },
+    getTree({ repoPath, sha }): Promise<LsTreeEntry[]> {
+      return git.lsTree(repoPath, sha);
+    },
     resetConfig(cfg: Config): Promise<void> {
       config.updateData(cfg);
       broadcast("configChanged", cfg);

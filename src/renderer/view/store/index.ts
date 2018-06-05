@@ -253,6 +253,26 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
       this.modules.errorReporter.actions.show(e);
     }
   }
+
+  async showTreeTab(sha: string): Promise<void> {
+    try {
+      const rootNodes = Object.freeze(
+        await browserCommand.getTree({
+          repoPath: this.state.repoPath,
+          sha
+        })
+      );
+      this.modules.tabs.actions.addOrSelect({
+        key: `tree/${sha}`,
+        kind: "tree",
+        text: `TREE @ ${shortHash(sha)}`,
+        params: { sha, rootNodes },
+        closable: true
+      });
+    } catch (e) {
+      this.modules.errorReporter.actions.show(e);
+    }
+  }
 }
 
 export const store = sinai.store(

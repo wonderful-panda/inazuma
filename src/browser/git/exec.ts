@@ -10,6 +10,7 @@ export interface ExecOptions {
 export interface ExecParams extends ExecOptions {
   repository: string;
   args: string[];
+  configs?: string[];
 }
 
 export interface ExecResult {
@@ -23,7 +24,13 @@ export interface ExecResult {
 }
 
 export function exec(command: string, params: ExecParams): Promise<ExecResult> {
-  const args = ["-C", params.repository, command, ...params.args];
+  let configs = [] as string[];
+  if (params.configs) {
+    for (const c of params.configs) {
+      configs.push("-c", c);
+    }
+  }
+  const args = ["-C", params.repository, ...configs, command, ...params.args];
   const p = cp.spawn(_gitCli, args);
   const stdoutBuffers: Buffer[] = [];
   const stderrBuffers: Buffer[] = [];

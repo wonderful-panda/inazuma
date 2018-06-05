@@ -3,6 +3,7 @@ import { log, getCommitDetail } from "./log";
 import { getRefs } from "./refs";
 import { status } from "./status";
 import { blame } from "./blame";
+import { lsTree } from "./lstree";
 
 export default {
   catFile,
@@ -11,5 +12,6 @@ export default {
   getCommitDetail,
   getRefs,
   status,
-  blame
+  blame,
+  lsTree
 };
