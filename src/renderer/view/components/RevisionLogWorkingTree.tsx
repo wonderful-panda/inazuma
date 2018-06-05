@@ -15,8 +15,8 @@ export default componentWithStore({
     return {
       displayState: {
         splitterPosition: 0.5,
-        stagedColumnWidths: undefined as number[] | undefined,
-        unstagedColumnWidths: undefined as number[] | undefined
+        stagedColumnWidths: {} as Dict<number>,
+        unstagedColumnWidths: {} as Dict<number>
       }
     };
   },

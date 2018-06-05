@@ -97,7 +97,7 @@
     "vue-template-compiler": "^2.5.16",
     "vue-tsx-support": "^1.2.1",
     "vue-typed-component": "^0.10.1",
-    "vue-vtable": "^0.10.0",
+    "vue-vtable": "^0.13.2",
     "webpack": "^4.8.3",
     "webpack-cli": "^2.1.3",
     "webpack-stream": "^4.0.3"

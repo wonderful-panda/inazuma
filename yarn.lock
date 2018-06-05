@@ -461,8 +461,8 @@ app-builder-bin@1.8.6:
     app-builder-bin-win "1.8.6"
 
 app-builder-bin@1.9.4:
-  version "1.9.3"
-  resolved "https://registry.yarnpkg.com/app-builder-bin/-/app-builder-bin-1.9.3.tgz#c6e929764783d11d684a3d975c9eca81b6384227"
+  version "1.9.4"
+  resolved "https://registry.yarnpkg.com/app-builder-bin/-/app-builder-bin-1.9.4.tgz#2e032f9f2b10a28ef4d7feb99c93bbc81c298b28"
 
 aproba@^1.0.3, aproba@^1.1.1:
   version "1.2.0"
@@ -8426,11 +8426,11 @@ vue-typed-component@^0.10.1:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/vue-typed-component/-/vue-typed-component-0.10.1.tgz#a1b607dd7a8945ccc42cf9a45beb0dcfbe9332b8"
 
-vue-vtable@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/vue-vtable/-/vue-vtable-0.10.0.tgz#41e60ad8e56a57efd96ce15ffaea5dfc11d52e4a"
+vue-vtable@^0.13.2:
+  version "0.13.2"
+  resolved "https://registry.yarnpkg.com/vue-vtable/-/vue-vtable-0.13.2.tgz#7130b216b1fa5a7d697984febacfe98a8cb8640f"
   dependencies:
-    lodash "^4.17.4"
+    lodash "^4.17.10"
     vue-css-definition "^0.1.0"
     vue-resizesensor "^0.2.1"
     vue-strict-prop "^0.1.1"

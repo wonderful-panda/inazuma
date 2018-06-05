@@ -18,33 +18,33 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create(
       items: p.ofRoArray<LogItem>().required,
       rowHeight: p(Number).required,
       selectedIndex: p(Number).required,
-      widths: p.ofRoArray<number>().optional
+      widths: p.ofObject<Dict<number>>().required
     },
     computed: {
       columns(): VtableColumn[] {
         return [
           {
-            title: "graph",
+            id: "graph",
             defaultWidth: 120,
             minWidth: 40
           },
           {
-            title: "id",
+            id: "id",
             defaultWidth: 80,
             minWidth: 40
           },
           {
-            title: "author",
+            id: "author",
             defaultWidth: 120,
             minWidth: 40
           },
           {
-            title: "date",
+            id: "date",
             defaultWidth: 100,
             minWidth: 40
           },
           {
-            title: "comment",
+            id: "comment",
             defaultWidth: 600,
             className: "flex--expand",
             minWidth: 200
@@ -101,7 +101,7 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create(
           staticClass={style.container}
           items={this.items}
           columns={this.columns}
-          initialWidths={this.widths}
+          widths={this.widths}
           rowHeight={rowHeight}
           rowStyleCycle={2}
           getItemKey={item => item.commit.id}
@@ -109,7 +109,6 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create(
             index === selectedIndex ? style.selectedRow : ""
           }
           {...{ on: this.$listeners }}
-          onColumnresize={arg => this.$emit("update:widths", arg.widths)}
           scopedSlots={{
             cell: p => [this.renderCell(p.columnId, p.item)]
           }}

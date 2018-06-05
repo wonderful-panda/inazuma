@@ -9,13 +9,14 @@ const Vtable = vtableOf<FileEntry>();
 
 const fileColumns: VtableColumn[] = [
   {
+    id: "status",
     title: "",
     className: md.BODY2,
     defaultWidth: 24,
     minWidth: 24
   },
   {
-    title: "path",
+    id: "path",
     className: "flex--expand " + md.BODY2,
     defaultWidth: 200,
     minWidth: 100
@@ -27,7 +28,7 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
   name: "FileTable",
   props: {
     files: p.ofRoArray<FileEntry>().required,
-    widths: p.ofRoArray<number>().optional
+    widths: p.ofObject<Dict<number>>().required
   },
   data() {
     return { selectedFile: "" };
@@ -50,10 +51,9 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
         <Vtable
           items={this.files}
           columns={fileColumns}
-          initialWidths={this.widths}
+          widths={this.widths}
           rowHeight={24}
           getItemKey={this.getFileKey}
-          onColumnresize={args => this.$emit("update:widths", args.widths)}
           getRowClass={arg => {
             return arg.path === this.selectedFile
               ? "vtable-row-selected"
