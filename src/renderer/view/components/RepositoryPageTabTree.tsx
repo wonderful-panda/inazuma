@@ -14,6 +14,7 @@ import * as ds from "view/store/displayState";
 import * as style from "./RepositoryPageTabTree.scss";
 import { getFileName, getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
+import VSplitterPanel from "./base/VSplitterPanel";
 
 type Data = LsTreeEntry["data"];
 type TreeNodeWithState = TreeNodeWithState_<Data>;
@@ -34,16 +35,16 @@ export default componentWithStore(
       return {
         selectedPath: "",
         displayState: {
-          columnWidths: {} as Dict<number>
+          columnWidths: {} as Dict<number>,
+          splitterPosition: 0.25
         }
       };
     },
     computed: {
       columns(): VtableColumn[] {
         return [
-          { id: "name", defaultWidth: 200 },
-          { id: "extension", defaultWidth: 80 },
-          { id: "fullpath", defaultWidth: 400, className: style.pathCell }
+          { id: "name", defaultWidth: 300 },
+          { id: "extension", defaultWidth: 80, className: style.lastCell }
         ];
       }
     },
@@ -67,8 +68,6 @@ export default componentWithStore(
             ];
           case "extension":
             return type === "blob" ? getExtension(path) : "";
-          case "fullpath":
-            return path;
           default:
             return "NOT IMPLEMENTED: " + columnId;
         }
@@ -76,9 +75,17 @@ export default componentWithStore(
     },
     render(): VNode {
       return (
-        <div class={style.container}>
+        <VSplitterPanel
+          class={style.container}
+          direction="horizontal"
+          splitterWidth={5}
+          ratio={__sync(this.displayState.splitterPosition)}
+          minSizeFirst="10%"
+          minSizeSecond="10%"
+        >
           <VtreeTableT
             ref="tree"
+            slot="first"
             style={{ flex: 1 }}
             columns={this.columns}
             rootNodes={this.rootNodes}
@@ -91,7 +98,12 @@ export default componentWithStore(
             }}
             onRowclick={this.onRowclick}
           />
-        </div>
+          <div slot="second" style={{ margin: "auto" }}>
+            <span class="md-headline" style={{ color: "gray" }}>
+              NOT IMPLEMENTED
+            </span>
+          </div>
+        </VSplitterPanel>
       );
     }
   },
