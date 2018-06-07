@@ -9,7 +9,7 @@ import { lineIndicesToRanges, getLangIdFromPath } from "view/monaco";
 import { showContextMenu } from "core/browser";
 import { asTuple } from "core/utils";
 import { VNode } from "vue";
-import * as style from "./RepositoryPageTabFile.scss";
+import * as style from "./BlamePanel.scss";
 
 const amdRequire = (global as any).amdRequire;
 
