@@ -20,9 +20,19 @@
   color: #888;
 }
 
-.editor {
+.editorWrapper {
+  position: relative;
   flex: 1;
   border: 1px solid #444;
+  overflow: hidden;
+}
+
+.editor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 
   :global {
     .line-numbers {

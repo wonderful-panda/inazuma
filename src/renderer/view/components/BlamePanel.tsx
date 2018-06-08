@@ -284,19 +284,21 @@ export default componentWithStore(
             <span class={style.path}>{this.path}</span>
             <span class={style.sha}>@ {shortHash(this.sha)}</span>
           </div>
-          <monaco-editor
-            ref="monaco"
-            class={style.editor}
-            require={amdRequire}
-            language={this.language}
-            value={this.blame.content.text}
-            options={this.options}
-            onEditorMount={this.onEditorMount}
-            onMouseDown={this.onMouseDown}
-            onMouseMove={this.onMouseMove}
-            onMouseLeave={this.onMouseLeave}
-            onContextMenu={this.showContextMenu}
-          />
+          <div class={style.editorWrapper}>
+            <monaco-editor
+              ref="monaco"
+              class={style.editor}
+              require={amdRequire}
+              language={this.language}
+              value={this.blame.content.text}
+              options={this.options}
+              onEditorMount={this.onEditorMount}
+              onMouseDown={this.onMouseDown}
+              onMouseMove={this.onMouseMove}
+              onMouseLeave={this.onMouseLeave}
+              onContextMenu={this.showContextMenu}
+            />
+          </div>
           {this.bottomBar}
         </div>
       );
