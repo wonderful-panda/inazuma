@@ -37,7 +37,11 @@ export default componentWithStore(
     },
     watch: {
       blame() {
-        this.updateStaticDecorations();
+        if (this.monacoEditor) {
+          this.monacoEditor.setScrollPosition({ scrollLeft: 0, scrollTop: 0 });
+          // decorations must be updated after text changed
+          this.$nextTick(this.updateStaticDecorations);
+        }
       },
       selectedCommitId() {
         this.updateSelectedCommitDecorations();
