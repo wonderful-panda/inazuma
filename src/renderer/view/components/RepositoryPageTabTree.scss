@@ -41,6 +41,21 @@
   }
 }
 
+.selectedRow {
+  background-color: #484848;
+}
+
+.rightPanel {
+  position: relative;
+  flex: 1;
+  display: flex;
+}
+
+.noFileSelected {
+  margin: auto;
+  color: gray !important;
+}
+
 .lastCell {
   flex: 1;
 }

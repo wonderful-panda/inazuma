@@ -15,6 +15,10 @@ import * as style from "./RepositoryPageTabTree.scss";
 import { getFileName, getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
+import VBackdropSpinner from "./base/VBackdropSpinner";
+import BlamePanel from "./BlamePanel";
+import { browserCommand } from "core/browser";
+import * as md from "view/utils/md-classes";
 
 type Data = LsTreeEntry["data"];
 type TreeNodeWithState = TreeNodeWithState_<Data>;
@@ -34,6 +38,8 @@ export default componentWithStore(
     data() {
       return {
         selectedPath: "",
+        selectedBlame: undefined as Blame | undefined,
+        loading: false,
         displayState: {
           columnWidths: {} as Dict<number>,
           splitterPosition: 0.25
@@ -46,9 +52,38 @@ export default componentWithStore(
           { id: "name", defaultWidth: 300 },
           { id: "extension", defaultWidth: 80, className: style.lastCell }
         ];
+      },
+      rightPanel(): VNode[] {
+        const ret = [] as VNode[];
+        if (this.selectedBlame) {
+          ret.push(
+            <BlamePanel
+              path={this.selectedPath}
+              blame={this.selectedBlame}
+              sha={this.sha}
+            />
+          );
+        } else {
+          ret.push(
+            <div class={[style.noFileSelected, md.DISPLAY1]}>
+              NO FILE SELECTED
+            </div>
+          );
+        }
+        if (this.loading) {
+          ret.push(<VBackdropSpinner />);
+        }
+        return ret;
       }
     },
     methods: {
+      getRowClass({ data }: TreeNodeWithState): string | undefined {
+        if (data.path === this.selectedPath) {
+          return style.selectedRow;
+        } else {
+          return undefined;
+        }
+      },
       onRowclick({ item, event }: RowEventArgs) {
         if (event.button !== 0) {
           return;
@@ -56,6 +91,30 @@ export default componentWithStore(
         event.preventDefault();
         event.stopPropagation();
         (this.$refs.tree as Vtreetable<Data>).toggleExpand(item.data);
+      },
+      async onRowdblclick({ item, event }: RowEventArgs) {
+        const { path: relPath, type } = item.data;
+        if (event.button !== 0 || type === "tree") {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        try {
+          this.loading = true;
+          const { repoPath } = this.$store.state;
+          const { sha } = this;
+          const blame = await browserCommand.getBlame({
+            repoPath,
+            relPath,
+            sha
+          });
+          this.selectedPath = relPath;
+          this.selectedBlame = blame;
+        } catch (e) {
+          this.$store.actions.showError(e);
+        } finally {
+          this.loading = false;
+        }
       },
       renderCell({ item, columnId }: VtableSlotCellProps): VNode[] | string {
         const { path, type } = item.data;
@@ -92,16 +151,16 @@ export default componentWithStore(
             indentWidth={12}
             rowHeight={24}
             getItemKey={item => item.path}
+            getRowClass={this.getRowClass}
             widths={__sync(this.displayState.columnWidths)}
             scopedSlots={{
               cell: this.renderCell
             }}
             onRowclick={this.onRowclick}
+            onRowdblclick={this.onRowdblclick}
           />
-          <div slot="second" style={{ margin: "auto" }}>
-            <span class="md-headline" style={{ color: "gray" }}>
-              NOT IMPLEMENTED
-            </span>
+          <div slot="second" class={style.rightPanel}>
+            {this.rightPanel}
           </div>
         </VSplitterPanel>
       );
