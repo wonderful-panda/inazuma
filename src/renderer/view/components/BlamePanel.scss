@@ -2,7 +2,6 @@
   display: flex;
   flex-flow: column nowrap;
   flex: 1;
-  margin: 0.2em 1em;
   overflow: hidden;
 }
 
@@ -60,9 +59,9 @@
 }
 
 .bottomBar {
-  min-height: 24px;
-  height: 24px;
-  line-height: 24px;
+  min-height: 20px;
+  height: 20px;
+  line-height: 20px;
   flex: 0;
   display: flex;
 }

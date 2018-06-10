@@ -61,6 +61,7 @@ export default componentWithStore(
               path={this.selectedPath}
               blame={this.selectedBlame}
               sha={this.sha}
+              style={{ margin: "0 0.2em" }}
             />
           );
         } else {
