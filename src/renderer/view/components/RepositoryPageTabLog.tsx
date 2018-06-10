@@ -9,6 +9,7 @@ import VSplitterPanel from "./base/VSplitterPanel";
 import { dragdrop } from "../dragdrop";
 import { LogItem } from "../mainTypes";
 import { __sync } from "view/utils/modifiers";
+import { showContextMenu } from "core/browser";
 
 // @vue/component
 export default componentWithStore({
@@ -18,7 +19,7 @@ export default componentWithStore({
     return {
       displayState: {
         splitterPosition: 0.6,
-        columnWidths: undefined as number[] | undefined
+        columnWidths: {} as Dict<number>
       }
     };
   },
@@ -44,6 +45,17 @@ export default componentWithStore({
     },
     runInteractiveShell() {
       this.$store.actions.runInteractiveShell();
+    },
+    showContextMenu({ item, event }: RowEventArgs<LogItem, Event>) {
+      event.preventDefault();
+      showContextMenu([
+        {
+          label: "Show tree",
+          click: () => {
+            this.$store.actions.showTreeTab(item.commit.id);
+          }
+        }
+      ]);
     }
   },
   render(): VNode {
@@ -64,6 +76,7 @@ export default componentWithStore({
           onRowclick={e => actions.setSelectedIndex(e.index)}
           onRowdragover={this.onRowdragover}
           onRowdrop={this.onRowdrop}
+          onRowcontextmenu={this.showContextMenu}
         />
         <template slot="second">
           {state.selectedCommit.id === "--" ? (

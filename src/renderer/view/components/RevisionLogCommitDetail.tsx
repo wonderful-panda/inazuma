@@ -15,7 +15,7 @@ export default componentWithStore({
   data() {
     return {
       displayState: {
-        columnWidths: undefined as number[] | undefined
+        columnWidths: {} as Dict<number>
       }
     };
   },

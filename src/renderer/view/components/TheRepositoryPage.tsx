@@ -3,6 +3,7 @@ import { componentWithStore } from "../store";
 import BaseLayout from "./BaseLayout";
 import TabLog from "./RepositoryPageTabLog";
 import TabFile from "./RepositoryPageTabFile";
+import TabTree from "./RepositoryPageTabTree";
 import SideBarBranches from "./SideBarBranches";
 import SideBarRemotes from "./SideBarRemotes";
 import VIconButton from "./base/VIconButton";
@@ -46,6 +47,8 @@ export default componentWithStore({
         return <TabLog />;
       } else if (tab.kind === "file") {
         return <TabFile {...{ props: tab.params }} />;
+      } else if (tab.kind === "tree") {
+        return <TabTree {...{ props: tab.params }} />;
       } else {
         return (
           <div class={md.HEADLINE} style={{ margin: "auto", color: "#888" }}>

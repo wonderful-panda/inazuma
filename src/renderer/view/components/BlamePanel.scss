@@ -2,7 +2,6 @@
   display: flex;
   flex-flow: column nowrap;
   flex: 1;
-  margin: 0.2em 1em;
   overflow: hidden;
 }
 
@@ -20,9 +19,19 @@
   color: #888;
 }
 
-.editor {
+.editorWrapper {
+  position: relative;
   flex: 1;
   border: 1px solid #444;
+  overflow: hidden;
+}
+
+.editor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 
   :global {
     .line-numbers {
@@ -50,9 +59,9 @@
 }
 
 .bottomBar {
-  min-height: 24px;
-  height: 24px;
-  line-height: 24px;
+  min-height: 20px;
+  height: 20px;
+  line-height: 20px;
   flex: 0;
   display: flex;
 }

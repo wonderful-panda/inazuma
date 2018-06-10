@@ -122,6 +122,14 @@ declare interface DiffFile {
   sha: string;
 }
 
+declare interface LsTreeEntry {
+  data: {
+    path: string;
+    type: "blob" | "tree";
+  };
+  children?: LsTreeEntry[];
+}
+
 declare interface BrowserCommand {
   openRepository(repoPath: string): Promise<{ commits: Commit[]; refs: Refs }>;
   getCommitDetail(params: {
@@ -133,6 +141,7 @@ declare interface BrowserCommand {
     relPath: string;
     sha: string;
   }): Promise<Blame>;
+  getTree(params: { repoPath: string; sha: string }): Promise<LsTreeEntry[]>;
   resetConfig(config: Config): Promise<void>;
   runInteractiveShell(curdir: string): Promise<void>;
   showExternalDiff(params: {
