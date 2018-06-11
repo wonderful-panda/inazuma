@@ -79,6 +79,11 @@ declare interface Commit extends DagNode {
   author: string;
 }
 
+declare interface FileCommit extends Commit {
+  filename: string;
+  previousFilename?: string;
+}
+
 declare interface BlameCommit {
   id: string;
   summary: string;

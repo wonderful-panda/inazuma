@@ -102,6 +102,88 @@ export async function log(
   return commitCount;
 }
 
+export async function filelog(
+  repository: string,
+  maxCount: number,
+  heads: string[],
+  path: string,
+  commitCb: (c: FileCommit) => any
+): Promise<number> {
+  /* Output format
+     |
+     |id <hash>
+     |parents <parent hashes separated by blank>
+     |author <author>
+     |date <author date (milliseconds from epoc)>
+     |summary <summary>
+     |<NUL>
+     |STAT LINE
+
+     |STAT LINE is one of them:
+     |deleted lines<TAB>added lines<TAB>path<NUL>
+     |deleted lines<TAB>added lines<NUL>old path<NUL>new path<NUL>
+     */
+
+  const args = [
+    ...heads,
+    "--topo-order",
+    `--format=%n${_logFormat}%nstat `,
+    "--follow",
+    "--numstat",
+    "-z"
+  ];
+  if (maxCount > 0) {
+    args.push(`-${maxCount}`);
+  }
+  args.push("--", path);
+  let current = {} as FileCommit;
+  let commitCount = 0;
+  let region: "PROPS" | "STAT" = "PROPS";
+  await exec("log", {
+    repository,
+    args,
+    onEachLine: line => {
+      if (line.length === 0) {
+        return;
+      }
+      if (region === "PROPS") {
+        const p = line.indexOf(" ");
+        if (p <= 0) {
+          console.log("log/unexpected output:", line);
+          return;
+        }
+        const name = line.slice(0, p);
+        if (name === "stat") {
+          region = "STAT";
+          return;
+        }
+        const proc = _procMap[name];
+        if (!proc) {
+          console.log("log/unexpected output:", line);
+          return;
+        }
+        proc(current, line.slice(p + 1));
+      } else {
+        // stat line
+        const tokens = line.split("\0");
+        if (tokens.length > 2) {
+          // deleted lines<TAB>added lines<NUL>old path<NUL>new path<NUL>
+          current.previousFilename = tokens[1];
+          current.filename = tokens[2];
+        } else {
+          // deleted lines<TAB>added lines<TAB>path<NUL>
+          current.filename = tokens[0].split("\t")[2];
+        }
+        commitCount++;
+        commitCb(current);
+        current = {} as FileCommit;
+        region = "PROPS";
+      }
+    }
+  });
+  return commitCount;
+}
+
 const _commitDetailFormat = _logFormat + "%nbody {{{%n%w(0,1,1)%b%n%w(0)}}}%n";
 
 export async function getCommitDetail(

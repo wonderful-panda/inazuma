@@ -1,5 +1,5 @@
 import { catFile, saveTo } from "./file";
-import { log, getCommitDetail } from "./log";
+import { log, filelog, getCommitDetail } from "./log";
 import { getRefs } from "./refs";
 import { status } from "./status";
 import { blame } from "./blame";
@@ -9,6 +9,7 @@ export default {
   catFile,
   saveTo,
   log,
+  filelog,
   getCommitDetail,
   getRefs,
   status,
