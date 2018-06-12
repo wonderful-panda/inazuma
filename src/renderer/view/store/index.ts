@@ -233,20 +233,19 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     this.mutations.setPreferenceShown(false);
   }
 
-  async showFileTab(sha: string, path: string): Promise<void> {
+  async showFileTab(sha: string, relPath: string): Promise<void> {
     try {
-      const blame = Object.freeze(
-        await browserCommand.getBlame({
-          repoPath: this.state.repoPath,
-          relPath: path,
-          sha
-        })
-      );
+      const { repoPath } = this.state;
+      const blame = await browserCommand.getBlame({
+        repoPath,
+        relPath,
+        sha
+      });
       this.modules.tabs.actions.addOrSelect({
-        key: `file/${path}:${sha}`,
+        key: `file/${relPath}:${sha}`,
         kind: "file",
-        text: `${getFileName(path)} @ ${shortHash(sha)}`,
-        params: { sha, path: path, blame },
+        text: `${getFileName(relPath)} @ ${shortHash(sha)}`,
+        params: { sha, path: relPath, blame },
         closable: true
       });
     } catch (e) {

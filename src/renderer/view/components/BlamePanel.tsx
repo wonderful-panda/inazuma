@@ -2,27 +2,34 @@ import * as Electron from "electron";
 import * as MonacoEditor from "vue-monaco";
 import * as moment from "moment";
 import { componentWithStore } from "../store";
-import VIconButton from "./base/VIconButton";
 import p from "vue-strict-prop";
 import { shortHash } from "../filters";
 import { lineIndicesToRanges, getLangIdFromPath } from "view/monaco";
 import { showContextMenu } from "core/browser";
 import { asTuple } from "core/utils";
 import { VNode } from "vue";
+import FileLogTable from "./FileLogTable";
 import * as style from "./BlamePanel.scss";
+import VSplitterPanel from "./base/VSplitterPanel";
+import { __sync } from "../utils/modifiers";
+import * as ds from "view/store/displayState";
 
 const amdRequire = (global as any).amdRequire;
 
 // @vue/component
 export default componentWithStore(
   {
-    name: "RepositoryPageTabFile",
+    name: "BlamePanel",
+    mixins: [ds.createMixin("BlamePanel")],
     components: {
-      MonacoEditor,
-      VIconButton
+      MonacoEditor
     },
     data() {
       return {
+        displayState: {
+          columnWidths: {} as Dict<number>,
+          splitterRatio: 0.3
+        },
         editorMounted: false,
         hoveredLineNumber: -1,
         selectedCommitId: "",
@@ -40,7 +47,10 @@ export default componentWithStore(
         if (this.monacoEditor) {
           this.monacoEditor.setScrollPosition({ scrollLeft: 0, scrollTop: 0 });
           // decorations must be updated after text changed
-          this.$nextTick(this.updateStaticDecorations);
+          this.$nextTick(() => {
+            this.selectedCommitId = this.blame.commits[0].id;
+            this.updateStaticDecorations();
+          });
         }
       },
       selectedCommitId() {
@@ -57,14 +67,15 @@ export default componentWithStore(
           readOnly: true,
           automaticLayout: true,
           folding: false,
+          minimap: { enabled: false },
           lineDecorationsWidth: (this.lineNoWidth + 21) * 7,
           lineNumbers: this.lineNumberFunc,
           selectOnLineNumbers: false,
           contextmenu: false
         };
       },
-      commitMap(): Map<string, BlameCommit> {
-        return new Map<string, BlameCommit>(
+      commitMap(): Map<string, FileCommit> {
+        return new Map<string, FileCommit>(
           this.blame.commits.map(c => asTuple(c.id, c))
         );
       },
@@ -74,7 +85,7 @@ export default componentWithStore(
         }
         return (this.$refs.monaco as any).getMonaco();
       },
-      hoveredCommit(): BlameCommit | undefined {
+      hoveredCommit(): FileCommit | undefined {
         const id = this.blame.commitIds[this.hoveredLineNumber - 1];
         if (!id) {
           return undefined;
@@ -94,9 +105,6 @@ export default componentWithStore(
       },
       lineNumberFunc(): (lineno: number) => string {
         const zeros = "00000000".slice(0, this.lineNoWidth + 1);
-        const boundaryId = this.blame.commits
-          .filter(c => c.boundary)
-          .map(c => c.id)[0];
         const formatDate = (v: number) =>
           moment(v)
             .local()
@@ -113,11 +121,7 @@ export default componentWithStore(
             return "";
           }
           const date = dateMap.get(id);
-          if (id === boundaryId) {
-            return `${linenoStr} ^${id.slice(0, 7)} ${date}`;
-          } else {
-            return `${linenoStr} ${shortHash(id)} ${date}`;
-          }
+          return `${linenoStr} ${shortHash(id)} ${date}`;
         };
       },
       bottomBar(): VNode[] {
@@ -139,6 +143,14 @@ export default componentWithStore(
               <span class={style.filename}>{hoveredCommit.filename}</span>
             </div>
           ];
+        }
+      },
+      selectedCommitIndex(): number {
+        const id = this.selectedCommitId;
+        if (!id) {
+          return -1;
+        } else {
+          return this.blame.commits.findIndex(c => c.id === id);
         }
       }
     },
@@ -168,6 +180,7 @@ export default componentWithStore(
       },
       onEditorMount() {
         this.editorMounted = true;
+        this.selectedCommitId = this.blame.commits[0].id;
         this.updateStaticDecorations();
         this.updateSelectedCommitDecorations();
       },
@@ -187,17 +200,20 @@ export default componentWithStore(
           label: "View this revision",
           click: () => actions.showFileTab(commit.id, commit.filename)
         });
-        if (commit.previous) {
+        if (commit.previousFilename) {
           menus.push({
             label: "View previous revision",
             click: () =>
-              actions.showFileTab(commit.previous!, commit.previousFilename!)
+              actions.showFileTab(
+                commit.parentIds[0]!,
+                commit.previousFilename!
+              )
           });
           menus.push({
             label: "Compare with previous revision",
             click: () =>
               actions.showExternalDiff(
-                { path: commit.previousFilename!, sha: commit.previous! },
+                { path: commit.previousFilename!, sha: commit.parentIds[0]! },
                 { path: commit.filename, sha: commit.id }
               )
           });
@@ -284,25 +300,45 @@ export default componentWithStore(
             <span class={style.path}>{this.path}</span>
             <span class={style.sha}>@ {shortHash(this.sha)}</span>
           </div>
-          <div class={style.editorWrapper}>
-            <monaco-editor
-              ref="monaco"
-              class={style.editor}
-              require={amdRequire}
-              language={this.language}
-              value={this.blame.content.text}
-              options={this.options}
-              onEditorMount={this.onEditorMount}
-              onMouseDown={this.onMouseDown}
-              onMouseMove={this.onMouseMove}
-              onMouseLeave={this.onMouseLeave}
-              onContextMenu={this.showContextMenu}
+          <VSplitterPanel
+            class={style.container}
+            direction="vertical"
+            splitterWidth={5}
+            minSizeFirst="10%"
+            minSizeSecond="10%"
+            ratio={__sync(this.displayState.splitterRatio)}
+          >
+            <FileLogTable
+              slot="first"
+              style={{ flex: 1, border: "1px solid #444" }}
+              items={this.blame.commits}
+              rowHeight={24}
+              selectedIndex={this.selectedCommitIndex}
+              widths={__sync(this.displayState.columnWidths)}
+              onRowclick={args => {
+                this.selectedCommitId = args.item.id;
+              }}
             />
-          </div>
+            <div slot="second" class={style.editorWrapper}>
+              <monaco-editor
+                ref="monaco"
+                class={style.editor}
+                require={amdRequire}
+                language={this.language}
+                value={this.blame.content.text}
+                options={this.options}
+                onEditorMount={this.onEditorMount}
+                onMouseDown={this.onMouseDown}
+                onMouseMove={this.onMouseMove}
+                onMouseLeave={this.onMouseLeave}
+                onContextMenu={this.showContextMenu}
+              />
+            </div>
+          </VSplitterPanel>
           {this.bottomBar}
         </div>
       );
     }
   },
-  ["path"]
+  ["path", "sha", "blame"]
 );

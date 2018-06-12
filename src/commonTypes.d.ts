@@ -96,7 +96,7 @@ declare interface BlameCommit {
 }
 
 declare interface Blame {
-  commits: ReadonlyArray<BlameCommit>;
+  commits: ReadonlyArray<FileCommit>;
   commitIds: ReadonlyArray<string>;
   content: {
     text: string;
@@ -146,6 +146,11 @@ declare interface BrowserCommand {
     relPath: string;
     sha: string;
   }): Promise<Blame>;
+  getFileLog(params: {
+    repoPath: string;
+    relPath: string;
+    sha: string;
+  }): Promise<FileCommit[]>;
   getTree(params: { repoPath: string; sha: string }): Promise<LsTreeEntry[]>;
   resetConfig(config: Config): Promise<void>;
   runInteractiveShell(curdir: string): Promise<void>;

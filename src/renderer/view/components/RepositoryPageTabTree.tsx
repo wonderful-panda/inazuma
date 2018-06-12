@@ -18,7 +18,6 @@ import VSplitterPanel from "./base/VSplitterPanel";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import BlamePanel from "./BlamePanel";
 import { browserCommand } from "core/browser";
-import * as md from "view/utils/md-classes";
 
 type Data = LsTreeEntry["data"];
 type TreeNodeWithState = TreeNodeWithState_<Data>;
@@ -66,13 +65,16 @@ export default componentWithStore(
           );
         } else {
           ret.push(
-            <div class={[style.noFileSelected, md.DISPLAY1]}>
-              NO FILE SELECTED
-            </div>
+            <md-empty-state
+              style={{ transition: "none !important" }}
+              md-icon="no_sim"
+              md-label="No file selected"
+              md-description="Select file, and blame information will be shown here"
+            />
           );
         }
         if (this.loading) {
-          ret.push(<VBackdropSpinner />);
+          ret.push(<VBackdropSpinner key="spinner" />);
         }
         return ret;
       }
@@ -102,8 +104,8 @@ export default componentWithStore(
         event.stopPropagation();
         try {
           this.loading = true;
-          const { repoPath } = this.$store.state;
           const { sha } = this;
+          const { repoPath } = this.$store.state;
           const blame = await browserCommand.getBlame({
             repoPath,
             relPath,

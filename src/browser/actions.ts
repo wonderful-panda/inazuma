@@ -38,6 +38,11 @@ export function setupBrowserCommands(
       const blame = await git.blame(repoPath, relPath, sha);
       return blame;
     },
+    async getFileLog({ repoPath, relPath, sha }): Promise<FileCommit[]> {
+      const ret = [] as FileCommit[];
+      await git.filelog(repoPath, 100, [sha], relPath, c => ret.push(c));
+      return ret;
+    },
     getTree({ repoPath, sha }): Promise<LsTreeEntry[]> {
       return git.lsTree(repoPath, sha);
     },
