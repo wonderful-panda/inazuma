@@ -53,7 +53,7 @@ export function exec(command: string, params: ExecParams): Promise<ExecResult> {
         }
       }
     });
-    p.stdout.on("close", () => {
+    p.on("exit", () => {
       if (lastLine) {
         cb(lastLine);
       }
