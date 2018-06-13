@@ -11,6 +11,8 @@
 
     .vlist-row {
       font-family: var(--monospace-fontfamily);
+      user-select: none;
+      cursor: default;
       &:hover {
         background-color: #4c4c4c;
       }
@@ -30,6 +32,8 @@
 
     .vlist-header-row {
       border-bottom: solid 2px #222;
+      user-select: none;
+      cursor: default;
     }
   }
 }

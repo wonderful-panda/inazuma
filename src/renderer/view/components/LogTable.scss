@@ -1,15 +1,20 @@
 .container {
   :global {
-    .vlist-row:nth-child(2n) {
-      background-color: #282828;
-    }
-
-    .vlist-row:hover {
-      background-color: #383838;
+    .vlist-row {
+      user-select: none;
+      cursor: default;
+      &:nth-child(2n) {
+        background-color: #282828;
+      }
+      &:hover {
+        background-color: #383838;
+      }
     }
 
     .vlist-header-row {
       border-bottom: solid 1px #aaa;
+      user-select: none;
+      cursor: default;
     }
 
     .vtable-splitter {
