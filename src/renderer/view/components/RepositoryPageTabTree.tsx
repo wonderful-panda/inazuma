@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import {
   vtreetableOf,
   ExpandableCell,
@@ -12,12 +13,14 @@ import p from "vue-strict-prop";
 import { VNode } from "vue";
 import * as ds from "view/store/displayState";
 import * as style from "./RepositoryPageTabTree.scss";
-import { getFileName, getExtension } from "core/utils";
+import { getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import BlamePanel from "./BlamePanel";
 import { browserCommand } from "core/browser";
+import VTextField from "./base/VTextField";
+import { filterTreeNodes } from "core/tree";
 
 type Data = LsTreeEntry["data"];
 type TreeNodeWithState = TreeNodeWithState_<Data>;
@@ -36,6 +39,8 @@ export default componentWithStore(
     },
     data() {
       return {
+        filterText: "" as string,
+        filterFunc: undefined as ((entry: Data) => boolean) | undefined,
         selectedPath: "",
         selectedBlame: undefined as Blame | undefined,
         loading: false,
@@ -51,6 +56,13 @@ export default componentWithStore(
           { id: "name", defaultWidth: 300 },
           { id: "extension", defaultWidth: 80, className: style.lastCell }
         ];
+      },
+      filteredRoots(): ReadonlyArray<LsTreeEntry> {
+        if (this.filterFunc === undefined) {
+          return this.rootNodes;
+        } else {
+          return filterTreeNodes(this.rootNodes, this.filterFunc);
+        }
       },
       rightPanel(): VNode[] {
         const ret = [] as VNode[];
@@ -78,6 +90,15 @@ export default componentWithStore(
         }
         return ret;
       }
+    },
+    watch: {
+      filterText: _.debounce(function(this: any, value: string) {
+        if (value) {
+          this.filterFunc = (v: Data) => v.basename.indexOf(value) >= 0;
+        } else {
+          this.filterFunc = undefined;
+        }
+      }, 500)
     },
     methods: {
       getRowClass({ data }: TreeNodeWithState): string | undefined {
@@ -120,16 +141,14 @@ export default componentWithStore(
         }
       },
       renderCell({ item, columnId }: VtableSlotCellProps): VNode[] | string {
-        const { path, type } = item.data;
+        const { basename, type } = item.data;
         switch (columnId) {
           case "name":
             return [
-              <ExpandableCell nodeState={item}>
-                {getFileName(path)}
-              </ExpandableCell>
+              <ExpandableCell nodeState={item}>{basename}</ExpandableCell>
             ];
           case "extension":
-            return type === "blob" ? getExtension(path) : "";
+            return type === "blob" ? getExtension(basename) : "";
           default:
             return "NOT IMPLEMENTED: " + columnId;
         }
@@ -145,23 +164,31 @@ export default componentWithStore(
           minSizeFirst="10%"
           minSizeSecond="10%"
         >
-          <VtreeTableT
-            ref="tree"
-            slot="first"
-            style={{ flex: 1 }}
-            columns={this.columns}
-            rootNodes={this.rootNodes}
-            indentWidth={12}
-            rowHeight={24}
-            getItemKey={item => item.path}
-            getRowClass={this.getRowClass}
-            widths={__sync(this.displayState.columnWidths)}
-            scopedSlots={{
-              cell: this.renderCell
-            }}
-            onRowclick={this.onRowclick}
-            onRowdblclick={this.onRowdblclick}
-          />
+          <template slot="first">
+            <VTextField
+              class={style.filterField}
+              inlineIcon="filter_list"
+              tooltip="Filename filter"
+              value={__sync(this.filterText)}
+            />
+            <VtreeTableT
+              ref="tree"
+              slot="first"
+              style={{ flex: 1 }}
+              columns={this.columns}
+              rootNodes={this.filteredRoots}
+              indentWidth={12}
+              rowHeight={24}
+              getItemKey={item => item.path}
+              getRowClass={this.getRowClass}
+              widths={__sync(this.displayState.columnWidths)}
+              scopedSlots={{
+                cell: this.renderCell
+              }}
+              onRowclick={this.onRowclick}
+              onRowdblclick={this.onRowdblclick}
+            />
+          </template>
           <div slot="second" class={style.rightPanel}>
             {this.rightPanel}
           </div>

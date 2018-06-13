@@ -130,6 +130,7 @@ declare interface DiffFile {
 declare interface LsTreeEntry {
   data: {
     path: string;
+    basename: string;
     type: "blob" | "tree";
   };
   children?: LsTreeEntry[];

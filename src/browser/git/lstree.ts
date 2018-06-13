@@ -20,7 +20,8 @@ export async function lsTree(
       const type = m[1] === "tree" ? "tree" : "blob";
       const path = m[2];
       const parent = path_.dirname(path);
-      const entry: LsTreeEntry = { data: { path, type } };
+      const basename = path_.basename(path);
+      const entry: LsTreeEntry = { data: { path, basename, type } };
       if (type === "tree") {
         parents[path] = entry.children = [];
       }
