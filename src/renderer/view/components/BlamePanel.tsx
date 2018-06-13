@@ -194,27 +194,25 @@ export default componentWithStore(
         if (!commit) {
           return;
         }
+        const { id, filename, previousFilename, parentIds } = commit;
         const actions = this.$store.actions;
         const menus: Electron.MenuItemConstructorOptions[] = [];
         menus.push({
           label: "View this revision",
-          click: () => actions.showFileTab(commit.id, commit.filename)
+          click: () => actions.showFileTab(id, filename)
         });
-        if (commit.previousFilename) {
+        if (parentIds[0]) {
           menus.push({
             label: "View previous revision",
             click: () =>
-              actions.showFileTab(
-                commit.parentIds[0]!,
-                commit.previousFilename!
-              )
+              actions.showFileTab(parentIds[0]!, previousFilename || filename)
           });
           menus.push({
             label: "Compare with previous revision",
             click: () =>
               actions.showExternalDiff(
-                { path: commit.previousFilename!, sha: commit.parentIds[0]! },
-                { path: commit.filename, sha: commit.id }
+                { path: previousFilename || filename, sha: parentIds[0]! },
+                { path: filename, sha: id }
               )
           });
         }
@@ -222,7 +220,7 @@ export default componentWithStore(
           label: "Compare with working tree",
           click: () =>
             actions.showExternalDiff(
-              { path: commit.filename, sha: commit.id },
+              { path: filename, sha: id },
               { path: this.path, sha: "UNSTAGED" }
             )
         });
