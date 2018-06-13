@@ -9,6 +9,7 @@ import { errorReporterModule } from "./errorReporterModule";
 import { tabsModule } from "./tabsModule";
 import { getFileName } from "core/utils";
 import { shortHash } from "../filters";
+import { sortTreeInplace } from "core/tree";
 
 const emptyCommit: CommitDetail = {
   id: "",
@@ -255,12 +256,16 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
 
   async showTreeTab(sha: string): Promise<void> {
     try {
-      const rootNodes = Object.freeze(
-        await browserCommand.getTree({
-          repoPath: this.state.repoPath,
-          sha
-        })
-      );
+      const rootNodes = await browserCommand.getTree({
+        repoPath: this.state.repoPath,
+        sha
+      });
+      sortTreeInplace(rootNodes, (a, b) => {
+        return (
+          a.data.type.localeCompare(b.data.type) * -1 || // tree, then blob
+          a.data.basename.localeCompare(b.data.basename)
+        );
+      });
       this.modules.tabs.actions.addOrSelect({
         key: `tree/${sha}`,
         kind: "tree",

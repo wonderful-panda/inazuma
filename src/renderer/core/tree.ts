@@ -26,3 +26,15 @@ function filterTreeNode<T>(
   }
   return { ...node, children };
 }
+
+export function sortTreeInplace<T>(
+  nodes: TreeNode<T>[],
+  compareFn: (a: TreeNode<T>, b: TreeNode<T>) => number
+): void {
+  nodes.sort(compareFn);
+  nodes.forEach(n => {
+    if (n.children) {
+      sortTreeInplace(n.children, compareFn);
+    }
+  });
+}
