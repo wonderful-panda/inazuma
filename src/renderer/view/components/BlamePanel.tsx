@@ -46,6 +46,7 @@ export default componentWithStore(
       blame() {
         if (this.monacoEditor) {
           this.monacoEditor.setScrollPosition({ scrollLeft: 0, scrollTop: 0 });
+          this.selectedCommitId = "";
           // decorations must be updated after text changed
           this.$nextTick(() => {
             this.selectedCommitId = this.blame.commits[0].id;
