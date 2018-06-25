@@ -2,7 +2,6 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { dragdrop } from "../dragdrop";
 import p from "vue-strict-prop";
-import * as style from "./LogTableCellSummaryRef.scss";
 
 export default tsx.component(
   // @vue/component
@@ -72,3 +71,55 @@ export default tsx.component(
   },
   ["refObject"]
 );
+
+const style = css`
+  .base {
+    vertical-align: middle;
+    height: 14px;
+    line-height: 14px;
+    font-family: var(--monospace-fontfamily);
+    font-size: 12px;
+    border: 1px solid;
+    margin: auto 4px auto 0;
+    padding: 0 0.4em 0 0.4em;
+    border-radius: 1em;
+    box-sizing: content-box;
+    cursor: default;
+  }
+
+  .${"head"} {
+    @extend .base;
+    line-height: 16px;
+    border-radius: 2px;
+    color: darkorange;
+    font-weight: bolder;
+    border: 2px solid darkorange;
+  }
+
+  .${"branch"} {
+    @extend .base;
+    color: cyan;
+    border-color: cyan;
+    cursor: pointer;
+  }
+
+  .${"currentBranch"} {
+    @extend .base;
+    color: cyan;
+    border: 2px solid cyan;
+    cursor: pointer;
+  }
+
+  .${"tag"} {
+    @extend .base;
+    border-radius: 0;
+    color: cyan;
+    border-color: cyan;
+  }
+
+  .${"remote"} {
+    @extend .base;
+    color: #888;
+    border-color: #888;
+  }
+`;

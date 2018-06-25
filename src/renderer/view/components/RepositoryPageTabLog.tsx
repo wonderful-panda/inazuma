@@ -89,12 +89,3 @@ export default componentWithStore({
     );
   }
 });
-
-/*
-<style module>
-.splitterPanel {
-  flex: 1;
-  margin: 2px;
-}
-</style>
-*/

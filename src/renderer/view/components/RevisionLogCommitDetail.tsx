@@ -6,7 +6,6 @@ import { showContextMenu } from "core/browser";
 import FileTable from "./FileTable";
 import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
-import * as style from "./RevisionLogCommitDetail.scss";
 
 // @vue/component
 export default componentWithStore({
@@ -125,3 +124,49 @@ export default componentWithStore({
     );
   }
 });
+
+const style = css`
+  .${"container"} {
+    display: flex;
+    flex: 1;
+    flex-flow: column nowrap;
+    padding: 8px;
+  }
+
+  .${"inactive"} {
+    color: #666;
+  }
+
+  .${"summary"} {
+    padding: 4px;
+    margin-bottom: 8px;
+  }
+
+  .${"attrTable"} {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .${"attrName"} {
+    background-color: #333;
+    padding: 0 8px;
+    vertical-align: middle;
+    font-family: var(--monospace-fontfamily);
+  }
+
+  .${"attrValue"} {
+    @extend .attrName;
+    width: 100%;
+  }
+
+  .${"body"} {
+    margin: 0px 2px 8px 2px;
+    font-size: small;
+    background-color: #333;
+    padding: 0.2em;
+    min-height: 1em;
+    max-height: 12em;
+    white-space: pre-wrap;
+    overflow: auto;
+  }
+`;

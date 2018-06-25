@@ -4,7 +4,6 @@ import VButton from "./base/VButton";
 import VModal from "./base/VModal";
 import VTextField from "./base/VTextField";
 import * as md from "view/utils/md-classes";
-import * as style from "./ThePreferencePage.scss";
 import { __sync } from "babel-plugin-vue-jsx-modifier/lib/modifiers";
 
 // @vue/component
@@ -97,3 +96,47 @@ export default componentWithStore({
     );
   }
 });
+
+const style = css`
+  .${"container"} {
+    display: flex;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80%;
+    height: 100%;
+    bottom: 0;
+    box-shadow: 4px 0 4px rgba(0, 0, 0, 0.4);
+
+    flex: 1;
+    transition: all 0.3s ease;
+  }
+
+  .${"subHeader"} {
+    padding: 0;
+    min-height: 26px;
+  }
+
+  .${"modalBase"} {
+    &:global(.modal-enter),
+    &:global(.modal-leave-to) {
+      .container {
+        transform: translateX(-100%);
+      }
+    }
+  }
+
+  .${"modalContent"} {
+    padding-left: 8px;
+    padding-right: 32px;
+  }
+
+  .${"input"} {
+    margin-left: 1em;
+  }
+  .${"numberInput"} {
+    margin-left: 1em;
+    min-width: 200px;
+    width: 200px;
+  }
+`;

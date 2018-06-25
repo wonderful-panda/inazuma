@@ -2,16 +2,9 @@ var webpack = require("webpack");
 var path = require("path");
 var ForkTsCheckerPlugin = require("fork-ts-checker-webpack-plugin");
 
-var cacheLoader = {
-  loader: "cache-loader",
-  options: {
-    cacheDirectory: path.resolve(__dirname, ".cache-loader")
-  }
-};
-
 var loadersForTs = [
-  cacheLoader,
   "babel-loader",
+  "css-literal-loader",
   {
     loader: "ts-loader",
     options: {
@@ -43,7 +36,7 @@ module.exports = {
         use: loadersForTs
       },
       {
-        test: /\.scss$/,
+        test: /\.(scss|css)$/,
         include: [path.resolve(__dirname, "view")],
         use: ["style-loader", "css-loader?modules", "sass-loader"]
       }
