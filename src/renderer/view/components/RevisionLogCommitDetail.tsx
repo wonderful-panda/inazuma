@@ -1,6 +1,6 @@
 import * as md from "view/utils/md-classes";
 import { VNode } from "vue";
-import * as moment from "moment";
+import moment from "moment";
 import { componentWithStore } from "../store";
 import { showContextMenu } from "core/browser";
 import FileTable from "./FileTable";

@@ -1,5 +1,5 @@
 import { VNode } from "vue";
-import * as moment from "moment";
+import moment from "moment";
 import * as tsx from "vue-tsx-support";
 import { vtableOf, VtableColumn, Vtable, VtableEventsOn } from "vue-vtable";
 import p from "vue-strict-prop";

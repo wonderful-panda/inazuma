@@ -1,6 +1,6 @@
-import * as Electron from "electron";
-import * as MonacoEditor from "vue-monaco";
-import * as moment from "moment";
+import Electron from "electron";
+import MonacoEditor from "vue-monaco";
+import moment from "moment";
 import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import { shortHash } from "../filters";

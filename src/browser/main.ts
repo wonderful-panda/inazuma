@@ -1,4 +1,4 @@
-import * as Electron from "electron";
+import Electron from "electron";
 import { config, environment } from "./persistent";
 import wm from "./windowManager";
 import { setupRepositorySessions } from "./repositorySession";
