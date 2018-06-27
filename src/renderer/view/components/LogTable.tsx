@@ -118,7 +118,7 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create(
   ["items", "rowHeight", "selectedIndex"]
 );
 
-export const style = css`
+const style = css`
   .${"container"} {
     :global {
       .vlist-row {
@@ -152,3 +152,5 @@ export const style = css`
     }
   }
 `;
+
+export { style };
