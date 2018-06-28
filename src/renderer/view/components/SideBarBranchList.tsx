@@ -93,7 +93,7 @@ const style = css`
   $vPadding: 4px;
 
   .${"wrapper"} {
-    --list-item-height: $branchNameHeight + $commitIdHeight + $vPadding * 2;
+    --list-item-height: #{$branchNameHeight + $commitIdHeight + $vPadding * 2};
     padding: 0;
     margin: 0 0 0.5em 0;
     display: flex;
