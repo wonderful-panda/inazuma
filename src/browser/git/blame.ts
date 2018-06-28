@@ -33,7 +33,7 @@ export async function blame(
       }
     }
   });
-  const [content, ,] = await Promise.all([
+  const [content] = await Promise.all([
     promiseContent,
     promiseFileLog,
     promiseBlame
