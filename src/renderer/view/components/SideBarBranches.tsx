@@ -2,7 +2,6 @@ import { VNode } from "vue";
 import { componentWithStore } from "../store";
 import SideBarBase from "./SideBarBase";
 import SideBarBranchList from "./SideBarBranchList";
-import * as style from "./SideBarBranches.scss";
 
 // @vue/component
 export default componentWithStore({
@@ -41,3 +40,15 @@ export default componentWithStore({
     );
   }
 });
+
+const style = css`
+  .${"wrapper"} {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+    margin: 0;
+    padding: 0.5em;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+`;

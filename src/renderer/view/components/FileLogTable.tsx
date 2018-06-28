@@ -1,11 +1,11 @@
 import { VNode } from "vue";
-import * as moment from "moment";
+import moment from "moment";
 import * as tsx from "vue-tsx-support";
 import { vtableOf, VtableColumn, Vtable, VtableEventsOn } from "vue-vtable";
 import p from "vue-strict-prop";
 import { LogItem } from "../mainTypes";
-import * as style from "./LogTable.scss";
 import { shortHash } from "../filters";
+import { style } from "./LogTable";
 
 const VtableT = vtableOf<FileCommit>();
 

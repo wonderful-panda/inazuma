@@ -1,5 +1,5 @@
 import * as path from "path";
-import * as Electron from "electron";
+import Electron from "electron";
 import * as fs from "fs";
 import { Validator, Schema } from "jsonschema";
 

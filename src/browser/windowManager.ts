@@ -1,4 +1,4 @@
-import * as Electron from "electron";
+import Electron from "electron";
 
 class WindowManager {
   private _wins: Dict<Electron.BrowserWindow> = {};

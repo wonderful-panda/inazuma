@@ -1,5 +1,5 @@
 import { VNode } from "vue";
-import * as Electron from "electron";
+import Electron from "electron";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { componentWithStore } from "../store";
@@ -8,7 +8,6 @@ import DrawerNavigation from "./DrawerNavigation";
 import { getFileName, normalizePathSeparator } from "core/utils";
 import { navigate } from "../route";
 import * as md from "view/utils/md-classes";
-import * as style from "./TheWelcomePage.scss";
 const { dialog, BrowserWindow } = Electron.remote;
 
 const RepositoryListItem = tsx.componentFactoryOf<{ onClick: void }>().create({
@@ -128,3 +127,44 @@ export default componentWithStore({
     );
   }
 });
+
+const style = css`
+  .${"content"} {
+    flex: 1;
+    padding: 0 1em;
+  }
+
+  .${"leftPanel"} {
+    display: inline-block;
+    min-width: 40%;
+
+    :global {
+      .md-list {
+        background-color: var(--md-theme-default-background-on-background);
+        padding: 0 0.5em;
+      }
+      .md-list-item-content {
+        min-height: 32px !important;
+      }
+      .md-subheader {
+        min-height: 32px !important;
+      }
+      .md-icon {
+        margin-right: 0.5em !important;
+      }
+    }
+  }
+
+  .${"repoName"} {
+    height: 20px;
+    margin-right: auto;
+    text-transform: none !important;
+  }
+  .${"repoDescription"} {
+    text-transform: none !important;
+    font-size: 75%;
+  }
+  .${"divider"} {
+    margin: 0.5em 0 !important;
+  }
+`;

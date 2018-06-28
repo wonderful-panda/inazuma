@@ -4,7 +4,6 @@ import p from "vue-strict-prop";
 import { DialogState, DialogActions } from "view/store/dialogModule";
 import VButton from "./VButton";
 import VModal from "./VModal";
-import * as style from "./VDialogBase.scss";
 
 export default tsx.component(
   // @vue/component
@@ -51,3 +50,22 @@ export default tsx.component(
   },
   ["state", "actions"]
 );
+
+const style = css`
+  .${"container"} {
+    margin: auto;
+    min-width: 400px;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .${"dialogBase"} {
+    &:global(.modal-enter),
+    &:global(.modal-leave-to) {
+      .${"container"} {
+        transform: scale(1.05);
+        opacity: 0;
+      }
+    }
+  }
+`;

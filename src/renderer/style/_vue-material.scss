@@ -1,4 +1,4 @@
-@import "~vue-material/dist/theme/engine";
+@import "node_modules/vue-material/dist/theme/engine";
 @include md-register-theme(
   "default",
   (
@@ -13,7 +13,7 @@
     theme: dark
   )
 );
-@import "~vue-material/dist/theme/all";
+@import "node_modules/vue-material/dist/theme/all";
 
 .md-app-toolbar {
   min-height: 40px !important;

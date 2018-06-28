@@ -10,7 +10,7 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "jsx": "preserve"
   },
   "include": [
@@ -20,7 +20,5 @@
     "../ipc-promise.d.ts",
     "../commonTypes.d.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

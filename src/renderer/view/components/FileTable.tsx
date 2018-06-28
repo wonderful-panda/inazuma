@@ -3,7 +3,6 @@ import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { vtableOf, VtableColumn, VtableEventsOn } from "vue-vtable";
 import * as md from "view/utils/md-classes";
-import * as style from "./FileTable.scss";
 
 const Vtable = vtableOf<FileEntry>();
 
@@ -71,3 +70,45 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
     );
   }
 });
+
+const style = css`
+  .${"container"} {
+    display: flex;
+    flex: 1;
+
+    :global {
+      .vlist-container {
+        display: flex;
+        margin: 4px 2px;
+        background-color: #333;
+      }
+
+      .vlist-row {
+        font-family: var(--monospace-fontfamily);
+        user-select: none;
+        cursor: default;
+        &:hover {
+          background-color: #4c4c4c;
+        }
+      }
+
+      .vtable-row-selected {
+        background-color: #484848;
+      }
+
+      .vtable-splitter {
+        border-left: solid 1px #222;
+      }
+
+      .vtable-dragging-splitter {
+        background-color: #222;
+      }
+
+      .vlist-header-row {
+        border-bottom: solid 2px #222;
+        user-select: none;
+        cursor: default;
+      }
+    }
+  }
+`;

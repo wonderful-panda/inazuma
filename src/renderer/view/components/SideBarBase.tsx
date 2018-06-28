@@ -2,7 +2,6 @@ import { VNode } from "vue";
 import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import VCloseButton from "./base/VCloseButton";
-import * as style from "./SideBarBase.scss";
 
 // @vue/component
 export default componentWithStore({
@@ -34,3 +33,48 @@ export default componentWithStore({
     );
   }
 });
+
+const style = css`
+  $sidebar-width: 200px;
+
+  .${"wrapper"} {
+    display: flex;
+    flex-flow: row-reverse nowrap;
+    overflow-x: hidden;
+    width: $sidebar-width;
+    max-width: $sidebar-width;
+    transition: all 0.3s ease;
+
+    &:global(.sidebar-enter),
+    &:global(.sidebar-leave-to) {
+      width: 0;
+      max-width: 0;
+    }
+  }
+  .${"container"} {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+    box-sizing: border-box;
+    width: $sidebar-width;
+    min-width: $sidebar-width;
+    max-width: $sidebar-width;
+  }
+  .${"titlebar"} {
+    display: flex;
+    flex-flow: row nowrap;
+  }
+  .${"title"} {
+    font-size: large;
+    vertical-align: bottom;
+    margin: auto;
+    padding-top: 0.5em;
+    padding-left: 0.5em;
+    flex: 1;
+  }
+  .${"content"} {
+    display: flex;
+    padding: 0.5em;
+    flex: 1;
+  }
+`;

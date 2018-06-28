@@ -5,7 +5,6 @@ import FileTable from "./FileTable";
 import * as md from "view/utils/md-classes";
 import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
-import * as style from "./RevisionLogWorkingTree.scss";
 
 // @vue/component
 export default componentWithStore({
@@ -83,3 +82,19 @@ export default componentWithStore({
     );
   }
 });
+
+const style = css`
+  .${"container"} {
+    display: flex;
+    flex: 1;
+    flex-flow: column nowrap;
+    padding: 8px;
+  }
+
+  .${"splitterPane"} {
+    display: flex;
+    flex: 1;
+    flex-flow: column nowrap;
+    padding: 0;
+  }
+`;

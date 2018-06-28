@@ -2,7 +2,6 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import * as md from "view/utils/md-classes";
-import * as style from "./VBackdropSpinner.scss";
 
 export default tsx.component({
   name: "VBackdropSpinner",
@@ -21,3 +20,21 @@ export default tsx.component({
     );
   }
 });
+
+const style = css`
+  .${"backdrop"} {
+    position: absolute;
+    flex: 1;
+    display: flex;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+
+  .${"spinner"} {
+    margin: auto;
+  }
+`;

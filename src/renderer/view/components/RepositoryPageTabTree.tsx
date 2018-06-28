@@ -12,7 +12,6 @@ import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import { VNode } from "vue";
 import * as ds from "view/store/displayState";
-import * as style from "./RepositoryPageTabTree.scss";
 import { getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
@@ -198,3 +197,74 @@ export default componentWithStore(
   },
   ["sha", "rootNodes"]
 );
+
+const style = css`
+  .${"container"} {
+    display: flex;
+    flex: 1;
+    padding: 1em;
+
+    svg {
+      fill: #ddd;
+    }
+
+    :global {
+      .vlist-container {
+        border: 1px solid gray;
+      }
+      .vlist-row {
+        font-family: var(--monospace-fontfamily);
+        user-select: none;
+        cursor: default;
+
+        &:nth-child(2n) {
+          background-color: #282828;
+        }
+
+        &:hover {
+          background-color: #383838;
+        }
+      }
+
+      .vlist-header-row {
+        border-bottom: solid 1px #aaa;
+        user-select: none;
+        cursor: default;
+      }
+
+      .vtable-splitter {
+        border-right: solid 1px #555;
+      }
+
+      .vtable-dragging-splitter {
+        background-color: #888;
+      }
+    }
+  }
+
+  .${"selectedRow"} {
+    background-color: #484848;
+  }
+
+  .${"rightPanel"} {
+    position: relative;
+    flex: 1;
+    display: flex;
+  }
+
+  .${"noFileSelected"} {
+    margin: auto;
+    color: gray !important;
+  }
+
+  .${"lastCell"} {
+    flex: 1;
+  }
+
+  .${"filterField"} {
+    margin: 0 0 0.5em 0;
+    padding: 0;
+    min-height: 0;
+    font-size: small;
+  }
+`;

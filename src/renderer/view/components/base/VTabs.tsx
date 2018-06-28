@@ -4,7 +4,6 @@ import p from "vue-strict-prop";
 import VButton from "./VButton";
 import VIconButton from "./VIconButton";
 import { TabDefinition } from "view/mainTypes";
-import * as style from "./VTabs.scss";
 
 export default tsx
   .componentFactoryOf<
@@ -77,3 +76,76 @@ export default tsx
       );
     }
   });
+
+const style = css`
+  .${"container"} {
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    overflow: hidden;
+    padding: 0;
+  }
+  .${"tabbar"} {
+    display: flex;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-flow: row nowrap;
+    height: 22px;
+    background-color: #333;
+    &::-webkit-scrollbar {
+      display: none;
+      height: 3px;
+    }
+    &:hover::-webkit-scrollbar {
+      display: block;
+    }
+  }
+  .${"tab"} {
+    display: inline-block;
+    position: relative;
+    height: 22px;
+    line-height: 22px;
+    border-right: 1px solid #111;
+    margin: 0;
+  }
+  .${"tabButton"} {
+    text-transform: none;
+    font-size: small;
+    margin: 0;
+    height: 22px;
+    color: #aaa !important;
+
+    :global(.md-button-content) {
+      margin-right: auto;
+      padding-right: 12px;
+    }
+  }
+  .${"tabContent"} {
+    display: flex;
+    flex: 1;
+  }
+  .${"selectedTabButton"} {
+    @extend .${"tabButton"};
+    background-color: var(--md-theme-default-background);
+    color: var(--md-theme-default-primary) !important;
+  }
+  .${"closeIcon"} {
+    position: absolute;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    min-height: 20px;
+    max-height: 20px;
+    min-width: 20px;
+    max-width: 20px;
+    :global(.md-icon) {
+      font-size: x-small !important;
+      color: #888 !important;
+      &:hover {
+        color: #fff !important;
+      }
+    }
+  }
+`;

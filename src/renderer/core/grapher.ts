@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import * as assert from "assert";
+import assert from "assert";
 
 export interface InterEdge {
   index: number;

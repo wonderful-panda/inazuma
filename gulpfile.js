@@ -1,10 +1,7 @@
 const gulp = require("gulp");
 const sass = require("gulp-sass");
 const tildeImporter = require("node-sass-tilde-importer");
-const rename = require("gulp-rename");
-const tcm = require("gulp-typed-css-modules");
 const shell = require("gulp-shell");
-const merge = require("merge-stream");
 const webpack = require("webpack");
 const webpackStream = require("webpack-stream");
 
@@ -33,31 +30,12 @@ gulp.task("style", () => {
     .pipe(gulp.dest("dist/renderer"));
 });
 
-// create '*.scss.d.ts' from '*.scss'
-gulp.task("tcm", () => {
-  return gulp
-    .src("src/renderer/view/**/*.scss")
-    .pipe(sass())
-    .pipe(
-      // revert file name (.css -> .scss)
-      rename(path => {
-        path.extname = ".scss";
-      })
-    )
-    .pipe(tcm())
-    .pipe(gulp.dest("src/renderer/view"));
-});
-
-gulp.task("watch:tcm", ["tcm"], () => {
-  gulp.watch("src/renderer/view/**/*.scss", ["tcm"]);
-});
-
-gulp.task("renderer", ["tcm"], () => {
+gulp.task("renderer", () => {
   const config = require("./src/renderer/webpack.config");
   return webpackStream(config, webpack).pipe(gulp.dest("dist/renderer"));
 });
 
-gulp.task("watch:renderer", ["tcm"], () => {
+gulp.task("watch:renderer", () => {
   const config = require("./src/renderer/webpack.config");
   return webpackStream({ ...config, watch: true }, webpack).pipe(
     gulp.dest("dist/renderer")
@@ -68,13 +46,7 @@ gulp.task("watch:renderer", ["tcm"], () => {
 gulp.task("browser", shell.task("tsc -p src/browser/tsconfig.json"));
 gulp.task("watch:browser", shell.task("tsc -w -p src/browser/tsconfig.json"));
 
-gulp.task("build", ["copy", "style", "tcm", "renderer", "browser"]);
-gulp.task("watch", [
-  "copy",
-  "style",
-  "watch:tcm",
-  "watch:renderer",
-  "watch:browser"
-]);
+gulp.task("build", ["copy", "style", "renderer", "browser"]);
+gulp.task("watch", ["copy", "style", "watch:renderer", "watch:browser"]);
 
 gulp.task("default", ["build"]);

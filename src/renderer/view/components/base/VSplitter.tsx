@@ -3,7 +3,6 @@ import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { px } from "core/utils";
 import { CssProperties } from "vue-css-definition";
-import * as style from "./VSplitter.scss";
 
 export interface SplitterEventArgs {
   pagePosition: number;
@@ -97,3 +96,30 @@ export default tsx.componentFactoryOf<SplitterEvents>().create(
   },
   ["direction"]
 );
+
+const style = css`
+  .splitter {
+    flex-grow: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    &:hover {
+      background-color: #383838;
+    }
+  }
+
+  .${"horizontal"} {
+    @extend .splitter;
+    cursor: col-resize;
+    margin: 0 1px;
+  }
+
+  .${"vertical"} {
+    @extend .splitter;
+    cursor: row-resize;
+    margin: 1px 0;
+  }
+
+  .${"dragging"} {
+    background-color: #383838;
+  }
+`;

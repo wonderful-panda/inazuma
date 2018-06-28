@@ -1,17 +1,20 @@
 var webpack = require("webpack");
 var path = require("path");
 var ForkTsCheckerPlugin = require("fork-ts-checker-webpack-plugin");
-
+var babelrc = require("../../build/babelrc");
 var cacheLoader = {
   loader: "cache-loader",
   options: {
-    cacheDirectory: path.resolve(__dirname, ".cache-loader")
+    cacheDirectory: path.join(__dirname, ".cache-loader")
   }
 };
 
 var loadersForTs = [
   cacheLoader,
-  "babel-loader",
+  {
+    loader: "babel-loader",
+    options: babelrc
+  },
   {
     loader: "ts-loader",
     options: {
@@ -45,7 +48,7 @@ module.exports = {
       {
         test: /\.scss$/,
         include: [path.resolve(__dirname, "view")],
-        use: ["style-loader", "css-loader?modules", "sass-loader"]
+        use: [cacheLoader, "style-loader", "css-loader?modules", "sass-loader"]
       }
     ]
   },

@@ -1,6 +1,6 @@
-import * as Electron from "electron";
-import * as MonacoEditor from "vue-monaco";
-import * as moment from "moment";
+import Electron from "electron";
+import MonacoEditor from "vue-monaco";
+import moment from "moment";
 import { componentWithStore } from "../store";
 import p from "vue-strict-prop";
 import { shortHash } from "../filters";
@@ -9,7 +9,6 @@ import { showContextMenu } from "core/browser";
 import { asTuple } from "core/utils";
 import { VNode } from "vue";
 import FileLogTable from "./FileLogTable";
-import * as style from "./BlamePanel.scss";
 import VSplitterPanel from "./base/VSplitterPanel";
 import { __sync } from "../utils/modifiers";
 import * as ds from "view/store/displayState";
@@ -341,3 +340,97 @@ export default componentWithStore(
   },
   ["path", "sha", "blame"]
 );
+
+const style = css`
+  .${"container"} {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .${"title"} {
+    font-family: var(--monospace-fontfamily);
+    padding-bottom: 4px;
+    height: 24px;
+    line-height: 24px;
+    flex: 0;
+  }
+  .${"path"} {
+    padding-right: 8px;
+  }
+  .${"sha"} {
+    color: #888;
+  }
+
+  .${"editorWrapper"} {
+    position: relative;
+    flex: 1;
+    border: 1px solid #444;
+    overflow: hidden;
+  }
+
+  .${"editor"} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    :global {
+      .line-numbers {
+        color: #666;
+        cursor: pointer !important;
+        padding-left: 8px;
+        white-space: nowrap;
+      }
+
+      .blame-hunk-head,
+      .blame-hunk-head-margin {
+        border-top: 1px solid #444;
+      }
+      .blame-hunk-head-margin ~ .line-numbers,
+      .blame-first-line-margin ~ .line-numbers {
+        color: #ddd;
+      }
+
+      .blame-selected-linesdecorations {
+        background-color: rgba(255, 140, 0, 0.6);
+        left: 0 !important;
+        width: 4px !important;
+      }
+    }
+  }
+
+  .${"bottomBar"} {
+    min-height: 20px;
+    height: 20px;
+    line-height: 20px;
+    flex: 0;
+    display: flex;
+  }
+
+  .${"commitId"} {
+    color: var(--md-theme-default-accent);
+    font-family: var(--monospace-fontfamily);
+    margin-right: 8px;
+  }
+
+  .${"date"} {
+    font-family: var(--monospace-fontfamily);
+    margin-right: 8px;
+  }
+
+  .${"author"} {
+    color: var(--md-theme-default-primary);
+    margin-right: 8px;
+  }
+
+  .${"summary"} {
+    margin-right: 8px;
+  }
+
+  .${"filename"} {
+    font-family: var(--monospace-fontfamily);
+  }
+`;

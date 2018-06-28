@@ -7,7 +7,6 @@ import VErrorReporter from "./base/VErrorReporter";
 import ThePreferencePage from "./ThePreferencePage";
 import * as md from "view/utils/md-classes";
 import { __capture } from "view/utils/modifiers";
-import * as style from "./BaseLayout.scss";
 
 // @vue/component
 export default componentWithStore({
@@ -80,3 +79,37 @@ export default componentWithStore({
     );
   }
 });
+
+const style = css`
+  .${"container"} {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+    :global {
+      .md-app {
+        flex: 1;
+      }
+
+      .md-app-toolbar {
+        padding: 0 4px;
+      }
+    }
+  }
+
+  .${"title"} {
+    margin: 0 !important;
+    flex: 1;
+  }
+
+  .${"content"} {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    padding: 4px;
+  }
+`;
