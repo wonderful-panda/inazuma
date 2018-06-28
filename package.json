@@ -10,7 +10,7 @@
     "prebuild": "run-s prebuild:*",
     "build:renderer": "webpack --config src/renderer/webpack.config.js",
     "build:browser": "tsc -p src/browser/tsconfig.json",
-    "build": "run-s prebuild build:renderer build:browser",
+    "build": "run-s build:renderer build:browser",
     "watch:renderer": "webpack --config src/renderer/webpack.config.js -w",
     "watch:browser": "tsc -p src/browser/tsconfig.json -w",
     "watch": "run-p watch:*",
