@@ -1,14 +1,6 @@
 import * as _ from "lodash";
-export const dataStore = Object.create({});
 
-export function initDataStore(data: { [key: string]: any }) {
-  const clone = _.cloneDeep(data);
-  for (const key in clone) {
-    dataStore[key] = clone[key];
-  }
-}
-
-export function createMixin<T>(name: string, initialData: T) {
+export function createMixin<T extends object>(name: string, initialData: T) {
   // @vue/component
   return {
     data() {
@@ -18,14 +10,22 @@ export function createMixin<T>(name: string, initialData: T) {
     },
     watch: {
       displayState: {
-        handler(value: any) {
-          dataStore[name] = _.cloneDeep(value);
-        },
+        handler: _.debounce((value: any) => {
+          localStorage.setItem(name, JSON.stringify(value));
+        }, 500),
         deep: true
       }
     },
-    created(this: { displayState: T }) {
-      const storedData = dataStore[name];
+    mounted(this: { displayState: T }) {
+      let storedData: T | undefined = undefined;
+      try {
+        const jsonString = localStorage.getItem(name);
+        if (jsonString) {
+          storedData = JSON.parse(jsonString);
+        }
+      } catch {
+        // leave storedData undefined
+      }
       const currentData = this.displayState;
       if (storedData !== undefined) {
         for (const key in currentData) {
@@ -35,7 +35,7 @@ export function createMixin<T>(name: string, initialData: T) {
           }
         }
       }
-      dataStore[name] = _.cloneDeep(currentData);
+      localStorage.setItem(name, JSON.stringify(currentData));
     }
   };
 }

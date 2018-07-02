@@ -68,13 +68,6 @@ export function setupBrowserCommands(
     showExternalDiff({ repoPath, left, right }) {
       const rs = _repoSessions.prepare(repoPath);
       return showExternalDiff(rs, left, right);
-    },
-    saveDisplayState({ key, value }): Promise<void> {
-      environment.data.displayState[key] = Object.assign(
-        environment.data.displayState[key] || {},
-        value
-      );
-      return Promise.resolve();
     }
   };
   // register each methods as Electron ipc handlers

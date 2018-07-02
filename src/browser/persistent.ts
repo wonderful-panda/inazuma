@@ -119,15 +119,12 @@ const environmentSchema: Schema = {
           type: "boolean"
         }
       }
-    },
-    displayState: {
-      type: "Object"
     }
   },
   required: ["recentOpened"]
 };
 
-const defaultEnvironData: Environment = { recentOpened: [], displayState: {} };
+const defaultEnvironData: Environment = { recentOpened: [] };
 
 export const environment = {
   data: Object.assign(

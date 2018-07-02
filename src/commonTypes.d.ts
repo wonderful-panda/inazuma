@@ -6,10 +6,6 @@ declare type Resolve<T> = (arg: T) => void;
 declare type Dict<T> = { [key: string]: T };
 declare type Consumer<T> = (value: T) => void;
 
-declare interface DisplayState {
-  main?: any;
-}
-
 /**
  * Auto updated parsistent data written to .environment.json
  */
@@ -20,7 +16,6 @@ declare interface Environment {
     height: number;
     maximized: boolean;
   };
-  displayState: DisplayState;
 }
 
 /**
@@ -159,9 +154,5 @@ declare interface BrowserCommand {
     repoPath: string;
     left: DiffFile;
     right: DiffFile;
-  }): Promise<void>;
-  saveDisplayState(params: {
-    key: keyof DisplayState;
-    value: any;
   }): Promise<void>;
 }

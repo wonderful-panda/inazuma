@@ -1,10 +1,8 @@
 import "./install-vue";
 import Vue from "vue";
 import Electron from "electron";
-import * as ds from "view/store/displayState";
 import { store } from "./store";
 import { router } from "./route";
-import { browserCommand } from "core/browser";
 import { loadMonaco } from "./monaco";
 loadMonaco();
 
@@ -13,14 +11,8 @@ loadMonaco();
   const json = JSON.parse(getPersistentAsJson());
   const config = json.config as Config;
   const environment = json.environment as Environment;
-  ds.initDataStore(environment.displayState.main);
   store.mutations.resetConfig(config);
   store.mutations.resetEnvironment(environment);
-
-  window.addEventListener("beforeunload", () => {
-    browserCommand.saveDisplayState({ key: "main", value: ds.dataStore });
-    return undefined;
-  });
 
   Electron.ipcRenderer.on(
     "action",
