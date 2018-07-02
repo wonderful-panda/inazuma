@@ -25,6 +25,43 @@ function addRef(refs: Refs, r: Ref): void {
   }
 }
 
+function parseShowRefLine(
+  line: string,
+  currentBranch: string
+): Ref | undefined {
+  const p = line.indexOf(" ");
+  if (p <= 0) {
+    return undefined;
+  }
+  const id = line.slice(0, p);
+  const fullname = line.slice(p + 1);
+  const refNameComponents = fullname.split("/");
+  let type = refNameComponents.shift();
+  if (type === "HEAD") {
+    return { fullname, type, id };
+  } else if (type === "refs") {
+    type = refNameComponents.shift();
+    if (type === "heads") {
+      const name = refNameComponents.join("/");
+      const current = fullname === currentBranch;
+      return { fullname, type, name, id, current };
+    } else if (type === "tags") {
+      const name = refNameComponents.join("/");
+      return { fullname, type, name, id };
+    } else if (type === "remotes") {
+      const remote = refNameComponents.shift();
+      if (remote) {
+        const name = refNameComponents.join("/");
+        return { fullname, type, remote, name, id };
+      } else {
+        throw new Error("show-ref: Unexpected output: " + line);
+      }
+    }
+  } else {
+    throw new Error("show-ref: Unexpected output: " + line);
+  }
+}
+
 export async function getRefs(repository: string): Promise<Refs> {
   const refs: Refs = {
     mergeHeads: [],
@@ -41,52 +78,28 @@ export async function getRefs(repository: string): Promise<Refs> {
   });
   const currentBranch =
     ret.exitCode === 0 ? ret.stdout.toString("utf8").replace(/\n$/, "") : "";
-  await exec("show-ref", {
+  const { stdout } = await exec("show-ref", {
     repository,
-    args: ["--head"],
-    onEachLine: line => {
-      const p = line.indexOf(" ");
-      if (p <= 0) {
-        return;
-      }
-      const id = line.slice(0, p);
-      const fullname = line.slice(p + 1);
-      const refNameComponents = fullname.split("/");
-      let type = refNameComponents.shift();
-      if (type === "HEAD") {
-        addRef(refs, { fullname, type, id });
-      } else if (type === "refs") {
-        let type = refNameComponents.shift();
-        let name: string;
-        switch (type) {
-          case "heads":
-            name = refNameComponents.join("/");
-            addRef(refs, {
-              fullname,
-              type,
-              name,
-              id,
-              current: fullname === currentBranch
-            });
-            break;
-          case "tags":
-            name = refNameComponents.join("/");
-            addRef(refs, { fullname, type, name, id });
-            break;
-          case "remotes":
-            const remote = refNameComponents.shift();
-            if (remote) {
-              name = refNameComponents.join("/");
-              addRef(refs, { fullname, type, remote, name, id });
-            }
-            break;
-          default:
-            // TODO: handle unexpected line
-            break;
-        }
+    args: ["--head", "--dereference"]
+  });
+  const lines = stdout.toString("utf8").split("\n");
+  const refList = lines.map(line => parseShowRefLine(line, currentBranch));
+  refList.forEach((ref, index) => {
+    if (!ref) {
+      return;
+    } else if (ref.type === "tags") {
+      if (ref.name.endsWith("^{}")) {
+        addRef(refs, { ...ref, name: ref.name.slice(0, -3) });
       } else {
-        // TODO: handle unexpected line
+        const next = refList[index + 1];
+        if (next && next.type === "tags" && next.name === ref.name + "^{}") {
+          // skip annotated tag (Add dereferenced tag instead)
+          return;
+        }
+        addRef(refs, ref);
       }
+    } else {
+      addRef(refs, ref);
     }
   });
   // Get merge head list from .git/MERGE_HEAD
