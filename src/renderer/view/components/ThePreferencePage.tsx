@@ -1,5 +1,5 @@
 import Vue, { VNode } from "vue";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import VButton from "./base/VButton";
 import VModal from "./base/VModal";
 import VTextField from "./base/VTextField";
@@ -7,12 +7,12 @@ import * as md from "view/utils/md-classes";
 import { __sync } from "babel-plugin-vue-jsx-modifier/lib/modifiers";
 
 // @vue/component
-export default componentWithStore({
+export default storeComponent.create({
   name: "ThePreferencePage",
   data() {
     // don't pass state.config directly.
     return {
-      config: JSON.parse(JSON.stringify(this.$store.state.config)) as Config
+      config: JSON.parse(JSON.stringify(this.state.config)) as Config
     };
   },
   mounted() {
@@ -25,10 +25,10 @@ export default componentWithStore({
   },
   methods: {
     back() {
-      this.$store.actions.hidePreference();
+      this.actions.hidePreference();
     },
     async onOk() {
-      await this.$store.actions.resetConfig(this.$data.config);
+      await this.actions.resetConfig(this.$data.config);
       this.back();
     },
     renderSubheader(text: string): VNode {

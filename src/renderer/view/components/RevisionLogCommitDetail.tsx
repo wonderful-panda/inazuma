@@ -1,14 +1,14 @@
 import * as md from "view/utils/md-classes";
 import { VNode } from "vue";
 import moment from "moment";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import { showContextMenu } from "core/browser";
 import FileTable from "./FileTable";
 import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
 
 // @vue/component
-export default componentWithStore({
+export default storeComponent.create({
   name: "RevisionLogCommitDetail",
   mixins: [ds.createMixin("RevisionLogCommitDetail")],
   data() {
@@ -20,7 +20,7 @@ export default componentWithStore({
   },
   computed: {
     commit(): CommitDetail {
-      return this.$store.state.selectedCommit;
+      return this.state.selectedCommit;
     },
     classes(): object {
       return {
@@ -68,7 +68,7 @@ export default componentWithStore({
       if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
         return;
       }
-      this.$store.actions.showExternalDiff(
+      this.actions.showExternalDiff(
         { path: item.oldPath || item.path, sha: this.commit.id + "~1" },
         { path: item.path, sha: this.commit.id }
       );
@@ -88,7 +88,7 @@ export default componentWithStore({
         {
           label: "Compare with working tree",
           click: () => {
-            this.$store.actions.showExternalDiff(
+            this.actions.showExternalDiff(
               { path: item.path, sha: this.commit.id },
               { path: item.path, sha: "UNSTAGED" }
             );
@@ -97,7 +97,7 @@ export default componentWithStore({
         {
           label: "View file",
           click: () => {
-            this.$store.actions.showFileTab(this.commit.id, item.path);
+            this.actions.showFileTab(this.commit.id, item.path);
           }
         }
       ]);

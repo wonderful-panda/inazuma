@@ -1,4 +1,3 @@
-import Vue, { VueConstructor } from "vue";
 import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
 import { AppState, LogItem, ErrorLikeObject } from "../mainTypes";
@@ -293,7 +292,19 @@ export const store = sinai.store(
 );
 
 export type AppStore = typeof store;
-export const VueWithStore: VueConstructor<
-  Vue & { $store: AppStore }
-> = Vue as any;
-export const componentWithStore = tsx.extendFrom(VueWithStore).create;
+// @vue/component
+export const StoreMixin = {
+  computed: {
+    state(this: { $store: AppStore }): AppStore["state"] {
+      return this.$store.state;
+    },
+    actions(this: { $store: AppStore }): AppStore["actions"] {
+      return this.$store.actions;
+    },
+    getters(this: { $store: AppStore }): AppStore["getters"] {
+      return this.$store.getters;
+    }
+  }
+};
+
+export const storeComponent = tsx.componentFactory.mixin(StoreMixin);

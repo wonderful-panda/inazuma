@@ -1,5 +1,5 @@
 import { VNode } from "vue";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import BaseLayout from "./BaseLayout";
 import TabLog from "./RepositoryPageTabLog";
 import TabFile from "./RepositoryPageTabFile";
@@ -14,10 +14,10 @@ import { TabDefinition } from "../mainTypes";
 import * as md from "view/utils/md-classes";
 
 // @vue/component
-export default componentWithStore({
+export default storeComponent.create({
   computed: {
     sidebar(): VNode | undefined {
-      switch (this.$store.state.sidebar) {
+      switch (this.state.sidebar) {
         case "branches":
           return <SideBarBranches />;
         case "remotes":
@@ -28,10 +28,10 @@ export default componentWithStore({
     },
     selectedTabIndex: {
       get(): number {
-        return this.$store.state.tabs.selectedIndex;
+        return this.state.tabs.selectedIndex;
       },
       set(value: number): void {
-        this.$store.actions.tabs.select(value);
+        this.actions.tabs.select(value);
       }
     }
   },
@@ -40,7 +40,7 @@ export default componentWithStore({
       location.reload();
     },
     runInteractiveShell() {
-      this.$store.actions.runInteractiveShell();
+      this.actions.runInteractiveShell();
     },
     renderTab(tab: TabDefinition): VNode {
       if (tab.kind === "log") {
@@ -59,7 +59,7 @@ export default componentWithStore({
     }
   },
   render(): VNode {
-    const { state, getters, actions } = this.$store;
+    const { state, getters, actions } = this;
     return (
       <BaseLayout title={getters.repoName}>
         <template slot="titlebar-buttons">

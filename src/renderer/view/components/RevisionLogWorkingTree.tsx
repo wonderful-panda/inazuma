@@ -1,5 +1,5 @@
 import { VNode } from "vue";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import VSplitterPanel from "./base/VSplitterPanel";
 import FileTable from "./FileTable";
 import * as md from "view/utils/md-classes";
@@ -7,7 +7,7 @@ import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
 
 // @vue/component
-export default componentWithStore({
+export default storeComponent.create({
   name: "RevisionLogWorkingTree",
   mixins: [ds.createMixin("RevisionLogWorkingTree")],
   data() {
@@ -21,15 +21,15 @@ export default componentWithStore({
   },
   computed: {
     commit(): CommitDetail {
-      return this.$store.state.selectedCommit;
+      return this.state.selectedCommit;
     },
     stagedFiles(): FileEntry[] {
-      return this.$store.state.selectedCommit.files.filter(f => {
+      return this.state.selectedCommit.files.filter(f => {
         return f.inIndex;
       });
     },
     unstagedFiles(): FileEntry[] {
-      return this.$store.state.selectedCommit.files.filter(f => {
+      return this.state.selectedCommit.files.filter(f => {
         return f.inWorkingTree;
       });
     }
@@ -40,12 +40,12 @@ export default componentWithStore({
         return;
       }
       if (cached) {
-        this.$store.actions.showExternalDiff(
+        this.actions.showExternalDiff(
           { path: item.oldPath || item.path, sha: "HEAD" },
           { path: item.path, sha: "STAGED" }
         );
       } else {
-        this.$store.actions.showExternalDiff(
+        this.actions.showExternalDiff(
           { path: item.path, sha: "STAGED" },
           { path: item.path, sha: "UNSTAGED" }
         );

@@ -1,7 +1,7 @@
 import Electron from "electron";
 import MonacoEditor from "vue-monaco";
 import moment from "moment";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import p from "vue-strict-prop";
 import { shortHash } from "../filters";
 import { lineIndicesToRanges, getLangIdFromPath } from "view/monaco";
@@ -16,7 +16,7 @@ import * as ds from "view/store/displayState";
 const amdRequire = (global as any).amdRequire;
 
 // @vue/component
-export default componentWithStore(
+export default storeComponent.create(
   {
     name: "BlamePanel",
     mixins: [ds.createMixin("BlamePanel")],
@@ -195,7 +195,7 @@ export default componentWithStore(
           return;
         }
         const { id, filename, previousFilename, parentIds } = commit;
-        const actions = this.$store.actions;
+        const actions = this.actions;
         const menus: Electron.MenuItemConstructorOptions[] = [];
         menus.push({
           label: "View this revision",

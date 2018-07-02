@@ -1,6 +1,6 @@
 import { VNode } from "vue";
 import { RowEventArgs } from "vue-vtable";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import * as ds from "view/store/displayState";
 import RevisionLogWorkingTree from "./RevisionLogWorkingTree";
 import RevisionLogCommitDetail from "./RevisionLogCommitDetail";
@@ -12,7 +12,7 @@ import { __sync } from "view/utils/modifiers";
 import { showContextMenu } from "core/browser";
 
 // @vue/component
-export default componentWithStore({
+export default storeComponent.create({
   name: "RepositoryPageTabLog",
   mixins: [ds.createMixin("TheRevisionLogPage")],
   data() {
@@ -44,7 +44,7 @@ export default componentWithStore({
       location.reload();
     },
     runInteractiveShell() {
-      this.$store.actions.runInteractiveShell();
+      this.actions.runInteractiveShell();
     },
     showContextMenu({ item, event }: RowEventArgs<LogItem, Event>) {
       event.preventDefault();
@@ -52,14 +52,14 @@ export default componentWithStore({
         {
           label: "Show tree",
           click: () => {
-            this.$store.actions.showTreeTab(item.commit.id);
+            this.actions.showTreeTab(item.commit.id);
           }
         }
       ]);
     }
   },
   render(): VNode {
-    const { state, getters, actions } = this.$store;
+    const { state, getters, actions } = this;
     return (
       <VSplitterPanel
         style={{ flex: 1, margin: "2px" }}

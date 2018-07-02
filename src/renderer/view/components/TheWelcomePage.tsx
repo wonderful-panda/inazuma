@@ -2,7 +2,7 @@ import { VNode } from "vue";
 import Electron from "electron";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import BaseLayout from "./BaseLayout";
 import DrawerNavigation from "./DrawerNavigation";
 import { getFileName, normalizePathSeparator } from "core/utils";
@@ -35,7 +35,7 @@ const RepositoryListItem = tsx.componentFactoryOf<{ onClick: void }>().create({
 });
 
 // @vue/component
-export default componentWithStore({
+export default storeComponent.create({
   name: "TheWelcomePage",
   components: {
     BaseLayout,
@@ -43,7 +43,7 @@ export default componentWithStore({
   },
   computed: {
     recentOpened(): string[] {
-      return this.$store.state.environment.recentOpened;
+      return this.state.environment.recentOpened;
     }
   },
   methods: {
@@ -81,7 +81,7 @@ export default componentWithStore({
     }
   },
   render(): VNode {
-    const { actions } = this.$store;
+    const { actions } = this;
     return (
       <BaseLayout title="inazuma">
         <template slot="drawer-navigations">

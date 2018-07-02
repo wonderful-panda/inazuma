@@ -1,5 +1,5 @@
 import { VNode } from "vue";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import p from "vue-strict-prop";
 import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
@@ -9,7 +9,7 @@ import * as md from "view/utils/md-classes";
 import { __capture } from "view/utils/modifiers";
 
 // @vue/component
-export default componentWithStore({
+export default storeComponent.create({
   name: "BaseLayout",
   props: {
     title: p(String).required
@@ -28,7 +28,7 @@ export default componentWithStore({
         this.menuVisible = v;
       }
     };
-    const { state, actions } = this.$store;
+    const { state, actions } = this;
     return (
       <div staticClass={style.container}>
         <md-app md-mode="fixed">

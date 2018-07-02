@@ -1,13 +1,13 @@
 import { VNode } from "vue";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import SideBarBase from "./SideBarBase";
 import SideBarBranchList from "./SideBarBranchList";
 
 // @vue/component
-export default componentWithStore({
+export default storeComponent.create({
   name: "SideBarBranches",
   render(): VNode {
-    const refs = this.$store.state.refs;
+    const refs = this.state.refs;
     return (
       <SideBarBase title="Branches">
         <div class={style.wrapper}>
@@ -15,13 +15,13 @@ export default componentWithStore({
             key="local branches"
             title="Local branches"
             branches={refs.heads}
-            onClick={r => this.$store.actions.selectCommit(r.id)}
+            onClick={r => this.actions.selectCommit(r.id)}
           />
           <SideBarBranchList
             key="tags"
             title="Tags"
             branches={refs.tags}
-            onClick={r => this.$store.actions.selectCommit(r.id)}
+            onClick={r => this.actions.selectCommit(r.id)}
           />
           {Object.keys(refs.remotes).map(name => {
             const r = refs.remotes[name];
@@ -31,7 +31,7 @@ export default componentWithStore({
                 key={key}
                 title={key}
                 branches={r}
-                onClick={r => this.$store.actions.selectCommit(r.id)}
+                onClick={r => this.actions.selectCommit(r.id)}
               />
             );
           })}

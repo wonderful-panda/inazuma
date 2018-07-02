@@ -8,7 +8,7 @@ import {
   RowEventArgs as RowEventArgs_,
   Vtreetable
 } from "vue-vtable";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import p from "vue-strict-prop";
 import { VNode } from "vue";
 import * as ds from "view/store/displayState";
@@ -27,7 +27,7 @@ type VtableSlotCellProps = VtableSlotCellProps_<TreeNodeWithState>;
 type RowEventArgs = RowEventArgs_<TreeNodeWithState, MouseEvent>;
 const VtreeTableT = vtreetableOf<Data>();
 
-export default componentWithStore(
+export default storeComponent.create(
   // @vue/component
   {
     name: "RepositoryPageTabTree",
@@ -125,7 +125,7 @@ export default componentWithStore(
         try {
           this.loading = true;
           const { sha } = this;
-          const { repoPath } = this.$store.state;
+          const { repoPath } = this.state;
           const blame = await browserCommand.getBlame({
             repoPath,
             relPath,
@@ -134,7 +134,7 @@ export default componentWithStore(
           this.selectedPath = relPath;
           this.selectedBlame = blame;
         } catch (e) {
-          this.$store.actions.showError(e);
+          this.actions.showError(e);
         } finally {
           this.loading = false;
         }

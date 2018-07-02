@@ -1,10 +1,10 @@
 import { VNode } from "vue";
-import { componentWithStore } from "../store";
+import { storeComponent } from "../store";
 import p from "vue-strict-prop";
 import VCloseButton from "./base/VCloseButton";
 
 // @vue/component
-export default componentWithStore({
+export default storeComponent.create({
   name: "SideBarBase",
   components: {
     VCloseButton
@@ -14,7 +14,7 @@ export default componentWithStore({
   },
   methods: {
     close() {
-      this.$store.actions.hideSidebar();
+      this.actions.hideSidebar();
     }
   },
   render(): VNode {
