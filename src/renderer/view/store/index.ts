@@ -27,7 +27,7 @@ const injected = sinai
 
 class State implements AppState {
   config: Config = { fontFamily: {}, recentListCount: 5 };
-  environment: Environment = { recentOpened: [], displayState: {} };
+  environment: Environment = { recentOpened: [] };
   repoPath = "";
   commits = [] as Commit[];
   graphs = {} as Dict<GraphFragment>;
