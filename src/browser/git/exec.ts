@@ -1,3 +1,4 @@
+import * as path from "path";
 import * as cp from "child_process";
 
 const _gitCli = "git";
@@ -30,7 +31,15 @@ export function exec(command: string, params: ExecParams): Promise<ExecResult> {
       configs.push("-c", c);
     }
   }
-  const args = ["-C", params.repository, ...configs, command, ...params.args];
+  const args = [
+    "-C",
+    params.repository,
+    "--git-dir",
+    path.join(params.repository, ".git"),
+    ...configs,
+    command,
+    ...params.args
+  ];
   const p = cp.spawn(_gitCli, args);
   const stdoutBuffers: Buffer[] = [];
   const stderrBuffers: Buffer[] = [];
