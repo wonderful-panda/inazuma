@@ -14,48 +14,31 @@ import { __sync } from "../utils/modifiers";
 import * as ds from "view/store/displayState";
 
 const amdRequire = (global as any).amdRequire;
+const displayState = ds.createMixin("BlamePanel", {
+  columnWidths: {} as Dict<number>,
+  splitterRatio: 0.3
+});
 
-// @vue/component
-export default storeComponent.create(
+export default storeComponent.mixin(displayState).create(
+  // @vue/component
   {
     name: "BlamePanel",
-    mixins: [ds.createMixin("BlamePanel")],
     components: {
       MonacoEditor
-    },
-    data() {
-      return {
-        displayState: {
-          columnWidths: {} as Dict<number>,
-          splitterRatio: 0.3
-        },
-        editorMounted: false,
-        hoveredLineNumber: -1,
-        selectedCommitId: "",
-        staticDecorationIds: [] as string[],
-        selectedCommitDecorationIds: [] as string[]
-      };
     },
     props: {
       path: p(String).required,
       sha: p(String).required,
       blame: p.ofObject<Blame>().required
     },
-    watch: {
-      blame() {
-        if (this.monacoEditor) {
-          this.monacoEditor.setScrollPosition({ scrollLeft: 0, scrollTop: 0 });
-          this.selectedCommitId = "";
-          // decorations must be updated after text changed
-          this.$nextTick(() => {
-            this.selectedCommitId = this.blame.commits[0].id;
-            this.updateStaticDecorations();
-          });
-        }
-      },
-      selectedCommitId() {
-        this.updateSelectedCommitDecorations();
-      }
+    data() {
+      return {
+        editorMounted: false,
+        hoveredLineNumber: -1,
+        selectedCommitId: "",
+        staticDecorationIds: [] as string[],
+        selectedCommitDecorationIds: [] as string[]
+      };
     },
     computed: {
       language(): string {
@@ -152,6 +135,22 @@ export default storeComponent.create(
         } else {
           return this.blame.commits.findIndex(c => c.id === id);
         }
+      }
+    },
+    watch: {
+      blame() {
+        if (this.monacoEditor) {
+          this.monacoEditor.setScrollPosition({ scrollLeft: 0, scrollTop: 0 });
+          this.selectedCommitId = "";
+          // decorations must be updated after text changed
+          this.$nextTick(() => {
+            this.selectedCommitId = this.blame.commits[0].id;
+            this.updateStaticDecorations();
+          });
+        }
+      },
+      selectedCommitId() {
+        this.updateSelectedCommitDecorations();
       }
     },
     methods: {

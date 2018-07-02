@@ -27,11 +27,15 @@ type VtableSlotCellProps = VtableSlotCellProps_<TreeNodeWithState>;
 type RowEventArgs = RowEventArgs_<TreeNodeWithState, MouseEvent>;
 const VtreeTableT = vtreetableOf<Data>();
 
-export default storeComponent.create(
+const displayState = ds.createMixin("RepositoryPageTabTree", {
+  columnWidths: {} as Dict<number>,
+  splitterPosition: 0.25
+});
+
+export default storeComponent.mixin(displayState).create(
   // @vue/component
   {
     name: "RepositoryPageTabTree",
-    mixins: [ds.createMixin("RepositoryPageTabTree")],
     props: {
       sha: p(String).required,
       rootNodes: p.ofRoArray<LsTreeEntry>().required
@@ -42,11 +46,7 @@ export default storeComponent.create(
         filterFunc: undefined as ((entry: Data) => boolean) | undefined,
         selectedPath: "",
         selectedBlame: undefined as Blame | undefined,
-        loading: false,
-        displayState: {
-          columnWidths: {} as Dict<number>,
-          splitterPosition: 0.25
-        }
+        loading: false
       };
     },
     computed: {

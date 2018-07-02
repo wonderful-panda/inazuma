@@ -8,11 +8,25 @@ export function initDataStore(data: { [key: string]: any }) {
   }
 }
 
-export function createMixin(name: string, memberName: string = "displayState") {
+export function createMixin<T>(name: string, initialData: T) {
+  // @vue/component
   return {
-    created(this: any) {
+    data() {
+      return {
+        displayState: _.cloneDeep(initialData)
+      };
+    },
+    watch: {
+      displayState: {
+        handler(value: any) {
+          dataStore[name] = _.cloneDeep(value);
+        },
+        deep: true
+      }
+    },
+    created(this: { displayState: T }) {
       const storedData = dataStore[name];
-      const currentData = this[memberName] || {};
+      const currentData = this.displayState;
       if (storedData !== undefined) {
         for (const key in currentData) {
           const value = storedData[key];
@@ -22,14 +36,6 @@ export function createMixin(name: string, memberName: string = "displayState") {
         }
       }
       dataStore[name] = _.cloneDeep(currentData);
-    },
-    watch: {
-      [memberName]: {
-        handler(value: any) {
-          dataStore[name] = _.cloneDeep(value);
-        },
-        deep: true
-      }
     }
   };
 }
