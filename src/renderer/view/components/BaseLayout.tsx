@@ -4,7 +4,7 @@ import p from "vue-strict-prop";
 import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
 import VErrorReporter from "./base/VErrorReporter";
-import ThePreferencePage from "./ThePreferencePage";
+import PreferencePanel from "./PreferencePanel";
 import * as md from "view/utils/md-classes";
 import { __capture } from "view/utils/modifiers";
 
@@ -64,11 +64,12 @@ export default storeComponent.create({
           </md-app-content>
         </md-app>
 
-        {state.preferenceShown ? (
-          <ThePreferencePage />
-        ) : (
-          <div style={{ display: "none" }} />
-        )}
+        <PreferencePanel
+          active={state.preferenceShown}
+          initialConfig={this.state.config}
+          hide={this.actions.hidePreference}
+          save={this.actions.resetConfig}
+        />
 
         <VErrorReporter
           error={state.errorReporter.error}
