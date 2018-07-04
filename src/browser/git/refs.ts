@@ -47,7 +47,7 @@ function parseShowRefLine(
       return { fullname, type, name, id, current };
     } else if (type === "tags") {
       const name = refNameComponents.join("/");
-      return { fullname, type, name, id };
+      return { fullname, type, name, id, tagId: id };
     } else if (type === "remotes") {
       const remote = refNameComponents.shift();
       if (remote) {
@@ -90,15 +90,13 @@ export async function getRefs(repository: string): Promise<Refs> {
     }
     if (ref.type === "tags") {
       if (ref.name.endsWith("^{}")) {
-        addRef(refs, { ...ref, name: ref.name.slice(0, -3) });
-      } else {
-        const next = refList[index + 1];
-        if (next && next.type === "tags" && next.name === ref.name + "^{}") {
-          // skip annotated tag (Add dereferenced tag instead)
-          return;
-        }
-        addRef(refs, ref);
+        return;
       }
+      const next = refList[index + 1];
+      if (next && next.type === "tags" && next.name === ref.name + "^{}") {
+        ref.id = next.id;
+      }
+      addRef(refs, ref);
     } else {
       addRef(refs, ref);
     }

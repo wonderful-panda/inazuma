@@ -47,6 +47,7 @@ declare type Ref = {
   | {
       type: "tags";
       name: string;
+      tagId: string;
     }
   | {
       type: "remotes";
