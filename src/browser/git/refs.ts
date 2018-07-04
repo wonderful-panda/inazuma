@@ -87,7 +87,8 @@ export async function getRefs(repository: string): Promise<Refs> {
   refList.forEach((ref, index) => {
     if (!ref) {
       return;
-    } else if (ref.type === "tags") {
+    }
+    if (ref.type === "tags") {
       if (ref.name.endsWith("^{}")) {
         addRef(refs, { ...ref, name: ref.name.slice(0, -3) });
       } else {

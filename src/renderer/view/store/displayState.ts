@@ -17,7 +17,7 @@ export function createMixin<T extends object>(name: string, initialData: T) {
       }
     },
     mounted(this: { displayState: T }) {
-      let storedData: T | undefined = undefined;
+      let storedData: T | undefined;
       const jsonString = localStorage.getItem(name);
       if (jsonString) {
         try {
