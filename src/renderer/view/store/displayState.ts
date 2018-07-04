@@ -18,13 +18,14 @@ export function createMixin<T extends object>(name: string, initialData: T) {
     },
     mounted(this: { displayState: T }) {
       let storedData: T | undefined = undefined;
-      try {
-        const jsonString = localStorage.getItem(name);
-        if (jsonString) {
+      const jsonString = localStorage.getItem(name);
+      if (jsonString) {
+        try {
           storedData = JSON.parse(jsonString);
+        } catch (_) {
+          // leave storedData undefined
+          localStorage.removeItem(name);
         }
-      } catch {
-        // leave storedData undefined
       }
       const currentData = this.displayState;
       if (storedData !== undefined) {
