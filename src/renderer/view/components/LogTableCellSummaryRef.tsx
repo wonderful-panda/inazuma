@@ -77,7 +77,6 @@ const style = css`
     vertical-align: middle;
     height: 14px;
     line-height: 14px;
-    font-family: var(--monospace-fontfamily);
     font-size: 12px;
     border: 1px solid;
     margin: auto 4px auto 0;
@@ -89,7 +88,6 @@ const style = css`
 
   .${"head"} {
     @extend .base;
-    line-height: 16px;
     border-radius: 2px;
     color: darkorange;
     font-weight: bolder;
