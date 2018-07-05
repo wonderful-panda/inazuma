@@ -106,7 +106,7 @@ export default storeComponent.create({
         <VTabs
           tabs={state.tabs.tabs}
           selectedIndex={__sync(this.selectedTabIndex)}
-          onTabClose={e => actions.tabs.remove(e.index)}
+          closeTab={actions.tabs.remove}
           scopedSlots={{
             default: ({ tab }) => [this.renderTab(tab)]
           }}
