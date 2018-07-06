@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import * as ipcPromise from "ipc-promise";
 import * as cp from "child_process";
 import * as path from "path";
@@ -72,7 +73,12 @@ export function setupBrowserCommands(
   };
   // register each methods as Electron ipc handlers
   Object.keys(bc).forEach(key => {
-    ipcPromise.on(key, (bc as any)[key]);
+    const handler = (bc as any)[key] as (...args: any[]) => Promise<any>;
+    ipcPromise.on(key, (arg: any) => {
+      return handler(arg).catch(e => {
+        throw _.toPlainObject(e);
+      });
+    });
   });
   return bc;
 }
