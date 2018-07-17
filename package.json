@@ -78,7 +78,7 @@
     "sinai": "^0.1.7",
     "style-loader": "^0.21.0",
     "ts-loader": "^4.3.0",
-    "typescript": "^2.8.3",
+    "typescript": "^2.9.2",
     "typescript-eslint-parser": "^15.0.0",
     "vue": "^2.5.16",
     "vue-class-component": "^6.2.0",
