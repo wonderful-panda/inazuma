@@ -79,27 +79,27 @@ export default storeComponent.create({
           <DrawerNavigation
             icon="local_offer"
             text="Branches"
-            onClick={() => actions.showSidebar("branches")}
+            action={() => actions.showSidebar("branches")}
           />
           <DrawerNavigation
             icon="cloud"
             text="Remotes"
-            onClick={() => actions.showSidebar("remotes")}
+            action={() => actions.showSidebar("remotes")}
           />
           <DrawerNavigation
             icon="settings"
             text="Preferences"
-            onClick={actions.showPreference}
+            action={actions.showPreference}
           />
           <DrawerNavigation
             icon="home"
             text="Go to Home"
-            to={{ path: "/", replace: true }}
+            action={{ path: "/", replace: true }}
           />
           <DrawerNavigation
             icon="info_outline"
             text="About"
-            onClick={actions.showVersionDialog}
+            action={actions.showVersionDialog}
           />
         </template>
         <keep-alive>{this.sidebar}</keep-alive>

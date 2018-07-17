@@ -88,12 +88,12 @@ export default storeComponent.create({
           <DrawerNavigation
             icon="settings"
             text="Preferences"
-            onClick={actions.showPreference}
+            action={actions.showPreference}
           />
           <DrawerNavigation
             icon="info_outline"
             text="About"
-            onClick={actions.showVersionDialog}
+            action={actions.showVersionDialog}
           />
         </template>
         <div class={style.content}>
