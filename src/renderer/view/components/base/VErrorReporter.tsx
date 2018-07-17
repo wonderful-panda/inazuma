@@ -5,36 +5,34 @@ import VIconButton from "./VIconButton";
 import p from "vue-strict-prop";
 import * as md from "view/utils/md-classes";
 
-export default tsx.component(
-  {
-    name: "VErrorReporter",
-    props: {
-      error: p.ofObject<ErrorLikeObject>().optional,
-      hide: p.ofFunction<() => void>().required
-    },
-    computed: {
-      message(): string {
-        return this.error ? this.error.message : "";
-      }
-    },
-    render(): VNode {
-      return (
-        <md-snackbar
-          class={style.container}
-          md-active={!!this.error}
-          {...{ on: { "update:mdActive": this.hide } }}
-        >
-          <div>
-            <md-icon>warning</md-icon>
-            <span class={[md.BODY1, style.message]}>{this.message}</span>
-          </div>
-          <VIconButton onClick={this.hide}>close</VIconButton>
-        </md-snackbar>
-      );
+// @vue/component
+export default tsx.component({
+  name: "VErrorReporter",
+  props: {
+    error: p.ofObject<ErrorLikeObject>().optional,
+    hide: p.ofFunction<() => void>().required
+  },
+  computed: {
+    message(): string {
+      return this.error ? this.error.message : "";
     }
   },
-  ["hide"]
-);
+  render(): VNode {
+    return (
+      <md-snackbar
+        class={style.container}
+        md-active={!!this.error}
+        {...{ on: { "update:mdActive": this.hide } }}
+      >
+        <div>
+          <md-icon>warning</md-icon>
+          <span class={[md.BODY1, style.message]}>{this.message}</span>
+        </div>
+        <VIconButton onClick={this.hide}>close</VIconButton>
+      </md-snackbar>
+    );
+  }
+});
 
 const style = css`
   .${"container"} {

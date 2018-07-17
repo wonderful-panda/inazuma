@@ -14,88 +14,85 @@ export interface SplitterEvents {
   onDragend: SplitterEventArgs;
 }
 
-export default tsx.componentFactoryOf<SplitterEvents>().create(
-  // @vue/component
-  {
-    name: "VSplitter",
-    // prettier-ignore
-    props: {
+// @vue/component
+export default tsx.componentFactoryOf<SplitterEvents>().create({
+  name: "VSplitter",
+  // prettier-ignore
+  props: {
       direction: p.ofStringLiterals("horizontal", "vertical").required,
       thickness: p(Number).validator(v => v > 0).default(3)
     },
-    data() {
+  data() {
+    return {
+      dragging: false
+    };
+  },
+  computed: {
+    classes(): object {
+      const { direction, dragging } = this;
       return {
-        dragging: false
+        [style[direction]]: true,
+        [style.dragging]: dragging
       };
     },
-    computed: {
-      classes(): object {
-        const { direction, dragging } = this;
+    dynamicStyle(): CssProperties {
+      const thickness = px(this.thickness);
+      if (this.direction === "horizontal") {
         return {
-          [style[direction]]: true,
-          [style.dragging]: dragging
+          flexBasis: thickness,
+          width: thickness
         };
-      },
-      dynamicStyle(): CssProperties {
-        const thickness = px(this.thickness);
-        if (this.direction === "horizontal") {
-          return {
-            flexBasis: thickness,
-            width: thickness
-          };
-        } else {
-          return {
-            flexBasis: thickness,
-            height: thickness
-          };
-        }
+      } else {
+        return {
+          flexBasis: thickness,
+          height: thickness
+        };
       }
-    },
-    methods: {
-      emitEvent(eventName: string, e: MouseEvent) {
-        let args: SplitterEventArgs;
-        if (this.direction === "horizontal") {
-          args = { pagePosition: e.pageX - this.thickness / 2 };
-        } else {
-          args = { pagePosition: e.pageY - this.thickness / 2 };
-        }
-        this.$emit(eventName, args);
-      },
-      onSplitterMouseDown(event: MouseEvent): void {
-        event.stopPropagation();
-        event.preventDefault();
-        this.dragging = true;
-        this.emitEvent("dragstart", event);
-        const onMouseMove = (e: MouseEvent) => {
-          e.stopPropagation();
-          e.preventDefault();
-          this.emitEvent("dragmove", e);
-        };
-        const onMouseUp = (e: MouseEvent) => {
-          e.stopPropagation();
-          e.preventDefault();
-          this.dragging = false;
-          this.emitEvent("dragmove", e);
-          this.emitEvent("dragend", e);
-          document.removeEventListener("mousemove", onMouseMove);
-          document.removeEventListener("mouseup", onMouseUp);
-        };
-        document.addEventListener("mousemove", onMouseMove);
-        document.addEventListener("mouseup", onMouseUp);
-      }
-    },
-    render(): VNode {
-      return (
-        <div
-          class={this.classes}
-          style={this.dynamicStyle}
-          onMousedown={this.onSplitterMouseDown}
-        />
-      );
     }
   },
-  ["direction"]
-);
+  methods: {
+    emitEvent(eventName: string, e: MouseEvent) {
+      let args: SplitterEventArgs;
+      if (this.direction === "horizontal") {
+        args = { pagePosition: e.pageX - this.thickness / 2 };
+      } else {
+        args = { pagePosition: e.pageY - this.thickness / 2 };
+      }
+      this.$emit(eventName, args);
+    },
+    onSplitterMouseDown(event: MouseEvent): void {
+      event.stopPropagation();
+      event.preventDefault();
+      this.dragging = true;
+      this.emitEvent("dragstart", event);
+      const onMouseMove = (e: MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        this.emitEvent("dragmove", e);
+      };
+      const onMouseUp = (e: MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        this.dragging = false;
+        this.emitEvent("dragmove", e);
+        this.emitEvent("dragend", e);
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+      };
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+    }
+  },
+  render(): VNode {
+    return (
+      <div
+        class={this.classes}
+        style={this.dynamicStyle}
+        onMousedown={this.onSplitterMouseDown}
+      />
+    );
+  }
+});
 
 const style = css`
   .splitter {
