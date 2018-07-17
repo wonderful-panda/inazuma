@@ -24,7 +24,7 @@ export default storeComponent.create({
           <div staticClass={style.container}>
             <div staticClass={style.titlebar}>
               <span staticClass={style.title}>{this.title}</span>
-              <VCloseButton onClick={this.close} />
+              <VCloseButton action={this.close} />
             </div>
             <div staticClass={style.content}>{this.$slots.default}</div>
           </div>

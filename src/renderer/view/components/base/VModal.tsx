@@ -60,7 +60,7 @@ export default tsx.componentFactoryOf<{ onClose: null }>().create({
           >
             <div staticClass={style.header}>
               <div class={[style.title, md.TITLE]}>{this.title}</div>
-              <VCloseButton onClick={this.cancel} />
+              <VCloseButton action={this.cancel} />
             </div>
             <div staticClass={style.content}>{this.$slots.default}</div>
             <div staticClass={style.footer}>

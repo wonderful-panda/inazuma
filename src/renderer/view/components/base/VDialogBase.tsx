@@ -24,7 +24,7 @@ export default tsx.component({
         mini
         primary={b.primary}
         accent={b.accent}
-        onClick={() => accept(b.name)}
+        action={() => accept(b.name)}
       >
         <span staticClass="md-title">{b.text}</span>
       </VButton>
@@ -39,7 +39,7 @@ export default tsx.component({
         {opt.renderContent(this.$createElement)}
         <template slot="footer-buttons">
           {buttons}
-          <VButton key="__CANCEL__" mini onClick={cancel}>
+          <VButton key="__CANCEL__" mini action={cancel}>
             <span staticClass="md-title">CANCEL</span>
           </VButton>
         </template>

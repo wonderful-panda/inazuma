@@ -33,7 +33,7 @@ export default storeComponent.create({
       <div staticClass={style.container}>
         <md-app md-mode="fixed">
           <md-app-toolbar staticClass="md-primary" md-dense>
-            <VIconButton mini onClick={this.toggleMenu}>
+            <VIconButton mini action={this.toggleMenu}>
               menu
             </VIconButton>
             <span class={[style.title, md.TITLE]}>{this.title}</span>
@@ -49,7 +49,7 @@ export default storeComponent.create({
           >
             <md-toolbar staticClass="md-transparent" md-elevation={0}>
               <div staticClass="md-toolbar-section-end">
-                <VIconButton mini onClick={this.toggleMenu}>
+                <VIconButton mini action={this.toggleMenu}>
                   keyboard_arrow_left
                 </VIconButton>
               </div>

@@ -4,15 +4,21 @@ import p from "vue-strict-prop";
 import VIconButton from "./VIconButton";
 
 // @vue/component
-export default tsx.componentFactoryOf<{ onClick: null }>().create({
+export default tsx.component({
   name: "VCloseButton",
   functional: true,
   props: {
-    disabled: p(Boolean).default(false)
+    disabled: Boolean,
+    action: p.ofFunction<() => void>().required
   },
-  render(_h, { data }): VNode {
+  render(_h, { props: { disabled, action }, data }): VNode {
     return (
-      <VIconButton class={style.closeButton} {...data}>
+      <VIconButton
+        class={style.closeButton}
+        disabled={disabled}
+        action={action}
+        {...data}
+      >
         close
       </VIconButton>
     );

@@ -67,11 +67,11 @@ export default storeComponent.create({
             mini
             disabled={!state.config.interactiveShell}
             tooltip="launch interactive shell"
-            onClick={this.runInteractiveShell}
+            action={this.runInteractiveShell}
           >
             input
           </VIconButton>
-          <VIconButton mini tooltip="reload" onClick={this.reload}>
+          <VIconButton mini tooltip="reload" action={this.reload}>
             refresh
           </VIconButton>
         </template>

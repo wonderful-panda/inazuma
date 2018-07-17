@@ -38,14 +38,14 @@ export default tsx
           <div ref="tabButton" refInFor key={tab.key} class={style.tab}>
             <VButton
               class={className}
-              onClick={() => this.$emit("update:selectedIndex", index)}
+              action={() => this.$emit("update:selectedIndex", index)}
             >
               {tab.text}
             </VButton>
             <VIconButton
               v-show={tab.closable}
               class={style.closeIcon}
-              onClick={() => this.$emit("tabClose", { tab, index })}
+              action={() => this.$emit("tabClose", { tab, index })}
             >
               close
             </VIconButton>

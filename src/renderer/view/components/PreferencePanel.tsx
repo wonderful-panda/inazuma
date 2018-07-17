@@ -92,10 +92,10 @@ export default tsx.component({
           />
         </form>
         <template slot="footer-buttons">
-          <VButton primary mini onClick={this.onOk}>
+          <VButton primary mini action={this.onOk}>
             <span class={md.TITLE}>SAVE</span>
           </VButton>
-          <VButton mini onClick={this.hide}>
+          <VButton mini action={this.hide}>
             <span class={md.TITLE}>CANCEL</span>
           </VButton>
         </template>

@@ -28,7 +28,7 @@ export default tsx.component({
           <md-icon>warning</md-icon>
           <span class={[md.BODY1, style.message]}>{this.message}</span>
         </div>
-        <VIconButton onClick={this.hide}>close</VIconButton>
+        <VIconButton action={this.hide}>close</VIconButton>
       </md-snackbar>
     );
   }
