@@ -7,6 +7,7 @@ import VErrorReporter from "./base/VErrorReporter";
 import PreferencePanel from "./PreferencePanel";
 import * as md from "view/utils/md-classes";
 import { __capture } from "view/utils/modifiers";
+import { MdList } from "./base/md";
 
 // @vue/component
 export default storeComponent.create({
@@ -54,9 +55,9 @@ export default storeComponent.create({
                 </VIconButton>
               </div>
             </md-toolbar>
-            <md-list onClick={__capture(this.toggleMenu)}>
+            <MdList nativeOn-click={__capture(this.toggleMenu)}>
               {this.$slots["drawer-navigations"]}
-            </md-list>
+            </MdList>
           </md-app-drawer>
 
           <md-app-content style={{ position: "relative", padding: "1px" }}>

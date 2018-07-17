@@ -20,6 +20,7 @@ import BlamePanel from "./BlamePanel";
 import { browserCommand } from "core/browser";
 import VTextField from "./base/VTextField";
 import { filterTreeNodes } from "core/tree";
+import { MdEmptyState } from "./base/md";
 
 type Data = LsTreeEntry["data"];
 type TreeNodeWithState = TreeNodeWithState_<Data>;
@@ -75,7 +76,7 @@ export default storeComponent.mixin(displayState).create({
         );
       } else {
         ret.push(
-          <md-empty-state
+          <MdEmptyState
             style={{ transition: "none !important" }}
             md-icon="no_sim"
             md-label="No file selected"

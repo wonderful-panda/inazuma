@@ -4,6 +4,13 @@ import p from "vue-strict-prop";
 import { shortHash } from "view/filters";
 import * as md from "view/utils/md-classes";
 import { CssProperties } from "vue-css-definition";
+import {
+  MdIcon,
+  MdDoubleLineList,
+  MdSubheader,
+  MdListItem,
+  MdListItemText
+} from "./base/md";
 
 // @vue/component
 export default tsx.componentFactoryOf<{ onClick: Ref }>().create({
@@ -37,18 +44,18 @@ export default tsx.componentFactoryOf<{ onClick: Ref }>().create({
         }
         const currentBranch = b.type === "heads" && b.current;
         return (
-          <md-list-item
+          <MdListItem
             key={b.fullname}
             class={{ [style.currentBranch]: currentBranch }}
             onClick={() => this.$emit("click", b)}
           >
-            <div class="md-list-item-text">
+            <MdListItemText>
               <span class={[md.SUBHEADING, style.branchName]}>{name}</span>
               <span class={[md.CAPTION, style.commitId]}>
                 {shortHash(b.id)}
               </span>
-            </div>
-          </md-list-item>
+            </MdListItemText>
+          </MdListItem>
         );
       });
     }
@@ -61,22 +68,22 @@ export default tsx.componentFactoryOf<{ onClick: Ref }>().create({
   render(): VNode {
     return (
       <div class={style.wrapper}>
-        <md-subheader
+        <MdSubheader
           class={["md-primary", style.header]}
-          nativeOnClick={this.toggleExpand}
+          nativeOn-click={this.toggleExpand}
         >
           <span>{this.title}</span>
-          <md-icon class={style.expandIcon} style={this.expandIconStyle}>
+          <MdIcon class={style.expandIcon} style={this.expandIconStyle}>
             arrow_drop_down
-          </md-icon>
-        </md-subheader>
+          </MdIcon>
+        </MdSubheader>
         <transition name={style.transition}>
           <div
             v-show={this.expanded}
             class={style.container}
             style={this.listStyle}
           >
-            <md-list class="md-double-line">{this.listItems}</md-list>
+            <MdDoubleLineList>{this.listItems}</MdDoubleLineList>
           </div>
         </transition>
       </div>

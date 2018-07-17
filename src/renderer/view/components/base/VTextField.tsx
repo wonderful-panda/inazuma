@@ -1,20 +1,23 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import p from "vue-strict-prop";
+import { MdTooltip, MdIcon, MdInput, MdField } from "./md";
 
 // @vue/component
 export default tsx.component({
   name: "VTextField",
   props: {
-    value: p(String, Number).optional,
-    label: p(String).optional,
-    helperText: p(String).optional,
-    disabled: p(Boolean).default(false),
-    placeholder: p(String).optional,
-    headIcon: p(String).optional,
-    inlineIcon: p(String).optional,
-    tooltip: p(String).optional,
-    inputAttrs: p(Object).optional
+    value: [String, Number],
+    type: String,
+    label: String,
+    helperText: String,
+    required: Boolean,
+    disabled: Boolean,
+    placeholder: String,
+    headIcon: String,
+    inlineIcon: String,
+    tooltip: String,
+    min: Number,
+    max: Number
   },
   computed: {},
   methods: {
@@ -29,13 +32,13 @@ export default tsx.component({
       );
     },
     iconNode(name: string | undefined): VNode | undefined {
-      return name ? <md-icon>{name}</md-icon> : undefined;
+      return name ? <MdIcon>{name}</MdIcon> : undefined;
     },
     tooltipNode(text: string | undefined): VNode | undefined {
-      return text ? <md-tooltip>{text}</md-tooltip> : undefined;
+      return text ? <MdTooltip>{text}</MdTooltip> : undefined;
     },
-    onInput(value: string | undefined) {
-      if (this.inputAttrs && this.inputAttrs.type === "number") {
+    onInput(value: string | number | undefined) {
+      if (this.type === "number") {
         this.$emit("update:value", (this as any)._n(value));
       } else {
         this.$emit("update:value", value);
@@ -44,20 +47,22 @@ export default tsx.component({
   },
   render(): VNode {
     return (
-      <md-field>
+      <MdField>
         {this.iconNode(this.headIcon)}
         {this.labelNode(this.label)}
-        <md-input
+        <MdInput
+          type={this.type}
           placeholder={this.placeholder}
           value={this.value}
           onInput={this.onInput}
+          required={this.required}
           disabled={this.disabled}
-          {...{ attrs: this.inputAttrs }}
+          {...{ attrs: { min: this.min, max: this.max } }}
         />
         {this.helperTextNode(this.helperText)}
         {this.iconNode(this.inlineIcon)}
         {this.tooltipNode(this.tooltip)}
-      </md-field>
+      </MdField>
     );
   }
 });

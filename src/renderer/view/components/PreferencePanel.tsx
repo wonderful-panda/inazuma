@@ -6,6 +6,7 @@ import VModal from "./base/VModal";
 import VTextField from "./base/VTextField";
 import * as md from "view/utils/md-classes";
 import { __sync } from "babel-plugin-vue-jsx-modifier/lib/modifiers";
+import { MdSubheader } from "./base/md";
 
 // @vue/component
 export default tsx.component({
@@ -37,9 +38,7 @@ export default tsx.component({
     },
     renderSubheader(text: string): VNode {
       return (
-        <md-subheader class={[md.PRIMARY, style.subHeader]}>
-          {text}
-        </md-subheader>
+        <MdSubheader class={[md.PRIMARY, style.subHeader]}>{text}</MdSubheader>
       );
     }
   },
@@ -80,9 +79,11 @@ export default tsx.component({
           />
           {this.renderSubheader("Miscellaneous")}
           <VTextField
+            type="number"
             class={style.numberInput}
             label="Number of recent opened list"
-            inputAttrs={{ type: "number", min: 0, max: 20 }}
+            min={0}
+            max={20}
             value={__sync(config.recentListCount)}
           />
           <VTextField

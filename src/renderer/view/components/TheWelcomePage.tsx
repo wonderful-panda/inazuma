@@ -8,6 +8,14 @@ import DrawerNavigation from "./DrawerNavigation";
 import { getFileName, normalizePathSeparator } from "core/utils";
 import { navigate } from "../route";
 import * as md from "view/utils/md-classes";
+import {
+  MdIcon,
+  MdDoubleLineList,
+  MdSubheader,
+  MdDivider,
+  MdListItem,
+  MdListItemText
+} from "./base/md";
 const { dialog, BrowserWindow } = Electron.remote;
 
 const RepositoryListItem = tsx.component({
@@ -20,17 +28,17 @@ const RepositoryListItem = tsx.component({
     action: p.ofFunction<() => void>().required
   },
   render(_h, ctx): VNode {
-    const { props, listeners } = ctx;
+    const { props } = ctx;
     return (
-      <md-list-item {...{ on: listeners }}>
-        <md-icon staticClass="md-dense">{props.icon}</md-icon>
-        <div staticClass="md-list-item-text">
+      <MdListItem onClick={props.action}>
+        <MdIcon>{props.icon}</MdIcon>
+        <MdListItemText>
           <span class={[md.SUBHEADING, style.repoName]}>{props.text}</span>
           <span class={[md.CAPTION, style.repoDescription]}>
             {props.description}
           </span>
-        </div>
-      </md-list-item>
+        </MdListItemText>
+      </MdListItem>
     );
   }
 });
@@ -60,25 +68,6 @@ export default storeComponent.create({
       }
       const repoPath = normalizePathSeparator(paths[0]);
       navigate.log(repoPath);
-    },
-    renderListItem(
-      key: string,
-      icon: string,
-      text: string,
-      description: string,
-      onClick: () => void
-    ): VNode {
-      return (
-        <md-list-item onClick={onClick} key={key}>
-          <md-icon staticClass="md-dense">{icon}</md-icon>
-          <div staticClass="md-list-item-text">
-            <span class={[md.SUBHEADING, style.repoName]}>{text}</span>
-            <span class={[md.CAPTION, style.repoDescription]}>
-              {description}
-            </span>
-          </div>
-        </md-list-item>
-      );
     }
   },
   render(): VNode {
@@ -100,7 +89,7 @@ export default storeComponent.create({
         <div class={style.content}>
           <h3 class={md.TITLE}>SELECT REPOSITORY</h3>
           <div class={style.leftPanel}>
-            <md-list staticClass="md-double-line">
+            <MdDoubleLineList>
               <RepositoryListItem
                 key=":browser"
                 icon="search"
@@ -108,10 +97,10 @@ export default storeComponent.create({
                 description="Select repositories by folder browser"
                 action={this.selectRepository}
               />
-              <md-divider class={style.divider} />
-              <md-subheader class={[md.PRIMARY, md.CAPTION]}>
+              <MdDivider class={style.divider} />
+              <MdSubheader class={[md.PRIMARY, md.CAPTION]}>
                 Recent opened
-              </md-subheader>
+              </MdSubheader>
               {this.recentOpened.map(repo => (
                 <RepositoryListItem
                   key={repo}
@@ -121,7 +110,7 @@ export default storeComponent.create({
                   action={() => this.openRepository(repo)}
                 />
               ))}
-            </md-list>
+            </MdDoubleLineList>
           </div>
         </div>
       </BaseLayout>

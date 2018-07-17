@@ -1,5 +1,6 @@
 import Vue, { VNode } from "vue";
 import VButton from "./VButton";
+import { MdIcon } from "./md";
 
 // @vue/component
 export default Vue.extend({
@@ -8,7 +9,7 @@ export default Vue.extend({
   render(_h, { data, children }): VNode {
     return (
       <VButton class="md-icon-button" {...data as any}>
-        <md-icon>{children}</md-icon>
+        <MdIcon>{children}</MdIcon>
       </VButton>
     );
   }

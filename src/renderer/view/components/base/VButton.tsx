@@ -1,6 +1,7 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
+import { MdButton, MdTooltip } from "./md";
 const m = tsx.modifiers;
 
 // @vue/component
@@ -28,12 +29,12 @@ export default tsx.component({
   },
   render(): VNode {
     const tooltip = this.tooltip ? (
-      <md-tooltip>{this.tooltip}</md-tooltip>
+      <MdTooltip>{this.tooltip}</MdTooltip>
     ) : (
       undefined
     );
     return (
-      <md-button
+      <MdButton
         class={this.classes}
         href={this.href}
         disabled={this.disabled}
@@ -41,7 +42,7 @@ export default tsx.component({
       >
         {this.$slots.default}
         {tooltip}
-      </md-button>
+      </MdButton>
     );
   }
 });

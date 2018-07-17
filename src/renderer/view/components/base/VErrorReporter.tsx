@@ -4,6 +4,7 @@ import { ErrorLikeObject } from "view/mainTypes";
 import VIconButton from "./VIconButton";
 import p from "vue-strict-prop";
 import * as md from "view/utils/md-classes";
+import { MdSnackbar, MdIcon } from "./md";
 
 // @vue/component
 export default tsx.component({
@@ -19,17 +20,17 @@ export default tsx.component({
   },
   render(): VNode {
     return (
-      <md-snackbar
+      <MdSnackbar
         class={style.container}
         md-active={!!this.error}
         {...{ on: { "update:mdActive": this.hide } }}
       >
         <div>
-          <md-icon>warning</md-icon>
+          <MdIcon>warning</MdIcon>
           <span class={[md.BODY1, style.message]}>{this.message}</span>
         </div>
         <VIconButton action={this.hide}>close</VIconButton>
-      </md-snackbar>
+      </MdSnackbar>
     );
   }
 });
