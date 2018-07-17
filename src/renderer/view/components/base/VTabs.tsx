@@ -4,92 +4,78 @@ import p from "vue-strict-prop";
 import VButton from "./VButton";
 import VIconButton from "./VIconButton";
 import { TabDefinition } from "view/mainTypes";
-import { functional } from "./functional";
 
-const TabButton = functional<{
-  selected: boolean;
-  tab: TabDefinition;
-  select:() => void;
-  close: () => void;
-}>({
-  render(_, { props: { selected, tab, select, close } }) {
-    const className = selected ? style.selectedTabButton : style.tabButton;
-    return (
-      <div ref="tabButton" refInFor key={tab.key} class={style.tab}>
-        <VButton class={className} onClick={select}>
-          {tab.text}
-        </VButton>
-        <VIconButton
-          v-show={tab.closable}
-          class={style.closeIcon}
-          onClick={close}
-        >
-          close
-        </VIconButton>
-      </div>
-    );
-  }
-});
 export default tsx
   .componentFactoryOf<
-    {},
+    {
+      onTabClose: { tab: TabDefinition; index: number };
+    },
     {
       default: { tab: TabDefinition };
     }
   >()
-  .create(
-    {
-      name: "VTabs",
-      props: {
-        tabs: p.ofRoArray<TabDefinition>().required,
-        selectedIndex: p(Number).required,
-        closeTab: p.ofFunction<(index: number) => void>().required
-      },
-      watch: {
-        selectedIndex(value: number) {
-          this.$nextTick(() => {
-            const tabButton = (this.$refs.tabButton as HTMLDivElement[])[value];
-            tabButton.scrollIntoView({ block: "nearest" });
-          });
-        }
-      },
-      methods: {
-        renderTabContent(tab: TabDefinition, index: number): VNode {
-          return (
-            <div
-              v-show={index === this.selectedIndex}
-              key={tab.key}
-              class={style.tabContent}
-            >
-              {this.$scopedSlots.default({ tab })}
-            </div>
-          );
-        }
-      },
-      render(): VNode {
-        const { tabs } = this;
+  .create({
+    name: "VTabs",
+    props: {
+      tabs: p.ofRoArray<TabDefinition>().required,
+      selectedIndex: p(Number).required
+    },
+    watch: {
+      selectedIndex(value: number) {
+        this.$nextTick(() => {
+          const tabButton = (this.$refs.tabButton as HTMLDivElement[])[value];
+          tabButton.scrollIntoView({ block: "nearest" });
+        });
+      }
+    },
+    methods: {
+      renderTabButton(tab: TabDefinition, index: number): VNode {
+        const className =
+          index === this.selectedIndex
+            ? style.selectedTabButton
+            : style.tabButton;
         return (
-          <div class={style.container}>
-            <div class={style.tabbar}>
-              {tabs.map((tab, index) => (
-                <TabButton
-                  ref="tabButton"
-                  refInFor
-                  key={tab.key}
-                  tab={tab}
-                  selected={index === this.selectedIndex}
-                  select={() => this.$emit("update:selectedIndex", index)}
-                  close={() => this.closeTab(index)}
-                />
-              ))}
-            </div>
-            {tabs.map((tab, index) => this.renderTabContent(tab, index))}
+          <div ref="tabButton" refInFor key={tab.key} class={style.tab}>
+            <VButton
+              class={className}
+              onClick={() => this.$emit("update:selectedIndex", index)}
+            >
+              {tab.text}
+            </VButton>
+            <VIconButton
+              v-show={tab.closable}
+              class={style.closeIcon}
+              onClick={() => this.$emit("tabClose", { tab, index })}
+            >
+              close
+            </VIconButton>
+          </div>
+        );
+      },
+      renderTabContent(tab: TabDefinition, index: number): VNode {
+        return (
+          <div
+            v-show={index === this.selectedIndex}
+            key={tab.key}
+            class={style.tabContent}
+          >
+            {this.$scopedSlots.default({ tab })}
           </div>
         );
       }
     },
-    ["tabs", "selectedIndex", "closeTab"]
-  );
+    render(): VNode {
+      const { tabs } = this;
+      return (
+        <div class={style.container}>
+          <div class={style.tabbar}>
+            {tabs.map((tab, index) => this.renderTabButton(tab, index))}
+          </div>
+          {tabs.map((tab, index) => this.renderTabContent(tab, index))}
+        </div>
+      );
+    }
+  });
 
 const style = css`
   .${"container"} {
