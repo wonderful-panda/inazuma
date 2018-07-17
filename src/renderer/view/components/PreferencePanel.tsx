@@ -53,7 +53,7 @@ export default tsx.component({
         class={style.modalBase}
         title="PREFERENCE"
         containerClass={style.container}
-        onClose={this.hide}
+        close={this.hide}
       >
         <form class={style.modalContent} action="#">
           {this.renderSubheader("Font settings")}

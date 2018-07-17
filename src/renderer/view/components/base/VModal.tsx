@@ -9,10 +9,11 @@ import { __capture } from "view/utils/modifiers";
 const m = tsx.modifiers;
 
 // @vue/component
-export default tsx.componentFactoryOf<{ onClose: null }>().create({
+export default tsx.component({
   name: "VModal",
   props: {
     title: p(String).required,
+    close: p.ofFunction<() => void>().required,
     containerClass: p(String).optional
   },
   mounted() {
@@ -25,7 +26,7 @@ export default tsx.componentFactoryOf<{ onClose: null }>().create({
   },
   methods: {
     cancel(): void {
-      this.$emit("close", null);
+      this.close();
     },
     onTabKeyDown(event: KeyboardEvent): void {
       const focusable = queryFocusableElements(this.$el);

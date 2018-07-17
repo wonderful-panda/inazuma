@@ -34,7 +34,7 @@ export default tsx.component({
         staticClass={style.dialogBase}
         title={opt.title}
         containerClass={style.container}
-        onClose={cancel}
+        close={cancel}
       >
         {opt.renderContent(this.$createElement)}
         <template slot="footer-buttons">

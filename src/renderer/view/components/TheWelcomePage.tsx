@@ -10,13 +10,14 @@ import { navigate } from "../route";
 import * as md from "view/utils/md-classes";
 const { dialog, BrowserWindow } = Electron.remote;
 
-const RepositoryListItem = tsx.componentFactoryOf<{ onClick: void }>().create({
+const RepositoryListItem = tsx.component({
   name: "RepositoryListItem",
   functional: true,
   props: {
     icon: p(String).required,
     text: p(String).required,
-    description: p(String).required
+    description: p(String).required,
+    action: p.ofFunction<() => void>().required
   },
   render(_h, ctx): VNode {
     const { props, listeners } = ctx;
@@ -105,7 +106,7 @@ export default storeComponent.create({
                 icon="search"
                 text="BROWSE..."
                 description="Select repositories by folder browser"
-                onClick={this.selectRepository}
+                action={this.selectRepository}
               />
               <md-divider class={style.divider} />
               <md-subheader class={[md.PRIMARY, md.CAPTION]}>
@@ -117,7 +118,7 @@ export default storeComponent.create({
                   icon="history"
                   text={getFileName(repo)}
                   description={repo}
-                  onClick={() => this.openRepository(repo)}
+                  action={() => this.openRepository(repo)}
                 />
               ))}
             </md-list>
