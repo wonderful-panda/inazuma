@@ -1,6 +1,6 @@
 import { VueConstructor, CreateElement, VNode, RenderContext } from "vue";
 import { RecordPropsDefinition, ArrayPropsDefinition } from "vue/types/options";
-import { AsComponent, WithProps, OuterProps } from "vue-support-types";
+import { AsComponent, WithProps, OuterProps } from "vue-support";
 
 export type ClassBinding =
   | string
