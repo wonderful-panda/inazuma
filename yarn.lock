@@ -7627,17 +7627,17 @@ vue-template-compiler@^2.5.16:
     de-indent "^1.0.2"
     he "^1.1.0"
 
-vue-tsx-support@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-2.0.0.tgz#e1dae7e49f411d403182ef80c2df24935f2dd9b2"
+vue-tsx-support@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-2.1.1.tgz#697db1d38bad53543429e9ecdff19704b0399390"
 
-vue-typed-component@^0.10.1:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/vue-typed-component/-/vue-typed-component-0.10.1.tgz#a1b607dd7a8945ccc42cf9a45beb0dcfbe9332b8"
+vue-typed-component@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/vue-typed-component/-/vue-typed-component-0.11.0.tgz#787746e80ebf3f7228a1854e9401ebd27f328f07"
 
-vue-vtable@^0.13.2:
-  version "0.13.2"
-  resolved "https://registry.yarnpkg.com/vue-vtable/-/vue-vtable-0.13.2.tgz#7130b216b1fa5a7d697984febacfe98a8cb8640f"
+vue-vtable@^0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/vue-vtable/-/vue-vtable-0.14.1.tgz#c91148d88e1be48ab2fd164d3aab043d67d46930"
   dependencies:
     lodash "^4.17.10"
     vue-css-definition "^0.1.0"
