@@ -3,7 +3,9 @@ import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { DialogState, DialogActions } from "view/store/dialogModule";
 import VButton from "./VButton";
-import VModal from "./VModal";
+import VModal, { ModalContainerClass } from "./VModal";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 // @vue/component
 export default tsx.component({
@@ -30,12 +32,7 @@ export default tsx.component({
       </VButton>
     ));
     return (
-      <VModal
-        staticClass={style.dialogBase}
-        title={opt.title}
-        containerClass={style.container}
-        close={cancel}
-      >
+      <VModal staticClass={style.dialogBase} title={opt.title} close={cancel}>
         {opt.renderContent(this.$createElement)}
         <template slot="footer-buttons">
           {buttons}
@@ -48,21 +45,21 @@ export default tsx.component({
   }
 });
 
-const style = css`
-  .${"container"} {
-    margin: auto;
-    min-width: 400px;
-    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.4);
-    transition: all 0.2s ease;
-  }
+const style = {
+  dialogBase: css`
+    .${ModalContainerClass} {
+      margin: auto;
+      min-width: 400px;
+      box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s ease;
+    }
 
-  .${"dialogBase"} {
-    &:global(.modal-enter),
-    &:global(.modal-leave-to) {
-      .${"container"} {
+    &.modal-enter,
+    &.modal-leave-to {
+      .${ModalContainerClass} {
         transform: scale(1.05);
         opacity: 0;
       }
     }
-  }
-`;
+  `
+};

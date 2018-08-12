@@ -2,6 +2,8 @@ import { VNode } from "vue";
 import { storeComponent } from "../store";
 import p from "vue-strict-prop";
 import VCloseButton from "./base/VCloseButton";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 // @vue/component
 export default storeComponent.create({
@@ -34,47 +36,46 @@ export default storeComponent.create({
   }
 });
 
-const style = css`
-  $sidebar-width: 200px;
-
-  .${"wrapper"} {
+const SidebarWidth = "200px";
+const style = {
+  wrapper: css`
     display: flex;
     flex-flow: row-reverse nowrap;
     overflow-x: hidden;
-    width: $sidebar-width;
-    max-width: $sidebar-width;
+    width: ${SidebarWidth};
+    max-width: ${SidebarWidth};
     transition: all 0.3s ease;
 
-    &:global(.sidebar-enter),
-    &:global(.sidebar-leave-to) {
+    &.sidebar-enter,
+    &.sidebar-leave-to {
       width: 0;
       max-width: 0;
     }
-  }
-  .${"container"} {
+  `,
+  container: css`
     display: flex;
     flex-flow: column nowrap;
     flex: 1;
     box-sizing: border-box;
-    width: $sidebar-width;
-    min-width: $sidebar-width;
-    max-width: $sidebar-width;
-  }
-  .${"titlebar"} {
+    width: ${SidebarWidth};
+    max-width: ${SidebarWidth};
+    min-width: ${SidebarWidth};
+  }`,
+  titlebar: css`
     display: flex;
     flex-flow: row nowrap;
-  }
-  .${"title"} {
+  `,
+  title: css`
     font-size: large;
     vertical-align: bottom;
     margin: auto;
     padding-top: 0.5em;
     padding-left: 0.5em;
     flex: 1;
-  }
-  .${"content"} {
+  `,
+  content: css`
     display: flex;
     padding: 0.5em;
     flex: 1;
-  }
-`;
+  `
+};

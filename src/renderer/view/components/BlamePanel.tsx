@@ -10,8 +10,11 @@ import { asTuple } from "core/utils";
 import { VNode } from "vue";
 import FileLogTable from "./FileLogTable";
 import VSplitterPanel from "./base/VSplitterPanel";
+import BlamePanelFooter from "./BlamePanelFooter";
 import { __sync } from "../utils/modifiers";
 import * as ds from "view/store/displayState";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 const amdRequire = (global as any).amdRequire;
 const displayState = ds.createMixin("BlamePanel", {
@@ -74,14 +77,6 @@ export default storeComponent.mixin(displayState).create({
       }
       return this.commitMap.get(id);
     },
-    hoveredCommitDate(): string {
-      const c = this.hoveredCommit;
-      return c
-        ? moment(c.date)
-            .local()
-            .format("L LT")
-        : "";
-    },
     lineNoWidth(): number {
       return this.blame.commitIds.length.toString().length;
     },
@@ -105,27 +100,6 @@ export default storeComponent.mixin(displayState).create({
         const date = dateMap.get(id);
         return `${linenoStr} ${shortHash(id)} ${date}`;
       };
-    },
-    bottomBar(): VNode[] {
-      const { hoveredCommit } = this;
-      if (!hoveredCommit) {
-        return [
-          <div class={style.bottomBar} />,
-          <div class={style.bottomBar} />
-        ];
-      } else {
-        return [
-          <div class={style.bottomBar}>
-            <span class={style.commitId}>{shortHash(hoveredCommit.id)}</span>
-            <span class={style.date}>{this.hoveredCommitDate}</span>
-            <span class={style.author}>{hoveredCommit.author}</span>
-            <span class={style.summary}>{hoveredCommit.summary}</span>
-          </div>,
-          <div class={style.bottomBar}>
-            <span class={style.filename}>{hoveredCommit.filename}</span>
-          </div>
-        ];
-      }
     },
     selectedCommitIndex(): number {
       const id = this.selectedCommitId;
@@ -330,102 +304,65 @@ export default storeComponent.mixin(displayState).create({
             />
           </div>
         </VSplitterPanel>
-        {this.bottomBar}
+        <BlamePanelFooter commit={this.hoveredCommit} />
       </div>
     );
   }
 });
 
-const style = css`
-  .${"container"} {
+const style = {
+  container: css`
     display: flex;
     flex-flow: column nowrap;
     flex: 1;
     overflow: hidden;
-  }
-
-  .${"title"} {
+  `,
+  title: css`
     font-family: var(--monospace-fontfamily);
     padding-bottom: 4px;
     height: 24px;
     line-height: 24px;
     flex: 0;
-  }
-  .${"path"} {
+  `,
+  path: css`
     padding-right: 8px;
-  }
-  .${"sha"} {
+  `,
+  sha: css`
     color: #888;
-  }
-
-  .${"editorWrapper"} {
+  `,
+  editorWrapper: css`
     position: relative;
     flex: 1;
     border: 1px solid #444;
     overflow: hidden;
-  }
-
-  .${"editor"} {
+  `,
+  editor: css`
     position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
 
-    :global {
-      .line-numbers {
-        color: #666;
-        cursor: pointer !important;
-        padding-left: 8px;
-        white-space: nowrap;
-      }
-
-      .blame-hunk-head,
-      .blame-hunk-head-margin {
-        border-top: 1px solid #444;
-      }
-      .blame-hunk-head-margin ~ .line-numbers,
-      .blame-first-line-margin ~ .line-numbers {
-        color: #ddd;
-      }
-
-      .blame-selected-linesdecorations {
-        background-color: rgba(255, 140, 0, 0.6);
-        left: 0 !important;
-        width: 4px !important;
-      }
+    .line-numbers {
+      color: #666;
+      cursor: pointer !important;
+      padding-left: 8px;
+      white-space: nowrap;
     }
-  }
 
-  .${"bottomBar"} {
-    min-height: 20px;
-    height: 20px;
-    line-height: 20px;
-    flex: 0;
-    display: flex;
-  }
+    .blame-hunk-head,
+    .blame-hunk-head-margin {
+      border-top: 1px solid #444;
+    }
+    .blame-hunk-head-margin ~ .line-numbers,
+    .blame-first-line-margin ~ .line-numbers {
+      color: #ddd;
+    }
 
-  .${"commitId"} {
-    color: var(--md-theme-default-accent);
-    font-family: var(--monospace-fontfamily);
-    margin-right: 8px;
-  }
-
-  .${"date"} {
-    font-family: var(--monospace-fontfamily);
-    margin-right: 8px;
-  }
-
-  .${"author"} {
-    color: var(--md-theme-default-primary);
-    margin-right: 8px;
-  }
-
-  .${"summary"} {
-    margin-right: 8px;
-  }
-
-  .${"filename"} {
-    font-family: var(--monospace-fontfamily);
-  }
-`;
+    .blame-selected-linesdecorations {
+      background-color: rgba(255, 140, 0, 0.6);
+      left: 0 !important;
+      width: 4px !important;
+    }
+  `
+};

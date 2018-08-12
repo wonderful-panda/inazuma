@@ -21,6 +21,8 @@ import { browserCommand } from "core/browser";
 import VTextField from "./base/VTextField";
 import { filterTreeNodes } from "core/tree";
 import { MdEmptyState } from "./base/md";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
 type TreeNodeWithState = TreeNodeWithState_<Data>;
@@ -194,8 +196,8 @@ export default storeComponent.mixin(displayState).create({
   }
 });
 
-const style = css`
-  .${"container"} {
+const style = {
+  container: css`
     display: flex;
     flex: 1;
     padding: 1em;
@@ -204,63 +206,56 @@ const style = css`
       fill: #ddd;
     }
 
-    :global {
-      .vlist-container {
-        border: 1px solid gray;
-      }
-      .vlist-row {
-        font-family: var(--monospace-fontfamily);
-        user-select: none;
-        cursor: default;
+    .vlist-container {
+      border: 1px solid gray;
+    }
+    .vlist-row {
+      font-family: var(--monospace-fontfamily);
+      user-select: none;
+      cursor: default;
 
-        &:nth-child(2n) {
-          background-color: #282828;
-        }
-
-        &:hover {
-          background-color: #383838;
-        }
+      &:nth-child(2n) {
+        background-color: #282828;
       }
 
-      .vlist-header-row {
-        border-bottom: solid 1px #aaa;
-        user-select: none;
-        cursor: default;
-      }
-
-      .vtable-splitter {
-        border-right: solid 1px #555;
-      }
-
-      .vtable-dragging-splitter {
-        background-color: #888;
+      &:hover {
+        background-color: #383838;
       }
     }
-  }
 
-  .${"selectedRow"} {
+    .vlist-header-row {
+      border-bottom: solid 1px #aaa;
+      user-select: none;
+      cursor: default;
+    }
+
+    .vtable-splitter {
+      border-right: solid 1px #555;
+    }
+
+    .vtable-dragging-splitter {
+      background-color: #888;
+    }
+  `,
+  selectedRow: css`
     background-color: #484848;
-  }
-
-  .${"rightPanel"} {
+  `,
+  rightPanel: css`
     position: relative;
     flex: 1;
     display: flex;
-  }
-
-  .${"noFileSelected"} {
+  `,
+  noFileSelected: css`
     margin: auto;
     color: gray !important;
-  }
-
-  .${"lastCell"} {
+  `,
+  lastCell: css`
     flex: 1;
-  }
-
-  .${"filterField"} {
+  `,
+  filterField: css`
     margin: 0 0 0.5em 0;
     padding: 0;
     min-height: 0;
     font-size: small;
-  }
-`;
+  `
+};

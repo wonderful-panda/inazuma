@@ -2,11 +2,53 @@ import Vue, { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import VButton from "./base/VButton";
-import VModal from "./base/VModal";
+import VModal, { ModalContainerClass } from "./base/VModal";
 import VTextField from "./base/VTextField";
 import * as md from "view/utils/md-classes";
 import { __sync } from "babel-plugin-vue-jsx-modifier/lib/modifiers";
 import { MdSubheader } from "./base/md";
+import * as emotion from "emotion";
+const css = emotion.css;
+
+const style = {
+  modalBase: css`
+    .${ModalContainerClass} {
+      display: flex;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 80%;
+      height: 100%;
+      bottom: 0;
+      box-shadow: 4px 0 4px rgba(0, 0, 0, 0.4);
+
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+    &.modal-enter,
+    &.modal-leave-to {
+      .${ModalContainerClass} {
+        transform: translateX(-100%);
+      }
+    }
+  `,
+  subHeader: css`
+    padding: 0;
+    min-height: 26px;
+  `,
+  modalContent: css`
+    padding-left: 8px;
+    padding-right: 32px;
+  `,
+  input: css`
+    margin-left: 1em;
+  `,
+  numberInput: css`
+    margin-left: 1em;
+    min-width: 200px;
+    width: 200px;
+  `
+};
 
 // @vue/component
 export default tsx.component({
@@ -48,12 +90,7 @@ export default tsx.component({
     }
     const config = this.config;
     return (
-      <VModal
-        class={style.modalBase}
-        title="PREFERENCE"
-        containerClass={style.container}
-        close={this.hide}
-      >
+      <VModal class={style.modalBase} title="PREFERENCE" close={this.hide}>
         <form class={style.modalContent} action="#">
           {this.renderSubheader("Font settings")}
           <VTextField
@@ -104,47 +141,3 @@ export default tsx.component({
     );
   }
 });
-
-const style = css`
-  .${"container"} {
-    display: flex;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 80%;
-    height: 100%;
-    bottom: 0;
-    box-shadow: 4px 0 4px rgba(0, 0, 0, 0.4);
-
-    flex: 1;
-    transition: all 0.3s ease;
-  }
-
-  .${"subHeader"} {
-    padding: 0;
-    min-height: 26px;
-  }
-
-  .${"modalBase"} {
-    &:global(.modal-enter),
-    &:global(.modal-leave-to) {
-      .container {
-        transform: translateX(-100%);
-      }
-    }
-  }
-
-  .${"modalContent"} {
-    padding-left: 8px;
-    padding-right: 32px;
-  }
-
-  .${"input"} {
-    margin-left: 1em;
-  }
-  .${"numberInput"} {
-    margin-left: 1em;
-    min-width: 200px;
-    width: 200px;
-  }
-`;

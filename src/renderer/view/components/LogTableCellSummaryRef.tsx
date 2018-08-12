@@ -2,119 +2,116 @@ import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { dragdrop } from "../dragdrop";
 import p from "vue-strict-prop";
+import * as emotion from "emotion";
+const css = emotion.css;
 
-// @vue/component
-export default tsx.component({
-  name: "LogTableCellSummaryRef",
+const Head = tsx.component({
+  functional: true,
+  render() {
+    return <span class={style.head}>HEAD</span>;
+  }
+});
+const Branch = tsx.component({
   props: {
-    refObject: p.ofObject<Ref>().required
-  },
-  computed: {
-    className(): string {
-      const ref = this.refObject;
-      switch (ref.type) {
-        case "HEAD":
-          return style.head;
-        case "heads":
-          return ref.current ? style.currentBranch : style.branch;
-        case "remotes":
-          return style.remote;
-        case "tags":
-          return style.tag;
-        default:
-          return "";
-      }
-    },
-    text(): string {
-      const ref = this.refObject;
-      switch (ref.type) {
-        case "HEAD":
-          return ref.type;
-        case "remotes":
-          return ref.remote + "/" + ref.name;
-        case "heads":
-        case "tags":
-          return ref.name;
-        default:
-          return ref.fullname;
-      }
-    },
-    draggable(): boolean {
-      const ref = this.refObject;
-      return ref.type === "heads";
-    }
+    branch: p.ofObject<BranchRef>().required
   },
   methods: {
     onDragStart(event: DragEvent) {
-      const ref = this.refObject;
-      if (ref.type === "heads") {
-        event.dataTransfer.effectAllowed = "move";
-        dragdrop.setData(event, "git/branch", {
-          name: ref.name,
-          isCurrent: ref.current
-        });
-      }
+      event.dataTransfer.effectAllowed = "move";
+      dragdrop.setData(event, "git/branch", {
+        name: this.branch.name,
+        isCurrent: this.branch.current
+      });
     }
   },
   render(): VNode {
     return (
       <span
-        class={this.className}
-        domProps-draggable={this.draggable}
+        class={style.branch(this.branch.current)}
+        draggable
         onDragstart={this.onDragStart}
       >
-        {this.text}
+        {this.branch.name}
       </span>
     );
   }
 });
-
-const style = css`
-  .base {
-    vertical-align: middle;
-    height: 14px;
-    line-height: 14px;
-    font-size: 12px;
-    border: 1px solid;
-    margin: auto 4px auto 0;
-    padding: 0 0.4em 0 0.4em;
-    border-radius: 1em;
-    box-sizing: content-box;
-    cursor: default;
+const Tag = tsx.component({
+  functional: true,
+  props: { tag: p.ofObject<TagRef>().required },
+  render(_h, { props: p }) {
+    return <span class={style.tag}>{p.tag.name}</span>;
   }
+});
+const Remote = tsx.component({
+  functional: true,
+  props: { remote: p.ofObject<RemoteRef>().required },
+  render(_h, { props: p }) {
+    return (
+      <span class={style.remote}>{p.remote.remote + "/" + p.remote.name}</span>
+    );
+  }
+});
 
-  .${"head"} {
-    @extend .base;
+// @vue/component
+export default tsx.component({
+  name: "LogTableCellSummaryRef",
+  functional: true,
+  props: {
+    refObject: p.ofObject<Ref>().required
+  },
+  render(_h, { props }): VNode {
+    const ref = props.refObject;
+    switch (ref.type) {
+      case "HEAD":
+        return <Head />;
+      case "heads":
+        return <Branch branch={ref} />;
+      case "tags":
+        return <Tag tag={ref} />;
+      case "remotes":
+        return <Remote remote={ref} />;
+      default:
+        return <span class={baseStyle}>{ref.fullname}</span>;
+    }
+  }
+});
+
+const baseStyle = css`
+  vertical-align: middle;
+  height: 14px;
+  line-height: 14px;
+  font-size: 12px;
+  margin: auto 4px auto 0;
+  padding: 0 0.4em 0 0.4em;
+  box-sizing: content-box;
+  cursor: default;
+`;
+
+const style = {
+  head: css`
+    ${baseStyle};
+    border: 2px solid darkorange;
     border-radius: 2px;
     color: darkorange;
     font-weight: bolder;
-    border: 2px solid darkorange;
-  }
-
-  .${"branch"} {
-    @extend .base;
+  `,
+  branch: (current: boolean) => css`
+    ${baseStyle};
+    border: ${current ? 2 : 1}px solid cyan;
     color: cyan;
-    border-color: cyan;
+    border-radius: 1em;
     cursor: pointer;
-  }
-
-  .${"currentBranch"} {
-    @extend .base;
+  `,
+  tag: css`
+    ${baseStyle};
+    border: 1px solid cyan;
     color: cyan;
-    border: 2px solid cyan;
-    cursor: pointer;
-  }
-
-  .${"tag"} {
-    @extend .base;
-    border-radius: 0;
-    color: cyan;
-    border-color: cyan;
-  }
-
-  .${"remote"} {
-    @extend .base;
+  `,
+  remote: css`
+    ${baseStyle};
+    border: 1px solid #888;
     color: #888;
-    border-color: #888;
-  }
-`;
+    border-radius: 1em;
+  `
+};

@@ -17,6 +17,8 @@ import {
   MdListItemText
 } from "./base/md";
 const { dialog, BrowserWindow } = Electron.remote;
+import * as emotion from "emotion";
+const css = emotion.css;
 
 const RepositoryListItem = tsx.component({
   name: "RepositoryListItem",
@@ -118,43 +120,39 @@ export default storeComponent.create({
   }
 });
 
-const style = css`
-  .${"content"} {
+const style = {
+  content: css`
     flex: 1;
     padding: 0 1em;
-  }
-
-  .${"leftPanel"} {
+  `,
+  leftPanel: css`
     display: inline-block;
     min-width: 40%;
 
-    :global {
-      .md-list {
-        background-color: var(--md-theme-default-background-on-background);
-        padding: 0 0.5em;
-      }
-      .md-list-item-content {
-        min-height: 32px !important;
-      }
-      .md-subheader {
-        min-height: 32px !important;
-      }
-      .md-icon {
-        margin-right: 0.5em !important;
-      }
+    .md-list {
+      background-color: var(--md-theme-default-background-on-background);
+      padding: 0 0.5em;
     }
-  }
-
-  .${"repoName"} {
+    .md-list-item-content {
+      min-height: 32px !important;
+    }
+    .md-subheader {
+      min-height: 32px !important;
+    }
+    .md-icon {
+      margin-right: 0.5em !important;
+    }
+  `,
+  repoName: css`
     height: 20px;
     margin-right: auto;
     text-transform: none !important;
-  }
-  .${"repoDescription"} {
+  `,
+  repoDescription: css`
     text-transform: none !important;
     font-size: 75%;
-  }
-  .${"divider"} {
+  `,
+  divider: css`
     margin: 0.5em 0 !important;
-  }
-`;
+  `
+};

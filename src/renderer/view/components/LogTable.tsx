@@ -6,6 +6,8 @@ import p from "vue-strict-prop";
 import LogTableCellGraph from "./LogTableCellGraph";
 import LogTableCellSummary from "./LogTableCellSummary";
 import { LogItem } from "../mainTypes";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 const VtableT = vtableOf<LogItem>();
 
@@ -109,39 +111,36 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create({
   }
 });
 
-const style = css`
-  .${"container"} {
-    :global {
-      .vlist-row {
-        user-select: none;
-        cursor: default;
-        &:nth-child(2n) {
-          background-color: #282828;
-        }
-        &:hover {
-          background-color: #383838;
-        }
+const style = {
+  container: css`
+    .vlist-row {
+      user-select: none;
+      cursor: default;
+      &:nth-child(2n) {
+        background-color: #282828;
       }
-
-      .vlist-header-row {
-        border-bottom: solid 1px #aaa;
-        user-select: none;
-        cursor: default;
-      }
-
-      .vtable-splitter {
-        border-right: solid 1px #555;
-      }
-
-      .vtable-dragging-splitter {
-        background-color: #888;
+      &:hover {
+        background-color: #383838;
       }
     }
 
-    .${"selectedRow"} {
-      background-color: #484848;
+    .vlist-header-row {
+      border-bottom: solid 1px #aaa;
+      user-select: none;
+      cursor: default;
     }
-  }
-`;
+
+    .vtable-splitter {
+      border-right: solid 1px #555;
+    }
+
+    .vtable-dragging-splitter {
+      background-color: #888;
+    }
+  `,
+  selectedRow: css`
+    background-color: #484848;
+  `
+};
 
 export { style };

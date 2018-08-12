@@ -8,6 +8,8 @@ import PreferencePanel from "./PreferencePanel";
 import * as md from "view/utils/md-classes";
 import { __capture } from "view/utils/modifiers";
 import { MdList } from "./base/md";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 // @vue/component
 export default storeComponent.create({
@@ -82,28 +84,23 @@ export default storeComponent.create({
   }
 });
 
-const style = css`
-  .${"container"} {
+const style = {
+  container: css`
     display: flex;
     flex-flow: column nowrap;
     flex: 1;
-    :global {
-      .md-app {
-        flex: 1;
-      }
-
-      .md-app-toolbar {
-        padding: 0 4px;
-      }
+    .md-app {
+      flex: 1;
     }
-  }
-
-  .${"title"} {
+    .md-app-toolbar {
+      padding: 0 4px;
+    }
+  `,
+  title: css`
     margin: 0 !important;
     flex: 1;
-  }
-
-  .${"content"} {
+  `,
+  content: css`
     display: flex;
     flex-direction: row;
     position: absolute;
@@ -113,5 +110,5 @@ const style = css`
     bottom: 0;
     box-sizing: border-box;
     padding: 4px;
-  }
-`;
+  `
+};

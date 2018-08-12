@@ -2,6 +2,8 @@ import { VNode } from "vue";
 import { storeComponent } from "../store";
 import SideBarBase from "./SideBarBase";
 import SideBarBranchList from "./SideBarBranchList";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 // @vue/component
 export default storeComponent.create({
@@ -41,8 +43,8 @@ export default storeComponent.create({
   }
 });
 
-const style = css`
-  .${"wrapper"} {
+const style = {
+  wrapper: css`
     display: flex;
     flex-flow: column nowrap;
     flex: 1;
@@ -50,5 +52,5 @@ const style = css`
     padding: 0.5em;
     overflow-x: hidden;
     overflow-y: auto;
-  }
-`;
+  `
+};

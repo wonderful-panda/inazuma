@@ -11,6 +11,8 @@ import {
   MdListItem,
   MdListItemText
 } from "./base/md";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 // @vue/component
 export default tsx.componentFactoryOf<{ onClick: Ref }>().create({
@@ -27,7 +29,7 @@ export default tsx.componentFactoryOf<{ onClick: Ref }>().create({
   computed: {
     listStyle(): CssProperties {
       return {
-        height: `calc(var(--list-item-height) * ${this.branches.length})`
+        height: `${ListItemHeight * this.branches.length}px`
       };
     },
     expandIconStyle(): CssProperties {
@@ -46,7 +48,7 @@ export default tsx.componentFactoryOf<{ onClick: Ref }>().create({
         return (
           <MdListItem
             key={b.fullname}
-            class={{ [style.currentBranch]: currentBranch }}
+            class={style.listItem(currentBranch)}
             onClick={() => this.$emit("click", b)}
           >
             <MdListItemText>
@@ -77,7 +79,7 @@ export default tsx.componentFactoryOf<{ onClick: Ref }>().create({
             arrow_drop_down
           </MdIcon>
         </MdSubheader>
-        <transition name={style.transition}>
+        <transition>
           <div
             v-show={this.expanded}
             class={style.container}
@@ -91,20 +93,19 @@ export default tsx.componentFactoryOf<{ onClick: Ref }>().create({
   }
 });
 
-const style = css`
-  $branchNameHeight: 18px;
-  $commitIdHeight: 12px;
-  $vPadding: 4px;
-
-  .${"wrapper"} {
-    --list-item-height: #{$branchNameHeight + $commitIdHeight + $vPadding * 2};
+const BranchNameHeight = 18;
+const CommitIdHeight = 12;
+const VPadding = 4;
+const ListItemHeight = BranchNameHeight + CommitIdHeight + VPadding * 2;
+const style = {
+  wrapper: css`
     padding: 0;
     margin: 0 0 0.5em 0;
     display: flex;
     flex-flow: column nowrap;
     flex: auto 0 0;
-  }
-  .${"header"} {
+  `,
+  header: css`
     position: relative;
     padding: 2px 2px 2px 4px;
     min-height: 16px;
@@ -114,54 +115,50 @@ const style = css`
     &:hover {
       background-color: #444;
     }
-  }
-  .${"expandIcon"} {
+  `,
+  expandIcon: css`
     position: absolute;
     right: 0;
     font-size: 16px;
     transition: transform ease 0.3s;
-  }
-  .${"container"} {
+  `,
+  container: css`
     padding: 0;
     margin: 0;
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
     overflow-y: hidden;
-    :global {
-      .md-list {
-        padding: 0;
-        flex: 1;
-      }
-      .md-list-item-content {
-        min-height: var(--list-item-height) !important;
-        max-height: var(--list-item-height) !important;
-        padding: $vPadding 12px;
-      }
+    .md-list {
+      padding: 0;
+      flex: 1;
     }
-  }
-  .${"currentBranch"} {
-    background-color: #333;
-  }
-  .${"branchName"} {
-    height: $branchNameHeight;
-    font-size: 14px;
-    text-transform: none !important;
-    text-overflow: ellipsis;
-  }
-  .${"commitId"} {
-    height: $commitIdHeight;
-    font-size: 12px !important;
-    text-transform: none !important;
-  }
-  .${"transition"} {
-    &:global(-enter-active),
-    &:global(-leave-active) {
+    &.v-enter-active,
+    &.v-leave-active {
       transition: height 0.2s ease;
     }
-    &:global(-enter),
-    &:global(-leave-to) {
+    &.v-enter,
+    &.v-leave-to {
       height: 0 !important;
     }
-  }
-`;
+  `,
+  listItem: (isCurrent: boolean) => css`
+    .md-list-item-content {
+      min-height: ${ListItemHeight}px !important;
+      max-height: ${ListItemHeight}px !important;
+      padding: ${VPadding}px 12px;
+    }
+    background-color: ${isCurrent ? "#333" : undefined};
+  `,
+  branchName: css`
+    height: ${BranchNameHeight}px;
+    font-size: 14px !important;
+    text-transform: none !important;
+    text-overflow: ellipsis;
+  `,
+  commitId: css`
+    height: ${CommitIdHeight}px;
+    font-size: 12px !important;
+    text-transform: none !important;
+  `
+};

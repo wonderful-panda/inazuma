@@ -6,6 +6,8 @@ import { showContextMenu } from "core/browser";
 import FileTable from "./FileTable";
 import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 const displayState = ds.createMixin("RevisionLogCommitDetail", {
   columnWidths: {} as Dict<number>
@@ -123,41 +125,38 @@ export default storeComponent.mixin(displayState).create(
   }
 );
 
-const style = css`
-  .${"container"} {
+const style = {
+  container: css`
     display: flex;
     flex: 1;
     flex-flow: column nowrap;
     padding: 8px;
-  }
-
-  .${"inactive"} {
+  `,
+  inactive: css`
     color: #666;
-  }
-
-  .${"summary"} {
+  `,
+  summary: css`
     padding: 4px;
     margin-bottom: 8px;
-  }
-
-  .${"attrTable"} {
+  `,
+  attrTable: css`
     width: 100%;
     margin-bottom: 8px;
-  }
-
-  .${"attrName"} {
+  `,
+  attrName: css`
     background-color: #333;
     padding: 0 8px;
     vertical-align: middle;
     font-family: var(--monospace-fontfamily);
-  }
-
-  .${"attrValue"} {
-    @extend .attrName;
+  `,
+  attrValue: css`
+    background-color: #333;
+    padding: 0 8px;
+    vertical-align: middle;
+    font-family: var(--monospace-fontfamily);
     width: 100%;
-  }
-
-  .${"body"} {
+  `,
+  body: css`
     margin: 0px 2px 8px 2px;
     font-size: small;
     background-color: #333;
@@ -166,5 +165,5 @@ const style = css`
     max-height: 12em;
     white-space: pre-wrap;
     overflow: auto;
-  }
-`;
+  `
+};

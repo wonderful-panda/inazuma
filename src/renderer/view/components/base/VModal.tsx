@@ -5,16 +5,59 @@ import { queryFocusableElements } from "view/utils/dom";
 import VCloseButton from "./VCloseButton";
 import * as md from "view/utils/md-classes";
 import { __capture } from "view/utils/modifiers";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 const m = tsx.modifiers;
+
+export const ModalContainerClass = "vmodal-container";
+
+const style = {
+  mask: css`
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    &.modal-enter,
+    &.modal-leave-active {
+      background-color: rgba(0, 0, 0, 0);
+    }
+    .${ModalContainerClass} {
+      display: flex;
+      padding-left: 1em;
+      flex-flow: column nowrap;
+      box-sizing: border-box;
+      background: var(--md-theme-default-background);
+    }
+  `,
+  title: css`
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    flex: 1;
+  `,
+  header: css`
+    display: flex;
+    flex-flow: row nowrap;
+  `,
+  footer: css`
+    display: flex;
+    flex-direction: row;
+    padding-right: 1em;
+  `,
+  content: css`
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow: auto;
+  `
+};
 
 // @vue/component
 export default tsx.component({
   name: "VModal",
   props: {
     title: p(String).required,
-    close: p.ofFunction<() => void>().required,
-    containerClass: p(String).optional
+    close: p.ofFunction<() => void>().required
   },
   mounted() {
     Vue.nextTick(() => {
@@ -55,7 +98,7 @@ export default tsx.component({
           onKeydown={__capture(m.tab(this.onTabKeyDown))}
         >
           <div
-            class={[style.container, this.containerClass]}
+            class={ModalContainerClass}
             onClick={m.stop}
             onKeydown={m.esc(this.cancel)}
           >
@@ -74,48 +117,3 @@ export default tsx.component({
     );
   }
 });
-
-const style = css`
-  .${"mask"} {
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9998;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    &:global(.modal-enter),
-    &:global(.modal-leave-active) {
-      background-color: rgba(0, 0, 0, 0);
-    }
-  }
-
-  .${"container"} {
-    display: flex;
-    padding-left: 1em;
-    flex-flow: column nowrap;
-    box-sizing: border-box;
-    background: var(--md-theme-default-background);
-  }
-
-  .${"title"} {
-    margin-top: 1em;
-    margin-bottom: 0.5em;
-    flex: 1;
-  }
-
-  .${"header"} {
-    display: flex;
-    flex-flow: row nowrap;
-  }
-
-  .${"footer"} {
-    display: flex;
-    flex-direction: row;
-    padding-right: 1em;
-  }
-
-  .${"content"} {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    overflow: auto;
-  }
-`;

@@ -5,6 +5,8 @@ import FileTable from "./FileTable";
 import * as md from "view/utils/md-classes";
 import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 const displayState = ds.createMixin("RevisionLogWorkingTree", {
   splitterPosition: 0.5,
@@ -81,18 +83,17 @@ export default storeComponent.mixin(displayState).create(
   }
 );
 
-const style = css`
-  .${"container"} {
+const style = {
+  container: css`
     display: flex;
     flex: 1;
     flex-flow: column nowrap;
     padding: 8px;
-  }
-
-  .${"splitterPane"} {
+  `,
+  splitterPane: css`
     display: flex;
     flex: 1;
     flex-flow: column nowrap;
     padding: 0;
-  }
-`;
+  `
+};

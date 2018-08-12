@@ -1,29 +1,23 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
-import p from "vue-strict-prop";
-import * as md from "view/utils/md-classes";
 import { MdProgressSpinner } from "./md";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 export default tsx.component({
   name: "VBackdropSpinner",
   functional: true,
-  props: {
-    accent: p(Boolean).default(false)
-  },
-  render(_h, { props }): VNode {
+  render(): VNode {
     return (
       <div class={style.backdrop}>
-        <MdProgressSpinner
-          md-mode="indeterminate"
-          class={{ [style.spinner]: true, [md.ACCENT]: props.accent }}
-        />
+        <MdProgressSpinner md-mode="indeterminate" class={style.spinner} />
       </div>
     );
   }
 });
 
-const style = css`
-  .${"backdrop"} {
+const style = {
+  backdrop: css`
     position: absolute;
     flex: 1;
     display: flex;
@@ -33,9 +27,8 @@ const style = css`
     right: 0;
     background-color: rgba(0, 0, 0, 0.5);
     overflow: hidden;
-  }
-
-  .${"spinner"} {
+  `,
+  spinner: css`
     margin: auto;
-  }
-`;
+  `
+};

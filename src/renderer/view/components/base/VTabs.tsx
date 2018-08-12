@@ -4,6 +4,35 @@ import p from "vue-strict-prop";
 import VButton from "./VButton";
 import VIconButton from "./VIconButton";
 import { TabDefinition } from "view/mainTypes";
+import * as emotion from "emotion";
+const css = emotion.css;
+
+const TabButton = tsx.component({
+  functional: true,
+  props: {
+    tab: p.ofObject<TabDefinition>().required,
+    selected: p(Boolean).required,
+    select: p.ofFunction<() => void>().required,
+    close: p.ofFunction<() => void>().required
+  },
+  render(_h, { props, data }): VNode {
+    const { tab, selected, select, close } = props;
+    return (
+      <div class={style.tab} {...data}>
+        <VButton class={style.tabButton(selected)} action={select}>
+          {tab.text}
+        </VButton>
+        <VIconButton
+          v-show={tab.closable}
+          class={style.closeIcon}
+          action={close}
+        >
+          close
+        </VIconButton>
+      </div>
+    );
+  }
+});
 
 interface ScopedSlotArgs {
   default: { tab: TabDefinition };
@@ -24,64 +53,52 @@ export default tsx.componentFactoryOf<never, ScopedSlotArgs>().create({
     }
   },
   methods: {
-    renderTabButton(tab: TabDefinition, index: number): VNode {
-      const className =
-        index === this.selectedIndex
-          ? style.selectedTabButton
-          : style.tabButton;
-      return (
-        <div ref="tabButton" refInFor key={tab.key} class={style.tab}>
-          <VButton
-            class={className}
-            action={() => this.$emit("update:selectedIndex", index)}
-          >
-            {tab.text}
-          </VButton>
-          <VIconButton
-            v-show={tab.closable}
-            class={style.closeIcon}
-            action={() => this.closeTab(index)}
-          >
-            close
-          </VIconButton>
-        </div>
-      );
-    },
-    renderTabContent(tab: TabDefinition, index: number): VNode {
-      return (
-        <div
-          v-show={index === this.selectedIndex}
-          key={tab.key}
-          class={style.tabContent}
-        >
-          {this.$scopedSlots.default({ tab })}
-        </div>
-      );
+    selectTab(index: number) {
+      this.$emit("update:selectedIndex", index);
     }
   },
   render(): VNode {
     const { tabs } = this;
+    const renderTab = this.$scopedSlots.default;
     return (
       <div class={style.container}>
         <div class={style.tabbar}>
-          {tabs.map((tab, index) => this.renderTabButton(tab, index))}
+          {tabs.map((tab, index) => (
+            <TabButton
+              ref="tabButton"
+              refInFor
+              key={tab.key}
+              tab={tab}
+              selected={index === this.selectedIndex}
+              select={() => this.selectTab(index)}
+              close={() => this.closeTab(index)}
+            />
+          ))}
         </div>
-        {tabs.map((tab, index) => this.renderTabContent(tab, index))}
+        {tabs.map((tab, index) => (
+          <div
+            key={tab.key}
+            class={style.tabContent}
+            v-show={index === this.selectedIndex}
+          >
+            {renderTab({ tab })}
+          </div>
+        ))}
       </div>
     );
   }
 });
 
-const style = css`
-  .${"container"} {
+const style = {
+  container: css`
     flex: 1;
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
     overflow: hidden;
     padding: 0;
-  }
-  .${"tabbar"} {
+  `,
+  tabbar: css`
     display: flex;
     max-width: 100%;
     overflow-x: auto;
@@ -96,37 +113,35 @@ const style = css`
     &:hover::-webkit-scrollbar {
       display: block;
     }
-  }
-  .${"tab"} {
+  `,
+  tab: css`
     display: inline-block;
     position: relative;
     height: 22px;
     line-height: 22px;
     border-right: 1px solid #111;
     margin: 0;
-  }
-  .${"tabButton"} {
+  `,
+  tabButton: (selected: boolean) => css`
     text-transform: none;
     font-size: small;
     margin: 0;
     height: 22px;
-    color: #aaa !important;
+    background-color: ${selected
+      ? "var(--md-theme-default-background)"
+      : undefined};
+    color: ${selected ? "var(--md-theme-default-primary)" : "#aaa"} !important;
 
-    :global(.md-button-content) {
+    .md-button-content {
       margin-right: auto;
       padding-right: 12px;
     }
-  }
-  .${"tabContent"} {
+  `,
+  tabContent: css`
     display: flex;
     flex: 1;
-  }
-  .${"selectedTabButton"} {
-    @extend .${"tabButton"};
-    background-color: var(--md-theme-default-background);
-    color: var(--md-theme-default-primary) !important;
-  }
-  .${"closeIcon"} {
+  `,
+  closeIcon: css`
     position: absolute;
     right: 0;
     margin: 0;
@@ -135,12 +150,12 @@ const style = css`
     max-height: 20px;
     min-width: 20px;
     max-width: 20px;
-    :global(.md-icon) {
+    .md-icon {
       font-size: x-small !important;
       color: #888 !important;
       &:hover {
         color: #fff !important;
       }
     }
-  }
-`;
+  `
+};

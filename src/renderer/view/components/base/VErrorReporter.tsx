@@ -5,6 +5,8 @@ import VIconButton from "./VIconButton";
 import p from "vue-strict-prop";
 import * as md from "view/utils/md-classes";
 import { MdSnackbar, MdIcon } from "./md";
+import * as emotion from "emotion";
+const css = emotion.css;
 
 // @vue/component
 export default tsx.component({
@@ -35,21 +37,18 @@ export default tsx.component({
   }
 });
 
-const style = css`
-  .${"container"} {
+const style = {
+  container: css`
     max-width: 80%;
     padding: 12px;
     background-color: var(--md-theme-default-accent) !important;
-    :global {
-      .md-snackbar-content,
-      .md-icon {
-        color: var(--md-theme-default-text-primary-on-accent) !important;
-      }
+    .md-snackbar-content,
+    .md-icon {
+      color: var(--md-theme-default-text-primary-on-accent) !important;
     }
-  }
-
-  .${"message"} {
+  `,
+  message: css`
     margin-left: 8px;
     font-weight: bold;
-  }
-`;
+  `
+};

@@ -32,28 +32,27 @@ declare interface Config {
   vueDevTool?: string;
 }
 
-declare type Ref = {
+declare interface RefBase<TypeName extends string> {
+  type: TypeName;
   id: string;
   fullname: string;
-} & (
-  | {
-      type: "HEAD" | "MERGE_HEAD";
-    }
-  | {
-      type: "heads";
-      name: string;
-      current: boolean;
-    }
-  | {
-      type: "tags";
-      name: string;
-      tagId: string;
-    }
-  | {
-      type: "remotes";
-      remote: string;
-      name: string;
-    });
+}
+declare interface HeadRef extends RefBase<"HEAD"> {}
+declare interface MergeHeadRef extends RefBase<"MERGE_HEAD"> {}
+declare interface BranchRef extends RefBase<"heads"> {
+  name: string;
+  current: boolean;
+}
+declare interface TagRef extends RefBase<"tags"> {
+  name: string;
+  tagId: string;
+}
+declare interface RemoteRef extends RefBase<"remotes"> {
+  remote: string;
+  name: string;
+}
+
+declare type Ref = HeadRef | MergeHeadRef | BranchRef | TagRef | RemoteRef;
 
 declare interface Refs {
   head?: string;
