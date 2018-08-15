@@ -17,7 +17,8 @@ export default tsx.component({
     inlineIcon: String,
     tooltip: String,
     min: Number,
-    max: Number
+    max: Number,
+    size: Number
   },
   computed: {},
   methods: {
@@ -57,7 +58,7 @@ export default tsx.component({
           onInput={this.onInput}
           required={this.required}
           disabled={this.disabled}
-          {...{ attrs: { min: this.min, max: this.max } }}
+          {...{ attrs: { min: this.min, max: this.max, size: this.size } }}
         />
         {this.helperTextNode(this.helperText)}
         {this.iconNode(this.inlineIcon)}

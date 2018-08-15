@@ -22,6 +22,7 @@ import VTextField from "./base/VTextField";
 import { filterTreeNodes } from "core/tree";
 import { MdEmptyState } from "./base/md";
 import * as emotion from "emotion";
+import VIconButton from "./base/VIconButton";
 const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
@@ -102,6 +103,14 @@ export default storeComponent.mixin(displayState).create({
     }, 500)
   },
   methods: {
+    expandFileTreeAll() {
+      const tree = this.$refs.tree as Vtreetable<any>;
+      tree.expandAll();
+    },
+    collapseFileTreeAll() {
+      const tree = this.$refs.tree as Vtreetable<any>;
+      tree.collapseAll();
+    },
     getRowClass({ data }: TreeNodeWithState): string | undefined {
       if (data.path === this.selectedPath) {
         return style.selectedRow;
@@ -164,12 +173,29 @@ export default storeComponent.mixin(displayState).create({
         minSizeSecond="10%"
       >
         <template slot="first">
-          <VTextField
-            class={style.filterField}
-            inlineIcon="filter_list"
-            tooltip="Filename filter"
-            value={__sync(this.filterText)}
-          />
+          <div style={{ display: "flex" }}>
+            <VTextField
+              class={style.filterField}
+              inlineIcon="filter_list"
+              tooltip="Filename filter"
+              size={1}
+              value={__sync(this.filterText)}
+            />
+            <VIconButton
+              class={style.expandButton}
+              tooltip="Expand all"
+              action={this.expandFileTreeAll}
+            >
+              expand_more
+            </VIconButton>
+            <VIconButton
+              class={style.expandButton}
+              tooltip="Collapse all"
+              action={this.collapseFileTreeAll}
+            >
+              expand_less
+            </VIconButton>
+          </div>
           <VtreeTableT
             ref="tree"
             slot="first"
@@ -257,5 +283,13 @@ const style = {
     padding: 0;
     min-height: 0;
     font-size: small;
+    flex: 1;
+  `,
+  expandButton: css`
+    min-width: 32px;
+    max-width: 32px;
+    min-height: 32px;
+    max-height: 32px;
+    margin-right: 0;
   `
 };
