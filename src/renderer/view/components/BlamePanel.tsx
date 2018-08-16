@@ -166,25 +166,24 @@ export default storeComponent.mixin(displayState).create({
       if (!commit) {
         return;
       }
-      const { id, filename, previousFilename, parentIds } = commit;
+      const { id, path, oldPath, parentIds } = commit;
       const actions = this.actions;
       const menus: Electron.MenuItemConstructorOptions[] = [];
       menus.push({
         label: "View this revision",
-        click: () => actions.showFileTab(id, filename)
+        click: () => actions.showFileTab(id, path)
       });
       if (parentIds[0]) {
         menus.push({
           label: "View previous revision",
-          click: () =>
-            actions.showFileTab(parentIds[0]!, previousFilename || filename)
+          click: () => actions.showFileTab(parentIds[0]!, oldPath || path)
         });
         menus.push({
           label: "Compare with previous revision",
           click: () =>
             actions.showExternalDiff(
-              { path: previousFilename || filename, sha: parentIds[0]! },
-              { path: filename, sha: id }
+              { path: oldPath || path, sha: parentIds[0]! },
+              { path, sha: id }
             )
         });
       }
@@ -192,7 +191,7 @@ export default storeComponent.mixin(displayState).create({
         label: "Compare with working tree",
         click: () =>
           actions.showExternalDiff(
-            { path: filename, sha: id },
+            { path, sha: id },
             { path: this.path, sha: "UNSTAGED" }
           )
       });

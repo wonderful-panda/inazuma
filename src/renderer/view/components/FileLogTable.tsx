@@ -77,7 +77,7 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileCommit>>().create({
         case "comment":
           return item.summary;
         case "path":
-          return item.filename;
+          return item.path;
         default:
           return "";
       }

@@ -120,8 +120,8 @@ export async function filelog(
      |STAT LINE
 
      |STAT LINE is one of them:
-     |deleted lines<TAB>added lines<TAB>path<NUL>
-     |deleted lines<TAB>added lines<NUL>old path<NUL>new path<NUL>
+     |status code<NUL>path<NUL>
+     |R###<NUL>old path<NUL>path<NUL>
      */
 
   const args = [
@@ -129,7 +129,7 @@ export async function filelog(
     "--topo-order",
     `--format=%n${_logFormat}%nstat `,
     "--follow",
-    "--numstat",
+    "--name-status",
     "-z"
   ];
   if (maxCount > 0) {
@@ -166,13 +166,12 @@ export async function filelog(
       } else {
         // stat line
         const tokens = line.split("\0");
-        if (tokens.length > 2) {
-          // deleted lines<TAB>added lines<NUL>old path<NUL>new path<NUL>
-          current.previousFilename = tokens[1];
-          current.filename = tokens[2];
+        current.statusCode = tokens[0];
+        if (current.statusCode.startsWith("R")) {
+          current.oldPath = tokens[1];
+          current.path = tokens[2];
         } else {
-          // deleted lines<TAB>added lines<TAB>path<NUL>
-          current.filename = tokens[0].split("\t")[2];
+          current.path = tokens[1];
         }
         commitCount++;
         commitCb(current);

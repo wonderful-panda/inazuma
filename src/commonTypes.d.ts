@@ -75,8 +75,9 @@ declare interface Commit extends DagNode {
 }
 
 declare interface FileCommit extends Commit {
-  filename: string;
-  previousFilename?: string;
+  statusCode: string;
+  path: string;
+  oldPath?: string;
 }
 
 declare interface BlameCommit {
