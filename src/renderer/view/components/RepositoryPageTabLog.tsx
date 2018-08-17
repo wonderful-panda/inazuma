@@ -9,7 +9,7 @@ import VSplitterPanel from "./base/VSplitterPanel";
 import { dragdrop } from "../dragdrop";
 import { LogItem } from "../mainTypes";
 import { __sync } from "view/utils/modifiers";
-import { showContextMenu } from "core/browser";
+import { showCommitContextMenu } from "../commands";
 
 const displayState = ds.createMixin("TheRevisionLogPage", {
   splitterPosition: 0.6,
@@ -45,14 +45,7 @@ export default storeComponent.mixin(displayState).create(
       },
       showContextMenu({ item, event }: RowEventArgs<LogItem, Event>) {
         event.preventDefault();
-        showContextMenu([
-          {
-            label: "Show tree",
-            click: () => {
-              this.actions.showTreeTab(item.commit.id);
-            }
-          }
-        ]);
+        showCommitContextMenu(this.$store, item.commit);
       }
     },
     render(): VNode {

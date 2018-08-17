@@ -2,11 +2,12 @@ import * as md from "view/utils/md-classes";
 import { VNode } from "vue";
 import moment from "moment";
 import { storeComponent } from "../store";
-import { showContextMenu } from "core/browser";
 import FileTable from "./FileTable";
 import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
 import * as emotion from "emotion";
+import { showFileContextMenu, executeFileCommand } from "../commands";
+import { fileCommandDiffWithParent } from "../commands/fileCommandDiff";
 const css = emotion.css;
 
 const displayState = ds.createMixin("RevisionLogCommitDetail", {
@@ -64,42 +65,17 @@ export default storeComponent.mixin(displayState).create(
         );
       },
       showExternalDiff(item: FileEntry) {
-        if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
-          return;
-        }
-        this.actions.showExternalDiff(
-          { path: item.oldPath || item.path, sha: this.commit.id + "~1" },
-          { path: item.path, sha: this.commit.id }
+        executeFileCommand(
+          fileCommandDiffWithParent,
+          this.$store,
+          this.commit,
+          item,
+          item.path
         );
       },
       showContextMenu(item: FileEntry, event: Event) {
         event.preventDefault();
-        if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
-          return;
-        }
-        showContextMenu([
-          {
-            label: "Compare with previous revision",
-            click: () => {
-              this.showExternalDiff(item);
-            }
-          },
-          {
-            label: "Compare with working tree",
-            click: () => {
-              this.actions.showExternalDiff(
-                { path: item.path, sha: this.commit.id },
-                { path: item.path, sha: "UNSTAGED" }
-              );
-            }
-          },
-          {
-            label: "View file",
-            click: () => {
-              this.actions.showFileTab(this.commit.id, item.path);
-            }
-          }
-        ]);
+        showFileContextMenu(this.$store, this.commit, item, item.path);
       }
     },
     render(): VNode {

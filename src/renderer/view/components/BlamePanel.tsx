@@ -1,11 +1,9 @@
-import Electron from "electron";
 import MonacoEditor from "vue-monaco";
 import moment from "moment";
 import { storeComponent } from "../store";
 import p from "vue-strict-prop";
 import { shortHash } from "../filters";
 import { lineIndicesToRanges, getLangIdFromPath } from "view/monaco";
-import { showContextMenu } from "core/browser";
 import { asTuple } from "core/utils";
 import { VNode } from "vue";
 import FileLogTable from "./FileLogTable";
@@ -14,6 +12,7 @@ import BlamePanelFooter from "./BlamePanelFooter";
 import { __sync } from "../utils/modifiers";
 import * as ds from "view/store/displayState";
 import * as emotion from "emotion";
+import { showFileContextMenu } from "../commands";
 const css = emotion.css;
 
 const amdRequire = (global as any).amdRequire;
@@ -156,7 +155,10 @@ export default storeComponent.mixin(displayState).create({
       this.updateStaticDecorations();
       this.updateSelectedCommitDecorations();
     },
-    showContextMenu(e: monaco.editor.IEditorMouseEvent) {
+    showContextMenu(item: FileCommit) {
+      showFileContextMenu(this.$store, item, item, this.path, true);
+    },
+    showContextMenuFromEditor(e: monaco.editor.IEditorMouseEvent) {
       const lineNumber = e.target.position.lineNumber;
       const commitId = this.blame.commitIds[lineNumber - 1];
       if (!commitId) {
@@ -166,36 +168,7 @@ export default storeComponent.mixin(displayState).create({
       if (!commit) {
         return;
       }
-      const { id, path, oldPath, parentIds } = commit;
-      const actions = this.actions;
-      const menus: Electron.MenuItemConstructorOptions[] = [];
-      menus.push({
-        label: "View this revision",
-        click: () => actions.showFileTab(id, path)
-      });
-      if (parentIds[0]) {
-        menus.push({
-          label: "View previous revision",
-          click: () => actions.showFileTab(parentIds[0]!, oldPath || path)
-        });
-        menus.push({
-          label: "Compare with previous revision",
-          click: () =>
-            actions.showExternalDiff(
-              { path: oldPath || path, sha: parentIds[0]! },
-              { path, sha: id }
-            )
-        });
-      }
-      menus.push({
-        label: "Compare with working tree",
-        click: () =>
-          actions.showExternalDiff(
-            { path, sha: id },
-            { path: this.path, sha: "UNSTAGED" }
-          )
-      });
-      showContextMenu(menus);
+      this.showContextMenu(commit);
     },
     updateStaticDecorations() {
       const monacoEditor = this.monacoEditor;
@@ -286,6 +259,7 @@ export default storeComponent.mixin(displayState).create({
             onRowclick={args => {
               this.selectedCommitId = args.item.id;
             }}
+            onRowcontextmenu={args => this.showContextMenu(args.item)}
           />
           <div slot="second" class={style.editorWrapper}>
             <monaco-editor
@@ -299,7 +273,7 @@ export default storeComponent.mixin(displayState).create({
               onMouseDown={this.onMouseDown}
               onMouseMove={this.onMouseMove}
               onMouseLeave={this.onMouseLeave}
-              onContextMenu={this.showContextMenu}
+              onContextMenu={this.showContextMenuFromEditor}
             />
           </div>
         </VSplitterPanel>

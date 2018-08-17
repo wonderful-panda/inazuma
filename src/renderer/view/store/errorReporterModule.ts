@@ -13,7 +13,15 @@ export class ErrorReporterMutations extends sinai.Mutations<
   }
 }
 
-export class ErrorReporterGetters extends sinai.Getters<ErrorReporterState>() {}
+export class ErrorReporterGetters extends sinai.Getters<ErrorReporterState>() {
+  get message(): string {
+    if (this.state.error) {
+      return this.state.error.message;
+    } else {
+      return "";
+    }
+  }
+}
 
 export class ErrorReporterActions extends sinai.Actions<
   ErrorReporterState,

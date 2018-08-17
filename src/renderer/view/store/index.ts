@@ -1,3 +1,4 @@
+import Vue, { VueConstructor } from "vue";
 import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
 import { AppState, LogItem, ErrorLikeObject } from "../mainTypes";
@@ -37,6 +38,7 @@ class State implements AppState {
   rowHeight = 24;
   sidebar = "";
   preferenceShown = false;
+  notification = "";
 }
 
 class Mutations extends injected.Mutations<State>() {
@@ -89,6 +91,10 @@ class Mutations extends injected.Mutations<State>() {
   }
   setPreferenceShown(value: boolean) {
     this.state.preferenceShown = value;
+  }
+
+  setNotification(value: string) {
+    this.state.notification = value;
   }
 }
 
@@ -226,6 +232,13 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     }
   }
 
+  showNotification(message: string) {
+    this.mutations.setNotification(message);
+  }
+  hideNotification() {
+    this.mutations.setNotification("");
+  }
+
   showPreference() {
     this.mutations.setPreferenceShown(true);
   }
@@ -293,7 +306,9 @@ export const store = sinai.store(
 
 export type AppStore = typeof store;
 // @vue/component
-export const StoreMixin = {
+export const StoreMixin = (Vue as VueConstructor<
+  Vue & { $store: AppStore }
+>).extend({
   computed: {
     state(this: { $store: AppStore }): AppStore["state"] {
       return this.$store.state;
@@ -305,6 +320,6 @@ export const StoreMixin = {
       return this.$store.getters;
     }
   }
-};
+});
 
 export const storeComponent = tsx.componentFactory.mixin(StoreMixin);

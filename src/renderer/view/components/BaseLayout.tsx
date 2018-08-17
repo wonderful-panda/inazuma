@@ -3,7 +3,7 @@ import { storeComponent } from "../store";
 import p from "vue-strict-prop";
 import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
-import VErrorReporter from "./base/VErrorReporter";
+import VNotification from "./base/VNotification";
 import PreferencePanel from "./PreferencePanel";
 import * as md from "view/utils/md-classes";
 import { __capture } from "view/utils/modifiers";
@@ -31,7 +31,7 @@ export default storeComponent.create({
         this.menuVisible = v;
       }
     };
-    const { state, actions } = this;
+    const { state, actions, getters } = this;
     return (
       <div staticClass={style.container}>
         <md-app md-mode="fixed">
@@ -73,9 +73,16 @@ export default storeComponent.create({
           hide={this.actions.hidePreference}
           save={this.actions.resetConfig}
         />
-
-        <VErrorReporter
-          error={state.errorReporter.error}
+        <VNotification
+          icon="info"
+          message={state.notification}
+          color="primary"
+          hide={actions.hideNotification}
+        />
+        <VNotification
+          icon="warning"
+          message={getters.errorReporter.message}
+          color="accent"
           hide={actions.errorReporter.clear}
         />
         <VDialogBase state={state.dialog} actions={actions.dialog} />
