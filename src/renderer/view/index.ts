@@ -1,9 +1,10 @@
 import "./install-vue";
-import Vue from "vue";
+import Vue, { VNode } from "vue";
 import Electron from "electron";
-import { store } from "./store";
-import { router } from "./route";
+import { store, storeComponent } from "./store";
 import { loadMonaco } from "./monaco";
+import TheWelcomePage from "./components/TheWelcomePage";
+import TheRepositoryPage from "./components/TheRepositoryPage";
 loadMonaco();
 
 (function init() {
@@ -14,6 +15,10 @@ loadMonaco();
   store.mutations.resetConfig(config);
   store.mutations.resetEnvironment(environment);
 
+  window.addEventListener("beforeunload", () => {
+    sessionStorage.setItem("repoPath", store.state.repoPath);
+  });
+
   Electron.ipcRenderer.on(
     "action",
     (_event: string, name: string, payload: any) => {
@@ -22,11 +27,19 @@ loadMonaco();
   );
 })();
 
-// eslint-disable-next-line no-new
-new Vue({
-  el: "#app",
-  store,
-  router,
+const initialRepo = sessionStorage.getItem("repoPath");
+if (initialRepo) {
+  sessionStorage.removeItem("repoPath");
+  store.actions.showRepositoryPage(initialRepo);
+}
+
+const App = storeComponent.create({
+  name: "App",
+  mounted() {
+    if (initialRepo) {
+      store.actions.openRepository(initialRepo);
+    }
+  },
   watch: {
     "$store.state.config.fontFamily": {
       handler({ standard, monospace }: Config["fontFamily"]) {
@@ -48,7 +61,20 @@ new Vue({
       immediate: true
     }
   },
+  render(h): VNode {
+    if (this.state.repoPath === "") {
+      return h(TheWelcomePage);
+    } else {
+      return h(TheRepositoryPage);
+    }
+  }
+});
+
+// eslint-disable-next-line no-new
+new Vue({
+  el: "#app",
+  store,
   render(h) {
-    return h("router-view");
+    return h(App);
   }
 });

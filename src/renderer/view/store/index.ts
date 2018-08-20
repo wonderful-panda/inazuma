@@ -1,7 +1,12 @@
 import Vue, { VueConstructor } from "vue";
 import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
-import { AppState, LogItem, ErrorLikeObject } from "../mainTypes";
+import {
+  AppState,
+  LogItem,
+  ErrorLikeObject,
+  TabDefinition
+} from "../mainTypes";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
 import { dialogModule } from "./dialogModule";
@@ -132,24 +137,30 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     this.mutations.resetConfig(config);
   }
 
-  async setRepositoryPath(repoPath: string): Promise<void> {
-    if (this.state.repoPath === repoPath) {
-      return;
-    }
-    if (repoPath) {
-      try {
-        const { commits, refs } = await browserCommand.openRepository(repoPath);
+  showWelcomePage(): void {
+    this.mutations.setRepoPath("");
+    this.modules.tabs.actions.reset([]);
+  }
+
+  showRepositoryPage(repoPath: string, tabs?: TabDefinition[]) {
+    this.mutations.setRepoPath(repoPath);
+    this.modules.tabs.actions.reset(
+      tabs || [{ key: "log", kind: "log", text: "COMMITS" }]
+    );
+  }
+
+  async openRepository(repoPath: string): Promise<void> {
+    try {
+      const { commits, refs } = await browserCommand.openRepository(repoPath);
+      if (this.state.repoPath !== repoPath) {
         this.mutations.setRepoPath(repoPath);
         this.modules.tabs.actions.reset([
           { key: "log", kind: "log", text: "COMMITS" }
         ]);
-        this.showCommits(commits, refs);
-      } catch (e) {
-        this.showError(e);
       }
-    } else {
-      this.mutations.setRepoPath(repoPath);
-      this.modules.tabs.actions.reset([]);
+      this.showCommits(commits, refs);
+    } catch (e) {
+      this.showError(e);
     }
   }
 

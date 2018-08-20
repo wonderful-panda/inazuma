@@ -58,7 +58,7 @@ export default storeComponent.create({
   },
   methods: {
     openRepository(repoPath: string): void {
-      navigate.log(repoPath);
+      this.actions.openRepository(repoPath);
     },
     selectRepository(): void {
       const paths = dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
@@ -68,7 +68,7 @@ export default storeComponent.create({
         return;
       }
       const repoPath = normalizePathSeparator(paths[0]);
-      navigate.log(repoPath);
+      this.actions.openRepository(repoPath);
     }
   },
   render(): VNode {

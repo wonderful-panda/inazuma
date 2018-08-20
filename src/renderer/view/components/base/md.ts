@@ -1,7 +1,6 @@
 import { ofType } from "vue-tsx-support";
 import Vue from "vue";
 import { withClass } from "./withClass";
-import { Location } from "vue-router";
 
 export const MdButton = ofType<
   {
@@ -39,10 +38,9 @@ export const MdIcon = Vue.component("MdIcon");
 
 export const MdList = Vue.component("MdList");
 export const MdDoubleLineList = withClass(MdList, "md-double-line");
-export const MdListItem = ofType<
-  { to?: Location },
-  { onClick: MouseEvent }
->().convert(Vue.component("MdListItem"));
+export const MdListItem = ofType<{}, { onClick: MouseEvent }>().convert(
+  Vue.component("MdListItem")
+);
 export const MdListItemText = withClass("div", "md-list-item-text");
 
 export const MdSubheader = Vue.component("MdSubheader");

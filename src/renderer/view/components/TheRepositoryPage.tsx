@@ -94,7 +94,7 @@ export default storeComponent.create({
           <DrawerNavigation
             icon="home"
             text="Go to Home"
-            action={{ path: "/", replace: true }}
+            action={this.actions.showWelcomePage}
           />
           <DrawerNavigation
             icon="info_outline"
