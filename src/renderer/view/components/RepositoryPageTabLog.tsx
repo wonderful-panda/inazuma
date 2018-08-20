@@ -37,9 +37,6 @@ export default storeComponent.mixin(displayState).create(
         const data = dragdrop.getData(event, "git/branch");
         console.log(data);
       },
-      reload() {
-        location.reload();
-      },
       runInteractiveShell() {
         this.actions.runInteractiveShell();
       },
