@@ -11,7 +11,6 @@ import VTabs from "./base/VTabs";
 import DrawerNavigation from "./DrawerNavigation";
 import { __sync } from "../utils/modifiers";
 import { TabDefinition } from "../mainTypes";
-import * as md from "view/utils/md-classes";
 
 // @vue/component
 export default storeComponent.create({
@@ -50,11 +49,8 @@ export default storeComponent.create({
       } else if (tab.kind === "tree") {
         return <TabTree {...{ props: tab.params }} />;
       } else {
-        return (
-          <div class={md.HEADLINE} style={{ margin: "auto", color: "#888" }}>
-            NOT IMPLEMENTED (kind: {tab.kind})
-          </div>
-        );
+        console.error("unknown tab kind", tab);
+        return <div />;
       }
     }
   },
