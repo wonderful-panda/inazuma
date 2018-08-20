@@ -133,23 +133,23 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
   }
 
   async setRepositoryPath(repoPath: string): Promise<void> {
-    if (store.state.repoPath === repoPath) {
+    if (this.state.repoPath === repoPath) {
       return;
     }
     if (repoPath) {
       try {
         const { commits, refs } = await browserCommand.openRepository(repoPath);
-        store.mutations.setRepoPath(repoPath);
-        store.actions.tabs.reset([
+        this.mutations.setRepoPath(repoPath);
+        this.modules.tabs.actions.reset([
           { key: "log", kind: "log", text: "COMMITS" }
         ]);
-        store.actions.showCommits(commits, refs);
+        this.showCommits(commits, refs);
       } catch (e) {
-        store.actions.showError(e);
+        this.showError(e);
       }
     } else {
-      store.mutations.setRepoPath(repoPath);
-      store.actions.tabs.reset([]);
+      this.mutations.setRepoPath(repoPath);
+      this.modules.tabs.actions.reset([]);
     }
   }
 
