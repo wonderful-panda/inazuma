@@ -1,5 +1,4 @@
 import { remote, MenuItemConstructorOptions } from "electron";
-const { Menu } = remote;
 import { CommitCommand, FileCommand } from "./types";
 import { AppStore } from "../store";
 import { commitCommandBrowseTree } from "./commitCommandBrowseTree";
@@ -10,6 +9,7 @@ import {
 } from "./fileCommandDiff";
 import { fileCommandYankPath } from "./fileCommandYankPath";
 import { fileCommandBlame, fileCommandBlameParent } from "./fileCommandBlame";
+const { Menu } = remote;
 
 const commitCommands: CommitCommand[] = [
   commitCommandYankHash,

@@ -6,7 +6,6 @@ import { storeComponent } from "../store";
 import BaseLayout from "./BaseLayout";
 import DrawerNavigation from "./DrawerNavigation";
 import { getFileName, normalizePathSeparator } from "core/utils";
-import { navigate } from "../route";
 import * as md from "view/utils/md-classes";
 import {
   MdIcon,
@@ -16,8 +15,8 @@ import {
   MdListItem,
   MdListItemText
 } from "./base/md";
-const { dialog, BrowserWindow } = Electron.remote;
 import * as emotion from "emotion";
+const { dialog, BrowserWindow } = Electron.remote;
 const css = emotion.css;
 
 const RepositoryListItem = tsx.component({

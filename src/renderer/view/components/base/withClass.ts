@@ -34,7 +34,7 @@ export function withClass<
 ): WithProps<AsComponent<C>, OuterProps<Props, PropsDef>>;
 
 export function withClass(component: any, ...args: any[]): any {
-  if (args.length == 1) {
+  if (args.length === 1) {
     return {
       functional: true,
       render(h: CreateElement, { data, children }: RenderContext): VNode {
