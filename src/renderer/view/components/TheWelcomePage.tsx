@@ -61,9 +61,13 @@ export default storeComponent.create({
       this.actions.openRepository(repoPath);
     },
     selectRepository(): void {
-      const paths = dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+      const parent = BrowserWindow.getFocusedWindow();
+      const options: Electron.OpenDialogOptions = {
         properties: ["openDirectory"]
-      });
+      };
+      const paths = parent
+        ? dialog.showOpenDialog(parent, options)
+        : dialog.showOpenDialog(options);
       if (typeof paths === "undefined") {
         return;
       }
