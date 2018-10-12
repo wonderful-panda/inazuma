@@ -87,7 +87,7 @@
     "vue-monaco": "^0.1.6",
     "vue-strict-prop": "^0.2.0",
     "vue-template-compiler": "^2.5.16",
-    "vue-tsx-support": "^2.1.1",
+    "vue-tsx-support": "^2.2.0",
     "vue-typed-component": "^0.11.0",
     "vue-vtable": "^0.14.1",
     "webpack": "^4.8.3",
