@@ -29,6 +29,7 @@
     "iconv-lite": "^0.4.23",
     "ipc-promise": "^0.1.4",
     "jsonschema": "^1.2.4",
+    "lodash": "^4.17.10",
     "rimraf": "^2.6.2"
   },
   "devDependencies": {
@@ -66,7 +67,6 @@
     "file-loader": "^1.1.11",
     "fork-ts-checker-webpack-plugin": "^0.4.1",
     "glob": "^7.1.2",
-    "lodash": "^4.17.10",
     "material-design-icons": "^3.0.1",
     "moment": "^2.22.1",
     "monaco-editor": "^0.13.1",
