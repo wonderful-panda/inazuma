@@ -1,12 +1,11 @@
 module.exports = {
-  presets: ["env"],
+  presets: [["@babel/env", { modules: "commonjs" }]],
   plugins: [
-    "vue-jsx-modifier",
-    "transform-vue-jsx",
+    "babel-plugin-vue-jsx-modifier",
+    "babel-plugin-transform-vue-jsx",
     [
-      "transform-runtime",
+      "@babel/plugin-transform-runtime",
       {
-        polyfill: false,
         regenerator: true
       }
     ],

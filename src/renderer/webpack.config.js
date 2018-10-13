@@ -10,7 +10,7 @@ var cacheLoader = {
 };
 
 var loadersForTs = [
-  cacheLoader,
+  // cacheLoader,
   {
     loader: "babel-loader",
     options: babelrc
