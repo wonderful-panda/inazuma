@@ -44,11 +44,6 @@ module.exports = {
       {
         test: /\.tsx?$/,
         use: loadersForTs
-      },
-      {
-        test: /\.scss$/,
-        include: [path.resolve(__dirname, "view")],
-        use: [cacheLoader, "style-loader", "css-loader?modules", "sass-loader"]
       }
     ]
   },
