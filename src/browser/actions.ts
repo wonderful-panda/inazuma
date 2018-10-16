@@ -55,14 +55,12 @@ export function setupBrowserCommands(
     runInteractiveShell(cwd: string): Promise<void> {
       const [command, ...args] = splitCommandline(config.data.interactiveShell);
       if (command) {
-        cp
-          .spawn(command, args, {
-            cwd,
-            detached: true,
-            shell: true,
-            stdio: "ignore"
-          })
-          .unref();
+        cp.spawn(command, args, {
+          cwd,
+          detached: true,
+          shell: true,
+          stdio: "ignore"
+        }).unref();
       }
       return Promise.resolve();
     },
@@ -143,13 +141,11 @@ async function showExternalDiff(
   ]);
   replaceOrPush(args, "%1", leftPath);
   replaceOrPush(args, "%2", rightPath);
-  cp
-    .spawn(command, args, {
-      detached: true,
-      shell: true,
-      stdio: "ignore"
-    })
-    .unref();
+  cp.spawn(command, args, {
+    detached: true,
+    shell: true,
+    stdio: "ignore"
+  }).unref();
 }
 
 async function prepareDiffFile(
