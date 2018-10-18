@@ -33,32 +33,34 @@ if (initialRepo) {
   store.actions.showRepositoryPage(initialRepo);
 }
 
+store.watch(
+  s => s.config.fontFamily,
+  value => {
+    document.body.style.setProperty(
+      "--default-fontfamily",
+      value.standard || "Meiryo, Helvetica, Yu Gothic"
+    );
+    document.body.style.setProperty(
+      "--monospace-fontfamily",
+      value.monospace || "monospace"
+    );
+  },
+  { immediate: true }
+);
+
+store.watch(
+  s => s.repoPath,
+  value => {
+    document.title = value ? `Inazuma (${value})` : "Inazuma";
+  },
+  { immediate: true }
+);
+
 const App = storeComponent.create({
   name: "App",
   mounted() {
     if (initialRepo) {
       store.actions.openRepository(initialRepo);
-    }
-  },
-  watch: {
-    "$store.state.config.fontFamily": {
-      handler({ standard, monospace }: Config["fontFamily"]) {
-        document.body.style.setProperty(
-          "--default-fontfamily",
-          standard || "Meiryo, Helvetica, Yu Gothic"
-        );
-        document.body.style.setProperty(
-          "--monospace-fontfamily",
-          monospace || "monospace"
-        );
-      },
-      immediate: true
-    },
-    "$store.state.repoPath": {
-      handler(value: string) {
-        document.title = value ? `Inazuma (${value})` : "Inazuma";
-      },
-      immediate: true
     }
   },
   render(h): VNode {
