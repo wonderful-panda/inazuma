@@ -3,7 +3,7 @@ import * as ipcPromise from "ipc-promise";
 import * as cp from "child_process";
 import * as path from "path";
 import * as fs from "fs-extra";
-import { environment, config } from "./persistent";
+import { config } from "./persistent";
 import { splitCommandline, randomName } from "./utils";
 import git from "./git";
 import wm from "./windowManager";
@@ -26,9 +26,6 @@ export function setupBrowserCommands(
       repoPath: string
     ): Promise<{ commits: Commit[]; refs: Refs }> {
       const ret = await fetchHistory(repoPath, 1000);
-      if (environment.addRecentOpened(repoPath)) {
-        broadcast("environmentChanged", environment.data);
-      }
       return ret;
     },
     async getCommitDetail({ repoPath, sha }): Promise<CommitDetail> {

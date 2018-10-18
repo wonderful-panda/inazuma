@@ -34,8 +34,8 @@ export type TabDefinition =
 
 export interface AppState {
   repoPath: string;
-  environment: Environment;
   config: Config;
+  recentList: string[];
   commits: Commit[];
   graphs: Dict<GraphFragment>;
   refs: Refs;

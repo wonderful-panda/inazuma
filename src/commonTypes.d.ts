@@ -10,7 +10,6 @@ declare type Consumer<T> = (value: T) => void;
  * Auto updated parsistent data written to .environment.json
  */
 declare interface Environment {
-  recentOpened: string[];
   windowSize?: {
     width: number;
     height: number;
@@ -114,7 +113,6 @@ declare interface CommitDetail extends Commit {
 }
 
 declare interface BroadcastAction {
-  environmentChanged: Environment;
   configChanged: Config;
 }
 

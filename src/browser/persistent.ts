@@ -124,7 +124,7 @@ const environmentSchema: Schema = {
   required: ["recentOpened"]
 };
 
-const defaultEnvironData: Environment = { recentOpened: [] };
+const defaultEnvironData: Environment = {};
 
 export const environment = {
   data: Object.assign(
@@ -136,21 +136,6 @@ export const environment = {
   },
   save() {
     save(environmentJsonPath, environmentSchema, this.data);
-  },
-  addRecentOpened(repoPath: string): boolean {
-    const recents = [...this.data.recentOpened];
-    const idx = recents.indexOf(repoPath);
-    if (idx === 0) {
-      return false;
-    } else if (0 < idx) {
-      recents.splice(idx, 1);
-    }
-    recents.unshift(repoPath);
-    if (config.data.recentListCount < recents.length) {
-      recents.splice(config.data.recentListCount);
-    }
-    this.data.recentOpened = recents;
-    return true;
   },
   setWindowSize(width: number, height: number, maximized: boolean) {
     this.data.windowSize = { width, height, maximized };

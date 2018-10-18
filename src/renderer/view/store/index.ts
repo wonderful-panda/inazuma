@@ -26,6 +26,8 @@ const emptyCommit: CommitDetail = {
   files: []
 };
 
+const MAX_RECENT_LIST = 20;
+
 const injected = sinai
   .inject("dialog", dialogModule)
   .and("errorReporter", errorReporterModule)
@@ -33,8 +35,8 @@ const injected = sinai
 
 class State implements AppState {
   config: Config = { fontFamily: {}, recentListCount: 5 };
-  environment: Environment = { recentOpened: [] };
   repoPath = "";
+  recentList = [] as string[];
   commits = [] as Commit[];
   graphs = {} as Dict<GraphFragment>;
   refs = {} as Refs;
@@ -60,12 +62,24 @@ class Mutations extends injected.Mutations<State>() {
     this.state.refs = refs;
   }
 
-  resetEnvironment(env: Environment) {
-    this.state.environment = Object.freeze(env);
-  }
-
   resetConfig(config: Config) {
     this.state.config = Object.freeze(config);
+  }
+
+  resetRecentList(value: string[]) {
+    this.state.recentList = value;
+  }
+
+  addRecentList(repoPath: string) {
+    if (this.state.recentList[0] === repoPath) {
+      return;
+    }
+    this.state.recentList = [
+      repoPath,
+      ...this.state.recentList
+        .filter(v => v !== repoPath)
+        .slice(0, MAX_RECENT_LIST - 1)
+    ];
   }
 
   setRepoPath(repoPath: string) {
@@ -76,6 +90,9 @@ class Mutations extends injected.Mutations<State>() {
     state.graphs = {};
     state.selectedIndex = -1;
     state.selectedCommit = emptyCommit;
+    if (repoPath) {
+      this.addRecentList(repoPath);
+    }
   }
 
   setSelectedIndex(index: number) {
@@ -121,16 +138,15 @@ class Getters extends injected.Getters<State>() {
   get repoName(): string {
     return getFileName(this.state.repoPath) || this.state.repoPath;
   }
+  get visibleRecentList(): string[] {
+    return this.state.recentList.slice(0, this.state.config.recentListCount);
+  }
 }
 
 class Actions extends injected.Actions<State, Getters, Mutations>() {
   showError(e: ErrorLikeObject) {
     console.log(e);
     this.modules.errorReporter.actions.show(e);
-  }
-
-  environmentChanged(env: Environment) {
-    this.mutations.resetEnvironment(env);
   }
 
   configChanged(config: Config) {

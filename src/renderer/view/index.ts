@@ -11,13 +11,21 @@ loadMonaco();
   const { getPersistentAsJson } = Electron.remote.require("./remote");
   const json = JSON.parse(getPersistentAsJson());
   const config = json.config as Config;
-  const environment = json.environment as Environment;
   store.mutations.resetConfig(config);
-  store.mutations.resetEnvironment(environment);
 
-  window.addEventListener("beforeunload", () => {
-    sessionStorage.setItem("repoPath", store.state.repoPath);
-  });
+  try {
+    const recentList = JSON.parse(localStorage.getItem("recentList") || "[]");
+    if (
+      recentList instanceof Array &&
+      recentList.every(v => typeof v === "string")
+    ) {
+      store.mutations.resetRecentList(recentList);
+    } else {
+      console.warn("Failed to load recentList from localStorage");
+    }
+  } catch {
+    console.warn("Failed to load recentList from localStorage");
+  }
 
   Electron.ipcRenderer.on(
     "action",
@@ -29,7 +37,6 @@ loadMonaco();
 
 const initialRepo = sessionStorage.getItem("repoPath");
 if (initialRepo) {
-  sessionStorage.removeItem("repoPath");
   store.actions.showRepositoryPage(initialRepo);
 }
 
@@ -52,8 +59,16 @@ store.watch(
   s => s.repoPath,
   value => {
     document.title = value ? `Inazuma (${value})` : "Inazuma";
+    sessionStorage.setItem("repoPath", store.state.repoPath);
   },
   { immediate: true }
+);
+
+store.watch(
+  s => s.recentList,
+  value => {
+    localStorage.setItem("recentList", JSON.stringify(value));
+  }
 );
 
 const App = storeComponent.create({

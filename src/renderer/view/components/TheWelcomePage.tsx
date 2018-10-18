@@ -53,7 +53,7 @@ export default storeComponent.create({
   },
   computed: {
     recentOpened(): string[] {
-      return this.state.environment.recentOpened;
+      return this.getters.visibleRecentList;
     }
   },
   methods: {
