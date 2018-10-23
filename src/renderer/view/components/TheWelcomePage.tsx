@@ -16,6 +16,7 @@ import {
   MdListItemText
 } from "./base/md";
 import * as emotion from "emotion";
+import VIconButton from "./base/VIconButton";
 const { dialog, BrowserWindow } = Electron.remote;
 const css = emotion.css;
 
@@ -26,7 +27,8 @@ const RepositoryListItem = tsx.component({
     icon: p(String).required,
     text: p(String).required,
     description: p(String).required,
-    action: p.ofFunction<() => void>().required
+    action: p.ofFunction<() => void>().required,
+    remove: p.ofFunction<() => void>().optional
   },
   render(_h, ctx): VNode {
     const { props } = ctx;
@@ -39,6 +41,13 @@ const RepositoryListItem = tsx.component({
             {props.description}
           </span>
         </MdListItemText>
+        {props.remove ? (
+          <VIconButton staticClass="md-list-action" mini action={props.remove}>
+            close
+          </VIconButton>
+        ) : (
+          undefined
+        )}
       </MdListItem>
     );
   }
@@ -73,6 +82,9 @@ export default storeComponent.create({
       }
       const repoPath = normalizePathSeparator(paths[0]);
       this.actions.openRepository(repoPath);
+    },
+    removeRecent(repoPath: string) {
+      this.actions.removeRecentList(repoPath);
     }
   },
   render(): VNode {
@@ -113,6 +125,7 @@ export default storeComponent.create({
                   text={getFileName(repo)}
                   description={repo}
                   action={() => this.openRepository(repo)}
+                  remove={() => this.removeRecent(repo)}
                 />
               ))}
             </MdDoubleLineList>
@@ -138,20 +151,28 @@ const style = {
     }
     .md-list-item-content {
       min-height: 32px !important;
+      :hover .md-list-action {
+        opacity: 1;
+      }
     }
     .md-subheader {
       min-height: 32px !important;
     }
     .md-icon {
-      margin-right: 0.5em !important;
+      margin-right: 0 !important;
+    }
+    .md-list-action {
+      opacity: 0;
     }
   `,
   repoName: css`
     height: 20px;
+    margin-left: 16px;
     margin-right: auto;
     text-transform: none !important;
   `,
   repoDescription: css`
+    margin-left: 16px;
     text-transform: none !important;
     font-size: 75%;
   `,

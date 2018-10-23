@@ -81,6 +81,12 @@ class Mutations extends injected.Mutations<State>() {
         .slice(0, MAX_RECENT_LIST - 1)
     ];
   }
+  removeRecentList(repoPath: string) {
+    const index = this.state.recentList.indexOf(repoPath);
+    if (0 <= index) {
+      Vue.delete(this.state.recentList, index);
+    }
+  }
 
   setRepoPath(repoPath: string) {
     const state = this.state;
@@ -315,6 +321,10 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     } catch (e) {
       this.modules.errorReporter.actions.show(e);
     }
+  }
+
+  removeRecentList(repoPath: string) {
+    this.mutations.removeRecentList(repoPath);
   }
 }
 
