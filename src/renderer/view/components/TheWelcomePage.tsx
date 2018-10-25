@@ -31,9 +31,9 @@ const RepositoryListItem = tsx.component({
     remove: p.ofFunction<() => void>().optional
   },
   render(_h, ctx): VNode {
-    const { props } = ctx;
+    const { props, data } = ctx;
     return (
-      <MdListItem onClick={props.action}>
+      <MdListItem onClick={props.action} {...data}>
         <MdIcon>{props.icon}</MdIcon>
         <MdListItemText>
           <span class={[md.SUBHEADING, style.repoName]}>{props.text}</span>
@@ -118,16 +118,18 @@ export default storeComponent.create({
               <MdSubheader class={[md.PRIMARY, md.CAPTION]}>
                 Recent opened
               </MdSubheader>
-              {this.recentOpened.map(repo => (
-                <RepositoryListItem
-                  key={repo}
-                  icon="history"
-                  text={getFileName(repo)}
-                  description={repo}
-                  action={() => this.openRepository(repo)}
-                  remove={() => this.removeRecent(repo)}
-                />
-              ))}
+              <transition-group name="recents">
+                {this.recentOpened.map(repo => (
+                  <RepositoryListItem
+                    key={repo}
+                    icon="history"
+                    text={getFileName(repo)}
+                    description={repo}
+                    action={() => this.openRepository(repo)}
+                    remove={() => this.removeRecent(repo)}
+                  />
+                ))}
+              </transition-group>
             </MdDoubleLineList>
           </div>
         </div>
@@ -148,6 +150,13 @@ const style = {
     .md-list {
       background-color: var(--md-theme-default-background-on-background);
       padding: 0 0.5em;
+
+      .recents-move {
+        transition: transform 0.3s;
+      }
+      .recents-leave-active {
+        position: absolute;
+      }
     }
     .md-list-item-content {
       min-height: 32px !important;
