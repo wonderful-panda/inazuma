@@ -14,7 +14,6 @@ import { errorReporterModule } from "./errorReporterModule";
 import { tabsModule } from "./tabsModule";
 import { getFileName } from "core/utils";
 import { shortHash } from "../filters";
-import { sortTreeInplace } from "core/tree";
 
 const emptyCommit: CommitDetail = {
   id: "",
@@ -281,17 +280,11 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
 
   async showFileTab(sha: string, relPath: string): Promise<void> {
     try {
-      const { repoPath } = this.state;
-      const blame = await browserCommand.getBlame({
-        repoPath,
-        relPath,
-        sha
-      });
       this.modules.tabs.actions.addOrSelect({
         key: `file/${relPath}:${sha}`,
         kind: "file",
         text: `${getFileName(relPath)} @ ${shortHash(sha)}`,
-        params: { sha, path: relPath, blame },
+        params: { sha, path: relPath },
         closable: true
       });
     } catch (e) {
@@ -301,21 +294,11 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
 
   async showTreeTab(sha: string): Promise<void> {
     try {
-      const rootNodes = await browserCommand.getTree({
-        repoPath: this.state.repoPath,
-        sha
-      });
-      sortTreeInplace(rootNodes, (a, b) => {
-        return (
-          a.data.type.localeCompare(b.data.type) * -1 || // tree, then blob
-          a.data.basename.localeCompare(b.data.basename)
-        );
-      });
       this.modules.tabs.actions.addOrSelect({
         key: `tree/${sha}`,
         kind: "tree",
         text: `TREE @ ${shortHash(sha)}`,
-        params: { sha, rootNodes },
+        params: { sha },
         closable: true
       });
     } catch (e) {

@@ -20,11 +20,11 @@ export interface LogTabDefinition extends TabDefinitionBase {
 }
 export interface FileTabDefinition extends TabDefinitionBase {
   kind: "file";
-  params: { sha: string; path: string; blame: Blame };
+  params: { sha: string; path: string };
 }
 export interface TreeTabDefinition extends TabDefinitionBase {
   kind: "tree";
-  params: { sha: string; rootNodes: ReadonlyArray<LsTreeEntry> };
+  params: { sha: string };
 }
 
 export type TabDefinition =

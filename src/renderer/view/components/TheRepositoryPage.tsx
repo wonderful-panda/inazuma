@@ -45,9 +45,9 @@ export default storeComponent.create({
       if (tab.kind === "log") {
         return <TabLog />;
       } else if (tab.kind === "file") {
-        return <TabFile {...{ props: tab.params }} />;
+        return <TabFile path={tab.params.path} sha={tab.params.sha} />;
       } else if (tab.kind === "tree") {
-        return <TabTree {...{ props: tab.params }} />;
+        return <TabTree sha={tab.params.sha} />;
       } else {
         console.error("unknown tab kind", tab);
         return <div />;
