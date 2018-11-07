@@ -10,11 +10,15 @@ export class TabsState {
 export class TabsMutations extends sinai.Mutations<TabsState>() {
   add(tab: TabDefinition) {
     const { tabs } = this.state;
-    Vue.set(tabs, tabs.length, tab);
+    Vue.set(tabs, tabs.length, { lazyProps: undefined, ...tab });
     this.state.selectedIndex = tabs.length - 1;
   }
-  remove(index: number) {
+  remove(key: string) {
     const { tabs, selectedIndex } = this.state;
+    const index = tabs.findIndex(t => t.key === key);
+    if (index < 0) {
+      return;
+    }
     Vue.delete(tabs, index);
     if (index < selectedIndex) {
       this.state.selectedIndex = selectedIndex - 1;
@@ -25,6 +29,19 @@ export class TabsMutations extends sinai.Mutations<TabsState>() {
   setSelectedIndex(value: number) {
     this.state.selectedIndex = value;
   }
+  setTabLazyProps(kind: string, key: string, lazyProps: {} | undefined) {
+    const tabs = this.state.tabs;
+    const index = tabs.findIndex(t => t.key === key);
+    if (index < 0) {
+      return;
+    }
+    const tab = tabs[index];
+    if (tab.kind !== kind) {
+      throw new Error("unexpected kind");
+    }
+    tab.lazyProps = lazyProps;
+  }
+
   reset(tabs: TabDefinition[]) {
     this.state.tabs = tabs;
     if (0 < tabs.length) {
@@ -46,7 +63,7 @@ export class TabsActions extends sinai.Actions<
   TabsGetters,
   TabsMutations
 >() {
-  addOrSelect(tab: TabDefinition) {
+  addOrSelect<D extends TabDefinition>(tab: D) {
     const index = this.state.tabs.findIndex(t => t.key === tab.key);
     if (index < 0) {
       this.mutations.add(tab);
@@ -54,9 +71,16 @@ export class TabsActions extends sinai.Actions<
       this.mutations.setSelectedIndex(index);
     }
   }
+  setTabLazyProps<D extends TabDefinition>(
+    kind: D["kind"],
+    key: string,
+    lazyProps: D["lazyProps"]
+  ) {
+    this.mutations.setTabLazyProps(kind, key, lazyProps);
+  }
 
-  remove(index: number) {
-    this.mutations.remove(index);
+  remove(key: string) {
+    this.mutations.remove(key);
   }
 
   select(index: number) {

@@ -5,7 +5,10 @@ import {
   AppState,
   LogItem,
   ErrorLikeObject,
-  TabDefinition
+  TabDefinition,
+  FileTabDefinition,
+  TreeTabDefinition,
+  RepositoryTabDefinition
 } from "../mainTypes";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
@@ -14,6 +17,7 @@ import { errorReporterModule } from "./errorReporterModule";
 import { tabsModule } from "./tabsModule";
 import { getFileName } from "core/utils";
 import { shortHash } from "../filters";
+import { sortTreeInplace } from "core/tree";
 
 const emptyCommit: CommitDetail = {
   id: "",
@@ -146,6 +150,9 @@ class Getters extends injected.Getters<State>() {
   get visibleRecentList(): string[] {
     return this.state.recentList.slice(0, this.state.config.recentListCount);
   }
+  get repositoryTabs(): RepositoryTabDefinition[] {
+    return this.modules.tabs.state.tabs as any;
+  }
 }
 
 class Actions extends injected.Actions<State, Getters, Mutations>() {
@@ -166,7 +173,7 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
   showRepositoryPage(repoPath: string, tabs?: TabDefinition[]) {
     this.mutations.setRepoPath(repoPath);
     this.modules.tabs.actions.reset(
-      tabs || [{ key: "log", kind: "log", text: "COMMITS" }]
+      tabs || [{ key: "log", kind: "log", text: "COMMITS", props: {} }]
     );
   }
 
@@ -176,7 +183,7 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
       if (this.state.repoPath !== repoPath) {
         this.mutations.setRepoPath(repoPath);
         this.modules.tabs.actions.reset([
-          { key: "log", kind: "log", text: "COMMITS" }
+          { key: "log", kind: "log", text: "COMMITS", props: {} }
         ]);
       }
       this.showCommits(commits, refs);
@@ -278,13 +285,13 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     this.mutations.setPreferenceShown(false);
   }
 
-  async showFileTab(sha: string, relPath: string): Promise<void> {
+  showFileTab(sha: string, relPath: string) {
     try {
-      this.modules.tabs.actions.addOrSelect({
+      this.modules.tabs.actions.addOrSelect<FileTabDefinition>({
         key: `file/${relPath}:${sha}`,
         kind: "file",
         text: `${getFileName(relPath)} @ ${shortHash(sha)}`,
-        params: { sha, path: relPath },
+        props: { sha, relPath },
         closable: true
       });
     } catch (e) {
@@ -292,18 +299,73 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     }
   }
 
-  async showTreeTab(sha: string): Promise<void> {
+  async loadFileTabLazyProps(key: string) {
+    const tab = this.getters.repositoryTabs.find(t => t.key === key);
+    if (!tab || tab.kind !== "file") {
+      return;
+    }
+    const repoPath = this.state.repoPath;
+    const { sha, relPath } = tab.props;
     try {
-      this.modules.tabs.actions.addOrSelect({
+      const blame = await browserCommand.getBlame({ repoPath, sha, relPath });
+      this.modules.tabs.actions.setTabLazyProps<FileTabDefinition>(
+        "file",
+        key,
+        {
+          blame: Object.freeze(blame)
+        }
+      );
+    } catch (e) {
+      this.modules.errorReporter.actions.show(e);
+      this.removeTab(key);
+    }
+  }
+
+  showTreeTab(sha: string) {
+    try {
+      const tab: TreeTabDefinition = {
         key: `tree/${sha}`,
         kind: "tree",
         text: `TREE @ ${shortHash(sha)}`,
-        params: { sha },
+        props: { sha },
         closable: true
-      });
+      };
+      this.modules.tabs.actions.addOrSelect(tab);
     } catch (e) {
       this.modules.errorReporter.actions.show(e);
     }
+  }
+
+  async loadTreeTabLazyProps(key: string) {
+    const tab = this.getters.repositoryTabs.find(t => t.key === key);
+    if (!tab || tab.kind !== "tree") {
+      return;
+    }
+    const repoPath = this.state.repoPath;
+    const { sha } = tab.props;
+    try {
+      const rootNodes = await browserCommand.getTree({ repoPath, sha });
+      sortTreeInplace(rootNodes, (a, b) => {
+        return (
+          a.data.type.localeCompare(b.data.type) * -1 ||
+          a.data.path.localeCompare(b.data.path)
+        );
+      });
+      this.modules.tabs.actions.setTabLazyProps<TreeTabDefinition>(
+        "tree",
+        key,
+        {
+          rootNodes: Object.freeze(rootNodes)
+        }
+      );
+    } catch (e) {
+      this.modules.errorReporter.actions.show(e);
+      this.removeTab(key);
+    }
+  }
+
+  removeTab(key: string) {
+    this.modules.tabs.actions.remove(key);
   }
 
   removeRecentList(repoPath: string) {

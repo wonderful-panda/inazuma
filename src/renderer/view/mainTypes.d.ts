@@ -10,24 +10,32 @@ export interface LogItem {
   refs: Ref[];
 }
 
-export interface TabDefinitionBase {
+export interface TabDefinition<
+  Kind extends string = string,
+  Props extends {} = {},
+  LazyProps extends {} = {}
+> {
+  kind: Kind;
   key: string;
   text: string;
   closable?: boolean;
-}
-export interface LogTabDefinition extends TabDefinitionBase {
-  kind: "log";
-}
-export interface FileTabDefinition extends TabDefinitionBase {
-  kind: "file";
-  params: { sha: string; path: string };
-}
-export interface TreeTabDefinition extends TabDefinitionBase {
-  kind: "tree";
-  params: { sha: string };
+  props: Props;
+  lazyProps?: LazyProps;
 }
 
-export type TabDefinition =
+export type LogTabDefinition = TabDefinition<"log">;
+export type FileTabDefinition = TabDefinition<
+  "file",
+  { sha: string; relPath: string },
+  { blame: Blame }
+>;
+export type TreeTabDefinition = TabDefinition<
+  "tree",
+  { sha: string },
+  { rootNodes: ReadonlyArray<LsTreeEntry> }
+>;
+
+export type RepositoryTabDefinition =
   | LogTabDefinition
   | FileTabDefinition
   | TreeTabDefinition;

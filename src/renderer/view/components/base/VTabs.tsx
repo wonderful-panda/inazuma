@@ -42,7 +42,7 @@ export default tsx.componentFactoryOf<never, ScopedSlotArgs>().create({
   props: {
     tabs: p.ofRoArray<TabDefinition>().required,
     selectedIndex: p(Number).required,
-    closeTab: p.ofFunction<(index: number) => void>().required
+    closeTab: p.ofFunction<(key: string) => void>().required
   },
   watch: {
     selectedIndex(value: number) {
@@ -71,7 +71,7 @@ export default tsx.componentFactoryOf<never, ScopedSlotArgs>().create({
               tab={tab}
               selected={index === this.selectedIndex}
               select={() => this.selectTab(index)}
-              close={() => this.closeTab(index)}
+              close={() => this.closeTab(tab.key)}
             />
           ))}
         </div>

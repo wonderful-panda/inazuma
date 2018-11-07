@@ -3,7 +3,6 @@ import { storeComponent } from "../store";
 import p from "vue-strict-prop";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import BlamePanel from "./BlamePanel";
-import { browserCommand } from "core/browser";
 import * as emotion from "emotion";
 const css = emotion.css;
 
@@ -14,24 +13,13 @@ const style = css`
 export default storeComponent.create({
   name: "RepositoryPageTabFile",
   props: {
+    tabkey: p(String).required,
     path: p(String).required,
-    sha: p(String).required
+    sha: p(String).required,
+    blame: p.ofObject<Blame>().optional
   },
-  data() {
-    return {
-      blame: undefined as undefined | Blame
-    };
-  },
-  async mounted() {
-    try {
-      this.blame = await browserCommand.getBlame({
-        repoPath: this.$store.state.repoPath,
-        relPath: this.path,
-        sha: this.sha
-      });
-    } catch (e) {
-      this.$store.actions.showError(e);
-    }
+  mounted() {
+    this.$store.actions.loadFileTabLazyProps(this.tabkey);
   },
   render(): VNode {
     if (!this.blame) {

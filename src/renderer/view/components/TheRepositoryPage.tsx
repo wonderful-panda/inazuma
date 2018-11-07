@@ -10,7 +10,7 @@ import VIconButton from "./base/VIconButton";
 import VTabs from "./base/VTabs";
 import DrawerNavigation from "./DrawerNavigation";
 import { __sync } from "../utils/modifiers";
-import { TabDefinition } from "../mainTypes";
+import { RepositoryTabDefinition } from "../mainTypes";
 
 // @vue/component
 export default storeComponent.create({
@@ -41,13 +41,28 @@ export default storeComponent.create({
     runInteractiveShell() {
       this.actions.runInteractiveShell();
     },
-    renderTab(tab: TabDefinition): VNode {
+    renderTab(tab: RepositoryTabDefinition): VNode {
       if (tab.kind === "log") {
         return <TabLog />;
       } else if (tab.kind === "file") {
-        return <TabFile path={tab.params.path} sha={tab.params.sha} />;
+        const { key, props, lazyProps } = tab;
+        return (
+          <TabFile
+            tabkey={key}
+            path={props.relPath}
+            sha={props.sha}
+            blame={lazyProps && lazyProps.blame}
+          />
+        );
       } else if (tab.kind === "tree") {
-        return <TabTree sha={tab.params.sha} />;
+        const { key, props, lazyProps } = tab;
+        return (
+          <TabTree
+            tabkey={key}
+            sha={props.sha}
+            rootNodes={lazyProps && lazyProps.rootNodes}
+          />
+        );
       } else {
         console.error("unknown tab kind", tab);
         return <div />;
@@ -100,11 +115,13 @@ export default storeComponent.create({
         </template>
         <keep-alive>{this.sidebar}</keep-alive>
         <VTabs
-          tabs={state.tabs.tabs}
+          tabs={getters.repositoryTabs}
           selectedIndex={__sync(this.selectedTabIndex)}
-          closeTab={actions.tabs.remove}
+          closeTab={actions.removeTab}
           scopedSlots={{
-            default: ({ tab }) => [this.renderTab(tab)]
+            default: ({ tab }) => [
+              this.renderTab(tab as RepositoryTabDefinition)
+            ]
           }}
         />
       </BaseLayout>
