@@ -6959,10 +6959,10 @@ vue-strict-prop@^0.1.1:
   resolved "https://registry.yarnpkg.com/vue-strict-prop/-/vue-strict-prop-0.1.1.tgz#26cfdd9937889256eaa1f660cca61d33942109a4"
   integrity sha512-tN4QRC1HuCD+5P3piRn59iakJ75HL1uMb53ow/+jg/nm/JK6ePU1xePGPNniMKRa86+A7Hs39H9Jc4xtLTUBMg==
 
-vue-strict-prop@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/vue-strict-prop/-/vue-strict-prop-0.3.0.tgz#9c92ccf2e0b920b5eca38f92e57506d6fa731dd4"
-  integrity sha512-ursjaa2Q6hiseGGl8LrSXVYBR/MFK1cj+j5GNXplzShPPSsr/baCBWfxqlp0jj/ar8Kqn+Z98TmlnAL9hqD91Q==
+vue-strict-prop@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/vue-strict-prop/-/vue-strict-prop-0.3.1.tgz#babbdfe5ac450ac2cb35a49c45b669a752280b86"
+  integrity sha512-/BEzdVD6Cafp2pRSmUYpHKmTfuXO+XhUANknwbgbwnhlw7wN2BXzjyRboAmj2hdSzekbsZDkRRVJ8Z7/QcaN1A==
 
 vue-template-compiler@^2.5.17:
   version "2.5.17"
