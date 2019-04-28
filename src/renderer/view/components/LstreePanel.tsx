@@ -8,7 +8,6 @@ import {
   RowEventArgs as RowEventArgs_,
   Vtreetable
 } from "vue-vtable";
-import { storeComponent } from "../store";
 import p from "vue-strict-prop";
 import { VNode } from "vue";
 import * as ds from "view/store/displayState";
@@ -23,6 +22,7 @@ import { filterTreeNodes } from "core/tree";
 import { MdEmptyState } from "./base/md";
 import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
+import { withStore, rootModule } from "view/store";
 const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
@@ -37,7 +37,7 @@ const displayState = ds.createMixin("RepositoryPageTabTree", {
 });
 
 // @vue/component
-export default storeComponent.mixin(displayState).create({
+export default withStore.mixin(displayState).create({
   name: "LstreePanel",
   props: {
     sha: p(String).required,
@@ -103,6 +103,7 @@ export default storeComponent.mixin(displayState).create({
     }, 500)
   },
   methods: {
+    ...rootModule.mapActions(["showError"]),
     expandFileTreeAll() {
       const tree = this.$refs.tree as Vtreetable<any>;
       tree.expandAll();
@@ -145,7 +146,7 @@ export default storeComponent.mixin(displayState).create({
         this.selectedPath = relPath;
         this.selectedBlame = blame;
       } catch (e) {
-        this.actions.showError(e);
+        this.showError(e);
       } finally {
         this.loading = false;
       }

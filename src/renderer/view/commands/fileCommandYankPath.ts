@@ -1,11 +1,15 @@
 import { FileCommand } from "./types";
 import * as Electron from "electron";
 
+import { store, rootModule } from "../store";
+
+const rootCtx = rootModule.context(store);
+
 export const fileCommandYankPath: FileCommand = {
   id: "YankPath",
   label: "Copy path to clipboard",
-  handler(store, _, file) {
+  handler(_, file) {
     Electron.clipboard.writeText(file.path);
-    store.actions.showNotification(`Copied: ${file.path}`);
+    rootCtx.dispatch("showNotification", { message: `Copied: ${file.path}` });
   }
 };

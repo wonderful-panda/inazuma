@@ -1,7 +1,7 @@
 import * as md from "view/utils/md-classes";
 import { VNode } from "vue";
 import moment from "moment";
-import { storeComponent } from "../store";
+import { withStore } from "../store";
 import FileTable from "./FileTable";
 import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
@@ -14,7 +14,7 @@ const displayState = ds.createMixin("RevisionLogCommitDetail", {
   columnWidths: {} as Dict<number>
 });
 
-export default storeComponent.mixin(displayState).create(
+export default withStore.mixin(displayState).create(
   // @vue/component
   {
     name: "RevisionLogCommitDetail",
@@ -67,7 +67,6 @@ export default storeComponent.mixin(displayState).create(
       showExternalDiff(item: FileEntry) {
         executeFileCommand(
           fileCommandDiffWithParent,
-          this.$store,
           this.commit,
           item,
           item.path
@@ -75,7 +74,7 @@ export default storeComponent.mixin(displayState).create(
       },
       showContextMenu(item: FileEntry, event: Event) {
         event.preventDefault();
-        showFileContextMenu(this.$store, this.commit, item, item.path);
+        showFileContextMenu(this.commit, item, item.path);
       }
     },
     render(): VNode {

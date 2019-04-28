@@ -1,5 +1,5 @@
 import { CreateElement, VNode } from "vue";
-import * as sinai from "sinai";
+import { Mutations, Getters, Actions, Module } from "vuex-smart-module";
 
 export interface ButtonOptions {
   name: string;
@@ -28,8 +28,9 @@ export class DialogState {
   resolve?: Resolve<DialogResult> = undefined;
 }
 
-export class DialogMutations extends sinai.Mutations<DialogState>() {
-  init(options: DialogOptions, resolve: Resolve<DialogResult>) {
+class DialogMutations extends Mutations<DialogState> {
+  init(payload: { options: DialogOptions; resolve: Resolve<DialogResult> }) {
+    const { options, resolve } = payload;
     if (this.state.resolve) {
       this.state.resolve({ accepted: false });
     }
@@ -44,27 +45,27 @@ export class DialogMutations extends sinai.Mutations<DialogState>() {
   }
 }
 
-export class DialogActions extends sinai.Actions<
+export class DialogActions extends Actions<
   DialogState,
-  any,
+  Getters<DialogState>,
   DialogMutations
->() {
-  show(options: DialogOptions): Promise<DialogResult> {
+> {
+  show({ options }: { options: DialogOptions }): Promise<DialogResult> {
     return new Promise<DialogResult>(resolve => {
-      this.mutations.init(options, resolve);
+      this.commit("init", { resolve, options });
     });
   }
 
-  accept(buttonId: string) {
-    this.mutations.setResult({ accepted: true, buttonId });
+  accept({ buttonId }: { buttonId: string }) {
+    this.commit("setResult", { accepted: true, buttonId });
   }
 
   cancel() {
-    this.mutations.setResult({ accepted: false });
+    this.commit("setResult", { accepted: false });
   }
 }
 
-export const dialogModule = sinai.module({
+export const dialogModule = new Module({
   state: DialogState,
   mutations: DialogMutations,
   actions: DialogActions

@@ -1,11 +1,11 @@
 import { VNode } from "vue";
-import { storeComponent } from "../store";
 import VSplitterPanel from "./base/VSplitterPanel";
 import FileTable from "./FileTable";
 import * as md from "view/utils/md-classes";
 import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
 import * as emotion from "emotion";
+import { rootModule, withStore } from "view/store";
 const css = emotion.css;
 
 const displayState = ds.createMixin("RevisionLogWorkingTree", {
@@ -14,14 +14,11 @@ const displayState = ds.createMixin("RevisionLogWorkingTree", {
   unstagedColumnWidths: {} as Dict<number>
 });
 
-export default storeComponent.mixin(displayState).create(
+export default withStore.mixin(displayState).create(
   // @vue/component
   {
     name: "RevisionLogWorkingTree",
     computed: {
-      commit(): CommitDetail {
-        return this.state.selectedCommit;
-      },
       stagedFiles(): FileEntry[] {
         return this.state.selectedCommit.files.filter(f => {
           return f.inIndex;
@@ -34,21 +31,24 @@ export default storeComponent.mixin(displayState).create(
       }
     },
     methods: {
-      showExternalDiff(item: FileEntry, cached: boolean) {
+      ...rootModule.mapActions(["showExternalDiff"]),
+      showExternalDiffCommittedAndStaged({ item }: { item: FileEntry }) {
         if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
           return;
         }
-        if (cached) {
-          this.actions.showExternalDiff(
-            { path: item.oldPath || item.path, sha: "HEAD" },
-            { path: item.path, sha: "STAGED" }
-          );
-        } else {
-          this.actions.showExternalDiff(
-            { path: item.path, sha: "STAGED" },
-            { path: item.path, sha: "UNSTAGED" }
-          );
+        this.showExternalDiff({
+          left: { path: item.oldPath || item.path, sha: "HEAD" },
+          right: { path: item.path, sha: "STAGED" }
+        });
+      },
+      showExternalDiffStagedAndUnstaged({ item }: { item: FileEntry }) {
+        if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
+          return;
         }
+        this.showExternalDiff({
+          left: { path: item.path, sha: "STAGED" },
+          right: { path: item.path, sha: "UNSTAGED" }
+        });
       }
     },
     render(): VNode {
@@ -66,7 +66,7 @@ export default storeComponent.mixin(displayState).create(
             <FileTable
               files={this.stagedFiles}
               widths={__sync(this.displayState.stagedColumnWidths)}
-              onRowdblclick={arg => this.showExternalDiff(arg.item, true)}
+              onRowdblclick={this.showExternalDiffCommittedAndStaged}
             />
           </div>
           <div slot="second" staticClass={style.splitterPane}>
@@ -74,7 +74,7 @@ export default storeComponent.mixin(displayState).create(
             <FileTable
               files={this.unstagedFiles}
               widths={__sync(this.displayState.unstagedColumnWidths)}
-              onRowdblclick={arg => this.showExternalDiff(arg.item, false)}
+              onRowdblclick={this.showExternalDiffStagedAndUnstaged}
             />
           </div>
         </VSplitterPanel>

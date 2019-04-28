@@ -1,21 +1,21 @@
-import * as sinai from "sinai";
 import Vue from "vue";
 import { TabDefinition } from "view/mainTypes";
+import { Mutations, Getters, Actions, Module } from "vuex-smart-module";
 
-export class TabsState {
+class TabsState {
   tabs: TabDefinition[] = [];
   selectedIndex: number = -1;
 }
 
-export class TabsMutations extends sinai.Mutations<TabsState>() {
-  add(tab: TabDefinition) {
+class TabsMutations extends Mutations<TabsState> {
+  add(payload: { tab: TabDefinition }) {
     const { tabs } = this.state;
-    Vue.set(tabs, tabs.length, { lazyProps: undefined, ...tab });
+    Vue.set(tabs, tabs.length, { lazyProps: undefined, ...payload.tab });
     this.state.selectedIndex = tabs.length - 1;
   }
-  remove(key: string) {
+  remove(payload: { key: string }) {
     const { tabs, selectedIndex } = this.state;
-    const index = tabs.findIndex(t => t.key === key);
+    const index = tabs.findIndex(t => t.key === payload.key);
     if (index < 0) {
       return;
     }
@@ -26,10 +26,15 @@ export class TabsMutations extends sinai.Mutations<TabsState>() {
       this.state.selectedIndex = selectedIndex - 1;
     }
   }
-  setSelectedIndex(value: number) {
-    this.state.selectedIndex = value;
+  setSelectedIndex(payload: { index: number }) {
+    this.state.selectedIndex = payload.index;
   }
-  setTabLazyProps(kind: string, key: string, lazyProps: {} | undefined) {
+  setTabLazyProps(payload: {
+    kind: string;
+    key: string;
+    lazyProps: {} | undefined;
+  }) {
+    const { kind, key, lazyProps } = payload;
     const tabs = this.state.tabs;
     const index = tabs.findIndex(t => t.key === key);
     if (index < 0) {
@@ -42,9 +47,9 @@ export class TabsMutations extends sinai.Mutations<TabsState>() {
     tab.lazyProps = lazyProps;
   }
 
-  reset(tabs: TabDefinition[]) {
-    this.state.tabs = tabs;
-    if (0 < tabs.length) {
+  reset(payload: { tabs: TabDefinition[] }) {
+    this.state.tabs = payload.tabs;
+    if (0 < payload.tabs.length) {
       this.state.selectedIndex = 0;
     } else {
       this.state.selectedIndex = -1;
@@ -52,47 +57,40 @@ export class TabsMutations extends sinai.Mutations<TabsState>() {
   }
 }
 
-export class TabsGetters extends sinai.Getters<TabsState>() {
+class TabsGetters extends Getters<TabsState> {
   get selectedTab(): TabDefinition | undefined {
     return this.state.tabs[this.state.selectedIndex];
   }
 }
 
-export class TabsActions extends sinai.Actions<
-  TabsState,
-  TabsGetters,
-  TabsMutations
->() {
-  addOrSelect<D extends TabDefinition>(tab: D) {
+class TabsActions extends Actions<TabsState, TabsGetters, TabsMutations> {
+  addOrSelect({ tab }: { tab: TabDefinition }) {
     const index = this.state.tabs.findIndex(t => t.key === tab.key);
     if (index < 0) {
-      this.mutations.add(tab);
+      this.commit("add", { tab });
     } else {
-      this.mutations.setSelectedIndex(index);
+      this.commit("setSelectedIndex", { index });
     }
   }
-  setTabLazyProps<D extends TabDefinition>(
-    kind: D["kind"],
-    key: string,
-    lazyProps: D["lazyProps"]
-  ) {
-    this.mutations.setTabLazyProps(kind, key, lazyProps);
+  setTabLazyProps(payload: {
+    kind: string;
+    key: string;
+    lazyProps: object | undefined;
+  }) {
+    this.commit("setTabLazyProps", payload);
   }
-
-  remove(key: string) {
-    this.mutations.remove(key);
+  remove(payload: { key: string }) {
+    this.commit("remove", payload);
   }
-
-  select(index: number) {
-    this.mutations.setSelectedIndex(index);
+  select(payload: { index: number }) {
+    this.commit("setSelectedIndex", payload);
   }
-
-  reset(tabs: TabDefinition[]) {
-    this.mutations.reset(tabs);
+  reset(payload: { tabs: TabDefinition[] }) {
+    this.commit("reset", payload);
   }
 }
 
-export const tabsModule = sinai.module({
+export const tabsModule = new Module({
   state: TabsState,
   mutations: TabsMutations,
   getters: TabsGetters,

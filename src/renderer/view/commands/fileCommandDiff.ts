@@ -1,4 +1,7 @@
 import { FileCommand } from "./types";
+import { store, rootModule } from "../store";
+
+const rootCtx = rootModule.context(store);
 
 export const fileCommandDiffWithParent: FileCommand = {
   id: "DiffWithParent",
@@ -12,11 +15,11 @@ export const fileCommandDiffWithParent: FileCommand = {
     }
     return true;
   },
-  handler(store, commit, file) {
-    store.actions.showExternalDiff(
-      { path: file.oldPath || file.path, sha: commit.id + "~1" },
-      { path: file.path, sha: commit.id }
-    );
+  handler(commit, file) {
+    rootCtx.dispatch("showExternalDiff", {
+      left: { path: file.oldPath || file.path, sha: commit.id + "~1" },
+      right: { path: file.path, sha: commit.id }
+    });
   }
 };
 
@@ -29,10 +32,10 @@ export const fileCommandDiffWithLocal: FileCommand = {
     }
     return true;
   },
-  handler(store, commit, file, path) {
-    store.actions.showExternalDiff(
-      { path: file.path, sha: commit.id },
-      { path, sha: "UNSTAGED" }
-    );
+  handler(commit, file, path) {
+    rootCtx.dispatch("showExternalDiff", {
+      left: { path: file.path, sha: commit.id },
+      right: { path, sha: "UNSTAGED" }
+    });
   }
 };

@@ -1,6 +1,5 @@
 import { remote, MenuItemConstructorOptions } from "electron";
 import { CommitCommand, FileCommand } from "./types";
-import { AppStore } from "../store";
 import { commitCommandBrowseTree } from "./commitCommandBrowseTree";
 import { commitCommandYankHash } from "./commitCommandYankHash";
 import {
@@ -24,21 +23,16 @@ const fileCommands: FileCommand[] = [
   fileCommandBlameParent
 ];
 
-export function executeCommitCommand(
-  command: CommitCommand,
-  store: AppStore,
-  commit: Commit
-) {
+export function executeCommitCommand(command: CommitCommand, commit: Commit) {
   const available = command.isEnabled || command.isVisible || (() => true);
   if (!available(commit)) {
     return;
   }
-  command.handler(store, commit);
+  command.handler(commit);
 }
 
 export function executeFileCommand(
   command: FileCommand,
-  store: AppStore,
   commit: Commit,
   file: FileEntry,
   path: string
@@ -47,13 +41,10 @@ export function executeFileCommand(
   if (!available(commit, file, path)) {
     return;
   }
-  command.handler(store, commit, file, path);
+  command.handler(commit, file, path);
 }
 
-function getCommitMenuTemplate(
-  store: AppStore,
-  commit: Commit
-): MenuItemConstructorOptions[] {
+function getCommitMenuTemplate(commit: Commit): MenuItemConstructorOptions[] {
   if (commit.id === "--") {
     return [];
   }
@@ -70,14 +61,13 @@ function getCommitMenuTemplate(
         label: c.label,
         enabled: c.isEnabled === undefined || c.isEnabled(commit),
         click: () => {
-          executeCommitCommand(c, store, commit);
+          executeCommitCommand(c, commit);
         }
       } as MenuItemConstructorOptions)
   );
 }
 
 function getFileMenuTemplate(
-  store: AppStore,
   commit: Commit,
   file: FileEntry,
   path: string
@@ -98,14 +88,14 @@ function getFileMenuTemplate(
         label: c.label,
         enabled: c.isEnabled === undefined || c.isEnabled(commit, file, path),
         click: () => {
-          executeFileCommand(c, store, commit, file, path);
+          executeFileCommand(c, commit, file, path);
         }
       } as MenuItemConstructorOptions)
   );
 }
 
-export function showCommitContextMenu(store: AppStore, commit: Commit) {
-  const template = getCommitMenuTemplate(store, commit);
+export function showCommitContextMenu(commit: Commit) {
+  const template = getCommitMenuTemplate(commit);
   if (template.length === 0) {
     return;
   }
@@ -114,15 +104,14 @@ export function showCommitContextMenu(store: AppStore, commit: Commit) {
 }
 
 export function showFileContextMenu(
-  store: AppStore,
   commit: Commit,
   file: FileEntry,
   path: string,
   includeCommitMenus: boolean = false
 ) {
-  const template = getFileMenuTemplate(store, commit, file, path);
+  const template = getFileMenuTemplate(commit, file, path);
   if (includeCommitMenus) {
-    const commitMenuTemplate = getCommitMenuTemplate(store, commit);
+    const commitMenuTemplate = getCommitMenuTemplate(commit);
     if (template.length > 0 && commitMenuTemplate.length > 0) {
       template.push({ type: "separator" });
     }

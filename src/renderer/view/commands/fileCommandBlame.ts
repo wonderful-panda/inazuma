@@ -1,4 +1,6 @@
 import { FileCommand } from "./types";
+import { store, rootModule } from "../store";
+const rootCtx = rootModule.context(store);
 
 export const fileCommandBlame: FileCommand = {
   id: "Blame",
@@ -6,8 +8,8 @@ export const fileCommandBlame: FileCommand = {
   isVisible(_, file) {
     return file.statusCode !== "D";
   },
-  handler(store, commit, file) {
-    store.actions.showFileTab(commit.id, file.path);
+  handler(commit, file) {
+    rootCtx.dispatch("showFileTab", { sha: commit.id, relPath: file.path });
   }
 };
 
@@ -17,7 +19,10 @@ export const fileCommandBlameParent: FileCommand = {
   isVisible(commit, file) {
     return commit.parentIds.length > 0 && file.statusCode !== "A";
   },
-  handler(store, commit, file) {
-    store.actions.showFileTab(commit.parentIds[0], file.oldPath || file.path);
+  handler(commit, file) {
+    rootCtx.dispatch("showFileTab", {
+      sha: commit.parentIds[0],
+      relPath: file.oldPath || file.path
+    });
   }
 };

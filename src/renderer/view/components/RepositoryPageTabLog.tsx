@@ -1,6 +1,6 @@
 import { VNode } from "vue";
 import { RowEventArgs } from "vue-vtable";
-import { storeComponent } from "../store";
+import { withStore, rootModule } from "../store";
 import * as ds from "view/store/displayState";
 import RevisionLogWorkingTree from "./RevisionLogWorkingTree";
 import RevisionLogCommitDetail from "./RevisionLogCommitDetail";
@@ -16,16 +16,18 @@ const displayState = ds.createMixin("TheRevisionLogPage", {
   columnWidths: {} as Dict<number>
 });
 
-export default storeComponent.mixin(displayState).create(
+export default withStore.mixin(displayState).create(
   // @vue/component
   {
     name: "RepositoryPageTabLog",
+    computed: rootModule.mapGetters(["items"]),
     methods: {
+      ...rootModule.mapActions(["runInteractiveShell", "setSelectedIndex"]),
       onRowdragover({ item, event }: RowEventArgs<LogItem, DragEvent>) {
         if (item.commit.id === "--") {
           return;
         }
-        if (dragdrop.isDataPresent(event, "git/branch")) {
+        if (dragdrop.isDataPresent(event, "git/branch") && event.dataTransfer) {
           event.dataTransfer.dropEffect = "move";
           event.preventDefault();
         }
@@ -37,16 +39,13 @@ export default storeComponent.mixin(displayState).create(
         const data = dragdrop.getData(event, "git/branch");
         console.log(data);
       },
-      runInteractiveShell() {
-        this.actions.runInteractiveShell();
-      },
       showContextMenu({ item, event }: RowEventArgs<LogItem, Event>) {
         event.preventDefault();
-        showCommitContextMenu(this.$store, item.commit);
+        showCommitContextMenu(item.commit);
       }
     },
     render(): VNode {
-      const { state, getters, actions } = this;
+      const state = this.state;
       return (
         <VSplitterPanel
           style={{ flex: 1, margin: "2px" }}
@@ -56,11 +55,11 @@ export default storeComponent.mixin(displayState).create(
         >
           <LogTable
             slot="first"
-            items={getters.items}
+            items={this.items}
             rowHeight={state.rowHeight}
             selectedIndex={state.selectedIndex}
             widths={__sync(this.displayState.columnWidths)}
-            onRowclick={e => actions.setSelectedIndex(e.index)}
+            onRowclick={e => this.setSelectedIndex({ index: e.index })}
             onRowdragover={this.onRowdragover}
             onRowdrop={this.onRowdrop}
             onRowcontextmenu={this.showContextMenu}

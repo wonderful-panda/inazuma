@@ -37,7 +37,7 @@ const TabButton = tsx.component({
 interface ScopedSlotArgs {
   default: { tab: TabDefinition };
 }
-export default tsx.componentFactoryOf<never, ScopedSlotArgs>().create({
+export default tsx.componentFactoryOf<{}, ScopedSlotArgs>().create({
   name: "VTabs",
   props: {
     tabs: p.ofRoArray<TabDefinition>().required,

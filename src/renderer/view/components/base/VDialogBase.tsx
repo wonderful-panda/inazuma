@@ -1,7 +1,7 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
-import { DialogState, DialogActions } from "view/store/dialogModule";
+import { DialogState } from "view/store/dialogModule";
 import VButton from "./VButton";
 import VModal, { ModalContainerClass } from "./VModal";
 import * as emotion from "emotion";
@@ -12,21 +12,22 @@ export default tsx.component({
   name: "VDialogBase",
   props: {
     state: p.ofObject<DialogState>().required,
-    actions: p.ofObject<DialogActions>().required
+    accept: p.ofFunction<{ buttonId: string }, void>().required,
+    cancel: p.ofFunction<() => void>().required
   },
   render(): VNode {
     const opt = this.state.options;
     if (!opt) {
       return <div />;
     }
-    const { accept, cancel } = this.actions;
+    const { accept, cancel } = this;
     const buttons = opt.buttons.map(b => (
       <VButton
         key={b.name}
         mini
         primary={b.primary}
         accent={b.accent}
-        action={() => accept(b.name)}
+        action={() => accept({ buttonId: b.name })}
       >
         <span staticClass="md-title">{b.text}</span>
       </VButton>

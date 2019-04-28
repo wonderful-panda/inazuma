@@ -1,9 +1,11 @@
 import { CommitCommand } from "./types";
+import { store, rootModule } from "../store";
+const rootCtx = rootModule.context(store);
 
 export const commitCommandBrowseTree: CommitCommand = {
   id: "BrowseTree",
   label: "Browse file tree",
-  handler(store, commit) {
-    store.actions.showTreeTab(commit.id);
+  handler(commit) {
+    rootCtx.dispatch("showTreeTab", { sha: commit.id });
   }
 };

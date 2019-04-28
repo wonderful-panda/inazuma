@@ -17,6 +17,9 @@ const Branch = tsx.component({
   },
   methods: {
     onDragStart(event: DragEvent) {
+      if (!event.dataTransfer) {
+        return;
+      }
       event.dataTransfer.effectAllowed = "move";
       dragdrop.setData(event, "git/branch", {
         name: this.branch.name,

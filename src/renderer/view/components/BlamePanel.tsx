@@ -1,6 +1,6 @@
 import MonacoEditor from "vue-monaco";
 import moment from "moment";
-import { storeComponent } from "../store";
+import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import { shortHash } from "../filters";
 import { lineIndicesToRanges, getLangIdFromPath } from "view/monaco";
@@ -22,7 +22,7 @@ const displayState = ds.createMixin("BlamePanel", {
 });
 
 // @vue/component
-export default storeComponent.mixin(displayState).create({
+export default tsx.componentFactory.mixin(displayState).create({
   name: "BlamePanel",
   components: {
     MonacoEditor
@@ -156,7 +156,7 @@ export default storeComponent.mixin(displayState).create({
       this.updateSelectedCommitDecorations();
     },
     showContextMenu(item: FileCommit) {
-      showFileContextMenu(this.$store, item, item, this.path, true);
+      showFileContextMenu(item, item, this.path, true);
     },
     showContextMenuFromEditor(e: monaco.editor.IEditorMouseEvent) {
       const lineNumber = e.target.position.lineNumber;

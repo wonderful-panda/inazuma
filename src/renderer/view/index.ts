@@ -1,17 +1,20 @@
 import "./install-vue";
 import Vue, { VNode } from "vue";
 import Electron from "electron";
-import { store, storeComponent } from "./store";
+import { store, rootModule, withStore } from "./store";
 import { loadMonaco } from "./monaco";
 import TheWelcomePage from "./components/TheWelcomePage";
 import TheRepositoryPage from "./components/TheRepositoryPage";
 loadMonaco();
 
+const initialRepo = sessionStorage.getItem("repoPath");
+
 (function init() {
   const { getPersistentAsJson } = Electron.remote.require("./remote");
   const json = JSON.parse(getPersistentAsJson());
   const config = json.config as Config;
-  store.mutations.resetConfig(config);
+  const root = rootModule.context(store);
+  root.commit("resetConfig", { config });
 
   try {
     const recentList = JSON.parse(localStorage.getItem("recentList") || "[]");
@@ -19,7 +22,7 @@ loadMonaco();
       recentList instanceof Array &&
       recentList.every(v => typeof v === "string")
     ) {
-      store.mutations.resetRecentList(recentList);
+      root.commit("resetRecentList", { value: recentList });
     } else {
       console.warn("Failed to load recentList from localStorage");
     }
@@ -30,15 +33,13 @@ loadMonaco();
   Electron.ipcRenderer.on(
     "action",
     (_event: string, name: string, payload: any) => {
-      (store.actions as any)[name](payload);
+      store.dispatch(name, payload);
     }
   );
+  if (initialRepo) {
+    root.dispatch("showRepositoryPage", { repoPath: initialRepo });
+  }
 })();
-
-const initialRepo = sessionStorage.getItem("repoPath");
-if (initialRepo) {
-  store.actions.showRepositoryPage(initialRepo);
-}
 
 store.watch(
   s => s.config.fontFamily,
@@ -71,11 +72,12 @@ store.watch(
   }
 );
 
-const App = storeComponent.create({
+const App = withStore.create({
   name: "App",
+  methods: rootModule.mapActions(["openRepository"]),
   mounted() {
     if (initialRepo) {
-      store.actions.openRepository(initialRepo);
+      this.openRepository({ repoPath: initialRepo });
     }
   },
   render(h): VNode {

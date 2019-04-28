@@ -1,18 +1,19 @@
 import p from "vue-strict-prop";
-import { storeComponent } from "../store";
+import { withStore, rootModule } from "../store";
 import { VNode } from "vue";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import LstreePanel from "./LstreePanel";
 
-export default storeComponent.create({
+export default withStore.create({
   name: "RepositoryPageTabTree",
   props: {
     tabkey: p(String).required,
     sha: p(String).required,
     rootNodes: p.ofRoArray<LsTreeEntry>().optional
   },
+  methods: rootModule.mapActions(["loadTreeTabLazyProps"]),
   mounted() {
-    this.$store.actions.loadTreeTabLazyProps(this.tabkey);
+    this.loadTreeTabLazyProps({ key: this.tabkey });
   },
   render(): VNode {
     if (!this.rootNodes) {

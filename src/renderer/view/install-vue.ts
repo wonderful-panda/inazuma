@@ -1,7 +1,7 @@
 import Vue from "vue";
-import * as sinai from "sinai";
+import Vuex from "vuex";
 import VueMaterial from "vue-material";
 import installFilters from "view/filters";
-Vue.use(sinai.install);
+Vue.use(Vuex);
 Vue.use(VueMaterial);
 installFilters();

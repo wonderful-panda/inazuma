@@ -2,7 +2,6 @@ import { VNode } from "vue";
 import Electron from "electron";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
-import { storeComponent } from "../store";
 import BaseLayout from "./BaseLayout";
 import DrawerNavigation from "./DrawerNavigation";
 import { getFileName, normalizePathSeparator } from "core/utils";
@@ -17,6 +16,7 @@ import {
 } from "./base/md";
 import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
+import { rootModule } from "view/store";
 const { dialog, BrowserWindow } = Electron.remote;
 const css = emotion.css;
 
@@ -54,21 +54,25 @@ const RepositoryListItem = tsx.component({
 });
 
 // @vue/component
-export default storeComponent.create({
+export default tsx.component({
   name: "TheWelcomePage",
   components: {
     BaseLayout,
     DrawerNavigation
   },
   computed: {
+    ...rootModule.mapGetters(["visibleRecentList"]),
     recentOpened(): string[] {
-      return this.getters.visibleRecentList;
+      return this.visibleRecentList;
     }
   },
   methods: {
-    openRepository(repoPath: string): void {
-      this.actions.openRepository(repoPath);
-    },
+    ...rootModule.mapActions([
+      "openRepository",
+      "removeRecentList",
+      "showPreference",
+      "showVersionDialog"
+    ]),
     selectRepository(): void {
       const parent = BrowserWindow.getFocusedWindow();
       const options: Electron.OpenDialogOptions = {
@@ -81,26 +85,22 @@ export default storeComponent.create({
         return;
       }
       const repoPath = normalizePathSeparator(paths[0]);
-      this.actions.openRepository(repoPath);
-    },
-    removeRecent(repoPath: string) {
-      this.actions.removeRecentList(repoPath);
+      this.openRepository({ repoPath });
     }
   },
   render(): VNode {
-    const { actions } = this;
     return (
       <BaseLayout title="inazuma">
         <template slot="drawer-navigations">
           <DrawerNavigation
             icon="settings"
             text="Preferences"
-            action={actions.showPreference}
+            action={this.showPreference}
           />
           <DrawerNavigation
             icon="info_outline"
             text="About"
-            action={actions.showVersionDialog}
+            action={this.showVersionDialog}
           />
         </template>
         <div class={style.content}>
@@ -119,14 +119,14 @@ export default storeComponent.create({
                 Recent opened
               </MdSubheader>
               <transition-group name="recents">
-                {this.recentOpened.map(repo => (
+                {this.recentOpened.map(repoPath => (
                   <RepositoryListItem
-                    key={repo}
+                    key={repoPath}
                     icon="history"
-                    text={getFileName(repo)}
-                    description={repo}
-                    action={() => this.openRepository(repo)}
-                    remove={() => this.removeRecent(repo)}
+                    text={getFileName(repoPath)}
+                    description={repoPath}
+                    action={() => this.openRepository({ repoPath })}
+                    remove={() => this.removeRecentList({ repoPath })}
                   />
                 ))}
               </transition-group>

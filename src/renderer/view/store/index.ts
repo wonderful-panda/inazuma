@@ -1,8 +1,6 @@
 import Vue, { VueConstructor } from "vue";
-import * as sinai from "sinai";
 import * as tsx from "vue-tsx-support";
 import {
-  AppState,
   LogItem,
   ErrorLikeObject,
   TabDefinition,
@@ -18,6 +16,15 @@ import { tabsModule } from "./tabsModule";
 import { getFileName } from "core/utils";
 import { shortHash } from "../filters";
 import { sortTreeInplace } from "core/tree";
+import {
+  Mutations,
+  Getters,
+  Context,
+  Actions,
+  Module,
+  createStore
+} from "vuex-smart-module";
+import { Store } from "vuex";
 
 const emptyCommit: CommitDetail = {
   id: "",
@@ -31,12 +38,12 @@ const emptyCommit: CommitDetail = {
 
 const MAX_RECENT_LIST = 20;
 
-const injected = sinai
-  .inject("dialog", dialogModule)
-  .and("errorReporter", errorReporterModule)
-  .and("tabs", tabsModule);
+type TabLazyPropPayload<D extends TabDefinition> = Pick<
+  Required<D>,
+  "kind" | "key" | "lazyProps"
+>;
 
-class State implements AppState {
+class RootState {
   config: Config = { fontFamily: {}, recentListCount: 5 };
   repoPath = "";
   recentList = [] as string[];
@@ -51,29 +58,34 @@ class State implements AppState {
   notification = "";
 }
 
-class Mutations extends injected.Mutations<State>() {
-  resetItems(commits: Commit[], graphs: Dict<GraphFragment>, refs: Refs) {
+class RootMutations extends Mutations<RootState> {
+  resetItems(payload: {
+    commits: Commit[];
+    graphs: Dict<GraphFragment>;
+    refs: Refs;
+  }) {
     const state = this.state;
-    state.commits = commits;
-    state.graphs = graphs;
-    state.refs = refs;
+    state.commits = payload.commits;
+    state.graphs = payload.graphs;
+    state.refs = payload.refs;
     state.selectedIndex = -1;
     state.selectedCommit = emptyCommit;
   }
 
-  resetRefs(refs: Refs) {
-    this.state.refs = refs;
+  resetRefs(payload: { refs: Refs }) {
+    this.state.refs = payload.refs;
   }
 
-  resetConfig(config: Config) {
-    this.state.config = Object.freeze(config);
+  resetConfig(payload: { config: Config }) {
+    this.state.config = Object.freeze(payload.config);
   }
 
-  resetRecentList(value: string[]) {
-    this.state.recentList = value;
+  resetRecentList(payload: { value: string[] }) {
+    this.state.recentList = payload.value;
   }
 
-  addRecentList(repoPath: string) {
+  addRecentList(payload: { repoPath: string }) {
+    const { repoPath } = payload;
     if (this.state.recentList[0] === repoPath) {
       return;
     }
@@ -84,14 +96,15 @@ class Mutations extends injected.Mutations<State>() {
         .slice(0, MAX_RECENT_LIST - 1)
     ];
   }
-  removeRecentList(repoPath: string) {
-    const index = this.state.recentList.indexOf(repoPath);
+  removeRecentList(payload: { repoPath: string }) {
+    const index = this.state.recentList.indexOf(payload.repoPath);
     if (0 <= index) {
       Vue.delete(this.state.recentList, index);
     }
   }
 
-  setRepoPath(repoPath: string) {
+  setRepoPath(payload: { repoPath: string }) {
+    const { repoPath } = payload;
     const state = this.state;
     state.repoPath = repoPath;
     state.commits = [];
@@ -100,36 +113,43 @@ class Mutations extends injected.Mutations<State>() {
     state.selectedIndex = -1;
     state.selectedCommit = emptyCommit;
     if (repoPath) {
-      this.addRecentList(repoPath);
+      this.addRecentList(payload);
     }
   }
 
-  setSelectedIndex(index: number) {
+  setSelectedIndex(payload: { index: number }) {
     const state = this.state;
-    state.selectedIndex = index;
+    state.selectedIndex = payload.index;
     state.selectedCommit = emptyCommit;
   }
 
-  setCommitDetail(commit: CommitDetail) {
+  setCommitDetail(payload: { commit: CommitDetail }) {
+    const commit = payload.commit;
     const { commits, selectedIndex } = this.state;
     if (commits[selectedIndex].id === commit.id) {
       this.state.selectedCommit = commit;
     }
   }
 
-  setSidebarName(name: string) {
-    this.state.sidebar = name;
+  setSidebarName(payload: { name: string }) {
+    this.state.sidebar = payload.name;
   }
-  setPreferenceShown(value: boolean) {
-    this.state.preferenceShown = value;
+  setPreferenceShown(payload: { value: boolean }) {
+    this.state.preferenceShown = payload.value;
   }
 
-  setNotification(value: string) {
-    this.state.notification = value;
+  setNotification(payload: { message: string }) {
+    this.state.notification = payload.message;
   }
 }
 
-class Getters extends injected.Getters<State>() {
+class RootGetters extends Getters<RootState> {
+  tabs!: Context<typeof tabsModule>;
+
+  $init(store: Store<any>) {
+    this.tabs = tabsModule.context(store);
+  }
+
   get items(): LogItem[] {
     const { commits, graphs, refs } = this.state;
     return commits.map(commit => {
@@ -151,92 +171,106 @@ class Getters extends injected.Getters<State>() {
     return this.state.recentList.slice(0, this.state.config.recentListCount);
   }
   get repositoryTabs(): RepositoryTabDefinition[] {
-    return this.modules.tabs.state.tabs as any;
+    return this.tabs.state.tabs as any;
   }
 }
 
-class Actions extends injected.Actions<State, Getters, Mutations>() {
-  showError(e: ErrorLikeObject) {
-    console.log(e);
-    this.modules.errorReporter.actions.show(e);
+class RootActions extends Actions<RootState, RootGetters, RootMutations> {
+  tabs!: Context<typeof tabsModule>;
+  errorReporter!: Context<typeof errorReporterModule>;
+  dialog!: Context<typeof dialogModule>;
+  $init(store: Store<any>) {
+    this.tabs = tabsModule.context(store);
+    this.errorReporter = errorReporterModule.context(store);
+    this.dialog = dialogModule.context(store);
   }
 
-  configChanged(config: Config) {
-    this.mutations.resetConfig(config);
+  showError(payload: { error: ErrorLikeObject }) {
+    console.log(payload.error);
+    this.errorReporter.dispatch({ type: "show", ...payload });
+  }
+
+  configChanged(payload: { config: Config }) {
+    this.commit({ type: "resetConfig", ...payload });
   }
 
   showWelcomePage(): void {
-    this.mutations.setRepoPath("");
-    this.modules.tabs.actions.reset([]);
+    this.commit({ type: "setRepoPath", repoPath: "" });
+    this.tabs.dispatch({ type: "reset", tabs: [] });
   }
 
-  showRepositoryPage(repoPath: string, tabs?: TabDefinition[]) {
-    this.mutations.setRepoPath(repoPath);
-    this.modules.tabs.actions.reset(
-      tabs || [{ key: "log", kind: "log", text: "COMMITS", props: {} }]
-    );
+  showRepositoryPage(payload: { repoPath: string; tabs?: TabDefinition[] }) {
+    this.commit({ type: "setRepoPath", repoPath: payload.repoPath });
+    this.tabs.dispatch({
+      type: "reset",
+      tabs: payload.tabs || [
+        { key: "log", kind: "log", text: "COMMITS", props: {} }
+      ]
+    });
   }
 
-  async openRepository(repoPath: string): Promise<void> {
+  async openRepository(payload: { repoPath: string }): Promise<void> {
     try {
+      const { repoPath } = payload;
       const { commits, refs } = await browserCommand.openRepository(repoPath);
       if (this.state.repoPath !== repoPath) {
-        this.mutations.setRepoPath(repoPath);
-        this.modules.tabs.actions.reset([
-          { key: "log", kind: "log", text: "COMMITS", props: {} }
-        ]);
+        this.commit({ type: "setRepoPath", repoPath });
+        this.tabs.dispatch({
+          type: "reset",
+          tabs: [{ key: "log", kind: "log", text: "COMMITS", props: {} }]
+        });
       }
-      this.showCommits(commits, refs);
-    } catch (e) {
-      this.showError(e);
+      this.showCommits({ commits, refs });
+    } catch (error) {
+      this.showError({ error });
     }
   }
 
-  private showCommits(commits: Commit[], refs: Refs) {
+  private showCommits(payload: { commits: Commit[]; refs: Refs }) {
     const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
     const graphs = {} as { [id: string]: GraphFragment };
-    commits.forEach(c => {
+    payload.commits.forEach(c => {
       graphs[c.id] = grapher.proceed(c);
     });
-    this.mutations.resetItems(commits, graphs, refs);
+    this.commit({ type: "resetItems", graphs, ...payload });
   }
 
-  showCommitDetail(commit: CommitDetail) {
-    this.mutations.setCommitDetail(commit);
+  showCommitDetail(payload: { commit: CommitDetail }) {
+    this.commit({ type: "setCommitDetail", ...payload });
   }
 
-  async setSelectedIndex(index: number): Promise<void> {
-    if (this.state.selectedIndex === index) {
+  async setSelectedIndex(payload: { index: number }): Promise<void> {
+    if (this.state.selectedIndex === payload.index) {
       return;
     }
     try {
-      this.mutations.setSelectedIndex(index);
+      this.commit({ type: "setSelectedIndex", ...payload });
       const { repoPath, commits } = this.state;
-      const detail = await browserCommand.getCommitDetail({
+      const commit = await browserCommand.getCommitDetail({
         repoPath,
-        sha: commits[index].id
+        sha: commits[payload.index].id
       });
-      this.showCommitDetail(detail);
-    } catch (e) {
-      this.showError(e);
+      this.showCommitDetail({ commit });
+    } catch (error) {
+      this.showError({ error });
     }
   }
 
-  selectCommit(commitId: string): Promise<void> {
-    const index = this.state.commits.findIndex(c => c.id === commitId);
+  selectCommit(payload: { commitId: string }): Promise<void> {
+    const index = this.state.commits.findIndex(c => c.id === payload.commitId);
     if (0 <= index) {
-      return this.setSelectedIndex(index);
+      return this.setSelectedIndex({ index });
     } else {
       return Promise.resolve();
     }
   }
 
-  showSidebar(name: string) {
-    this.mutations.setSidebarName(name);
+  showSidebar(payload: { name: string }) {
+    this.commit({ type: "setSidebarName", ...payload });
   }
 
   hideSidebar() {
-    this.mutations.setSidebarName("");
+    this.commit({ type: "setSidebarName", name: "" });
   }
 
   resetConfig(config: Config): Promise<void> {
@@ -248,58 +282,66 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
   }
 
   async showVersionDialog(): Promise<boolean> {
-    const ret = await this.modules.dialog.actions.show({
-      title: "Version",
-      renderContent: _h => "Version dialog: Not implemented",
-      buttons: []
+    const ret = await this.dialog.dispatch({
+      type: "show",
+      options: {
+        title: "Version",
+        renderContent: _h => "Version dialog: Not implemented",
+        buttons: []
+      }
     });
     return ret.accepted;
   }
 
-  async showExternalDiff(left: DiffFile, right: DiffFile): Promise<void> {
+  async showExternalDiff(payload: {
+    left: DiffFile;
+    right: DiffFile;
+  }): Promise<void> {
     if (!this.state.config.externalDiffTool) {
       return;
     }
     try {
       await browserCommand.showExternalDiff({
         repoPath: this.state.repoPath,
-        left,
-        right
+        ...payload
       });
-    } catch (e) {
-      this.showError(e);
+    } catch (error) {
+      this.showError({ error });
     }
   }
 
-  showNotification(message: string) {
-    this.mutations.setNotification(message);
+  showNotification(payload: { message: string }) {
+    this.commit("setNotification", payload);
   }
   hideNotification() {
-    this.mutations.setNotification("");
+    this.commit("setNotification", { message: "" });
   }
 
   showPreference() {
-    this.mutations.setPreferenceShown(true);
+    this.commit("setPreferenceShown", { value: true });
   }
   hidePreference() {
-    this.mutations.setPreferenceShown(false);
+    this.commit("setPreferenceShown", { value: false });
   }
 
-  showFileTab(sha: string, relPath: string) {
+  showFileTab({ sha, relPath }: { sha: string; relPath: string }) {
     try {
-      this.modules.tabs.actions.addOrSelect<FileTabDefinition>({
-        key: `file/${relPath}:${sha}`,
-        kind: "file",
-        text: `${getFileName(relPath)} @ ${shortHash(sha)}`,
-        props: { sha, relPath },
-        closable: true
+      this.tabs.dispatch({
+        type: "addOrSelect",
+        tab: {
+          key: `file/${relPath}:${sha}`,
+          kind: "file",
+          text: `${getFileName(relPath)} @ ${shortHash(sha)}`,
+          props: { sha, relPath },
+          closable: true
+        }
       });
-    } catch (e) {
-      this.modules.errorReporter.actions.show(e);
+    } catch (error) {
+      this.showError({ error });
     }
   }
 
-  async loadFileTabLazyProps(key: string) {
+  async loadFileTabLazyProps({ key }: { key: string }) {
     const tab = this.getters.repositoryTabs.find(t => t.key === key);
     if (!tab || tab.kind !== "file") {
       return;
@@ -307,21 +349,22 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
     const repoPath = this.state.repoPath;
     const { sha, relPath } = tab.props;
     try {
-      const blame = await browserCommand.getBlame({ repoPath, sha, relPath });
-      this.modules.tabs.actions.setTabLazyProps<FileTabDefinition>(
-        "file",
-        key,
-        {
-          blame: Object.freeze(blame)
-        }
+      const blame = Object.freeze(
+        await browserCommand.getBlame({ repoPath, sha, relPath })
       );
-    } catch (e) {
-      this.modules.errorReporter.actions.show(e);
-      this.removeTab(key);
+      const payload: TabLazyPropPayload<FileTabDefinition> = {
+        kind: "file",
+        key,
+        lazyProps: { blame }
+      };
+      this.tabs.dispatch("setTabLazyProps", payload);
+    } catch (error) {
+      this.showError({ error });
+      this.removeTab({ key });
     }
   }
 
-  showTreeTab(sha: string) {
+  showTreeTab({ sha }: { sha: string }) {
     try {
       const tab: TreeTabDefinition = {
         key: `tree/${sha}`,
@@ -330,13 +373,13 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
         props: { sha },
         closable: true
       };
-      this.modules.tabs.actions.addOrSelect(tab);
-    } catch (e) {
-      this.modules.errorReporter.actions.show(e);
+      this.tabs.dispatch("addOrSelect", { tab });
+    } catch (error) {
+      this.showError({ error });
     }
   }
 
-  async loadTreeTabLazyProps(key: string) {
+  async loadTreeTabLazyProps({ key }: { key: string }) {
     const tab = this.getters.repositoryTabs.find(t => t.key === key);
     if (!tab || tab.kind !== "tree") {
       return;
@@ -351,57 +394,60 @@ class Actions extends injected.Actions<State, Getters, Mutations>() {
           a.data.path.localeCompare(b.data.path)
         );
       });
-      this.modules.tabs.actions.setTabLazyProps<TreeTabDefinition>(
-        "tree",
+      const payload: TabLazyPropPayload<TreeTabDefinition> = {
+        kind: "tree",
         key,
-        {
+        lazyProps: {
           rootNodes: Object.freeze(rootNodes)
         }
-      );
-    } catch (e) {
-      this.modules.errorReporter.actions.show(e);
-      this.removeTab(key);
+      };
+      this.tabs.dispatch("setTabLazyProps", payload);
+    } catch (error) {
+      this.showError({ error });
+      this.removeTab({ key });
     }
   }
 
-  removeTab(key: string) {
-    this.modules.tabs.actions.remove(key);
+  removeTab(payload: { key: string }) {
+    this.tabs.dispatch("remove", payload);
   }
 
-  removeRecentList(repoPath: string) {
-    this.mutations.removeRecentList(repoPath);
+  removeRecentList(payload: { repoPath: string }) {
+    this.commit("removeRecentList", payload);
   }
 }
 
-export const store = sinai.store(
-  sinai
-    .module({
-      state: State,
-      mutations: Mutations,
-      getters: Getters,
-      actions: Actions
-    })
-    .child("dialog", dialogModule)
-    .child("errorReporter", errorReporterModule)
-    .child("tabs", tabsModule)
-);
+const modules = {
+  tabs: tabsModule,
+  dialog: dialogModule,
+  errorReporter: errorReporterModule
+};
 
-export type AppStore = typeof store;
-// @vue/component
-export const StoreMixin = (Vue as VueConstructor<
-  Vue & { $store: AppStore }
->).extend({
-  computed: {
-    state(this: { $store: AppStore }): AppStore["state"] {
-      return this.$store.state;
-    },
-    actions(this: { $store: AppStore }): AppStore["actions"] {
-      return this.$store.actions;
-    },
-    getters(this: { $store: AppStore }): AppStore["getters"] {
-      return this.$store.getters;
-    }
-  }
+export const rootModule = new Module({
+  state: RootState,
+  mutations: RootMutations,
+  getters: RootGetters,
+  actions: RootActions,
+  modules
 });
 
-export const storeComponent = tsx.componentFactory.mixin(StoreMixin);
+type ModuleState<M> = M extends Module<infer S, any, any, any> ? S : {};
+
+type CombinedState<
+  RootState,
+  M extends { [key: string]: Module<any, any, any, any> }
+> = RootState & { [K in keyof M]: ModuleState<M[K]> };
+
+export type AppState = CombinedState<RootState, typeof modules>;
+export type AppStore = Store<AppState>;
+export const store: AppStore = createStore(rootModule);
+
+export const withStore = tsx.componentFactory.mixin(
+  (Vue as VueConstructor<Vue & { $store: AppStore }>).extend({
+    computed: {
+      state(): AppState {
+        return this.$store.state;
+      }
+    }
+  })
+);

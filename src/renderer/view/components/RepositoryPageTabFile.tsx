@@ -1,5 +1,5 @@
 import { VNode } from "vue";
-import { storeComponent } from "../store";
+import { withStore, rootModule } from "../store";
 import p from "vue-strict-prop";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import BlamePanel from "./BlamePanel";
@@ -10,7 +10,7 @@ const style = css`
   margin: 0.5em 1em 0.2em 1em;
 `;
 
-export default storeComponent.create({
+export default withStore.create({
   name: "RepositoryPageTabFile",
   props: {
     tabkey: p(String).required,
@@ -18,8 +18,9 @@ export default storeComponent.create({
     sha: p(String).required,
     blame: p.ofObject<Blame>().optional
   },
+  methods: rootModule.mapActions(["loadFileTabLazyProps"]),
   mounted() {
-    this.$store.actions.loadFileTabLazyProps(this.tabkey);
+    this.loadFileTabLazyProps({ key: this.tabkey });
   },
   render(): VNode {
     if (!this.blame) {

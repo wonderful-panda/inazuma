@@ -1,12 +1,13 @@
 import { VNode } from "vue";
-import { storeComponent } from "../store";
+import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import VCloseButton from "./base/VCloseButton";
 import * as emotion from "emotion";
+import { rootModule } from "view/store";
 const css = emotion.css;
 
 // @vue/component
-export default storeComponent.create({
+export default tsx.component({
   name: "SideBarBase",
   components: {
     VCloseButton
@@ -14,11 +15,7 @@ export default storeComponent.create({
   props: {
     title: p(String).required
   },
-  methods: {
-    close() {
-      this.actions.hideSidebar();
-    }
-  },
+  methods: rootModule.mapActions(["hideSidebar"]),
   render(): VNode {
     return (
       <transition name="sidebar" mode="out-in">
@@ -26,7 +23,7 @@ export default storeComponent.create({
           <div staticClass={style.container}>
             <div staticClass={style.titlebar}>
               <span staticClass={style.title}>{this.title}</span>
-              <VCloseButton action={this.close} />
+              <VCloseButton action={this.hideSidebar} />
             </div>
             <div staticClass={style.content}>{this.$slots.default}</div>
           </div>
@@ -60,7 +57,7 @@ const style = {
     width: ${SidebarWidth};
     max-width: ${SidebarWidth};
     min-width: ${SidebarWidth};
-  }`,
+  `,
   titlebar: css`
     display: flex;
     flex-flow: row nowrap;

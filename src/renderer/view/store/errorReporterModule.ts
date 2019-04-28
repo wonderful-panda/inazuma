@@ -1,19 +1,17 @@
-import * as sinai from "sinai";
 import { ErrorLikeObject } from "view/mainTypes";
+import { Mutations, Getters, Actions, Module } from "vuex-smart-module";
 
 export class ErrorReporterState {
   error: ErrorLikeObject | undefined = undefined;
 }
 
-export class ErrorReporterMutations extends sinai.Mutations<
-  ErrorReporterState
->() {
-  setError(error: ErrorLikeObject | undefined) {
-    this.state.error = error;
+export class ErrorReporterMutations extends Mutations<ErrorReporterState> {
+  setError(payload: { error: ErrorLikeObject | undefined }) {
+    this.state.error = payload.error;
   }
 }
 
-export class ErrorReporterGetters extends sinai.Getters<ErrorReporterState>() {
+export class ErrorReporterGetters extends Getters<ErrorReporterState> {
   get message(): string {
     if (this.state.error) {
       return this.state.error.message;
@@ -23,21 +21,21 @@ export class ErrorReporterGetters extends sinai.Getters<ErrorReporterState>() {
   }
 }
 
-export class ErrorReporterActions extends sinai.Actions<
+export class ErrorReporterActions extends Actions<
   ErrorReporterState,
   ErrorReporterGetters,
   ErrorReporterMutations
->() {
-  show(error: ErrorLikeObject) {
-    this.mutations.setError(error);
+> {
+  show({ error }: { error: ErrorLikeObject }) {
+    this.commit("setError", { error });
   }
 
   clear() {
-    this.mutations.setError(undefined);
+    this.commit("setError", { error: undefined });
   }
 }
 
-export const errorReporterModule = sinai.module({
+export const errorReporterModule = new Module({
   state: ErrorReporterState,
   mutations: ErrorReporterMutations,
   getters: ErrorReporterGetters,

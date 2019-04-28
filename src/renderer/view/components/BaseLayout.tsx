@@ -1,18 +1,20 @@
 import { VNode } from "vue";
-import { storeComponent } from "../store";
+import { withStore, rootModule } from "../store";
 import p from "vue-strict-prop";
 import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
 import VNotification from "./base/VNotification";
 import PreferencePanel from "./PreferencePanel";
 import * as md from "view/utils/md-classes";
-import { __capture } from "view/utils/modifiers";
+import { __capture, __sync } from "view/utils/modifiers";
 import { MdList } from "./base/md";
 import * as emotion from "emotion";
+import { errorReporterModule } from "view/store/errorReporterModule";
+import { dialogModule } from "view/store/dialogModule";
 const css = emotion.css;
 
 // @vue/component
-export default storeComponent.create({
+export default withStore.create({
   name: "BaseLayout",
   props: {
     title: p(String).required
@@ -20,18 +22,26 @@ export default storeComponent.create({
   data() {
     return { menuVisible: false };
   },
+  computed: {
+    ...errorReporterModule.mapGetters({ errorMessage: "message" })
+  },
   methods: {
+    ...rootModule.mapActions([
+      "hideNotification",
+      "hidePreference",
+      "resetConfig"
+    ]),
+    ...errorReporterModule.mapActions({ clearError: "clear" }),
+    ...dialogModule.mapActions({
+      acceptDialog: "accept",
+      cancelDialog: "cancel"
+    }),
     toggleMenu(): void {
       this.menuVisible = !this.menuVisible;
     }
   },
   render(): VNode {
-    const drawerEventListener = {
-      "update:mdActive": (v: boolean) => {
-        this.menuVisible = v;
-      }
-    };
-    const { state, actions, getters } = this;
+    const state = this.state;
     return (
       <div staticClass={style.container}>
         <md-app md-mode="fixed">
@@ -45,11 +55,7 @@ export default storeComponent.create({
             </div>
           </md-app-toolbar>
 
-          <md-app-drawer
-            md-fixed
-            md-active={this.menuVisible}
-            {...{ on: drawerEventListener }}
-          >
+          <md-app-drawer md-fixed md-active={__sync(this.menuVisible)}>
             <md-toolbar staticClass="md-transparent" md-elevation={0}>
               <div staticClass="md-toolbar-section-end">
                 <VIconButton mini action={this.toggleMenu}>
@@ -69,23 +75,27 @@ export default storeComponent.create({
 
         <PreferencePanel
           active={state.preferenceShown}
-          initialConfig={this.state.config}
-          hide={this.actions.hidePreference}
-          save={this.actions.resetConfig}
+          initialConfig={state.config}
+          hide={this.hidePreference}
+          save={this.resetConfig}
         />
         <VNotification
           icon="info"
           message={state.notification}
           color="primary"
-          hide={actions.hideNotification}
+          hide={this.hideNotification}
         />
         <VNotification
           icon="warning"
-          message={getters.errorReporter.message}
+          message={this.errorMessage}
           color="accent"
-          hide={actions.errorReporter.clear}
+          hide={this.clearError}
         />
-        <VDialogBase state={state.dialog} actions={actions.dialog} />
+        <VDialogBase
+          state={state.dialog}
+          accept={this.acceptDialog}
+          cancel={this.cancelDialog}
+        />
       </div>
     );
   }
