@@ -67,9 +67,9 @@ class TabsActions extends Actions<TabsState, TabsGetters, TabsMutations> {
   addOrSelect({ tab }: { tab: TabDefinition }) {
     const index = this.state.tabs.findIndex(t => t.key === tab.key);
     if (index < 0) {
-      this.commit("add", { tab });
+      this.committer.add({ tab });
     } else {
-      this.commit("setSelectedIndex", { index });
+      this.committer.setSelectedIndex({ index });
     }
   }
   setTabLazyProps(payload: {
@@ -77,16 +77,16 @@ class TabsActions extends Actions<TabsState, TabsGetters, TabsMutations> {
     key: string;
     lazyProps: object | undefined;
   }) {
-    this.commit("setTabLazyProps", payload);
+    this.committer.setTabLazyProps(payload);
   }
   remove(payload: { key: string }) {
-    this.commit("remove", payload);
+    this.committer.remove(payload);
   }
   select(payload: { index: number }) {
-    this.commit("setSelectedIndex", payload);
+    this.committer.setSelectedIndex(payload);
   }
   reset(payload: { tabs: TabDefinition[] }) {
-    this.commit("reset", payload);
+    this.committer.reset(payload);
   }
 }
 

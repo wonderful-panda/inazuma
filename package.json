@@ -84,7 +84,7 @@
     "vue-typed-component": "^0.11.0",
     "vue-vtable": "^0.14.1",
     "vuex": "^3.1.0",
-    "vuex-smart-module": "^0.2.6",
+    "vuex-smart-module": "https://github.com/wonderful-panda/vuex-smart-module#0.2.6-mod1",
     "webpack": "^4.20.2",
     "webpack-cli": "^3.1.2"
   }

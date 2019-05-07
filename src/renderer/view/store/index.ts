@@ -187,22 +187,21 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
 
   showError(payload: { error: ErrorLikeObject }) {
     console.log(payload.error);
-    this.errorReporter.dispatch({ type: "show", ...payload });
+    this.errorReporter.dispatcher.show(payload);
   }
 
   configChanged(payload: { config: Config }) {
-    this.commit({ type: "resetConfig", ...payload });
+    this.committer.resetConfig(payload);
   }
 
   showWelcomePage(): void {
-    this.commit({ type: "setRepoPath", repoPath: "" });
-    this.tabs.dispatch({ type: "reset", tabs: [] });
+    this.committer.setRepoPath({ repoPath: "" });
+    this.tabs.dispatcher.reset({ tabs: [] });
   }
 
   showRepositoryPage(payload: { repoPath: string; tabs?: TabDefinition[] }) {
-    this.commit({ type: "setRepoPath", repoPath: payload.repoPath });
-    this.tabs.dispatch({
-      type: "reset",
+    this.committer.setRepoPath({ repoPath: payload.repoPath });
+    this.tabs.dispatcher.reset({
       tabs: payload.tabs || [
         { key: "log", kind: "log", text: "COMMITS", props: {} }
       ]
@@ -214,9 +213,8 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
       const { repoPath } = payload;
       const { commits, refs } = await browserCommand.openRepository(repoPath);
       if (this.state.repoPath !== repoPath) {
-        this.commit({ type: "setRepoPath", repoPath });
-        this.tabs.dispatch({
-          type: "reset",
+        this.committer.setRepoPath({ repoPath });
+        this.tabs.dispatcher.reset({
           tabs: [{ key: "log", kind: "log", text: "COMMITS", props: {} }]
         });
       }
@@ -232,11 +230,11 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
     payload.commits.forEach(c => {
       graphs[c.id] = grapher.proceed(c);
     });
-    this.commit({ type: "resetItems", graphs, ...payload });
+    this.committer.resetItems({ graphs, ...payload });
   }
 
   showCommitDetail(payload: { commit: CommitDetail }) {
-    this.commit({ type: "setCommitDetail", ...payload });
+    this.committer.setCommitDetail(payload);
   }
 
   async setSelectedIndex(payload: { index: number }): Promise<void> {
@@ -244,7 +242,7 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
       return;
     }
     try {
-      this.commit({ type: "setSelectedIndex", ...payload });
+      this.committer.setSelectedIndex(payload);
       const { repoPath, commits } = this.state;
       const commit = await browserCommand.getCommitDetail({
         repoPath,
@@ -266,11 +264,11 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
   }
 
   showSidebar(payload: { name: string }) {
-    this.commit({ type: "setSidebarName", ...payload });
+    this.committer.setSidebarName(payload);
   }
 
   hideSidebar() {
-    this.commit({ type: "setSidebarName", name: "" });
+    this.committer.setSidebarName({ name: "" });
   }
 
   resetConfig(config: Config): Promise<void> {
@@ -311,23 +309,22 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
   }
 
   showNotification(payload: { message: string }) {
-    this.commit("setNotification", payload);
+    this.committer.setNotification(payload);
   }
   hideNotification() {
-    this.commit("setNotification", { message: "" });
+    this.committer.setNotification({ message: "" });
   }
 
   showPreference() {
-    this.commit("setPreferenceShown", { value: true });
+    this.committer.setPreferenceShown({ value: true });
   }
   hidePreference() {
-    this.commit("setPreferenceShown", { value: false });
+    this.committer.setPreferenceShown({ value: false });
   }
 
   showFileTab({ sha, relPath }: { sha: string; relPath: string }) {
     try {
-      this.tabs.dispatch({
-        type: "addOrSelect",
+      this.tabs.dispatcher.addOrSelect({
         tab: {
           key: `file/${relPath}:${sha}`,
           kind: "file",
@@ -357,7 +354,7 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
         key,
         lazyProps: { blame }
       };
-      this.tabs.dispatch("setTabLazyProps", payload);
+      this.tabs.dispatcher.setTabLazyProps(payload);
     } catch (error) {
       this.showError({ error });
       this.removeTab({ key });
@@ -373,7 +370,7 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
         props: { sha },
         closable: true
       };
-      this.tabs.dispatch("addOrSelect", { tab });
+      this.tabs.dispatcher.addOrSelect({ tab });
     } catch (error) {
       this.showError({ error });
     }
@@ -401,7 +398,7 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
           rootNodes: Object.freeze(rootNodes)
         }
       };
-      this.tabs.dispatch("setTabLazyProps", payload);
+      this.tabs.dispatcher.setTabLazyProps(payload);
     } catch (error) {
       this.showError({ error });
       this.removeTab({ key });
@@ -409,11 +406,11 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
   }
 
   removeTab(payload: { key: string }) {
-    this.tabs.dispatch("remove", payload);
+    this.tabs.dispatcher.remove(payload);
   }
 
   removeRecentList(payload: { repoPath: string }) {
-    this.commit("removeRecentList", payload);
+    this.committer.removeRecentList(payload);
   }
 }
 

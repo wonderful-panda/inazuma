@@ -6995,10 +6995,9 @@ vue@^2.5.17:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.17.tgz#0f8789ad718be68ca1872629832ed533589c6ada"
   integrity sha512-mFbcWoDIJi0w0Za4emyLiW72Jae0yjANHbCVquMKijcavBGypqlF7zHRgMa5k4sesdv7hv2rB4JPdZfR+TPfhQ==
 
-vuex-smart-module@^0.2.6:
+"vuex-smart-module@https://github.com/wonderful-panda/vuex-smart-module#0.2.6-mod1":
   version "0.2.6"
-  resolved "https://registry.yarnpkg.com/vuex-smart-module/-/vuex-smart-module-0.2.6.tgz#d3c91e7fecc65608831e71003c50ab66cd687246"
-  integrity sha512-r7nfNRIkfPXLkaCLdjbW1PLbEWSuq+xPnAx2TDFS4v8BNAoYxw8pU6AF3+dGAjq2n6/9OieorWI2fQlFKJk0Uw==
+  resolved "https://github.com/wonderful-panda/vuex-smart-module#b0b916044b2e019a48b49f8b7ec07ab1e6313159"
 
 vuex@^3.1.0:
   version "3.1.0"

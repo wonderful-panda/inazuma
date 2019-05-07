@@ -27,11 +27,11 @@ export class ErrorReporterActions extends Actions<
   ErrorReporterMutations
 > {
   show({ error }: { error: ErrorLikeObject }) {
-    this.commit("setError", { error });
+    this.committer.setError({ error });
   }
 
   clear() {
-    this.commit("setError", { error: undefined });
+    this.committer.setError({ error: undefined });
   }
 }
 
