@@ -15,7 +15,6 @@ import * as emotion from "emotion";
 import { showFileContextMenu } from "../commands";
 const css = emotion.css;
 
-const amdRequire = (global as any).amdRequire;
 const displayState = ds.createMixin("BlamePanel", {
   columnWidths: {} as Dict<number>,
   splitterRatio: 0.3
@@ -127,7 +126,10 @@ export default tsx.componentFactory.mixin(displayState).create({
   },
   methods: {
     onMouseDown({ target }: monaco.editor.IEditorMouseEvent) {
-      const { type } = target;
+      const { position, type } = target;
+      if (!position) {
+        return;
+      }
       if (
         type !== monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN &&
         type !== monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS &&
@@ -136,7 +138,7 @@ export default tsx.componentFactory.mixin(displayState).create({
       ) {
         return;
       }
-      const lineIndex = target.position.lineNumber - 1;
+      const lineIndex = position.lineNumber - 1;
       this.selectedCommitId = this.blame.commitIds[lineIndex];
     },
     onMouseMove(e: monaco.editor.IEditorMouseEvent) {
@@ -159,6 +161,9 @@ export default tsx.componentFactory.mixin(displayState).create({
       showFileContextMenu(item, item, this.path, true);
     },
     showContextMenuFromEditor(e: monaco.editor.IEditorMouseEvent) {
+      if (!e.target.position) {
+        return;
+      }
       const lineNumber = e.target.position.lineNumber;
       const commitId = this.blame.commitIds[lineNumber - 1];
       if (!commitId) {
@@ -177,8 +182,8 @@ export default tsx.componentFactory.mixin(displayState).create({
       }
       const { commitIds } = this.blame;
       const lineIndices = commitIds
-        .map(
-          (id, index) => (0 < index && id !== commitIds[index - 1] ? index : -1)
+        .map((id, index) =>
+          0 < index && id !== commitIds[index - 1] ? index : -1
         )
         .filter(v => v >= 0);
       lineIndices.push(commitIds.length);
@@ -223,7 +228,6 @@ export default tsx.componentFactory.mixin(displayState).create({
         overviewRuler: {
           color: "rgba(255, 140, 0, 0.6)",
           darkColor: "rgba(255, 140, 0, 0.6)",
-          hcColor: "rgba(255, 140, 0, 0.6)",
           position: monaco.editor.OverviewRulerLane.Right
         }
       };
@@ -265,11 +269,10 @@ export default tsx.componentFactory.mixin(displayState).create({
             <monaco-editor
               ref="monaco"
               class={style.editor}
-              require={amdRequire}
               language={this.language}
               value={this.blame.content.text}
               options={this.options}
-              onEditorMount={this.onEditorMount}
+              onEditorDidMount={this.onEditorMount}
               onMouseDown={this.onMouseDown}
               onMouseMove={this.onMouseMove}
               onMouseLeave={this.onMouseLeave}

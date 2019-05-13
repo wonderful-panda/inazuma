@@ -52,16 +52,16 @@ export class DialogActions extends Actions<
 > {
   show({ options }: { options: DialogOptions }): Promise<DialogResult> {
     return new Promise<DialogResult>(resolve => {
-      this.committer.init({ resolve, options });
+      this.mutations.init({ resolve, options });
     });
   }
 
   accept({ buttonId }: { buttonId: string }) {
-    this.committer.setResult({ accepted: true, buttonId });
+    this.mutations.setResult({ accepted: true, buttonId });
   }
 
   cancel() {
-    this.committer.setResult({ accepted: false });
+    this.mutations.setResult({ accepted: false });
   }
 }
 

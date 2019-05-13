@@ -61,7 +61,7 @@ export default tsx.component({
   },
   mounted() {
     Vue.nextTick(() => {
-      const focusable = queryFocusableElements(this.$el);
+      const focusable = queryFocusableElements(this.$el as HTMLElement);
       if (focusable) {
         focusable[0].focus();
       }
@@ -72,7 +72,7 @@ export default tsx.component({
       this.close();
     },
     onTabKeyDown(event: KeyboardEvent): void {
-      const focusable = queryFocusableElements(this.$el);
+      const focusable = queryFocusableElements(this.$el as HTMLElement);
       if (focusable.length === 0) {
         return;
       }

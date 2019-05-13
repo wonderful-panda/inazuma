@@ -37,7 +37,7 @@ const initialRepo = sessionStorage.getItem("repoPath");
     }
   );
   if (initialRepo) {
-    root.dispatcher.showRepositoryPage({ repoPath: initialRepo });
+    root.actions.showRepositoryPage({ repoPath: initialRepo });
   }
 })();
 

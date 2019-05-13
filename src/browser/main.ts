@@ -63,7 +63,10 @@ const template: Electron.MenuItemConstructorOptions[] = [
 function showMainWindow() {
   const mainWindow = wm.create({
     autoHideMenuBar: true,
-    show: false
+    show: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
   // restore window size
   const size = environment.data.windowSize;

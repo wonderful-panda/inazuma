@@ -187,21 +187,21 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
 
   showError(payload: { error: ErrorLikeObject }) {
     console.log(payload.error);
-    this.errorReporter.dispatcher.show(payload);
+    this.errorReporter.actions.show(payload);
   }
 
   configChanged(payload: { config: Config }) {
-    this.committer.resetConfig(payload);
+    this.mutations.resetConfig(payload);
   }
 
   showWelcomePage(): void {
-    this.committer.setRepoPath({ repoPath: "" });
-    this.tabs.dispatcher.reset({ tabs: [] });
+    this.mutations.setRepoPath({ repoPath: "" });
+    this.tabs.actions.reset({ tabs: [] });
   }
 
   showRepositoryPage(payload: { repoPath: string; tabs?: TabDefinition[] }) {
-    this.committer.setRepoPath({ repoPath: payload.repoPath });
-    this.tabs.dispatcher.reset({
+    this.mutations.setRepoPath({ repoPath: payload.repoPath });
+    this.tabs.actions.reset({
       tabs: payload.tabs || [
         { key: "log", kind: "log", text: "COMMITS", props: {} }
       ]
@@ -213,8 +213,8 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
       const { repoPath } = payload;
       const { commits, refs } = await browserCommand.openRepository(repoPath);
       if (this.state.repoPath !== repoPath) {
-        this.committer.setRepoPath({ repoPath });
-        this.tabs.dispatcher.reset({
+        this.mutations.setRepoPath({ repoPath });
+        this.tabs.actions.reset({
           tabs: [{ key: "log", kind: "log", text: "COMMITS", props: {} }]
         });
       }
@@ -230,11 +230,11 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
     payload.commits.forEach(c => {
       graphs[c.id] = grapher.proceed(c);
     });
-    this.committer.resetItems({ graphs, ...payload });
+    this.mutations.resetItems({ graphs, ...payload });
   }
 
   showCommitDetail(payload: { commit: CommitDetail }) {
-    this.committer.setCommitDetail(payload);
+    this.mutations.setCommitDetail(payload);
   }
 
   async setSelectedIndex(payload: { index: number }): Promise<void> {
@@ -242,7 +242,7 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
       return;
     }
     try {
-      this.committer.setSelectedIndex(payload);
+      this.mutations.setSelectedIndex(payload);
       const { repoPath, commits } = this.state;
       const commit = await browserCommand.getCommitDetail({
         repoPath,
@@ -264,11 +264,11 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
   }
 
   showSidebar(payload: { name: string }) {
-    this.committer.setSidebarName(payload);
+    this.mutations.setSidebarName(payload);
   }
 
   hideSidebar() {
-    this.committer.setSidebarName({ name: "" });
+    this.mutations.setSidebarName({ name: "" });
   }
 
   resetConfig(config: Config): Promise<void> {
@@ -309,22 +309,22 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
   }
 
   showNotification(payload: { message: string }) {
-    this.committer.setNotification(payload);
+    this.mutations.setNotification(payload);
   }
   hideNotification() {
-    this.committer.setNotification({ message: "" });
+    this.mutations.setNotification({ message: "" });
   }
 
   showPreference() {
-    this.committer.setPreferenceShown({ value: true });
+    this.mutations.setPreferenceShown({ value: true });
   }
   hidePreference() {
-    this.committer.setPreferenceShown({ value: false });
+    this.mutations.setPreferenceShown({ value: false });
   }
 
   showFileTab({ sha, relPath }: { sha: string; relPath: string }) {
     try {
-      this.tabs.dispatcher.addOrSelect({
+      this.tabs.actions.addOrSelect({
         tab: {
           key: `file/${relPath}:${sha}`,
           kind: "file",
@@ -354,7 +354,7 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
         key,
         lazyProps: { blame }
       };
-      this.tabs.dispatcher.setTabLazyProps(payload);
+      this.tabs.actions.setTabLazyProps(payload);
     } catch (error) {
       this.showError({ error });
       this.removeTab({ key });
@@ -370,7 +370,7 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
         props: { sha },
         closable: true
       };
-      this.tabs.dispatcher.addOrSelect({ tab });
+      this.tabs.actions.addOrSelect({ tab });
     } catch (error) {
       this.showError({ error });
     }
@@ -398,7 +398,7 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
           rootNodes: Object.freeze(rootNodes)
         }
       };
-      this.tabs.dispatcher.setTabLazyProps(payload);
+      this.tabs.actions.setTabLazyProps(payload);
     } catch (error) {
       this.showError({ error });
       this.removeTab({ key });
@@ -406,11 +406,11 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
   }
 
   removeTab(payload: { key: string }) {
-    this.tabs.dispatcher.remove(payload);
+    this.tabs.actions.remove(payload);
   }
 
   removeRecentList(payload: { repoPath: string }) {
-    this.committer.removeRecentList(payload);
+    this.mutations.removeRecentList(payload);
   }
 }
 
