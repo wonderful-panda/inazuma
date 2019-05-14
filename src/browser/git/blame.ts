@@ -23,7 +23,7 @@ export async function blame(
       const match = line.match(headerPattern);
       if (match) {
         const commitId = match[1];
-        let lineNo = parseInt(match[2]);
+        let lineNo = parseInt(match[2]) - 1; // translate 1-base to 0-base
         let lineCount = parseInt(match[3]);
         while (lineCount--) {
           commitIds[lineNo++] = commitId;
