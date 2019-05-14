@@ -130,29 +130,28 @@ export default tsx.component({
             mask={this.maskUrl(this.lineMaskId)}
           />
         ))}
-        {this.graph.nodeEdges.map(
-          (edge, i) =>
-            edge.index === this.nodeIdx ? (
-              <line
-                key={this.nodeEdgeKey(edge)}
-                x1={this.c2x(edge.index)}
-                y1={edge.type === "C" ? 0 : this.height}
-                x2={this.c2x(edge.index)}
-                y2={this.nodeY}
-                stroke={edge.color}
-                stroke-width={2}
-                mask={this.maskUrl(this.nodeMaskId)}
-              />
-            ) : (
-              <path
-                key={this.nodeEdgeKey(edge)}
-                d={this.nodeEdgePath(edge)}
-                stroke={edge.color}
-                stroke-width={2}
-                fill="none"
-                mask={this.nodeEdgeMask(i)}
-              />
-            )
+        {this.graph.nodeEdges.map((edge, i) =>
+          edge.index === this.nodeIdx ? (
+            <line
+              key={this.nodeEdgeKey(edge)}
+              x1={this.c2x(edge.index)}
+              y1={edge.type === "C" ? 0 : this.height}
+              x2={this.c2x(edge.index)}
+              y2={this.nodeY}
+              stroke={edge.color}
+              stroke-width={2}
+              mask={this.maskUrl(this.nodeMaskId)}
+            />
+          ) : (
+            <path
+              key={this.nodeEdgeKey(edge)}
+              d={this.nodeEdgePath(edge)}
+              stroke={edge.color}
+              stroke-width={2}
+              fill="none"
+              mask={this.nodeEdgeMask(i)}
+            />
+          )
         )}
         <circle
           cx={this.nodeX}

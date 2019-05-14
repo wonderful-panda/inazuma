@@ -30,12 +30,16 @@ declare module "vue-support" {
     C extends VueConstructor | string
   > = C extends keyof JSX.IntrinsicElements
     ? TsxComponent<Vue, JSX.IntrinsicElements[C]>
-    : C extends string ? TsxComponent<Vue, any> : C;
+    : C extends string
+    ? TsxComponent<Vue, any>
+    : C;
 
   export type WithProps<
     C extends VueConstructor,
     Props
   > = C extends TsxComponent<infer V, infer P, infer E, infer S, infer A>
     ? TsxComponent<V, P & Props, E, S, A>
-    : C extends VueConstructor<infer V> ? TsxComponent<V, Props> : never;
+    : C extends VueConstructor<infer V>
+    ? TsxComponent<V, Props>
+    : never;
 }
