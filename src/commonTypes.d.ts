@@ -113,7 +113,7 @@ declare interface CommitDetail extends Commit {
 }
 
 declare interface BroadcastAction {
-  configChanged: Config;
+  configChanged(payload: { config: Config }): void;
 }
 
 declare interface DiffFile {

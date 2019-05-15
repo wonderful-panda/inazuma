@@ -11,12 +11,14 @@ import { RepositorySessions, RepositorySession } from "./repositorySession";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
-export function broadcast<K extends keyof BroadcastAction>(
-  type: K,
-  payload: BroadcastAction[K]
-) {
-  wm.broadcast(type, payload);
-}
+export const broadcast = new Proxy(
+  {},
+  {
+    get(_target, name: string) {
+      return (payload: any) => wm.broadcast(name, payload);
+    }
+  }
+) as BroadcastAction;
 
 export function setupBrowserCommands(
   _repoSessions: RepositorySessions
@@ -46,7 +48,7 @@ export function setupBrowserCommands(
     },
     resetConfig(cfg: Config): Promise<void> {
       config.updateData(cfg);
-      broadcast("configChanged", cfg);
+      broadcast.configChanged({ config: cfg });
       return Promise.resolve();
     },
     runInteractiveShell(cwd: string): Promise<void> {

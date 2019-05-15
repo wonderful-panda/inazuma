@@ -175,7 +175,8 @@ class RootGetters extends Getters<RootState> {
   }
 }
 
-class RootActions extends Actions<RootState, RootGetters, RootMutations> {
+class RootActions extends Actions<RootState, RootGetters, RootMutations>
+  implements BroadcastAction {
   tabs!: Context<typeof tabsModule>;
   errorReporter!: Context<typeof errorReporterModule>;
   dialog!: Context<typeof dialogModule>;
@@ -185,13 +186,14 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations> {
     this.dialog = dialogModule.context(store);
   }
 
+  // from BroadcastAction
+  configChanged(payload: { config: Config }) {
+    this.mutations.resetConfig(payload);
+  }
+
   showError(payload: { error: ErrorLikeObject }) {
     console.log(payload.error);
     this.errorReporter.actions.show(payload);
-  }
-
-  configChanged(payload: { config: Config }) {
-    this.mutations.resetConfig(payload);
   }
 
   showWelcomePage(): void {
