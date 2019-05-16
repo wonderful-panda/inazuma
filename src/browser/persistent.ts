@@ -66,9 +66,6 @@ export const configSchema: Schema = {
     },
     interactiveShell: {
       type: "string"
-    },
-    vueDevTool: {
-      type: "string"
     }
   }
 };
@@ -77,8 +74,7 @@ const defaultConfigData: Config = {
   fontFamily: {},
   recentListCount: 5,
   externalDiffTool: "",
-  interactiveShell: "",
-  vueDevTool: ""
+  interactiveShell: ""
 };
 
 export const config = {

@@ -28,7 +28,6 @@ declare interface Config {
   recentListCount: number;
   externalDiffTool?: string;
   interactiveShell?: string;
-  vueDevTool?: string;
 }
 
 declare interface RefBase<TypeName extends string> {

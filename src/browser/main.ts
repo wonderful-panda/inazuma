@@ -3,6 +3,11 @@ import { config, environment } from "./persistent";
 import wm from "./windowManager";
 import { setupRepositorySessions } from "./repositorySession";
 import { setupBrowserCommands } from "./actions";
+import { parseCommandLine } from "./options";
+import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+
+const options = parseCommandLine();
+
 const repoSessions = setupRepositorySessions();
 setupBrowserCommands(repoSessions);
 
@@ -89,12 +94,13 @@ function showMainWindow() {
   mainWindow.show();
 }
 
-Electron.app.on("ready", () => {
-  if (config.data.vueDevTool) {
+Electron.app.on("ready", async () => {
+  if (options.enableDevtools) {
     try {
-      Electron.BrowserWindow.addDevToolsExtension(config.data.vueDevTool);
+      const name = await installExtension(VUEJS_DEVTOOLS);
+      console.log("load devtools extension:", name);
     } catch (e) {
-      console.log("failed to load devtools extension");
+      console.log("failed to load devtools extension:", e);
     }
   }
   showMainWindow();

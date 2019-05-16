@@ -123,11 +123,6 @@ export default tsx.component({
             max={20}
             value={__sync(config.recentListCount)}
           />
-          <VTextField
-            class={style.input}
-            label="Path of vue dev tool"
-            value={__sync(config.vueDevTool)}
-          />
         </form>
         <template slot="footer-buttons">
           <VButton primary mini action={this.onOk}>
