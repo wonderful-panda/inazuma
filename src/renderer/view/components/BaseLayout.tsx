@@ -5,7 +5,6 @@ import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
 import VNotification from "./base/VNotification";
 import PreferencePanel from "./PreferencePanel";
-import * as md from "view/utils/md-classes";
 import { __capture, __sync } from "view/utils/modifiers";
 import { MdList } from "./base/md";
 import * as emotion from "emotion";
@@ -45,16 +44,6 @@ export default withStore.create({
     return (
       <div staticClass={style.container}>
         <md-app md-mode="fixed">
-          <md-app-toolbar staticClass="md-primary" md-dense>
-            <VIconButton mini action={this.toggleMenu}>
-              menu
-            </VIconButton>
-            <span class={[style.title, md.TITLE]}>{this.title}</span>
-            <div staticClass="md-toolbar-section-end">
-              {this.$slots["titlebar-buttons"]}
-            </div>
-          </md-app-toolbar>
-
           <md-app-drawer md-fixed md-active={__sync(this.menuVisible)}>
             <md-toolbar staticClass="md-transparent" md-elevation={0}>
               <div staticClass="md-toolbar-section-end">
@@ -68,8 +57,17 @@ export default withStore.create({
             </MdList>
           </md-app-drawer>
 
-          <md-app-content style={{ position: "relative", padding: "1px" }}>
-            <div class={style.content}>{this.$slots["default"]}</div>
+          <md-app-content staticClass={style.contentWrapper}>
+            <div staticClass={style.titleBar}>
+              <VIconButton
+                staticClass={style.menuButton}
+                action={this.toggleMenu}
+              >
+                menu
+              </VIconButton>
+              {this.title}
+            </div>
+            <div staticClass={style.content}>{this.$slots["default"]}</div>
           </md-app-content>
         </md-app>
 
@@ -117,15 +115,45 @@ const style = {
     margin: 0 !important;
     flex: 1;
   `,
+  contentWrapper: css`
+    position: relative;
+    padding: 1px;
+  `,
+  titleBar: css`
+    position: absolute;
+    display: flex;
+    flex-flow: row nowrap;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 28px;
+    line-height: 28px;
+    background-color: #2a2a2a;
+    color: #888;
+    font-size: 18px !important;
+  `,
   content: css`
     display: flex;
     flex-direction: row;
     position: absolute;
     left: 0;
     right: 0;
-    top: 0;
+    top: 28px;
     bottom: 0;
     box-sizing: border-box;
     padding: 4px;
+  `,
+  menuButton: css`
+    min-height: 28px;
+    max-height: 28px;
+    min-width: 28px;
+    max-width: 28px;
+    .md-icon {
+      font-size: 22px !important;
+      color: #888 !important;
+      &:hover {
+        color: #fff !important;
+      }
+    }
   `
 };

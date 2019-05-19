@@ -5,7 +5,6 @@ import TabFile from "./RepositoryPageTabFile";
 import TabTree from "./RepositoryPageTabTree";
 import SideBarBranches from "./SideBarBranches";
 import SideBarRemotes from "./SideBarRemotes";
-import VIconButton from "./base/VIconButton";
 import VTabs from "./base/VTabs";
 import DrawerNavigation from "./DrawerNavigation";
 import { __sync } from "../utils/modifiers";
@@ -38,7 +37,6 @@ export default withStore.create({
   },
   methods: {
     ...rootModule.mapActions([
-      "runInteractiveShell",
       "showSidebar",
       "showPreference",
       "showWelcomePage",
@@ -82,20 +80,7 @@ export default withStore.create({
   },
   render(): VNode {
     return (
-      <BaseLayout title={this.repoName}>
-        <template slot="titlebar-buttons">
-          <VIconButton
-            mini
-            disabled={!this.state.config.interactiveShell}
-            tooltip="launch interactive shell"
-            action={this.runInteractiveShell}
-          >
-            input
-          </VIconButton>
-          <VIconButton mini tooltip="reload" action={this.reload}>
-            refresh
-          </VIconButton>
-        </template>
+      <BaseLayout title={this.state.repoPath}>
         <template slot="drawer-navigations">
           <DrawerNavigation
             icon="local_offer"
