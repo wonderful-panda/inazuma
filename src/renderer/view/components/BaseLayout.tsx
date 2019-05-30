@@ -3,6 +3,7 @@ import { withStore, rootModule } from "../store";
 import p from "vue-strict-prop";
 import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
+import TitleBarButton from "./TitleBarButton";
 import VNotification from "./base/VNotification";
 import PreferencePanel from "./PreferencePanel";
 import { __capture, __sync } from "view/utils/modifiers";
@@ -59,13 +60,9 @@ export default withStore.create({
 
           <md-app-content staticClass={style.contentWrapper}>
             <div staticClass={style.titleBar}>
-              <VIconButton
-                staticClass={style.menuButton}
-                action={this.toggleMenu}
-              >
-                menu
-              </VIconButton>
-              {this.title}
+              <TitleBarButton action={this.toggleMenu}>menu</TitleBarButton>
+              <span style="flex: 1">{this.title}</span>
+              {this.$slots["titlebar-buttons"]}
             </div>
             <div staticClass={style.content}>{this.$slots["default"]}</div>
           </md-app-content>
@@ -142,18 +139,5 @@ const style = {
     bottom: 0;
     box-sizing: border-box;
     padding: 4px;
-  `,
-  menuButton: css`
-    min-height: 28px;
-    max-height: 28px;
-    min-width: 28px;
-    max-width: 28px;
-    .md-icon {
-      font-size: 22px !important;
-      color: #888 !important;
-      &:hover {
-        color: #fff !important;
-      }
-    }
   `
 };

@@ -53,7 +53,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.ExternalsPlugin("commonjs", ["electron"]),
+    new webpack.ExternalsPlugin("commonjs", ["electron", "node-pty"]),
     new ForkTsCheckerPlugin(),
     new MonacoEditorPlugin()
   ]

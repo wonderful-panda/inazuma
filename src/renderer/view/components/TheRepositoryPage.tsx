@@ -5,15 +5,22 @@ import TabFile from "./RepositoryPageTabFile";
 import TabTree from "./RepositoryPageTabTree";
 import SideBarBranches from "./SideBarBranches";
 import SideBarRemotes from "./SideBarRemotes";
+import Terminal from "./Terminal";
+import VSplitterPanel from "./base/VSplitterPanel";
 import VTabs from "./base/VTabs";
 import DrawerNavigation from "./DrawerNavigation";
+import TitleBarButton from "./TitleBarButton";
 import { __sync } from "../utils/modifiers";
 import { RepositoryTabDefinition } from "../mainTypes";
 import { rootModule, withStore } from "view/store";
+import * as ds from "view/store/displayState";
 import { tabsModule } from "view/store/tabsModule";
 
+const displayState = ds.createMixin("TheRepositoryPage", {
+  splitterPosition: 0.8
+});
 // @vue/component
-export default withStore.create({
+export default withStore.mixin(displayState).create({
   computed: {
     ...rootModule.mapGetters(["repoName", "repositoryTabs"]),
     sidebarVNode(): VNode | undefined {
@@ -41,7 +48,8 @@ export default withStore.create({
       "showPreference",
       "showWelcomePage",
       "showVersionDialog",
-      "removeTab"
+      "removeTab",
+      "toggleTerminal"
     ]),
     ...tabsModule.mapActions({ selectTab: "select" }),
     reload() {
@@ -79,8 +87,9 @@ export default withStore.create({
     }
   },
   render(): VNode {
+    const { repoPath, terminalShown, config } = this.state;
     return (
-      <BaseLayout title={this.state.repoPath}>
+      <BaseLayout title={repoPath}>
         <template slot="drawer-navigations">
           <DrawerNavigation
             icon="local_offer"
@@ -108,17 +117,36 @@ export default withStore.create({
             action={this.showVersionDialog}
           />
         </template>
+        <template slot="titlebar-buttons">
+          <TitleBarButton action={this.toggleTerminal}>keyboard</TitleBarButton>
+        </template>
         <keep-alive>{this.sidebarVNode}</keep-alive>
-        <VTabs
-          tabs={this.repositoryTabs}
-          selectedIndex={__sync(this.selectedTabIndex)}
-          closeTab={this.closeTab}
-          scopedSlots={{
-            default: ({ tab }) => [
-              this.renderTab(tab as RepositoryTabDefinition)
-            ]
-          }}
-        />
+        <VSplitterPanel
+          style={{ flex: 1 }}
+          ratio={__sync(this.displayState.splitterPosition)}
+          direction="vertical"
+          splitterWidth={5}
+          showSecond={terminalShown}
+        >
+          <VTabs
+            slot="first"
+            tabs={this.repositoryTabs}
+            selectedIndex={__sync(this.selectedTabIndex)}
+            closeTab={this.closeTab}
+            scopedSlots={{
+              default: ({ tab }) => [
+                this.renderTab(tab as RepositoryTabDefinition)
+              ]
+            }}
+          />
+          <keep-alive slot="second">
+            {terminalShown && !!config.interactiveShell ? (
+              <Terminal cwd={repoPath} cmd={config.interactiveShell} />
+            ) : (
+              undefined
+            )}
+          </keep-alive>
+        </VSplitterPanel>
       </BaseLayout>
     );
   }

@@ -15,7 +15,9 @@ export default tsx.component({
     splitterWidth: p(Number).validator(v => v > 0).required,
     ratio: p(Number).validator(v => 0 <= v && v <= 1).required,
     minSizeFirst: p(String, Number).default("10%"),
-    minSizeSecond: p(String, Number).default("10%")
+    minSizeSecond: p(String, Number).default("10%"),
+    showFirst: p(Boolean).default(true),
+    showSecond: p(Boolean).default(true)
   },
   data() {
     return {
@@ -99,18 +101,21 @@ export default tsx.component({
       <div class="splitter-panel-container" style={this.containerStyle}>
         <div
           ref="first"
+          v-show={this.showFirst}
           class="splitter-panel-first"
           style={this.firstPanelStyle}
         >
           {first}
         </div>
         <VSplitter
+          v-show={this.showFirst && this.showSecond}
           direction={this.direction}
           thickness={this.splitterWidth}
           onDragmove={this.onSplitterMove}
         />
         <div
           ref="second"
+          v-show={this.showSecond}
           class="splitter-panel-second"
           style={this.secondPanelStyle}
         >

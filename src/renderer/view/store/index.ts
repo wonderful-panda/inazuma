@@ -55,6 +55,7 @@ class RootState {
   rowHeight = 24;
   sidebar = "";
   preferenceShown = false;
+  terminalShown = false;
   notification = "";
 }
 
@@ -134,8 +135,13 @@ class RootMutations extends Mutations<RootState> {
   setSidebarName(payload: { name: string }) {
     this.state.sidebar = payload.name;
   }
+
   setPreferenceShown(payload: { value: boolean }) {
     this.state.preferenceShown = payload.value;
+  }
+
+  setTerminalShown(payload: { value: boolean }) {
+    this.state.terminalShown = payload.value;
   }
 
   setNotification(payload: { message: string }) {
@@ -322,6 +328,9 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations>
   }
   hidePreference() {
     this.mutations.setPreferenceShown({ value: false });
+  }
+  toggleTerminal() {
+    this.mutations.setTerminalShown({ value: !this.state.terminalShown });
   }
 
   showFileTab({ sha, relPath }: { sha: string; relPath: string }) {
