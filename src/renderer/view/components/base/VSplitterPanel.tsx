@@ -4,6 +4,7 @@ import p from "vue-strict-prop";
 import { clamp } from "core/utils";
 import { CssProperties } from "vue-css-definition";
 import VSplitter, { SplitterEventArgs } from "./VSplitter";
+import { __relay } from "view/utils/modifiers";
 
 const FLEX_SUM = 1000;
 
@@ -17,7 +18,8 @@ export default tsx.component({
     minSizeFirst: p(String, Number).default("10%"),
     minSizeSecond: p(String, Number).default("10%"),
     showFirst: p(Boolean).default(true),
-    showSecond: p(Boolean).default(true)
+    showSecond: p(Boolean).default(true),
+    allowDirectionChange: p(Boolean).default(false)
   },
   data() {
     return {
@@ -109,9 +111,10 @@ export default tsx.component({
         </div>
         <VSplitter
           v-show={this.showFirst && this.showSecond}
-          direction={this.direction}
+          direction={__relay(this.direction)}
           thickness={this.splitterWidth}
           onDragmove={this.onSplitterMove}
+          allowDirectionChange={this.allowDirectionChange}
         />
         <div
           ref="second"

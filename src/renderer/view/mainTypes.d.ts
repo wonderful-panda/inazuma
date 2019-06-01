@@ -54,3 +54,5 @@ export interface AppState {
   preferenceShown: boolean;
   notification: string;
 }
+
+export type SplitterDirection = "horizontal" | "vertical";

@@ -1,8 +1,7 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
-import { px } from "core/utils";
-import { CssProperties } from "vue-css-definition";
+import VIconButton from "./VIconButton";
 import * as emotion from "emotion";
 const css = emotion.css;
 
@@ -16,34 +15,21 @@ export interface SplitterEvents {
   onDragend: SplitterEventArgs;
 }
 
+const HOVER_COLOR = "#383838";
+
 // @vue/component
 export default tsx.componentFactoryOf<SplitterEvents>().create({
   name: "VSplitter",
   // prettier-ignore
   props: {
       direction: p.ofStringLiterals("horizontal", "vertical").required,
-      thickness: p(Number).validator(v => v > 0).default(3)
+      thickness: p(Number).validator(v => v > 0).default(3),
+      allowDirectionChange: p(Boolean).required
     },
   data() {
     return {
       dragging: false
     };
-  },
-  computed: {
-    dynamicStyle(): CssProperties {
-      const thickness = px(this.thickness);
-      if (this.direction === "horizontal") {
-        return {
-          flexBasis: thickness,
-          width: thickness
-        };
-      } else {
-        return {
-          flexBasis: thickness,
-          height: thickness
-        };
-      }
-    }
   },
   methods: {
     emitEvent(eventName: string, e: MouseEvent) {
@@ -76,29 +62,69 @@ export default tsx.componentFactoryOf<SplitterEvents>().create({
       };
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
+    },
+    changeDirection() {
+      this.$emit(
+        "update:direction",
+        this.direction === "horizontal" ? "vertical" : "horizontal"
+      );
     }
   },
   render(): VNode {
+    const { direction, thickness, dragging } = this;
     return (
       <div
-        class={style.spliitter(this.direction === "horizontal", this.dragging)}
-        style={this.dynamicStyle}
+        class={style.splitter(direction === "horizontal", thickness, dragging)}
         onMousedown={this.onSplitterMouseDown}
-      />
+      >
+        {this.allowDirectionChange ? (
+          <VIconButton
+            raised
+            tooltip="Switch splitter orientation"
+            action={this.changeDirection}
+          >
+            swap_horiz
+          </VIconButton>
+        ) : (
+          undefined
+        )}
+      </div>
     );
   }
 });
 
 const style = {
-  spliitter: (horizontal: boolean, dragging: boolean) => css`
+  splitter: (horizontal: boolean, thickness: number, dragging: boolean) => css`
     flex-grow: 0;
     flex-shrink: 0;
+    flex-basis: ${thickness}px;
     box-sizing: border-box;
-    &:hover {
-      background-color: #383838;
-    }
+    position: relative;
     cursor: ${horizontal ? "col-resize" : "row-resize"};
     margin: ${horizontal ? "0 1px" : "1px 0"};
-    background-color: ${dragging ? "#383838" : undefined};
+    background-color: ${dragging ? HOVER_COLOR : undefined};
+    .md-icon-button {
+      visibility: ${dragging ? "visible" : "hidden"};
+      position: absolute;
+      transition: transform 0.2s ease;
+      left: -20px;
+      right: -20px;
+      top: -20px;
+      bottom: -20px;
+      margin: auto;
+      padding: auto;
+      margin: auto;
+      background-color: ${HOVER_COLOR} !important;
+      transform: rotate(${horizontal ? 0 : 90}deg);
+      &:hover {
+        transform: rotate(${horizontal ? 90 : 0}deg);
+      }
+    }
+    &:hover {
+      background-color: ${HOVER_COLOR} !important;
+      .md-icon-button {
+        visibility: visible;
+      }
+    }
   `
 };

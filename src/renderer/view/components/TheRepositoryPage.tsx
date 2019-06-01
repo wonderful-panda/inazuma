@@ -11,13 +11,14 @@ import VTabs from "./base/VTabs";
 import DrawerNavigation from "./DrawerNavigation";
 import TitleBarButton from "./TitleBarButton";
 import { __sync } from "../utils/modifiers";
-import { RepositoryTabDefinition } from "../mainTypes";
+import { RepositoryTabDefinition, SplitterDirection } from "../mainTypes";
 import { rootModule, withStore } from "view/store";
 import * as ds from "view/store/displayState";
 import { tabsModule } from "view/store/tabsModule";
 
 const displayState = ds.createMixin("TheRepositoryPage", {
-  splitterPosition: 0.8
+  splitterPosition: 0.8,
+  splitterDirection: "vertical" as SplitterDirection
 });
 // @vue/component
 export default withStore.mixin(displayState).create({
@@ -52,6 +53,12 @@ export default withStore.mixin(displayState).create({
       "toggleTerminal"
     ]),
     ...tabsModule.mapActions({ selectTab: "select" }),
+    showSidebarBranches() {
+      this.showSidebar({ name: "branches" });
+    },
+    showSidebarRemotes() {
+      this.showSidebar({ name: "branches" });
+    },
     reload() {
       location.reload();
     },
@@ -94,12 +101,12 @@ export default withStore.mixin(displayState).create({
           <DrawerNavigation
             icon="local_offer"
             text="Branches"
-            action={() => this.showSidebar({ name: "branches" })}
+            action={this.showSidebarBranches}
           />
           <DrawerNavigation
             icon="cloud"
             text="Remotes"
-            action={() => this.showSidebar({ name: "remotes" })}
+            action={this.showSidebarRemotes}
           />
           <DrawerNavigation
             icon="settings"
@@ -124,9 +131,10 @@ export default withStore.mixin(displayState).create({
         <VSplitterPanel
           style={{ flex: 1 }}
           ratio={__sync(this.displayState.splitterPosition)}
-          direction="vertical"
+          direction={__sync(this.displayState.splitterDirection)}
           splitterWidth={5}
           showSecond={terminalShown}
+          allowDirectionChange={true}
         >
           <VTabs
             slot="first"
