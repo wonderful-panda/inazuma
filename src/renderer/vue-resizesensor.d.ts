@@ -3,7 +3,7 @@ declare module "vue-resizesensor" {
   import { TsxComponent } from "vue-tsx-support";
   const VueResizeSensor: TsxComponent<
     Vue,
-    { debounce?: boolean },
+    { debounce?: number; throttle?: number },
     { onResized: () => void }
   >;
   export = VueResizeSensor;

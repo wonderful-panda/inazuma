@@ -6926,6 +6926,14 @@ vue-resizesensor@^0.2.1:
     lodash "^4.13.1"
     vue "^2.3.0"
 
+vue-resizesensor@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/vue-resizesensor/-/vue-resizesensor-0.3.0.tgz#1ec4c93fa31bcd058eeb2ee3b53267df48299533"
+  integrity sha512-NH/x01UhS0IPQLdD7jXVN3RN/YEsG06cNNUfjqynQIDKfxXU7wmTW7UrbfXdsJkHi6YRvfYIzYfmvpIqxOChVw==
+  dependencies:
+    lodash "^4.13.1"
+    vue "^2.3.0"
+
 vue-strict-prop@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/vue-strict-prop/-/vue-strict-prop-0.1.2.tgz#5430fc35265b675034f15d36a4ce0748cd3792bf"

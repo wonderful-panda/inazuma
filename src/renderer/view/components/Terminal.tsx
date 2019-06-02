@@ -84,7 +84,7 @@ export default withStore.create({
   render(): VNode {
     return (
       <div style="position: relative; flex: 1; overflow: hidden;">
-        <ResizeSensor onResized={this.onResized} />
+        <ResizeSensor debounce={0} throttle={50} onResized={this.onResized} />
       </div>
     );
   }
