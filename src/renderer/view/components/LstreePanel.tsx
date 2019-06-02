@@ -23,6 +23,7 @@ import { MdEmptyState } from "./base/md";
 import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
 import { withStore, rootModule } from "view/store";
+import { SplitterDirection } from "view/mainTypes";
 const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
@@ -33,7 +34,8 @@ const VtreeTableT = vtreetableOf<Data>();
 
 const displayState = ds.createMixin("RepositoryPageTabTree", {
   columnWidths: {} as Dict<number>,
-  splitterPosition: 0.25
+  splitterPosition: 0.25,
+  splitterDirection: "horizontal" as SplitterDirection
 });
 
 // @vue/component
@@ -65,6 +67,33 @@ export default withStore.mixin(displayState).create({
       } else {
         return filterTreeNodes(this.rootNodes, this.filterFunc);
       }
+    },
+    filterPanel(): VNode {
+      return (
+        <div style={{ display: "flex" }}>
+          <VTextField
+            class={style.filterField}
+            inlineIcon="filter_list"
+            tooltip="Filename filter"
+            size={1}
+            value={__sync(this.filterText)}
+          />
+          <VIconButton
+            class={style.expandButton}
+            tooltip="Expand all"
+            action={this.expandFileTreeAll}
+          >
+            expand_more
+          </VIconButton>
+          <VIconButton
+            class={style.expandButton}
+            tooltip="Collapse all"
+            action={this.collapseFileTreeAll}
+          >
+            expand_less
+          </VIconButton>
+        </div>
+      );
     },
     rightPanel(): VNode[] {
       const ret = [] as VNode[];
@@ -167,36 +196,15 @@ export default withStore.mixin(displayState).create({
     return (
       <VSplitterPanel
         class={style.container}
-        direction="horizontal"
+        allowDirectionChange
+        direction={__sync(this.displayState.splitterDirection)}
         splitterWidth={5}
         ratio={__sync(this.displayState.splitterPosition)}
         minSizeFirst="10%"
         minSizeSecond="10%"
       >
-        <template slot="first">
-          <div style={{ display: "flex" }}>
-            <VTextField
-              class={style.filterField}
-              inlineIcon="filter_list"
-              tooltip="Filename filter"
-              size={1}
-              value={__sync(this.filterText)}
-            />
-            <VIconButton
-              class={style.expandButton}
-              tooltip="Expand all"
-              action={this.expandFileTreeAll}
-            >
-              expand_more
-            </VIconButton>
-            <VIconButton
-              class={style.expandButton}
-              tooltip="Collapse all"
-              action={this.collapseFileTreeAll}
-            >
-              expand_less
-            </VIconButton>
-          </div>
+        <div class={style.leftPanel} slot="first">
+          {this.filterPanel}
           <VtreeTableT
             ref="tree"
             slot="first"
@@ -214,7 +222,7 @@ export default withStore.mixin(displayState).create({
             onRowclick={this.onRowclick}
             onRowdblclick={this.onRowdblclick}
           />
-        </template>
+        </div>
         <div slot="second" class={style.rightPanel}>
           {this.rightPanel}
         </div>
@@ -266,6 +274,13 @@ const style = {
   `,
   selectedRow: css`
     background-color: #484848;
+  `,
+  leftPanel: css`
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0;
+    margin: 0;
   `,
   rightPanel: css`
     position: relative;

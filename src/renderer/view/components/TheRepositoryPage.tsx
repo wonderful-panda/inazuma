@@ -134,7 +134,7 @@ export default withStore.mixin(displayState).create({
           direction={__sync(this.displayState.splitterDirection)}
           splitterWidth={5}
           showSecond={terminalShown}
-          allowDirectionChange={true}
+          allowDirectionChange
         >
           <VTabs
             slot="first"

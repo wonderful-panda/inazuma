@@ -7,12 +7,13 @@ import RevisionLogCommitDetail from "./RevisionLogCommitDetail";
 import LogTable from "./LogTable";
 import VSplitterPanel from "./base/VSplitterPanel";
 import { dragdrop } from "../dragdrop";
-import { LogItem } from "../mainTypes";
+import { LogItem, SplitterDirection } from "../mainTypes";
 import { __sync } from "view/utils/modifiers";
 import { showCommitContextMenu } from "../commands";
 
 const displayState = ds.createMixin("TheRevisionLogPage", {
   splitterPosition: 0.6,
+  splitterDirection: "horizontal" as SplitterDirection,
   columnWidths: {} as Dict<number>
 });
 
@@ -49,7 +50,8 @@ export default withStore.mixin(displayState).create(
       return (
         <VSplitterPanel
           style={{ flex: 1, margin: "2px" }}
-          direction="horizontal"
+          allowDirectionChange
+          direction={__sync(this.displayState.splitterDirection)}
           splitterWidth={5}
           ratio={__sync(this.displayState.splitterPosition)}
         >
