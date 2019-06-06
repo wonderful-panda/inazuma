@@ -13,12 +13,16 @@ import { __sync } from "../utils/modifiers";
 import * as ds from "view/store/displayState";
 import * as emotion from "emotion";
 import { showFileContextMenu } from "../commands";
+import { SplitterDirection } from "view/mainTypes";
 const css = emotion.css;
 
-const displayState = ds.createMixin("BlamePanel", {
-  columnWidths: {} as Dict<number>,
-  splitterRatio: 0.3
-});
+const displayState = ds.createMixin(
+  {
+    columnWidths: {} as Dict<number>,
+    splitter: { ratio: 0.3, direction: "vertical" as SplitterDirection }
+  },
+  { key: "Blame" }
+);
 
 // @vue/component
 export default tsx.componentFactory.mixin(displayState).create({
@@ -247,11 +251,12 @@ export default tsx.componentFactory.mixin(displayState).create({
         </div>
         <VSplitterPanel
           class={style.container}
-          direction="vertical"
           splitterWidth={5}
           minSizeFirst="10%"
           minSizeSecond="10%"
-          ratio={__sync(this.displayState.splitterRatio)}
+          allowDirectionChange
+          direction={__sync(this.displayState.splitter.direction)}
+          ratio={__sync(this.displayState.splitter.ratio)}
         >
           <FileLogTable
             slot="first"

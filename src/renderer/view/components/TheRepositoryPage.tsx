@@ -16,10 +16,12 @@ import { rootModule, withStore } from "view/store";
 import * as ds from "view/store/displayState";
 import { tabsModule } from "view/store/tabsModule";
 
-const displayState = ds.createMixin("TheRepositoryPage", {
-  splitterPosition: 0.8,
-  splitterDirection: "vertical" as SplitterDirection
-});
+const displayState = ds.createMixin(
+  {
+    splitter: { ratio: 0.8, direction: "vertical" as SplitterDirection }
+  },
+  { key: "RepositoryPage", root: true }
+);
 // @vue/component
 export default withStore.mixin(displayState).create({
   computed: {
@@ -130,11 +132,11 @@ export default withStore.mixin(displayState).create({
         <keep-alive>{this.sidebarVNode}</keep-alive>
         <VSplitterPanel
           style={{ flex: 1 }}
-          ratio={__sync(this.displayState.splitterPosition)}
-          direction={__sync(this.displayState.splitterDirection)}
+          allowDirectionChange
+          ratio={__sync(this.displayState.splitter.ratio)}
+          direction={__sync(this.displayState.splitter.direction)}
           splitterWidth={5}
           showSecond={terminalShown}
-          allowDirectionChange
         >
           <VTabs
             slot="first"

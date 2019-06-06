@@ -32,11 +32,13 @@ type VtableSlotCellProps = VtableSlotCellProps_<TreeNodeWithState>;
 type RowEventArgs = RowEventArgs_<TreeNodeWithState, MouseEvent>;
 const VtreeTableT = vtreetableOf<Data>();
 
-const displayState = ds.createMixin("RepositoryPageTabTree", {
-  columnWidths: {} as Dict<number>,
-  splitterPosition: 0.25,
-  splitterDirection: "horizontal" as SplitterDirection
-});
+const displayState = ds.createMixin(
+  {
+    columnWidths: {} as Dict<number>,
+    splitter: { ratio: 0.25, direction: "horizontal" as SplitterDirection }
+  },
+  { key: "LsTree" }
+);
 
 // @vue/component
 export default withStore.mixin(displayState).create({
@@ -197,9 +199,9 @@ export default withStore.mixin(displayState).create({
       <VSplitterPanel
         class={style.container}
         allowDirectionChange
-        direction={__sync(this.displayState.splitterDirection)}
+        direction={__sync(this.displayState.splitter.direction)}
         splitterWidth={5}
-        ratio={__sync(this.displayState.splitterPosition)}
+        ratio={__sync(this.displayState.splitter.ratio)}
         minSizeFirst="10%"
         minSizeSecond="10%"
       >

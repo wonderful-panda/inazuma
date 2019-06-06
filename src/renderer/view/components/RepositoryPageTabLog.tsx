@@ -11,11 +11,13 @@ import { LogItem, SplitterDirection } from "../mainTypes";
 import { __sync } from "view/utils/modifiers";
 import { showCommitContextMenu } from "../commands";
 
-const displayState = ds.createMixin("TheRevisionLogPage", {
-  splitterPosition: 0.6,
-  splitterDirection: "horizontal" as SplitterDirection,
-  columnWidths: {} as Dict<number>
-});
+const displayState = ds.createMixin(
+  {
+    splitter: { ratio: 0.6, direction: "horizontal" as SplitterDirection },
+    columnWidths: {} as Dict<number>
+  },
+  { key: "Log" }
+);
 
 export default withStore.mixin(displayState).create(
   // @vue/component
@@ -51,9 +53,9 @@ export default withStore.mixin(displayState).create(
         <VSplitterPanel
           style={{ flex: 1, margin: "2px" }}
           allowDirectionChange
-          direction={__sync(this.displayState.splitterDirection)}
+          direction={__sync(this.displayState.splitter.direction)}
           splitterWidth={5}
-          ratio={__sync(this.displayState.splitterPosition)}
+          ratio={__sync(this.displayState.splitter.ratio)}
         >
           <LogTable
             slot="first"

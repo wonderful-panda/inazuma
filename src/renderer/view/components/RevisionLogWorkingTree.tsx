@@ -8,11 +8,16 @@ import * as emotion from "emotion";
 import { rootModule, withStore } from "view/store";
 const css = emotion.css;
 
-const displayState = ds.createMixin("RevisionLogWorkingTree", {
-  splitterPosition: 0.5,
-  stagedColumnWidths: {} as Dict<number>,
-  unstagedColumnWidths: {} as Dict<number>
-});
+const displayState = ds.createMixin(
+  {
+    splitterPosition: 0.5,
+    stagedColumnWidths: {} as Dict<number>,
+    unstagedColumnWidths: {} as Dict<number>
+  },
+  {
+    key: "WorkingTree"
+  }
+);
 
 export default withStore.mixin(displayState).create(
   // @vue/component

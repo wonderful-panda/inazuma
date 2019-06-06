@@ -10,9 +10,14 @@ import { showFileContextMenu, executeFileCommand } from "../commands";
 import { fileCommandDiffWithParent } from "../commands/fileCommandDiff";
 const css = emotion.css;
 
-const displayState = ds.createMixin("RevisionLogCommitDetail", {
-  columnWidths: {} as Dict<number>
-});
+const displayState = ds.createMixin(
+  {
+    columnWidths: {} as Dict<number>
+  },
+  {
+    key: "CommitDetail"
+  }
+);
 
 export default withStore.mixin(displayState).create(
   // @vue/component
