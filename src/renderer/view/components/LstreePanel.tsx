@@ -10,12 +10,11 @@ import {
 } from "vue-vtable";
 import p from "vue-strict-prop";
 import { VNode } from "vue";
-import * as ds from "view/store/displayState";
 import { getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
 import VBackdropSpinner from "./base/VBackdropSpinner";
-import BlamePanel from "./BlamePanel";
+import { blamePanelWithPersist } from "./BlamePanel";
 import { browserCommand } from "core/browser";
 import VTextField from "./base/VTextField";
 import { filterTreeNodes } from "core/tree";
@@ -24,6 +23,7 @@ import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
 import { withStore, rootModule } from "view/store";
 import { SplitterDirection } from "view/mainTypes";
+import { withPersist } from "./base/withPersist";
 const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
@@ -32,16 +32,10 @@ type VtableSlotCellProps = VtableSlotCellProps_<TreeNodeWithState>;
 type RowEventArgs = RowEventArgs_<TreeNodeWithState, MouseEvent>;
 const VtreeTableT = vtreetableOf<Data>();
 
-const displayState = ds.createMixin(
-  {
-    columnWidths: {} as Dict<number>,
-    splitter: { ratio: 0.25, direction: "horizontal" as SplitterDirection }
-  },
-  { key: "LsTree" }
-);
+const BlamePanel = blamePanelWithPersist("BlamePanel@LstreePanel");
 
 // @vue/component
-export default withStore.mixin(displayState).create({
+const LstreePanel = withStore.create({
   name: "LstreePanel",
   props: {
     sha: p(String).required,
@@ -49,6 +43,8 @@ export default withStore.mixin(displayState).create({
   },
   data() {
     return {
+      columnWidths: {} as Record<string, number>,
+      splitter: { ratio: 0.25, direction: "horizontal" as SplitterDirection },
       filterText: "" as string,
       filterFunc: undefined as ((entry: Data) => boolean) | undefined,
       selectedPath: "",
@@ -199,9 +195,9 @@ export default withStore.mixin(displayState).create({
       <VSplitterPanel
         class={style.container}
         allowDirectionChange
-        direction={__sync(this.displayState.splitter.direction)}
+        direction={__sync(this.splitter.direction)}
         splitterWidth={5}
-        ratio={__sync(this.displayState.splitter.ratio)}
+        ratio={__sync(this.splitter.ratio)}
         minSizeFirst="10%"
         minSizeSecond="10%"
       >
@@ -217,7 +213,7 @@ export default withStore.mixin(displayState).create({
             rowHeight={24}
             getItemKey={item => item.path}
             getRowClass={this.getRowClass}
-            widths={__sync(this.displayState.columnWidths)}
+            widths={__sync(this.columnWidths)}
             scopedSlots={{
               cell: this.renderCell
             }}
@@ -311,3 +307,9 @@ const style = {
     margin-right: 0;
   `
 };
+
+export default withPersist(
+  LstreePanel,
+  ["columnWidths", "splitter"],
+  "LstreePanel"
+);

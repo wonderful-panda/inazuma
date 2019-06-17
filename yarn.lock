@@ -6918,6 +6918,11 @@ vue-monaco@^0.3.1:
     monaco-editor "^0.15.6"
     nano-assign "^1.0.0"
 
+vue-persist@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/vue-persist/-/vue-persist-0.4.0.tgz#88aeabcdf5c65704363f585e03ba7a591783052c"
+  integrity sha512-j2MAsLVoFW3rHcfqDHniNpI46m8Llep8q0rxAzcAdwZdYQ6bZrw5NjzM3P57ka1pFMA4whrCUHtNtMxbF2HAsg==
+
 vue-resizesensor@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/vue-resizesensor/-/vue-resizesensor-0.2.1.tgz#d30b435dde657f7384be8471f1f3d382c388eb85"

@@ -13,17 +13,15 @@ import TitleBarButton from "./TitleBarButton";
 import { __sync } from "../utils/modifiers";
 import { RepositoryTabDefinition, SplitterDirection } from "../mainTypes";
 import { rootModule, withStore } from "view/store";
-import * as ds from "view/store/displayState";
 import { tabsModule } from "view/store/tabsModule";
 
-const displayState = ds.createMixin(
-  {
-    splitter: { ratio: 0.8, direction: "vertical" as SplitterDirection }
-  },
-  { key: "RepositoryPage", root: true }
-);
 // @vue/component
-export default withStore.mixin(displayState).create({
+export default withStore.create({
+  data() {
+    return {
+      splitter: { ratio: 0.8, direction: "vertical" as SplitterDirection }
+    };
+  },
   computed: {
     ...rootModule.mapGetters(["repoName", "repositoryTabs"]),
     sidebarVNode(): VNode | undefined {
@@ -44,6 +42,9 @@ export default withStore.mixin(displayState).create({
         this.selectTab({ index });
       }
     }
+  },
+  created() {
+    this.$persist(["splitter"], `persist:${this.$options.name}`);
   },
   methods: {
     ...rootModule.mapActions([
@@ -133,8 +134,8 @@ export default withStore.mixin(displayState).create({
         <VSplitterPanel
           style={{ flex: 1 }}
           allowDirectionChange
-          ratio={__sync(this.displayState.splitter.ratio)}
-          direction={__sync(this.displayState.splitter.direction)}
+          ratio={__sync(this.splitter.ratio)}
+          direction={__sync(this.splitter.direction)}
           splitterWidth={5}
           showSecond={terminalShown}
         >

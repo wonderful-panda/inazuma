@@ -10,22 +10,14 @@ import FileLogTable from "./FileLogTable";
 import VSplitterPanel from "./base/VSplitterPanel";
 import BlamePanelFooter from "./BlamePanelFooter";
 import { __sync } from "../utils/modifiers";
-import * as ds from "view/store/displayState";
 import * as emotion from "emotion";
 import { showFileContextMenu } from "../commands";
 import { SplitterDirection } from "view/mainTypes";
+import { withPersist } from "./base/withPersist";
 const css = emotion.css;
 
-const displayState = ds.createMixin(
-  {
-    columnWidths: {} as Dict<number>,
-    splitter: { ratio: 0.3, direction: "vertical" as SplitterDirection }
-  },
-  { key: "Blame" }
-);
-
 // @vue/component
-export default tsx.componentFactory.mixin(displayState).create({
+export const BlamePanel = tsx.componentFactory.create({
   name: "BlamePanel",
   components: {
     MonacoEditor
@@ -37,6 +29,8 @@ export default tsx.componentFactory.mixin(displayState).create({
   },
   data() {
     return {
+      columnWidths: {} as Record<string, number>,
+      splitter: { ratio: 0.3, direction: "vertical" as SplitterDirection },
       editorMounted: false,
       hoveredLineNumber: -1,
       selectedCommitId: "",
@@ -255,8 +249,8 @@ export default tsx.componentFactory.mixin(displayState).create({
           minSizeFirst="10%"
           minSizeSecond="10%"
           allowDirectionChange
-          direction={__sync(this.displayState.splitter.direction)}
-          ratio={__sync(this.displayState.splitter.ratio)}
+          direction={__sync(this.splitter.direction)}
+          ratio={__sync(this.splitter.ratio)}
         >
           <FileLogTable
             slot="first"
@@ -264,7 +258,7 @@ export default tsx.componentFactory.mixin(displayState).create({
             items={this.blame.commits}
             rowHeight={24}
             selectedIndex={this.selectedCommitIndex}
-            widths={__sync(this.displayState.columnWidths)}
+            widths={__sync(this.columnWidths)}
             onRowclick={args => {
               this.selectedCommitId = args.item.id;
             }}
@@ -347,3 +341,7 @@ const style = {
     }
   `
 };
+
+export function blamePanelWithPersist(name: string) {
+  return withPersist(BlamePanel, ["columnWidths", "splitter"], name);
+}

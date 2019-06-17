@@ -1,7 +1,6 @@
 import { VNode } from "vue";
 import { RowEventArgs } from "vue-vtable";
 import { withStore, rootModule } from "../store";
-import * as ds from "view/store/displayState";
 import RevisionLogWorkingTree from "./RevisionLogWorkingTree";
 import RevisionLogCommitDetail from "./RevisionLogCommitDetail";
 import LogTable from "./LogTable";
@@ -10,19 +9,18 @@ import { dragdrop } from "../dragdrop";
 import { LogItem, SplitterDirection } from "../mainTypes";
 import { __sync } from "view/utils/modifiers";
 import { showCommitContextMenu } from "../commands";
+import { withPersist } from "./base/withPersist";
 
-const displayState = ds.createMixin(
-  {
-    splitter: { ratio: 0.6, direction: "horizontal" as SplitterDirection },
-    columnWidths: {} as Dict<number>
-  },
-  { key: "Log" }
-);
-
-export default withStore.mixin(displayState).create(
+const RepositoryPageTabLog = withStore.create(
   // @vue/component
   {
     name: "RepositoryPageTabLog",
+    data() {
+      return {
+        splitter: { ratio: 0.6, direction: "horizontal" as SplitterDirection },
+        columnWidths: {} as Record<string, number>
+      };
+    },
     computed: rootModule.mapGetters(["items"]),
     methods: {
       ...rootModule.mapActions(["runInteractiveShell", "setSelectedIndex"]),
@@ -53,16 +51,16 @@ export default withStore.mixin(displayState).create(
         <VSplitterPanel
           style={{ flex: 1, margin: "2px" }}
           allowDirectionChange
-          direction={__sync(this.displayState.splitter.direction)}
+          direction={__sync(this.splitter.direction)}
           splitterWidth={5}
-          ratio={__sync(this.displayState.splitter.ratio)}
+          ratio={__sync(this.splitter.ratio)}
         >
           <LogTable
             slot="first"
             items={this.items}
             rowHeight={state.rowHeight}
             selectedIndex={state.selectedIndex}
-            widths={__sync(this.displayState.columnWidths)}
+            widths={__sync(this.columnWidths)}
             onRowclick={e => this.setSelectedIndex({ index: e.index })}
             onRowdragover={this.onRowdragover}
             onRowdrop={this.onRowdrop}
@@ -70,13 +68,19 @@ export default withStore.mixin(displayState).create(
           />
           <template slot="second">
             {state.selectedCommit.id === "--" ? (
-              <RevisionLogWorkingTree />
+              <RevisionLogWorkingTree commit={state.selectedCommit} />
             ) : (
-              <RevisionLogCommitDetail />
+              <RevisionLogCommitDetail commit={state.selectedCommit} />
             )}
           </template>
         </VSplitterPanel>
       );
     }
   }
+);
+
+export default withPersist(
+  RepositoryPageTabLog,
+  ["columnWidths", "splitter"],
+  "RepositoryPageTabLog"
 );

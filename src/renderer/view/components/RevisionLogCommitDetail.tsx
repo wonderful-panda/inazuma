@@ -1,32 +1,27 @@
 import * as md from "view/utils/md-classes";
 import { VNode } from "vue";
 import moment from "moment";
-import { withStore } from "../store";
+import * as tsx from "vue-tsx-support";
+import p from "vue-strict-prop";
 import FileTable from "./FileTable";
-import * as ds from "view/store/displayState";
 import { __sync } from "view/utils/modifiers";
 import * as emotion from "emotion";
 import { showFileContextMenu, executeFileCommand } from "../commands";
 import { fileCommandDiffWithParent } from "../commands/fileCommandDiff";
+import { withPersist } from "./base/withPersist";
 const css = emotion.css;
 
-const displayState = ds.createMixin(
-  {
-    columnWidths: {} as Dict<number>
-  },
-  {
-    key: "CommitDetail"
-  }
-);
-
-export default withStore.mixin(displayState).create(
+const RevisionLogCommitDetail = tsx.component(
   // @vue/component
   {
     name: "RevisionLogCommitDetail",
+    props: {
+      commit: p.ofType<CommitDetail>().required
+    },
+    data() {
+      return { columnWidths: {} as Record<string, number> };
+    },
     computed: {
-      commit(): CommitDetail {
-        return this.state.selectedCommit;
-      },
       classes(): object {
         return {
           [style.container]: true,
@@ -95,7 +90,7 @@ export default withStore.mixin(displayState).create(
           {this.body}
           <FileTable
             files={this.commit.files}
-            widths={__sync(this.displayState.columnWidths)}
+            widths={__sync(this.columnWidths)}
             onRowdblclick={arg => this.showExternalDiff(arg.item)}
             onRowcontextmenu={arg => this.showContextMenu(arg.item, arg.event)}
           />
@@ -147,3 +142,9 @@ const style = {
     overflow: auto;
   `
 };
+
+export default withPersist(
+  RevisionLogCommitDetail,
+  ["columnWidths"],
+  "RevisionLogCommitDetail"
+);
