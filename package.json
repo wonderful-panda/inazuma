@@ -31,7 +31,7 @@
     "iconv-lite": "^0.4.24",
     "ipc-promise": "^0.1.4",
     "jsonschema": "^1.2.4",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "node-pty": "^0.8.1",
     "rimraf": "^2.6.3"
   },
