@@ -1,8 +1,0 @@
-{
-  // tsconfig for vetur
-  // (vetur supposes tsconfig.json is in workspace root)
-  "extends": "./src/renderer/tsconfig",
-  "compilerOptions": {
-    "baseUrl": "./src/renderer"
-  }
-}
