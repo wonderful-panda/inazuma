@@ -31,7 +31,10 @@ const RepositoryListItem = tsx.component({
     remove: p.ofFunction<() => void>().optional
   },
   render(_h, ctx): VNode {
-    const { props, data } = ctx;
+    const {
+      props,
+      data: { scopedSlots, ...data }
+    } = ctx;
     return (
       <MdListItem onClick={props.action} {...data}>
         <MdIcon>{props.icon}</MdIcon>

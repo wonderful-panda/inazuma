@@ -6957,10 +6957,10 @@ vue-template-compiler@^2.6.10:
     de-indent "^1.0.2"
     he "^1.1.0"
 
-vue-tsx-support@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-2.3.0.tgz#dd82f37f005a80a262bbe79dfefaa29baf88a147"
-  integrity sha512-0ARqgRVWsGXe7asKmE3f78zgIkLnLM2eQHn5w+GLyf8E/PV2OMFG5Q6exdfpekLwRhbALPsRPxc51bjWgDm7UA==
+vue-tsx-support@^3.0.0-dev.6a:
+  version "3.0.0-dev.6a"
+  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-dev.6a.tgz#4777ccf75735408eb99bbbb5bcff2edd0d4eeab1"
+  integrity sha512-Le9w7KtsKWD/di+NpnwaPPF/7NyEqvmltRgFAziDrZgLgOmuYf/QCPG8OMEAmBOVDWqi0rITjadv6KIi7meqOg==
 
 vue-typed-component@^0.11.0:
   version "0.11.0"

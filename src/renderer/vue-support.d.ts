@@ -7,7 +7,7 @@ declare module "vue-support" {
   import { TsxComponent } from "vue-tsx-support";
 
   type RequiredProps<Props, PD extends RecordPropsDefinition<Props>> = ({
-    [K in keyof PD]: PD[K] extends { required: true } ? K : never
+    [K in keyof PD]: PD[K] extends { required: true } ? K : never;
   })[keyof Props];
 
   type OptionalProps<Props, PD extends RecordPropsDefinition<Props>> = Exclude<
@@ -28,8 +28,8 @@ declare module "vue-support" {
 
   export type AsComponent<
     C extends VueConstructor | string
-  > = C extends keyof JSX.IntrinsicElements
-    ? TsxComponent<Vue, JSX.IntrinsicElements[C]>
+  > = C extends keyof VueTsxSupport.JSX.IntrinsicElements
+    ? TsxComponent<Vue, VueTsxSupport.JSX.IntrinsicElements[C]>
     : C extends string
     ? TsxComponent<Vue, any>
     : C;

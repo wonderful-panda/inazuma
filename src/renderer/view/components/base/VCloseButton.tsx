@@ -13,7 +13,10 @@ export default tsx.component({
     disabled: Boolean,
     action: p.ofFunction<() => void>().required
   },
-  render(_h, { props: { disabled, action }, data }): VNode {
+  render(
+    _h,
+    { props: { disabled, action }, data: { scopedSlots, ...data } }
+  ): VNode {
     return (
       <VIconButton
         class={style.closeButton}
