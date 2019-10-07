@@ -12,7 +12,7 @@ export function withPersist<V extends typeof Vue>(
 ): V {
   return Base.extend({
     created() {
-      this.$persist(keys, `persist:${name}`);
+      this.$persist(keys as any, `persist:${name}`);
     }
   }) as V;
 }
