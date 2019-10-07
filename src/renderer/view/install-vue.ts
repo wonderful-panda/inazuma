@@ -1,9 +1,11 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import VueCompositionApi from "@vue/composition-api";
 import VuePersist from "vue-persist";
 import VueMaterial from "vue-material";
 import installFilters from "view/filters";
 Vue.use(Vuex);
+Vue.use(VueCompositionApi);
 Vue.use(VuePersist);
 Vue.use(VueMaterial);
 installFilters();

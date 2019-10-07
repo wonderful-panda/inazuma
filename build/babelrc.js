@@ -1,8 +1,7 @@
 module.exports = {
-  presets: [["@babel/env", { modules: "commonjs" }]],
+  presets: [["@babel/env", { modules: "commonjs" }], "vca-jsx", "@vue/app"],
   plugins: [
     "babel-plugin-vue-jsx-modifier",
-    "babel-plugin-transform-vue-jsx",
     [
       "@babel/plugin-transform-runtime",
       {

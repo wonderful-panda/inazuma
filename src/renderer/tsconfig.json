@@ -10,8 +10,7 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "jsx": "preserve",
-    "jsxFactory": "VueTsxSupport",
-    "keyofStringsOnly": true
+    "jsxFactory": "VueTsxSupport"
   },
   "include": [
     "**/*.ts",
