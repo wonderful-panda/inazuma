@@ -1550,6 +1550,11 @@ babel-plugin-vue-jsx-modifier@^1.0.0:
   resolved "https://registry.yarnpkg.com/babel-plugin-vue-jsx-modifier/-/babel-plugin-vue-jsx-modifier-1.0.1.tgz#29756380402422e632bbd08021278971d2aecfd2"
   integrity sha512-WTvSo7PsVuhBy/Wloo+Wnqx8O5UDr+lbrBGxUb0lsAe1+wr2eLkq1Q19YrcXbctXK0myel8oL4boU83Evo4FUQ==
 
+babel-plugin-vue-tsx-functional@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/babel-plugin-vue-tsx-functional/-/babel-plugin-vue-tsx-functional-0.1.2.tgz#dba31885e726aff1ad34b86055bd9d3181c6f796"
+  integrity sha512-FavGVI6s+PjLPf6aGq5FOo1gHbfOpo/cYLij+xqt82F2H6CHJiWENBIa9wMgO4ra2BkzGy6w/2SCl/hSbWAhBQ==
+
 babel-preset-vca-jsx@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/babel-preset-vca-jsx/-/babel-preset-vca-jsx-0.3.2.tgz#f8ec67747dc8ab99a3f7ff28d26df5ea63f30fbb"

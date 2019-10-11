@@ -53,6 +53,7 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-transform-vue-jsx": "^4.0.1",
     "babel-plugin-vue-jsx-modifier": "^1.0.0",
+    "babel-plugin-vue-tsx-functional": "^0.1.2",
     "babel-preset-vca-jsx": "^0.3.2",
     "cache-loader": "^3.0.1",
     "chokidar": "2.1.5",

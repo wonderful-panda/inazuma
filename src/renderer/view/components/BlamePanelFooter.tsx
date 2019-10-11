@@ -1,30 +1,20 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
-import p from "vue-strict-prop";
 import { shortHash, longDate } from "../filters";
 import * as emotion from "emotion";
 const css = emotion.css;
 
-export default tsx.component({
-  name: "BlamePanelFooter",
-  functional: true,
-  props: {
-    commit: p.ofObject<FileCommit>().optional
-  },
-  render(_h, { props }): VNode {
-    const commit = props.commit;
-    if (!commit) {
-      return <div class={style.container} />;
-    } else {
-      return (
-        <div class={style.container}>
-          <span class={style.sha}>{shortHash(commit.id)}</span>
-          <span class={style.date}>{longDate(commit.date)}</span>
-          <span class={style.author}>{commit.author}</span>
-          <span class={style.summary}>{commit.summary}</span>
-        </div>
-      );
-    }
+export default _fc<{ commit?: FileCommit }>(ctx => {
+  const commit = ctx.props.commit;
+  if (!commit) {
+    return <div class={style.container} />;
+  } else {
+    return (
+      <div class={style.container}>
+        <span class={style.sha}>{shortHash(commit.id)}</span>
+        <span class={style.date}>{longDate(commit.date)}</span>
+        <span class={style.author}>{commit.author}</span>
+        <span class={style.summary}>{commit.summary}</span>
+      </div>
+    );
   }
 });
 

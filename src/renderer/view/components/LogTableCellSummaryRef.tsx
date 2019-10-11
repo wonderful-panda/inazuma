@@ -1,82 +1,53 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
 import { dragdrop } from "../dragdrop";
-import p from "vue-strict-prop";
 import * as emotion from "emotion";
 const css = emotion.css;
 
-const Head = tsx.component({
-  functional: true,
-  render() {
-    return <span class={style.head}>HEAD</span>;
-  }
-});
-const Branch = tsx.component({
-  props: {
-    branch: p.ofObject<BranchRef>().required
-  },
-  methods: {
-    onDragStart(event: DragEvent) {
-      if (!event.dataTransfer) {
-        return;
-      }
-      event.dataTransfer.effectAllowed = "move";
-      dragdrop.setData(event, "git/branch", {
-        name: this.branch.name,
-        isCurrent: this.branch.current
-      });
+const Head = _fc(() => <span class={style.head}>HEAD</span>);
+
+const Branch = _fc<{ branch: BranchRef }>(ctx => {
+  const branch = ctx.props.branch;
+  const onDragStart = (e: DragEvent) => {
+    if (!e.dataTransfer) {
+      return;
     }
-  },
-  render(): VNode {
-    return (
-      <span
-        class={style.branch(this.branch.current)}
-        draggable
-        onDragstart={this.onDragStart}
-      >
-        {this.branch.name}
-      </span>
-    );
-  }
-});
-const Tag = tsx.component({
-  functional: true,
-  props: { tag: p.ofObject<TagRef>().required },
-  render(_h, { props: p }) {
-    return <span class={style.tag}>{p.tag.name}</span>;
-  }
-});
-const Remote = tsx.component({
-  functional: true,
-  props: { remote: p.ofObject<RemoteRef>().required },
-  render(_h, { props: p }) {
-    return (
-      <span class={style.remote}>{p.remote.remote + "/" + p.remote.name}</span>
-    );
-  }
+    e.dataTransfer.effectAllowed = "move";
+    dragdrop.setData(e, "git/branch", {
+      name: branch.name,
+      isCurrent: branch.current
+    });
+  };
+  return (
+    <span
+      class={style.branch(branch.current)}
+      draggable
+      onDragstart={onDragStart}
+    >
+      {branch.name}
+    </span>
+  );
 });
 
-// @vue/component
-export default tsx.component({
-  name: "LogTableCellSummaryRef",
-  functional: true,
-  props: {
-    refObject: p.ofObject<Ref>().required
-  },
-  render(_h, { props }): VNode {
-    const ref = props.refObject;
-    switch (ref.type) {
-      case "HEAD":
-        return <Head />;
-      case "heads":
-        return <Branch branch={ref} />;
-      case "tags":
-        return <Tag tag={ref} />;
-      case "remotes":
-        return <Remote remote={ref} />;
-      default:
-        return <span class={baseStyle}>{ref.fullname}</span>;
-    }
+const Tag = _fc<{ tag: TagRef }>(({ props: { tag } }) => (
+  <span class={style.tag}>{tag.name}</span>
+));
+
+const Remote = _fc<{ remote: RemoteRef }>(({ props: { remote } }) => (
+  <span class={style.remote}>{remote.remote + "/" + remote.name}</span>
+));
+
+export default _fc<{ refObject: Ref }>(({ props }) => {
+  const ref = props.refObject;
+  switch (ref.type) {
+    case "HEAD":
+      return <Head />;
+    case "heads":
+      return <Branch branch={ref} />;
+    case "tags":
+      return <Tag tag={ref} />;
+    case "remotes":
+      return <Remote remote={ref} />;
+    default:
+      return <span class={baseStyle}>{ref.fullname}</span>;
   }
 });
 

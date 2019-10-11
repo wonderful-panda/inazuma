@@ -7,31 +7,26 @@ import { TabDefinition } from "view/mainTypes";
 import * as emotion from "emotion";
 const css = emotion.css;
 
-const TabButton = tsx.component({
-  functional: true,
-  props: {
-    tab: p.ofObject<TabDefinition>().required,
-    selected: p(Boolean).required,
-    select: p.ofFunction<() => void>().required,
-    close: p.ofFunction<() => void>().required
-  },
-  render(_h, { props, data }): VNode {
-    const { tab, selected, select, close } = props;
-    return (
-      <div class={style.tab} {...data}>
-        <VButton class={style.tabButton(selected)} action={select}>
-          {tab.text}
-        </VButton>
-        <VIconButton
-          v-show={tab.closable}
-          class={style.closeIcon}
-          action={close}
-        >
-          close
-        </VIconButton>
-      </div>
-    );
-  }
+const TabButton = _fc<{
+  tab: TabDefinition;
+  selected: boolean;
+  select: () => void;
+  close: () => void;
+}>(({ props, data }) => {
+  return (
+    <div class={style.tab} {...data}>
+      <VButton class={style.tabButton(props.selected)} action={props.select}>
+        {props.tab.text}
+      </VButton>
+      <VIconButton
+        v-show={props.tab.closable}
+        class={style.closeIcon}
+        action={props.close}
+      >
+        close
+      </VIconButton>
+    </div>
+  );
 });
 
 interface ScopedSlotArgs {

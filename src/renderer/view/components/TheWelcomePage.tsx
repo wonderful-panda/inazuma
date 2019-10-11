@@ -1,7 +1,6 @@
 import { VNode } from "vue";
 import Electron from "electron";
 import * as tsx from "vue-tsx-support";
-import p from "vue-strict-prop";
 import BaseLayout from "./BaseLayout";
 import DrawerNavigation from "./DrawerNavigation";
 import { getFileName, normalizePathSeparator } from "core/utils";
@@ -20,40 +19,31 @@ import { rootModule } from "view/store";
 const { dialog, BrowserWindow } = Electron.remote;
 const css = emotion.css;
 
-const RepositoryListItem = tsx.component({
-  name: "RepositoryListItem",
-  functional: true,
-  props: {
-    icon: p(String).required,
-    text: p(String).required,
-    description: p(String).required,
-    action: p.ofFunction<() => void>().required,
-    remove: p.ofFunction<() => void>().optional
-  },
-  render(_h, ctx): VNode {
-    const {
-      props,
-      data: { scopedSlots, ...data }
-    } = ctx;
-    return (
-      <MdListItem onClick={props.action} {...data}>
-        <MdIcon>{props.icon}</MdIcon>
-        <MdListItemText>
-          <span class={[md.SUBHEADING, style.repoName]}>{props.text}</span>
-          <span class={[md.CAPTION, style.repoDescription]}>
-            {props.description}
-          </span>
-        </MdListItemText>
-        {props.remove ? (
-          <VIconButton staticClass="md-list-action" mini action={props.remove}>
-            close
-          </VIconButton>
-        ) : (
-          undefined
-        )}
-      </MdListItem>
-    );
-  }
+const RepositoryListItem = _fc<{
+  icon: string;
+  text: string;
+  description: string;
+  action: () => void;
+  remove?: () => void;
+}>(({ props, data: { scopedSlots, ...rest } }) => {
+  return (
+    <MdListItem onClick={props.action} {...rest}>
+      <MdIcon>{props.icon}</MdIcon>
+      <MdListItemText>
+        <span class={[md.SUBHEADING, style.repoName]}>{props.text}</span>
+        <span class={[md.CAPTION, style.repoDescription]}>
+          {props.description}
+        </span>
+      </MdListItemText>
+      {props.remove ? (
+        <VIconButton staticClass="md-list-action" mini action={props.remove}>
+          close
+        </VIconButton>
+      ) : (
+        undefined
+      )}
+    </MdListItem>
+  );
 });
 
 // @vue/component
