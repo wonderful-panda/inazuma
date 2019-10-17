@@ -14,7 +14,7 @@ import { getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
 import VBackdropSpinner from "./base/VBackdropSpinner";
-import { blamePanelWithPersist } from "./BlamePanel";
+import BlamePanel from "./BlamePanel";
 import { browserCommand } from "core/browser";
 import VTextField from "./base/VTextField";
 import { filterTreeNodes } from "core/tree";
@@ -31,8 +31,6 @@ type TreeNodeWithState = TreeNodeWithState_<Data>;
 type VtableSlotCellProps = VtableSlotCellProps_<TreeNodeWithState>;
 type RowEventArgs = RowEventArgs_<TreeNodeWithState, MouseEvent>;
 const VtreeTableT = vtreetableOf<Data>();
-
-const BlamePanel = blamePanelWithPersist("BlamePanel@LstreePanel");
 
 // @vue/component
 const LstreePanel = withStore.create({
@@ -101,6 +99,7 @@ const LstreePanel = withStore.create({
             path={this.selectedPath}
             blame={this.selectedBlame}
             sha={this.sha}
+            storageKey="BlamePanel@LstreePanel"
             style={{ margin: "0 0.2em" }}
           />
         );

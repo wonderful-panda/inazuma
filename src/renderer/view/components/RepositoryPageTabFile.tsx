@@ -2,11 +2,10 @@ import { VNode } from "vue";
 import { withStore, rootModule } from "../store";
 import p from "vue-strict-prop";
 import VBackdropSpinner from "./base/VBackdropSpinner";
-import { blamePanelWithPersist } from "./BlamePanel";
+import BlamePanel from "./BlamePanel";
 import * as emotion from "emotion";
 const css = emotion.css;
 
-const BlamePanel = blamePanelWithPersist("BlamePanel@RepositoryPageTabFile");
 const style = css`
   margin: 0.5em 1em 0.2em 1em;
 `;
@@ -33,6 +32,7 @@ export default withStore.create({
           path={this.path}
           sha={this.sha}
           blame={this.blame}
+          storageKey="BlamePanel@RepositoryPageTabFile"
         />
       );
     }
