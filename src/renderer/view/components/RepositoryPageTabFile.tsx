@@ -1,40 +1,45 @@
-import { VNode } from "vue";
-import { withStore, rootModule } from "../store";
+import * as vca from "vue-tsx-support/lib/vca";
+import { useRootModule } from "../store";
 import p from "vue-strict-prop";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import BlamePanel from "./BlamePanel";
 import * as emotion from "emotion";
+import { onMounted } from "@vue/composition-api";
+import { provideNamespacedStorage, rootStorage } from "./base/useStorage";
 const css = emotion.css;
 
 const style = css`
   margin: 0.5em 1em 0.2em 1em;
 `;
 
-export default withStore.create({
-  name: "RepositoryPageTabFile",
+export default vca.component({
   props: {
     tabkey: p(String).required,
     path: p(String).required,
     sha: p(String).required,
     blame: p.ofObject<Blame>().optional
   },
-  methods: rootModule.mapActions(["loadFileTabLazyProps"]),
-  mounted() {
-    this.loadFileTabLazyProps({ key: this.tabkey });
-  },
-  render(): VNode {
-    if (!this.blame) {
-      return <VBackdropSpinner />;
-    } else {
-      return (
-        <BlamePanel
-          class={style}
-          path={this.path}
-          sha={this.sha}
-          blame={this.blame}
-          storageKey="BlamePanel@RepositoryPageTabFile"
-        />
-      );
-    }
+  setup(props) {
+    const rootCtx = useRootModule();
+    provideNamespacedStorage(rootStorage.subStorage("TabFile"));
+
+    onMounted(() => {
+      rootCtx.actions.loadFileTabLazyProps({ key: props.tabkey });
+    });
+
+    return () => {
+      if (!props.blame) {
+        return <VBackdropSpinner />;
+      } else {
+        return (
+          <BlamePanel
+            class={style}
+            path={props.path}
+            sha={props.sha}
+            blame={props.blame}
+          />
+        );
+      }
+    };
   }
 });

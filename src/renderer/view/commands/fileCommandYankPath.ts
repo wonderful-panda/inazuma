@@ -1,9 +1,9 @@
 import { FileCommand } from "./types";
 import * as Electron from "electron";
 
-import { store, rootModule } from "../store";
+import { useRootModule } from "../store";
 
-const rootCtx = rootModule.context(store);
+const rootCtx = useRootModule();
 
 export const fileCommandYankPath: FileCommand = {
   id: "YankPath",

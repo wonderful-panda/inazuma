@@ -1,7 +1,7 @@
 import { FileCommand } from "./types";
-import { store, rootModule } from "../store";
+import { useRootModule } from "../store";
 
-const rootCtx = rootModule.context(store);
+const rootCtx = useRootModule();
 
 export const fileCommandDiffWithParent: FileCommand = {
   id: "DiffWithParent",

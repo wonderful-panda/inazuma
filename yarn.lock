@@ -1545,10 +1545,10 @@ babel-plugin-transform-vue-jsx@^4.0.1:
   dependencies:
     esutils "^2.0.2"
 
-babel-plugin-vue-jsx-modifier@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/babel-plugin-vue-jsx-modifier/-/babel-plugin-vue-jsx-modifier-1.0.1.tgz#29756380402422e632bbd08021278971d2aecfd2"
-  integrity sha512-WTvSo7PsVuhBy/Wloo+Wnqx8O5UDr+lbrBGxUb0lsAe1+wr2eLkq1Q19YrcXbctXK0myel8oL4boU83Evo4FUQ==
+babel-plugin-vue-jsx-modifier@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-vue-jsx-modifier/-/babel-plugin-vue-jsx-modifier-1.1.1.tgz#c4b949c601f4a86903c133ace2aa5eeb18e8134c"
+  integrity sha512-nC5ordZBvmQm0mmawz34IzQbGJUwgxW+1ucDv6MchaVlJweUyPNnZ5hF3UK8ZXkVZsfeZHxYNzzodLMUJ04Pdg==
 
 babel-plugin-vue-tsx-functional@^0.1.2:
   version "0.1.2"
@@ -7369,10 +7369,10 @@ vue-template-compiler@^2.6.10:
     de-indent "^1.0.2"
     he "^1.1.0"
 
-vue-tsx-support@^3.0.0-dev.6c:
-  version "3.0.0-dev.6d"
-  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-dev.6d.tgz#68ca4660cf6d9c63f017b733cf68863706a69cec"
-  integrity sha512-gDo9Ch5spoZGZFclKU2l7OaFfNvMXFEtmD9MRZpWacFr/FtW0H2faVo8O9j1EXigy6Uh9GAcimV8NKqaqx/pCg==
+vue-tsx-support@^3.0.0-dev.6e:
+  version "3.0.0-dev.6e"
+  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-dev.6e.tgz#98aeecbb9846b32716e1d22c02176ab59f2381cf"
+  integrity sha512-AkiSmTpl0IOn5jHwv5zLZq6p3aQHaDu+ojN3ksCft5ELUdk3f1aiH8NPDDbETxbdeJ7UorUN5fQmMlleFEQ5EQ==
 
 vue-vtable@^1.0.0-beta.6:
   version "1.0.0-beta.6"

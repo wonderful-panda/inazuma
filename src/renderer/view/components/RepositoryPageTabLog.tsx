@@ -1,6 +1,6 @@
-import { VNode } from "vue";
+import * as vca from "vue-tsx-support/lib/vca";
 import { RowEventArgs } from "vue-vtable";
-import { withStore, rootModule } from "../store";
+import { useRootModule } from "../store";
 import RevisionLogWorkingTree from "./RevisionLogWorkingTree";
 import RevisionLogCommitDetail from "./RevisionLogCommitDetail";
 import LogTable from "./LogTable";
@@ -9,65 +9,77 @@ import { dragdrop } from "../dragdrop";
 import { LogItem, SplitterDirection } from "../mainTypes";
 import { __sync } from "view/utils/modifiers";
 import { showCommitContextMenu } from "../commands";
-import { withPersist } from "./base/withPersist";
+import {
+  rootStorage,
+  provideNamespacedStorage,
+  useStorage
+} from "./base/useStorage";
 
-const RepositoryPageTabLog = withStore.create(
-  // @vue/component
-  {
-    name: "RepositoryPageTabLog",
-    data() {
-      return {
+export default vca.component({
+  setup() {
+    const rootCtx = useRootModule();
+    provideNamespacedStorage(rootStorage.subStorage("TabLog"));
+
+    const persistData = useStorage(
+      {
         splitter: { ratio: 0.6, direction: "horizontal" as SplitterDirection },
         columnWidths: {} as Record<string, number>
-      };
-    },
-    computed: rootModule.mapGetters(["items"]),
-    methods: {
-      ...rootModule.mapActions(["runInteractiveShell", "setSelectedIndex"]),
-      onRowdragover({ item, event }: RowEventArgs<LogItem, DragEvent>) {
-        if (item.commit.id === "--") {
-          return;
-        }
-        if (dragdrop.isDataPresent(event, "git/branch") && event.dataTransfer) {
-          event.dataTransfer.dropEffect = "move";
-          event.preventDefault();
-        }
       },
-      onRowdrop({ item, event }: RowEventArgs<LogItem, DragEvent>) {
-        if (item.commit.id === "--") {
-          return;
-        }
-        const data = dragdrop.getData(event, "git/branch");
-        console.log(data);
-      },
-      showContextMenu({ item, event }: RowEventArgs<LogItem, Event>) {
-        event.preventDefault();
-        showCommitContextMenu(item.commit);
+      rootStorage,
+      "TabLog"
+    );
+
+    const onRowdragover = ({
+      item,
+      event
+    }: RowEventArgs<LogItem, DragEvent>) => {
+      if (item.commit.id === "--") {
+        return;
       }
-    },
-    render(): VNode {
-      const state = this.state;
+      if (dragdrop.isDataPresent(event, "git/branch") && event.dataTransfer) {
+        event.dataTransfer.dropEffect = "move";
+        event.preventDefault();
+      }
+    };
+
+    const onRowdrop = ({ item, event }: RowEventArgs<LogItem, DragEvent>) => {
+      if (item.commit.id === "--") {
+        return;
+      }
+      const data = dragdrop.getData(event, "git/branch");
+      console.log(data);
+    };
+
+    const showContextMenu = ({ item, event }: RowEventArgs<LogItem, Event>) => {
+      event.preventDefault();
+      showCommitContextMenu(item.commit);
+    };
+
+    return () => {
+      const state = rootCtx.state;
       return (
         <VSplitterPanel
           style={{ flex: 1, margin: "2px" }}
           allowDirectionChange
-          direction={__sync(this.splitter.direction)}
+          direction={__sync(persistData.splitter.direction)}
           splitterWidth={5}
-          ratio={__sync(this.splitter.ratio)}
+          ratio={__sync(persistData.splitter.ratio)}
         >
           <LogTable
             slot="first"
-            items={this.items}
+            items={rootCtx.getters.items}
             rowHeight={state.rowHeight}
             selectedIndex={state.selectedIndex}
-            widths={__sync(this.columnWidths)}
-            onRowclick={e => this.setSelectedIndex({ index: e.index })}
-            onRowdragover={this.onRowdragover}
-            onRowdrop={this.onRowdrop}
-            onRowcontextmenu={this.showContextMenu}
+            widths={__sync(persistData.columnWidths)}
+            onRowclick={e =>
+              rootCtx.actions.setSelectedIndex({ index: e.index })
+            }
+            onRowdragover={onRowdragover}
+            onRowdrop={onRowdrop}
+            onRowcontextmenu={showContextMenu}
           />
           <template slot="second">
-            {state.selectedCommit.id === "--" ? (
+            {rootCtx.state.selectedCommit.id === "--" ? (
               <RevisionLogWorkingTree commit={state.selectedCommit} />
             ) : (
               <RevisionLogCommitDetail commit={state.selectedCommit} />
@@ -75,12 +87,6 @@ const RepositoryPageTabLog = withStore.create(
           </template>
         </VSplitterPanel>
       );
-    }
+    };
   }
-);
-
-export default withPersist(
-  RepositoryPageTabLog,
-  ["columnWidths", "splitter"],
-  "RepositoryPageTabLog"
-);
+});

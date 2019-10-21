@@ -11,24 +11,25 @@ import * as emotion from "emotion";
 import { showFileContextMenu } from "../commands";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, computed } from "@vue/composition-api";
-import { useStorage } from "core/utils";
+import { useStorage, injectNamespacedStorage } from "./base/useStorage";
 const css = emotion.css;
 
 const BlamePanel = vca.component({
   props: {
     path: p(String).required,
     sha: p(String).required,
-    blame: p.ofObject<Blame>().required,
-    storageKey: p(String).optional
+    blame: p.ofObject<Blame>().required
   },
   setup(props) {
     const selectedCommitId = ref("");
+    const storage = injectNamespacedStorage();
     const persist = useStorage(
       {
         columnWidths: {} as Record<string, number>,
         splitter: { ratio: 0.3, direction: "vertical" as SplitterDirection }
       },
-      props.storageKey
+      storage,
+      "BlamePanel"
     );
     const language = computed(() => getLangIdFromPath(props.path));
     const commits = computed(

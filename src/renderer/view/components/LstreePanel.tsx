@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import {
   vtreetableOf,
   ExpandableCell,
@@ -8,9 +8,9 @@ import {
   RowEventArgs as RowEventArgs_,
   Vtreetable
 } from "vue-vtable";
+import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
-import { VNode } from "vue";
-import { getExtension } from "core/utils";
+import { getExtension, updateEmitter, withPseudoSetter } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
 import VBackdropSpinner from "./base/VBackdropSpinner";
@@ -21,9 +21,11 @@ import { filterTreeNodes } from "core/tree";
 import { MdEmptyState } from "./base/md";
 import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
-import { withStore, rootModule } from "view/store";
+import { useRootModule } from "view/store";
 import { SplitterDirection } from "view/mainTypes";
-import { withPersist } from "./base/withPersist";
+import { ref, watch, computed, reactive } from "@vue/composition-api";
+import { withClass } from "./base/withClass";
+import { useStorage, injectNamespacedStorage } from "./base/useStorage";
 const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
@@ -31,202 +33,6 @@ type TreeNodeWithState = TreeNodeWithState_<Data>;
 type VtableSlotCellProps = VtableSlotCellProps_<TreeNodeWithState>;
 type RowEventArgs = RowEventArgs_<TreeNodeWithState, MouseEvent>;
 const VtreeTableT = vtreetableOf<Data>();
-
-// @vue/component
-const LstreePanel = withStore.create({
-  name: "LstreePanel",
-  props: {
-    sha: p(String).required,
-    rootNodes: p.ofRoArray<LsTreeEntry>().required
-  },
-  data() {
-    return {
-      columnWidths: {} as Record<string, number>,
-      splitter: { ratio: 0.25, direction: "horizontal" as SplitterDirection },
-      filterText: "" as string,
-      filterFunc: undefined as ((entry: Data) => boolean) | undefined,
-      selectedPath: "",
-      selectedBlame: undefined as Blame | undefined,
-      loading: false
-    };
-  },
-  computed: {
-    columns(): VtableColumn[] {
-      return [
-        { id: "name", defaultWidth: 300 },
-        { id: "extension", defaultWidth: 80, className: style.lastCell }
-      ];
-    },
-    filteredRoots(): ReadonlyArray<LsTreeEntry> {
-      if (this.filterFunc === undefined) {
-        return this.rootNodes;
-      } else {
-        return filterTreeNodes(this.rootNodes, this.filterFunc);
-      }
-    },
-    filterPanel(): VNode {
-      return (
-        <div style={{ display: "flex" }}>
-          <VTextField
-            class={style.filterField}
-            inlineIcon="filter_list"
-            tooltip="Filename filter"
-            size={1}
-            value={__sync(this.filterText)}
-          />
-          <VIconButton
-            class={style.expandButton}
-            tooltip="Expand all"
-            action={this.expandFileTreeAll}
-          >
-            expand_more
-          </VIconButton>
-          <VIconButton
-            class={style.expandButton}
-            tooltip="Collapse all"
-            action={this.collapseFileTreeAll}
-          >
-            expand_less
-          </VIconButton>
-        </div>
-      );
-    },
-    rightPanel(): VNode[] {
-      const ret = [] as VNode[];
-      if (this.selectedBlame) {
-        ret.push(
-          <BlamePanel
-            path={this.selectedPath}
-            blame={this.selectedBlame}
-            sha={this.sha}
-            storageKey="BlamePanel@LstreePanel"
-            style={{ margin: "0 0.2em" }}
-          />
-        );
-      } else {
-        ret.push(
-          <MdEmptyState
-            style={{ transition: "none !important" }}
-            md-icon="no_sim"
-            md-label="No file selected"
-            md-description="Select file, and blame information will be shown here"
-          />
-        );
-      }
-      if (this.loading) {
-        ret.push(<VBackdropSpinner key="spinner" />);
-      }
-      return ret;
-    }
-  },
-  watch: {
-    filterText: _.debounce(function(this: any, value: string) {
-      if (value) {
-        this.filterFunc = (v: Data) => v.basename.indexOf(value) >= 0;
-      } else {
-        this.filterFunc = undefined;
-      }
-    }, 500)
-  },
-  methods: {
-    ...rootModule.mapActions(["showError"]),
-    expandFileTreeAll() {
-      const tree = this.$refs.tree as Vtreetable<any>;
-      tree.expandAll();
-    },
-    collapseFileTreeAll() {
-      const tree = this.$refs.tree as Vtreetable<any>;
-      tree.collapseAll();
-    },
-    getRowClass({ data }: TreeNodeWithState): string | undefined {
-      if (data.path === this.selectedPath) {
-        return style.selectedRow;
-      } else {
-        return undefined;
-      }
-    },
-    onRowclick({ item, event }: RowEventArgs) {
-      if (event.button !== 0) {
-        return;
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      (this.$refs.tree as Vtreetable<Data>).toggleExpand(item.data);
-    },
-    async onRowdblclick({ item, event }: RowEventArgs) {
-      const { path: relPath, type } = item.data;
-      if (event.button !== 0 || type === "tree") {
-        return;
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      try {
-        this.loading = true;
-        const { sha } = this;
-        const { repoPath } = this.state;
-        const blame = await browserCommand.getBlame({
-          repoPath,
-          relPath,
-          sha
-        });
-        this.selectedPath = relPath;
-        this.selectedBlame = blame;
-      } catch (e) {
-        this.showError(e);
-      } finally {
-        this.loading = false;
-      }
-    },
-    renderCell({ item, columnId }: VtableSlotCellProps): VNode[] | string {
-      const { basename, type } = item.data;
-      switch (columnId) {
-        case "name":
-          return [<ExpandableCell nodeState={item}>{basename}</ExpandableCell>];
-        case "extension":
-          return type === "blob" ? getExtension(basename) : "";
-        default:
-          return "NOT IMPLEMENTED: " + columnId;
-      }
-    }
-  },
-  render(): VNode {
-    return (
-      <VSplitterPanel
-        class={style.container}
-        allowDirectionChange
-        direction={__sync(this.splitter.direction)}
-        splitterWidth={5}
-        ratio={__sync(this.splitter.ratio)}
-        minSizeFirst="10%"
-        minSizeSecond="10%"
-      >
-        <div class={style.leftPanel} slot="first">
-          {this.filterPanel}
-          <VtreeTableT
-            ref="tree"
-            slot="first"
-            style={{ flex: 1 }}
-            columns={this.columns}
-            rootNodes={this.filteredRoots}
-            indentWidth={12}
-            rowHeight={24}
-            getItemKey={item => item.path}
-            getRowClass={this.getRowClass}
-            widths={__sync(this.columnWidths)}
-            scopedSlots={{
-              cell: this.renderCell
-            }}
-            onRowclick={this.onRowclick}
-            onRowdblclick={this.onRowdblclick}
-          />
-        </div>
-        <div slot="second" class={style.rightPanel}>
-          {this.rightPanel}
-        </div>
-      </VSplitterPanel>
-    );
-  }
-});
 
 const style = {
   container: css`
@@ -297,18 +103,251 @@ const style = {
     min-height: 0;
     font-size: small;
     flex: 1;
-  `,
-  expandButton: css`
+  `
+};
+
+const treeViewColumns: VtableColumn[] = [
+  { id: "name", defaultWidth: 300 },
+  { id: "extension", defaultWidth: 80, className: style.lastCell }
+];
+
+const ExpandButton = withClass(
+  VIconButton,
+  css`
     min-width: 32px;
     max-width: 32px;
     min-height: 32px;
     max-height: 32px;
     margin-right: 0;
   `
-};
-
-export default withPersist(
-  LstreePanel,
-  ["columnWidths", "splitter"],
-  "LstreePanel"
 );
+
+const FilterToolbar = _fc<{
+  filterText: string;
+  expandAll: () => void;
+  collapseAll: () => void;
+}>(({ props, listeners }) => {
+  const filterText = withPseudoSetter(props, "filterText", listeners);
+  return (
+    <div style={{ display: "flex" }}>
+      <VTextField
+        class={style.filterField}
+        inlineIcon="filter_list"
+        tooltip="Filename filter"
+        size={1}
+        value={__sync(filterText.value, filterText.setValue)}
+      />
+      <ExpandButton tooltip="Expand all" action={props.expandAll}>
+        expand_more
+      </ExpandButton>
+      <ExpandButton tooltip="Collapse all" action={props.collapseAll}>
+        expand_less
+      </ExpandButton>
+    </div>
+  );
+});
+
+const LeftPanel = vca.component({
+  props: {
+    rootNodes: p.ofRoArray<LsTreeEntry>().required,
+    columnWidths: p.ofObject<Record<string, number>>().required,
+    selectedPath: p(String).required
+  },
+  setup(props, ctx) {
+    const emitUpdate = updateEmitter<typeof props>();
+    const filterText = ref("");
+    const filteredRoots = ref(props.rootNodes);
+    watch(
+      filterText,
+      _.debounce(value => {
+        if (!value) {
+          filteredRoots.value = props.rootNodes;
+        } else {
+          const predicate = (v: Data) => v.basename.indexOf(value) >= 0;
+          filteredRoots.value = filterTreeNodes(props.rootNodes, predicate);
+        }
+      }, 500)
+    );
+    const tree = computed(() => ctx.refs.tree as Vtreetable<any>);
+    const expandAll = () => tree.value.expandAll();
+    const collapseAll = () => tree.value.collapseAll();
+    const getRowClass = ({ data }: TreeNodeWithState) => {
+      return data.path === props.selectedPath ? style.selectedRow : undefined;
+    };
+    const onRowclick = ({ item, event }: RowEventArgs) => {
+      if (event.button !== 0) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      tree.value.toggleExpand(item.data);
+    };
+    const onRowdblclick = ({ item, event }: RowEventArgs) => {
+      const { path, type } = item.data;
+      if (event.button !== 0 || type === "tree") {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+
+      emitUpdate(ctx, "selectedPath", path);
+    };
+
+    const renderCell = ({ item, columnId }: VtableSlotCellProps) => {
+      const { basename, type } = item.data;
+      switch (columnId) {
+        case "name":
+          return <ExpandableCell nodeState={item}>{basename}</ExpandableCell>;
+        case "extension":
+          return type === "blob" ? getExtension(basename) : "";
+        default:
+          return "NOT IMPLEMENTED: " + columnId;
+      }
+    };
+
+    return () => {
+      return (
+        <div class={style.leftPanel}>
+          <FilterToolbar
+            filterText={__sync(filterText.value)}
+            expandAll={expandAll}
+            collapseAll={collapseAll}
+          />
+          <VtreeTableT
+            ref="tree"
+            style={{ flex: 1 }}
+            columns={treeViewColumns}
+            rootNodes={filteredRoots.value}
+            indentWidth={12}
+            rowHeight={24}
+            getItemKey={item => item.path}
+            getRowClass={getRowClass}
+            widths={__sync(props.columnWidths, v =>
+              emitUpdate(ctx, "columnWidths", v)
+            )}
+            scopedSlots={{
+              cell: renderCell
+            }}
+            onRowclick={onRowclick}
+            onRowdblclick={onRowdblclick}
+          />
+        </div>
+      );
+    };
+  }
+});
+
+const RightPanel = vca.component({
+  props: {
+    loading: p(Boolean).required,
+    path: p(String).required,
+    sha: p(String).required,
+    blame: p.ofObject<Blame>().optional
+  },
+  setup(props) {
+    return () => {
+      const content = props.blame ? (
+        <BlamePanel
+          path={props.path}
+          blame={props.blame}
+          sha={props.sha}
+          style={{ margin: "0 0.2em" }}
+        />
+      ) : (
+        <MdEmptyState
+          style={{ transition: "none !important" }}
+          md-icon="no_sim"
+          md-label="No file selected"
+          md-description="Select file, and blame information will be shown here"
+        />
+      );
+
+      return (
+        <div class={style.rightPanel}>
+          {content}
+          {props.loading ? <VBackdropSpinner key="spinner" /> : undefined}
+        </div>
+      );
+    };
+  }
+});
+
+const LstreePanel = vca.component({
+  props: {
+    sha: p(String).required,
+    rootNodes: p.ofRoArray<LsTreeEntry>().required
+  },
+  setup(props) {
+    const state = reactive({
+      loading: false,
+      treePath: "",
+      blamePath: "",
+      blame: undefined as undefined | Blame
+    });
+    const storage = injectNamespacedStorage();
+    const persistState = useStorage(
+      {
+        columnWidths: {} as Record<string, number>,
+        splitter: { ratio: 0.25, direction: "horizontal" as SplitterDirection }
+      },
+      storage,
+      "LsTreePanel"
+    );
+
+    const rootCtx = useRootModule();
+
+    watch(
+      () => state.treePath,
+      async value => {
+        if (!value) {
+          state.blamePath = "";
+          state.blame = undefined;
+          return;
+        }
+        try {
+          state.loading = true;
+          const { repoPath } = rootCtx.state;
+          const blame = await browserCommand.getBlame({
+            repoPath,
+            relPath: value,
+            sha: props.sha
+          });
+          state.blamePath = value;
+          state.blame = blame;
+        } catch (error) {
+          rootCtx.actions.showError({ error });
+        } finally {
+          state.loading = false;
+        }
+      }
+    );
+
+    return () => {
+      return (
+        <VSplitterPanel
+          class={style.container}
+          allowDirectionChange
+          direction={__sync(persistState.splitter.direction)}
+          splitterWidth={5}
+          ratio={__sync(persistState.splitter.ratio)}
+        >
+          <LeftPanel
+            slot="first"
+            rootNodes={props.rootNodes}
+            selectedPath={__sync(state.treePath)}
+            columnWidths={__sync(persistState.columnWidths)}
+          />
+          <RightPanel
+            slot="second"
+            loading={state.loading}
+            path={state.blamePath}
+            sha={props.sha}
+            blame={state.blame}
+          />
+        </VSplitterPanel>
+      );
+    };
+  }
+});
+
+export default LstreePanel;

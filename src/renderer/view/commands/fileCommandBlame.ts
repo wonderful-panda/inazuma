@@ -1,6 +1,6 @@
 import { FileCommand } from "./types";
-import { store, rootModule } from "../store";
-const rootCtx = rootModule.context(store);
+import { useRootModule } from "../store";
+const rootCtx = useRootModule();
 
 export const fileCommandBlame: FileCommand = {
   id: "Blame",

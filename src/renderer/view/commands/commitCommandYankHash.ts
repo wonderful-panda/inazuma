@@ -1,7 +1,7 @@
 import { CommitCommand } from "./types";
 import * as Electron from "electron";
-import { store, rootModule } from "../store";
-const rootCtx = rootModule.context(store);
+import { useRootModule } from "../store";
+const rootCtx = useRootModule();
 
 export const commitCommandYankHash: CommitCommand = {
   id: "YankHash",

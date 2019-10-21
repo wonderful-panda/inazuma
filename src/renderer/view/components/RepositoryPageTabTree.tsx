@@ -1,25 +1,30 @@
 import p from "vue-strict-prop";
-import { withStore, rootModule } from "../store";
-import { VNode } from "vue";
+import * as vca from "vue-tsx-support/lib/vca";
+import { useRootModule } from "../store";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import LstreePanel from "./LstreePanel";
+import { onMounted } from "@vue/composition-api";
+import { provideNamespacedStorage, rootStorage } from "./base/useStorage";
 
-export default withStore.create({
-  name: "RepositoryPageTabTree",
+export default vca.component({
   props: {
     tabkey: p(String).required,
     sha: p(String).required,
     rootNodes: p.ofRoArray<LsTreeEntry>().optional
   },
-  methods: rootModule.mapActions(["loadTreeTabLazyProps"]),
-  mounted() {
-    this.loadTreeTabLazyProps({ key: this.tabkey });
-  },
-  render(): VNode {
-    if (!this.rootNodes) {
-      return <VBackdropSpinner />;
-    } else {
-      return <LstreePanel rootNodes={this.rootNodes} sha={this.sha} />;
-    }
+  setup(props) {
+    const rootCtx = useRootModule();
+    provideNamespacedStorage(rootStorage.subStorage("TabTree"));
+
+    onMounted(() => {
+      rootCtx.actions.loadTreeTabLazyProps({ key: props.tabkey });
+    });
+    return () => {
+      if (!props.rootNodes) {
+        return <VBackdropSpinner />;
+      } else {
+        return <LstreePanel rootNodes={props.rootNodes} sha={props.sha} />;
+      }
+    };
   }
 });

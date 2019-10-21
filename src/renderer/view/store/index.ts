@@ -465,3 +465,7 @@ export const withStore = tsx.componentFactory.mixin(
     }
   })
 );
+
+export function useRootModule() {
+  return rootModule.context(store);
+}

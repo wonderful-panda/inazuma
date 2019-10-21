@@ -1,5 +1,6 @@
-import { SetupContext, reactive, watch } from "@vue/composition-api";
+import { SetupContext } from "@vue/composition-api";
 import moment from "moment";
+import { RenderContext } from "vue";
 
 export function getFileName(fullpath: string): string {
   return fullpath.split("/").pop()!;
@@ -35,36 +36,6 @@ export function formatDateL(v: number): string {
     .format("L");
 }
 
-export function useStorage<T extends object>(
-  initialValue: T,
-  storageKey: string | undefined
-) {
-  if (!storageKey) {
-    return reactive(initialValue);
-  }
-  const storedString = localStorage.getItem(storageKey);
-  let value: T;
-  if (storedString) {
-    try {
-      value = { ...initialValue, ...JSON.parse(storedString) } as T;
-    } catch (e) {
-      console.warn("Failed to parse string from localStorage: " + storageKey);
-      value = initialValue;
-    }
-  } else {
-    value = initialValue;
-  }
-  const ret = reactive(value);
-  watch(
-    () => ret,
-    value => {
-      localStorage.setItem(storageKey, JSON.stringify(value));
-    },
-    { deep: true, lazy: true }
-  );
-  return ret;
-}
-
 export function asTuple<T1, T2>(v1: T1, v2: T2): [T1, T2];
 export function asTuple<T1, T2, T3>(v1: T1, v2: T2, v3: T3): [T1, T2, T3];
 export function asTuple<T1, T2, T3, T4>(
@@ -84,5 +55,25 @@ export function updateEmitter<Props>() {
     value: Props[K]
   ) => {
     ctx.emit("update:" + name, value);
+  };
+}
+
+export function withPseudoSetter<Props, K extends keyof Props>(
+  props: Props,
+  name: K,
+  listeners: RenderContext["listeners"]
+) {
+  const handler = listeners["update:" + name];
+  return {
+    value: props[name],
+    setValue: (v: Props[K]) => {
+      if (handler) {
+        if (handler instanceof Array) {
+          handler.forEach(h => h(v));
+        } else {
+          handler(v);
+        }
+      }
+    }
   };
 }
