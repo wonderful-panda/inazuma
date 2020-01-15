@@ -3,7 +3,7 @@ import { IPty, spawn } from "node-pty";
 import { Terminal } from "xterm";
 import * as fit from "xterm/lib/addons/fit/fit";
 import p from "vue-strict-prop";
-import { withStore, rootModule } from "view/store";
+import { withStore, rootMapper } from "view/store";
 import ResizeSensor from "vue-resizesensor";
 
 type Shell = { pty: IPty; term: Terminal };
@@ -27,7 +27,7 @@ export default withStore.create({
     this.terminateShell();
   },
   methods: {
-    ...rootModule.mapActions(["hideTerminal", "showError"]),
+    ...rootMapper.mapActions(["hideTerminal", "showError"]),
     openShell() {
       if (this.shell) {
         this.shell.term.focus();

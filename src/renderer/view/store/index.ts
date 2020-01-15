@@ -22,7 +22,8 @@ import {
   Context,
   Actions,
   Module,
-  createStore
+  createStore,
+  createMapper
 } from "vuex-smart-module";
 import { Store } from "vuex";
 
@@ -113,9 +114,6 @@ class RootMutations extends Mutations<RootState> {
     state.graphs = {};
     state.selectedIndex = -1;
     state.selectedCommit = emptyCommit;
-    if (repoPath) {
-      this.addRecentList(payload);
-    }
   }
 
   setSelectedIndex(payload: { index: number }) {
@@ -181,7 +179,8 @@ class RootGetters extends Getters<RootState> {
   }
 }
 
-class RootActions extends Actions<RootState, RootGetters, RootMutations>
+class RootActions
+  extends Actions<RootState, RootGetters, RootMutations, RootActions>
   implements BroadcastAction {
   tabs!: Context<typeof tabsModule>;
   errorReporter!: Context<typeof errorReporterModule>;
@@ -202,13 +201,20 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations>
     this.errorReporter.actions.show(payload);
   }
 
+  setRepoPath(payload: { repoPath: string }) {
+    this.mutations.setRepoPath(payload);
+    if (payload.repoPath) {
+      this.mutations.addRecentList(payload);
+    }
+  }
+
   showWelcomePage(): void {
-    this.mutations.setRepoPath({ repoPath: "" });
+    this.actions.setRepoPath({ repoPath: "" });
     this.tabs.actions.reset({ tabs: [] });
   }
 
   showRepositoryPage(payload: { repoPath: string; tabs?: TabDefinition[] }) {
-    this.mutations.setRepoPath({ repoPath: payload.repoPath });
+    this.actions.setRepoPath({ repoPath: payload.repoPath });
     this.tabs.actions.reset({
       tabs: payload.tabs || [
         { key: "log", kind: "log", text: "COMMITS", props: {} }
@@ -221,12 +227,12 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations>
       const { repoPath } = payload;
       const { commits, refs } = await browserCommand.openRepository(repoPath);
       if (this.state.repoPath !== repoPath) {
-        this.mutations.setRepoPath({ repoPath });
+        this.actions.setRepoPath({ repoPath });
         this.tabs.actions.reset({
           tabs: [{ key: "log", kind: "log", text: "COMMITS", props: {} }]
         });
       }
-      this.showCommits({ commits, refs });
+      this.actions.showCommits({ commits, refs });
     } catch (error) {
       this.showError({ error });
     }
@@ -256,7 +262,7 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations>
         repoPath,
         sha: commits[payload.index].id
       });
-      this.showCommitDetail({ commit });
+      this.actions.showCommitDetail({ commit });
     } catch (error) {
       this.showError({ error });
     }
@@ -444,6 +450,8 @@ export const rootModule = new Module({
   actions: RootActions,
   modules
 });
+
+export const rootMapper = createMapper(rootModule);
 
 type ModuleState<M> = M extends Module<infer S, any, any, any> ? S : {};
 

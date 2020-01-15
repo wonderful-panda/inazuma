@@ -2,14 +2,14 @@ import { VNode } from "vue";
 import SideBarBase from "./SideBarBase";
 import SideBarBranchList from "./SideBarBranchList";
 import * as emotion from "emotion";
-import { rootModule, withStore } from "view/store";
+import { rootMapper, withStore } from "view/store";
 const css = emotion.css;
 
 // @vue/component
 export default withStore.create({
   name: "SideBarBranches",
   methods: {
-    ...rootModule.mapActions(["selectCommit"]),
+    ...rootMapper.mapActions(["selectCommit"]),
     selectCommitByRef(r: Ref) {
       this.selectCommit({ commitId: r.id });
     }

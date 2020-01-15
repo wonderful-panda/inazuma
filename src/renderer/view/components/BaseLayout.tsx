@@ -1,5 +1,5 @@
 import { VNode } from "vue";
-import { withStore, rootModule } from "../store";
+import { withStore, rootMapper } from "../store";
 import p from "vue-strict-prop";
 import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
@@ -9,8 +9,8 @@ import PreferencePanel from "./PreferencePanel";
 import { __capture, __sync } from "view/utils/modifiers";
 import { MdList } from "./base/md";
 import * as emotion from "emotion";
-import { errorReporterModule } from "view/store/errorReporterModule";
-import { dialogModule } from "view/store/dialogModule";
+import { errorReporterMapper } from "view/store/errorReporterModule";
+import { dialogMapper } from "view/store/dialogModule";
 const css = emotion.css;
 
 // @vue/component
@@ -23,16 +23,16 @@ export default withStore.create({
     return { menuVisible: false };
   },
   computed: {
-    ...errorReporterModule.mapGetters({ errorMessage: "message" })
+    ...errorReporterMapper.mapGetters({ errorMessage: "message" })
   },
   methods: {
-    ...rootModule.mapActions([
+    ...rootMapper.mapActions([
       "hideNotification",
       "hidePreference",
       "resetConfig"
     ]),
-    ...errorReporterModule.mapActions({ clearError: "clear" }),
-    ...dialogModule.mapActions({
+    ...errorReporterMapper.mapActions({ clearError: "clear" }),
+    ...dialogMapper.mapActions({
       acceptDialog: "accept",
       cancelDialog: "cancel"
     }),

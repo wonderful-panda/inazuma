@@ -3,7 +3,7 @@ import * as tsx from "vue-tsx-support";
 import p from "vue-strict-prop";
 import VCloseButton from "./base/VCloseButton";
 import * as emotion from "emotion";
-import { rootModule } from "view/store";
+import { rootMapper } from "view/store";
 const css = emotion.css;
 
 // @vue/component
@@ -15,7 +15,7 @@ export default tsx.component({
   props: {
     title: p(String).required
   },
-  methods: rootModule.mapActions(["hideSidebar"]),
+  methods: { ...rootMapper.mapActions(["hideSidebar"]) },
   render(): VNode {
     return (
       <transition name="sidebar" mode="out-in">

@@ -1,7 +1,7 @@
 import "./install-vue";
 import Vue, { VNode } from "vue";
 import Electron from "electron";
-import { store, rootModule, withStore } from "./store";
+import { store, rootModule, rootMapper, withStore } from "./store";
 import { loadMonaco } from "./monaco";
 import TheWelcomePage from "./components/TheWelcomePage";
 import TheRepositoryPage from "./components/TheRepositoryPage";
@@ -74,7 +74,7 @@ store.watch(
 
 const App = withStore.create({
   name: "App",
-  methods: rootModule.mapActions(["openRepository"]),
+  methods: rootMapper.mapActions(["openRepository"]),
   mounted() {
     if (initialRepo) {
       this.openRepository({ repoPath: initialRepo });

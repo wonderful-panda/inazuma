@@ -12,8 +12,8 @@ import DrawerNavigation from "./DrawerNavigation";
 import TitleBarButton from "./TitleBarButton";
 import { __sync } from "../utils/modifiers";
 import { RepositoryTabDefinition, SplitterDirection } from "../mainTypes";
-import { rootModule, withStore } from "view/store";
-import { tabsModule } from "view/store/tabsModule";
+import { withStore, rootMapper } from "view/store";
+import { tabsMapper } from "view/store/tabsModule";
 
 // @vue/component
 export default withStore.create({
@@ -23,7 +23,7 @@ export default withStore.create({
     };
   },
   computed: {
-    ...rootModule.mapGetters(["repoName", "repositoryTabs"]),
+    ...rootMapper.mapGetters(["repoName", "repositoryTabs"]),
     sidebarVNode(): VNode | undefined {
       switch (this.state.sidebar) {
         case "branches":
@@ -47,7 +47,7 @@ export default withStore.create({
     this.$persist(["splitter"], `persist:${this.$options.name}`);
   },
   methods: {
-    ...rootModule.mapActions([
+    ...rootMapper.mapActions([
       "showSidebar",
       "showPreference",
       "showWelcomePage",
@@ -55,7 +55,7 @@ export default withStore.create({
       "removeTab",
       "toggleTerminal"
     ]),
-    ...tabsModule.mapActions({ selectTab: "select" }),
+    ...tabsMapper.mapActions({ selectTab: "select" }),
     showSidebarBranches() {
       this.showSidebar({ name: "branches" });
     },

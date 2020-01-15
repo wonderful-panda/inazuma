@@ -15,7 +15,7 @@ import {
 } from "./base/md";
 import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
-import { rootModule } from "view/store";
+import { rootMapper } from "view/store";
 const { dialog, BrowserWindow } = Electron.remote;
 const css = emotion.css;
 
@@ -54,13 +54,13 @@ export default tsx.component({
     DrawerNavigation
   },
   computed: {
-    ...rootModule.mapGetters(["visibleRecentList"]),
+    ...rootMapper.mapGetters(["visibleRecentList"]),
     recentOpened(): string[] {
       return this.visibleRecentList;
     }
   },
   methods: {
-    ...rootModule.mapActions([
+    ...rootMapper.mapActions([
       "openRepository",
       "removeRecentList",
       "showPreference",

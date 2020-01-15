@@ -1,5 +1,11 @@
 import { ErrorLikeObject } from "view/mainTypes";
-import { Mutations, Getters, Actions, Module } from "vuex-smart-module";
+import {
+  Mutations,
+  Getters,
+  Actions,
+  Module,
+  createMapper
+} from "vuex-smart-module";
 
 export class ErrorReporterState {
   error: ErrorLikeObject | undefined = undefined;
@@ -41,3 +47,5 @@ export const errorReporterModule = new Module({
   getters: ErrorReporterGetters,
   actions: ErrorReporterActions
 });
+
+export const errorReporterMapper = createMapper(errorReporterModule);

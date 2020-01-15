@@ -1,5 +1,11 @@
 import { CreateElement, VNode } from "vue";
-import { Mutations, Getters, Actions, Module } from "vuex-smart-module";
+import {
+  Mutations,
+  Getters,
+  Actions,
+  Module,
+  createMapper
+} from "vuex-smart-module";
 
 export interface ButtonOptions {
   name: string;
@@ -70,3 +76,5 @@ export const dialogModule = new Module({
   mutations: DialogMutations,
   actions: DialogActions
 });
+
+export const dialogMapper = createMapper(dialogModule);
