@@ -7108,10 +7108,10 @@ typescript-estree@18.0.0:
     lodash.unescape "4.0.1"
     semver "5.5.0"
 
-typescript@^3.4.5:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.3.tgz#fea942fabb20f7e1ca7164ff626f1a9f3f70b4da"
-  integrity sha512-N7bceJL1CtRQ2RiG0AQME13ksR7DiuQh/QehubYcghzv20tnh+MQnQIuJddTmsbqYj+dztchykemz0zFzlvdQw==
+typescript@^3.7.4:
+  version "3.7.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.4.tgz#1743a5ec5fef6a1fa9f3e4708e33c81c73876c19"
+  integrity sha512-A25xv5XCtarLwXpcDNZzCGvW2D1S3/bACratYBx2sax8PefsFhlYmkQicKHvpYflFS8if4zne5zT5kpJ7pzuvw==
 
 typical@^4.0.0:
   version "4.0.0"
@@ -7369,15 +7369,15 @@ vue-template-compiler@^2.6.10:
     de-indent "^1.0.2"
     he "^1.1.0"
 
-vue-tsx-support@^3.0.0-dev.6e:
-  version "3.0.0-dev.6e"
-  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-dev.6e.tgz#98aeecbb9846b32716e1d22c02176ab59f2381cf"
-  integrity sha512-AkiSmTpl0IOn5jHwv5zLZq6p3aQHaDu+ojN3ksCft5ELUdk3f1aiH8NPDDbETxbdeJ7UorUN5fQmMlleFEQ5EQ==
+vue-tsx-support@3.0.0-dev.7a:
+  version "3.0.0-dev.7a"
+  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-dev.7a.tgz#886d8d5738c003583047772717fffb1770d5806e"
+  integrity sha512-1/cTOP4UjIoOqnCjJ2cI2b+dVb7OSbaz+3Vwagm+RqXsI3qgflLAj/p7N45vbe/3lRF+ZHq7tOBF7NuMKAYzzQ==
 
-vue-vtable@^1.0.0-beta.6:
-  version "1.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/vue-vtable/-/vue-vtable-1.0.0-beta.6.tgz#acf7b9d3269811c5f1e8619448a6b5a8f3efe08c"
-  integrity sha512-AQodVUUQxNojzj6JxakBjpsOwTyBvJvwHq59ub5gzA0B0ssDHNFxpZiobVTBfQr5NeW5c+JBJ/y9UMhyLVJGQQ==
+vue-vtable@1.0.0-beta.7:
+  version "1.0.0-beta.7"
+  resolved "https://registry.yarnpkg.com/vue-vtable/-/vue-vtable-1.0.0-beta.7.tgz#2bda40d402a4892b99efd2e5a6add95290a6ed48"
+  integrity sha512-gI2tpfrM6M3OLr3kY5jXR9bZutC0FoMfZK4RTkeLU4ZD5QEWZQVGQx1u37+2QqbqhBr+0z8znEQehEpoXUVboA==
 
 vue@^2.3.0, vue@^2.6.10:
   version "2.6.10"
