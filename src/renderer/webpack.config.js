@@ -1,6 +1,5 @@
 var webpack = require("webpack");
 var path = require("path");
-var ForkTsCheckerPlugin = require("fork-ts-checker-webpack-plugin");
 var MonacoEditorPlugin = require("monaco-editor-webpack-plugin");
 var babelrc = require("../../build/babelrc");
 var cacheLoader = {
@@ -17,10 +16,7 @@ var loadersForTs = [
     options: babelrc
   },
   {
-    loader: "ts-loader",
-    options: {
-      transpileOnly: true
-    }
+    loader: "ts-loader"
   }
 ];
 
@@ -54,7 +50,6 @@ module.exports = {
   },
   plugins: [
     new webpack.ExternalsPlugin("commonjs", ["electron", "node-pty"]),
-    new ForkTsCheckerPlugin(),
     new MonacoEditorPlugin()
   ]
 };
