@@ -1,12 +1,12 @@
 import Vue, { VNode } from "vue";
 import { IPty, spawn } from "node-pty";
 import { Terminal } from "xterm";
-import * as fit from "xterm/lib/addons/fit/fit";
+import { FitAddon } from "xterm-addon-fit";
 import p from "vue-strict-prop";
 import { withStore, rootMapper } from "view/store";
 import ResizeSensor from "vue-resizesensor";
 
-type Shell = { pty: IPty; term: Terminal };
+type Shell = { pty: IPty; term: Terminal; fitAddon: FitAddon };
 
 export default withStore.create({
   name: "Terminal",
@@ -37,18 +37,21 @@ export default withStore.create({
         const { cmd, args, cwd, fontFamily, fontSize } = this;
         const pty = spawn(cmd, args, { cwd });
         const term = new Terminal({ fontFamily, fontSize });
+        const fitAddon = new FitAddon();
+        term.loadAddon(fitAddon);
         pty.on("data", data => term.write(data));
         pty.on("exit", () => {
           term.dispose();
+          fitAddon.dispose();
           this.shell = null;
           this.hideTerminal();
         });
         term.onData(data => pty.write(data));
         term.onResize(({ cols, rows }) => pty.resize(cols, rows));
-        this.shell = { pty, term };
+        this.shell = { pty, term, fitAddon };
         Vue.nextTick(() => {
           term.open(this.$el as HTMLElement);
-          fit.fit(term);
+          fitAddon.fit();
           term.focus();
         });
       } catch (error) {
@@ -65,7 +68,8 @@ export default withStore.create({
     },
     onResized() {
       if (this.shell !== null) {
-        fit.fit(this.shell.term);
+        this.shell.fitAddon.fit();
+        this.shell.term.refresh(0, this.shell.term.rows - 1);
       }
     }
   },
