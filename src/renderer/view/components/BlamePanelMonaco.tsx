@@ -10,8 +10,6 @@ import { ref, computed, watch } from "@vue/composition-api";
 import { updateEmitter, formatDateL } from "core/utils";
 const css = emotion.css;
 
-type MonacoEditorInstance = InstanceType<typeof MonacoEditor>;
-
 const style = css`
   position: absolute;
   top: 0;
@@ -55,14 +53,9 @@ export const BlamePanelMonaco = vca.component({
   },
   setup(props, ctx: vca.SetupContext<PrefixedEvents>) {
     const emitUpdate = updateEmitter<typeof props>();
-    const editor = ref(undefined as
-      | monaco.editor.IStandaloneCodeEditor
-      | undefined);
-    const onEditorDidMount = () => {
-      editor.value = (ctx.refs.root as MonacoEditorInstance).getMonaco();
-      updateStaticDecorations();
-      updateSelectedCommitDecorations();
-    };
+    const editor = ref(
+      undefined as monaco.editor.IStandaloneCodeEditor | undefined
+    );
 
     const hoveredLineNumber = ref(-1);
     watch(hoveredLineNumber, (newValue, oldValue) => {
@@ -212,6 +205,18 @@ export const BlamePanelMonaco = vca.component({
         }
       }
     };
+    const onEditorDidMount = (
+      rawEditor: monaco.editor.IStandaloneCodeEditor
+    ) => {
+      editor.value = rawEditor;
+      rawEditor.onMouseDown(onMouseDown);
+      rawEditor.onMouseMove(onMouseMove);
+      rawEditor.onMouseLeave(onMouseLeave);
+      rawEditor.onContextMenu(onContextMenu);
+      updateStaticDecorations();
+      updateSelectedCommitDecorations();
+    };
+
     return () => {
       return (
         <MonacoEditor
@@ -221,10 +226,6 @@ export const BlamePanelMonaco = vca.component({
           value={props.blame.content.text}
           options={options.value}
           onEditorDidMount={onEditorDidMount}
-          onMouseDown={onMouseDown}
-          onMouseMove={onMouseMove}
-          onMouseLeave={onMouseLeave}
-          onContextMenu={onContextMenu}
         />
       );
     };

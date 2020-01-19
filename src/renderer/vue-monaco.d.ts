@@ -10,11 +10,7 @@ declare module "vue-monaco" {
       options: monaco.editor.IEditorConstructionOptions;
     },
     {
-      onEditorDidMount: void;
-      onMouseDown: monaco.editor.IEditorMouseEvent;
-      onMouseMove: monaco.editor.IEditorMouseEvent;
-      onMouseLeave: monaco.editor.IEditorMouseEvent;
-      onContextMenu: monaco.editor.IEditorMouseEvent;
+      onEditorDidMount: monaco.editor.IStandaloneCodeEditor;
     },
     {},
     {}
