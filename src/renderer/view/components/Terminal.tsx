@@ -28,7 +28,7 @@ export default withStore.create({
   },
   methods: {
     ...rootMapper.mapActions(["hideTerminal", "showError"]),
-    openShell() {
+    openShell(): void {
       if (this.shell) {
         this.shell.term.focus();
         return;
@@ -59,14 +59,14 @@ export default withStore.create({
         this.hideTerminal();
       }
     },
-    terminateShell() {
+    terminateShell(): void {
       if (!this.shell) {
         return;
       }
       this.shell.pty.kill();
       this.shell = null;
     },
-    onResized() {
+    onResized(): void {
       if (this.shell !== null) {
         this.shell.fitAddon.fit();
         this.shell.term.refresh(0, this.shell.term.rows - 1);
