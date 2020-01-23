@@ -98,6 +98,7 @@ class RootMutations extends Mutations<RootState> {
         .slice(0, MAX_RECENT_LIST - 1)
     ];
   }
+
   removeRecentList(payload: { repoPath: string }) {
     const index = this.state.recentList.indexOf(payload.repoPath);
     if (0 <= index) {
@@ -165,15 +166,19 @@ class RootGetters extends Getters<RootState> {
       return { commit, graph, refs: refsOfThis };
     });
   }
+
   get repoPathEncoded(): string {
     return encodeURIComponent(this.state.repoPath);
   }
+
   get repoName(): string {
     return getFileName(this.state.repoPath) || this.state.repoPath;
   }
+
   get visibleRecentList(): string[] {
     return this.state.recentList.slice(0, this.state.config.recentListCount);
   }
+
   get repositoryTabs(): RepositoryTabDefinition[] {
     return this.tabs.state.tabs as any;
   }
@@ -325,6 +330,7 @@ class RootActions
   showNotification(payload: { message: string }) {
     this.mutations.setNotification(payload);
   }
+
   hideNotification() {
     this.mutations.setNotification({ message: "" });
   }
@@ -332,15 +338,19 @@ class RootActions
   showPreference() {
     this.mutations.setPreferenceShown({ value: true });
   }
+
   hidePreference() {
     this.mutations.setPreferenceShown({ value: false });
   }
+
   toggleTerminal() {
     this.mutations.setTerminalShown({ value: !this.state.terminalShown });
   }
+
   showTerminal() {
     this.mutations.setTerminalShown({ value: true });
   }
+
   hideTerminal() {
     this.mutations.setTerminalShown({ value: false });
   }

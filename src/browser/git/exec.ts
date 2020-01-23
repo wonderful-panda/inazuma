@@ -25,7 +25,7 @@ export interface ExecResult {
 }
 
 export function exec(command: string, params: ExecParams): Promise<ExecResult> {
-  let configs = [] as string[];
+  const configs = [] as string[];
   if (params.configs) {
     for (const c of params.configs) {
       configs.push("-c", c);

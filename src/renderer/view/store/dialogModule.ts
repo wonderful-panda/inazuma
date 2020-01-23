@@ -43,6 +43,7 @@ class DialogMutations extends Mutations<DialogState> {
     this.state.options = options;
     this.state.resolve = resolve;
   }
+
   setResult(ret: DialogResult) {
     if (this.state.resolve) {
       this.state.resolve(ret);

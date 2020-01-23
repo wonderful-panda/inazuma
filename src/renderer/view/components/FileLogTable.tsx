@@ -52,7 +52,7 @@ export default tsx.componentFactoryOf<VtableEventsOn<FileCommit>>().create({
   },
   watch: {
     selectedIndex(newValue: number) {
-      (this.$refs["vtable"] as Vtable<LogItem>).ensureVisible(newValue);
+      (this.$refs.vtable as Vtable<LogItem>).ensureVisible(newValue);
     }
   },
   methods: {

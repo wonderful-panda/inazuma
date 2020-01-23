@@ -42,6 +42,7 @@ class ColorPallete {
       this._used[c] = 0;
     });
   }
+
   pop(): string {
     if (this._queue.length === 0) {
       this._queue.splice(0, 0, ...this.colors);
@@ -50,6 +51,7 @@ class ColorPallete {
     this._used[ret] += 1;
     return ret;
   }
+
   push(color: string) {
     this._used[color] -= 1;
     if (this._used[color] === 0) {

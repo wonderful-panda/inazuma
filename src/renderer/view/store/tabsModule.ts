@@ -19,6 +19,7 @@ class TabsMutations extends Mutations<TabsState> {
     Vue.set(tabs, tabs.length, { lazyProps: undefined, ...payload.tab });
     this.state.selectedIndex = tabs.length - 1;
   }
+
   remove(payload: { key: string }) {
     const { tabs, selectedIndex } = this.state;
     const index = tabs.findIndex(t => t.key === payload.key);
@@ -32,9 +33,11 @@ class TabsMutations extends Mutations<TabsState> {
       this.state.selectedIndex = selectedIndex - 1;
     }
   }
+
   setSelectedIndex(payload: { index: number }) {
     this.state.selectedIndex = payload.index;
   }
+
   setTabLazyProps(payload: {
     kind: string;
     key: string;
@@ -78,6 +81,7 @@ class TabsActions extends Actions<TabsState, TabsGetters, TabsMutations> {
       this.mutations.setSelectedIndex({ index });
     }
   }
+
   setTabLazyProps(payload: {
     kind: string;
     key: string;
@@ -85,12 +89,15 @@ class TabsActions extends Actions<TabsState, TabsGetters, TabsMutations> {
   }) {
     this.mutations.setTabLazyProps(payload);
   }
+
   remove(payload: { key: string }) {
     this.mutations.remove(payload);
   }
+
   select(payload: { index: number }) {
     this.mutations.setSelectedIndex(payload);
   }
+
   reset(payload: { tabs: TabDefinition[] }) {
     this.mutations.reset(payload);
   }

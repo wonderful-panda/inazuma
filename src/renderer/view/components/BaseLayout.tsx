@@ -64,7 +64,7 @@ export default withStore.create({
               <span style="flex: 1">{this.title}</span>
               {this.$slots["titlebar-buttons"]}
             </div>
-            <div staticClass={style.content}>{this.$slots["default"]}</div>
+            <div staticClass={style.content}>{this.$slots.default}</div>
           </md-app-content>
         </md-app>
 
