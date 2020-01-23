@@ -8,7 +8,7 @@ export default Vue.extend({
   functional: true,
   render(_h, { data, children }): VNode {
     return (
-      <VButton class="md-icon-button" {...data as any}>
+      <VButton class="md-icon-button" {...(data as any)}>
         <MdIcon>{children}</MdIcon>
       </VButton>
     );

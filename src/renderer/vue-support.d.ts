@@ -6,9 +6,9 @@ declare module "vue-support" {
   } from "vue/types/options";
   import { TsxComponent } from "vue-tsx-support";
 
-  type RequiredProps<Props, PD extends RecordPropsDefinition<Props>> = ({
+  type RequiredProps<Props, PD extends RecordPropsDefinition<Props>> = {
     [K in keyof PD]: PD[K] extends { required: true } ? K : never;
-  })[keyof Props];
+  }[keyof Props];
 
   type OptionalProps<Props, PD extends RecordPropsDefinition<Props>> = Exclude<
     keyof Props,

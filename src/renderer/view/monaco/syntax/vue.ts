@@ -12,7 +12,12 @@ const conf: monaco.languages.LanguageConfiguration = {
     blockComment: ["<!--", "-->"]
   },
 
-  brackets: [["<!--", "-->"], ["<", ">"], ["{", "}"], ["(", ")"]],
+  brackets: [
+    ["<!--", "-->"],
+    ["<", ">"],
+    ["{", "}"],
+    ["(", ")"]
+  ],
 
   autoClosingPairs: [
     { open: "{", close: "}" },
