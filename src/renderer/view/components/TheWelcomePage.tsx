@@ -66,18 +66,18 @@ export default tsx.component({
       "showPreference",
       "showVersionDialog"
     ]),
-    selectRepository(): void {
+    async selectRepository(): Promise<void> {
       const parent = BrowserWindow.getFocusedWindow();
       const options: Electron.OpenDialogOptions = {
         properties: ["openDirectory"]
       };
-      const paths = parent
+      const result = await (parent
         ? dialog.showOpenDialog(parent, options)
-        : dialog.showOpenDialog(options);
-      if (typeof paths === "undefined") {
+        : dialog.showOpenDialog(options));
+      if (result.canceled || !result.filePaths) {
         return;
       }
-      const repoPath = normalizePathSeparator(paths[0]);
+      const repoPath = normalizePathSeparator(result.filePaths[0]);
       this.openRepository({ repoPath });
     }
   },

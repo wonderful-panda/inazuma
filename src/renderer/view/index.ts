@@ -30,12 +30,9 @@ const initialRepo = sessionStorage.getItem("repoPath");
     console.warn("Failed to load recentList from localStorage");
   }
 
-  Electron.ipcRenderer.on(
-    "action",
-    (_event: string, name: string, payload: any) => {
-      store.dispatch(name, payload);
-    }
-  );
+  Electron.ipcRenderer.on("action", (_event, name: string, payload: any) => {
+    store.dispatch(name, payload);
+  });
   if (initialRepo) {
     root.actions.showRepositoryPage({ repoPath: initialRepo });
   }
