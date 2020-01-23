@@ -6,8 +6,9 @@ module.exports = {
     es6: true
   },
   extends: ["standard", "standard-jsx", "plugin:vue/recommended"],
+  plugins: ["@typescript-eslint/eslint-plugin"],
   parserOptions: {
-    parser: "typescript-eslint-parser",
+    parser: "@typescript-eslint/parser",
     ecmaVersion: 2017,
     sourceType: "module",
     ecmaFeatures: {
@@ -20,6 +21,7 @@ module.exports = {
     "no-unused-vars": "off",
     "space-infix-ops": "off",
     "no-useless-constructor": "off",
+    "no-extra-parens": "off",
     "import/export": "off",
     "func-call-spacing": "off",
 
@@ -28,6 +30,7 @@ module.exports = {
     semi: "off",
     quotes: "off",
     "space-before-function-paren": "off",
+    "react/jsx-curly-newline": "off",
     "react/jsx-indent": "off",
     "react/jsx-indent-props": "off",
 
