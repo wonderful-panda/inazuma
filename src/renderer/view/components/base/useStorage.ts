@@ -40,7 +40,9 @@ function createStorage(
 
 export const rootStorage = createStorage("", localStorage);
 
-const injectKey: InjectionKey<NamespacedStorage> = Symbol();
+const injectKey: InjectionKey<NamespacedStorage> = Symbol(
+  "namespaced storage key"
+);
 
 export function provideNamespacedStorage(value: NamespacedStorage) {
   provide(injectKey, value);

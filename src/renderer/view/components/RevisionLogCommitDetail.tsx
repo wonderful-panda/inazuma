@@ -45,7 +45,9 @@ const RevisionLogCommitDetail = tsx.component(
         return this.commit.id.substring(0, 8);
       },
       shortParentIds(): VNode[] {
-        return this.commit.parentIds.map(v => <div>{v.substring(0, 8)}</div>);
+        return this.commit.parentIds.map(v => (
+          <div key={v}>{v.substring(0, 8)}</div>
+        ));
       },
       body(): VNode | undefined {
         if (this.commit.body) {

@@ -37,6 +37,7 @@ module.exports = {
     // other code style
     yoda: "off",
     "linebreak-style": ["error", "unix"],
+    "react/jsx-handler-names": "off",
 
     // jsx
     "jsx-quotes": ["error", "prefer-double"],
