@@ -1,5 +1,5 @@
 module.exports = {
-  presets: ["vca-jsx", ["@vue/app", { modules: "commonjs" }]],
+  presets: ["vca-jsx", "@vue/app"],
   plugins: [
     ["emotion", { autoLabel: true }],
     ["babel-plugin-vue-tsx-functional/lib/plugin", { funcName: "_fc" }],
