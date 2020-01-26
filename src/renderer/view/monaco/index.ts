@@ -1,17 +1,12 @@
-import "monaco-editor";
 import { getExtension } from "core/utils";
-import { install as installVueSyntax } from "./syntax/vue";
+import "./setup";
 
 const langMap = new Map<string, string>();
-
-export function loadMonaco() {
-  installVueSyntax();
-  monaco.languages.getLanguages().forEach(lang => {
-    if (lang.extensions) {
-      lang.extensions.forEach(ext => langMap.set(ext.toLowerCase(), lang.id));
-    }
-  });
-}
+monaco.languages.getLanguages().forEach(lang => {
+  if (lang.extensions) {
+    lang.extensions.forEach(ext => langMap!.set(ext.toLowerCase(), lang.id));
+  }
+});
 
 /**
  * Make range list from line index list

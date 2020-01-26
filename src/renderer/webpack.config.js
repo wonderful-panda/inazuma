@@ -29,7 +29,8 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, "../../dist/renderer"),
-    filename: "[name].js"
+    filename: "[name].js",
+    chunkFilename: "[name].js"
   },
   devtool: "source-map",
   resolve: {

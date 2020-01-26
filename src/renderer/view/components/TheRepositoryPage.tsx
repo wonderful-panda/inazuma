@@ -1,8 +1,6 @@
 import { VNode } from "vue";
 import BaseLayout from "./BaseLayout";
 import TabLog from "./RepositoryPageTabLog";
-import TabFile from "./RepositoryPageTabFile";
-import TabTree from "./RepositoryPageTabTree";
 import SideBarBranches from "./SideBarBranches";
 import SideBarRemotes from "./SideBarRemotes";
 import Terminal from "./Terminal";
@@ -14,8 +12,21 @@ import { __sync } from "../utils/modifiers";
 import { RepositoryTabDefinition, SplitterDirection } from "../mainTypes";
 import { withStore, rootMapper } from "view/store";
 import { tabsMapper } from "view/store/tabsModule";
+import { asAsyncComponent } from "view/utils/async-component";
 
-// @vue/component
+const TabFile = asAsyncComponent(() =>
+  import(
+    /* webpackChunkName: "repositorypagetabfile", webpackPrefetch: true */
+    "./RepositoryPageTabFile"
+  ).then(mod => mod.default)
+);
+const TabTree = asAsyncComponent(() =>
+  import(
+    /* webpackChunkName: "repositorypagetabtree", webpackPrefetch: true */
+    "./RepositoryPageTabTree"
+  ).then(mod => mod.default)
+);
+
 export default withStore.create({
   data() {
     return {

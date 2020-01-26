@@ -2,10 +2,15 @@ import "./install-vue";
 import Vue, { VNode } from "vue";
 import Electron from "electron";
 import { store, rootModule, rootMapper, withStore } from "./store";
-import { loadMonaco } from "./monaco";
+import { asAsyncComponent } from "./utils/async-component";
 import TheWelcomePage from "./components/TheWelcomePage";
-import TheRepositoryPage from "./components/TheRepositoryPage";
-loadMonaco();
+
+const TheRepositoryPage = asAsyncComponent(async () =>
+  import(
+    /* webpackChunkName: "therepositorypage", webpackPrefetch: true */
+    "./components/TheRepositoryPage"
+  ).then(mod => mod.default)
+);
 
 const initialRepo = sessionStorage.getItem("repoPath");
 
