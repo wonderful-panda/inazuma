@@ -1,14 +1,14 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import VIconButton from "./VIconButton";
 import p from "vue-strict-prop";
 import * as md from "view/utils/md-classes";
 import { MdSnackbar, MdIcon } from "./md";
 import * as emotion from "emotion";
+import { __sync } from "view/utils/modifiers";
+import { computed } from "@vue/composition-api";
 const css = emotion.css;
 
-// @vue/component
-export default tsx.component({
+export default vca.component({
   name: "VNotification",
   props: {
     message: p(String).required,
@@ -16,18 +16,21 @@ export default tsx.component({
     color: p.ofStringLiterals("primary", "accent").required,
     hide: p.ofFunction<() => void>().required
   },
-  render(): VNode {
-    return (
+  setup(p) {
+    const hasMessage = computed({
+      get: () => !!p.message,
+      set: v => v || p.hide()
+    });
+    return () => (
       <MdSnackbar
-        class={style.container(this.color)}
-        md-active={!!this.message}
-        {...{ on: { "update:mdActive": this.hide } }}
+        class={style.container(p.color)}
+        md-active={__sync(hasMessage.value)}
       >
         <div>
-          <MdIcon>{this.icon}</MdIcon>
-          <span class={[md.BODY1, style.message]}>{this.message}</span>
+          <MdIcon>{p.icon}</MdIcon>
+          <span class={[md.BODY1, style.message]}>{p.message}</span>
         </div>
-        <VIconButton action={this.hide}>close</VIconButton>
+        <VIconButton action={p.hide}>close</VIconButton>
       </MdSnackbar>
     );
   }

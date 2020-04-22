@@ -4,7 +4,8 @@ declare module "vue-support" {
     RecordPropsDefinition,
     ArrayPropsDefinition
   } from "vue/types/options";
-  import { TsxComponent } from "vue-tsx-support";
+  import { TsxComponent, TsxTypeInfoOf } from "vue-tsx-support";
+  import { PropsOf as PropsOf_ } from "vue-tsx-support/types/base";
 
   type RequiredProps<Props, PD extends RecordPropsDefinition<Props>> = {
     [K in keyof PD]: PD[K] extends { required: true } ? K : never;
@@ -42,4 +43,8 @@ declare module "vue-support" {
     : C extends VueConstructor<infer V>
     ? TsxComponent<V, Props>
     : never;
+
+  export type PropsOf<C extends Vue | VueConstructor> = PropsOf_<
+    C extends VueConstructor ? InstanceType<C> : C
+  >;
 }

@@ -1,39 +1,36 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import { ErrorLikeObject } from "view/mainTypes";
 import VIconButton from "./VIconButton";
 import p from "vue-strict-prop";
 import * as md from "view/utils/md-classes";
 import { MdSnackbar, MdIcon } from "./md";
 import * as emotion from "emotion";
+import { __sync } from "view/utils/modifiers";
+import { computed } from "@vue/composition-api";
 const css = emotion.css;
 
-// @vue/component
-export default tsx.component({
+export default vca.component({
   name: "VErrorReporter",
   props: {
     error: p.ofObject<ErrorLikeObject>().optional,
     hide: p.ofFunction<() => void>().required
   },
-  computed: {
-    message(): string {
-      return this.error ? this.error.message : "";
-    }
-  },
-  render(): VNode {
-    return (
-      <MdSnackbar
-        class={style.container}
-        md-active={!!this.error}
-        {...{ on: { "update:mdActive": this.hide } }}
-      >
-        <div>
-          <MdIcon>warning</MdIcon>
-          <span class={[md.BODY1, style.message]}>{this.message}</span>
-        </div>
-        <VIconButton action={this.hide}>close</VIconButton>
-      </MdSnackbar>
-    );
+  setup(p) {
+    const hasError = computed({
+      get: () => !!p.error,
+      set: v => v || p.hide()
+    });
+    return () => {
+      return (
+        <MdSnackbar class={style.container} md-active={__sync(hasError.value)}>
+          <div>
+            <MdIcon>warning</MdIcon>
+            <span class={[md.BODY1, style.message]}>{p.error?.message}</span>
+          </div>
+          <VIconButton action={p.hide}>close</VIconButton>
+        </MdSnackbar>
+      );
+    };
   }
 });
 

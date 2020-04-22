@@ -1,16 +1,16 @@
-import Vue, { VNode } from "vue";
+import * as tsx from "vue-tsx-support";
 import VButton from "./VButton";
 import { MdIcon } from "./md";
+import { PropsOf } from "vue-support";
 
-// @vue/component
-export default Vue.extend({
-  name: "VIconButton",
-  functional: true,
-  render(_h, { data, children }): VNode {
-    return (
-      <VButton class="md-icon-button" {...(data as any)}>
-        <MdIcon>{children}</MdIcon>
-      </VButton>
-    );
-  }
-}) as typeof VButton;
+type Props = PropsOf<typeof VButton>;
+
+const VButtonX = tsx.withPropsObject(VButton);
+
+export default _fc<Props>(({ children, data }) => {
+  return (
+    <VButtonX class="md-icon-button" {...(data as any)}>
+      <MdIcon>{children}</MdIcon>
+    </VButtonX>
+  );
+});

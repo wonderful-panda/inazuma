@@ -1,8 +1,8 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
 import VIconButton from "./VIconButton";
 import * as emotion from "emotion";
+import { ref } from "@vue/composition-api";
 const css = emotion.css;
 
 export interface SplitterEventArgs {
@@ -17,71 +17,69 @@ export interface SplitterEvents {
 
 const HOVER_COLOR = "#383838";
 
-// @vue/component
-export default tsx.componentFactoryOf<SplitterEvents>().create({
+export default vca.component({
   name: "VSplitter",
   // prettier-ignore
   props: {
-      direction: p.ofStringLiterals("horizontal", "vertical").required,
-      thickness: p(Number).validator(v => v > 0).default(3),
-      allowDirectionChange: p(Boolean).required
-    },
-  data() {
-    return {
-      dragging: false
-    };
+    direction: p.ofStringLiterals("horizontal", "vertical").required,
+    thickness: p(Number).validator(v => v > 0).default(3),
+    allowDirectionChange: p(Boolean).required
   },
-  methods: {
-    emitEvent(eventName: string, e: MouseEvent) {
+  setup(p, ctx: vca.SetupContext<SplitterEvents>) {
+    const updater = vca.updateEmitter<typeof p>();
+    const dragging = ref(false);
+    const emitEvent = (eventName: keyof SplitterEvents, e: MouseEvent) => {
       let args: SplitterEventArgs;
-      if (this.direction === "horizontal") {
-        args = { pagePosition: e.pageX - this.thickness / 2 };
+      if (p.direction === "horizontal") {
+        args = { pagePosition: e.pageX - p.thickness / 2 };
       } else {
-        args = { pagePosition: e.pageY - this.thickness / 2 };
+        args = { pagePosition: e.pageY - p.thickness / 2 };
       }
-      this.$emit(eventName, args);
-    },
-    onSplitterMouseDown(event: MouseEvent): void {
+      vca.emitOn(ctx, eventName, args);
+    };
+    const onSplitterMouseDown = (event: MouseEvent) => {
       event.stopPropagation();
       event.preventDefault();
-      this.dragging = true;
-      this.emitEvent("dragstart", event);
+      dragging.value = true;
+      emitEvent("onDragstart", event);
       const onMouseMove = (e: MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
-        this.emitEvent("dragmove", e);
+        emitEvent("onDragmove", e);
       };
+
       const onMouseUp = (e: MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
-        this.dragging = false;
-        this.emitEvent("dragmove", e);
-        this.emitEvent("dragend", e);
+        dragging.value = false;
+        emitEvent("onDragmove", e);
+        emitEvent("onDragend", e);
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
       };
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
-    },
-    changeDirection() {
-      this.$emit(
-        "update:direction",
-        this.direction === "horizontal" ? "vertical" : "horizontal"
-      );
-    }
-  },
-  render(): VNode {
-    const { direction, thickness, dragging } = this;
-    return (
+    };
+
+    const toggleDirection = () => {
+      const value = p.direction === "horizontal" ? "vertical" : "horizontal";
+      updater(ctx, "direction", value);
+    };
+
+    return () => (
       <div
-        class={style.splitter(direction === "horizontal", thickness, dragging)}
-        onMousedown={this.onSplitterMouseDown}
+        class={style.splitter(
+          p.direction === "horizontal",
+          p.thickness,
+          dragging.value
+        )}
+        onMousedown={onSplitterMouseDown}
       >
-        {this.allowDirectionChange ? (
+        {p.allowDirectionChange ? (
           <VIconButton
             raised
             tooltip="Switch splitter orientation"
-            action={this.changeDirection}
+            action={toggleDirection}
           >
             swap_horiz
           </VIconButton>

@@ -239,7 +239,7 @@ class RootActions
       }
       this.actions.showCommits({ commits, refs });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
@@ -269,14 +269,14 @@ class RootActions
       });
       this.actions.showCommitDetail({ commit });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
   selectCommit(payload: { commitId: string }): Promise<void> {
     const index = this.state.commits.findIndex(c => c.id === payload.commitId);
     if (0 <= index) {
-      return this.setSelectedIndex({ index });
+      return this.actions.setSelectedIndex({ index });
     } else {
       return Promise.resolve();
     }
@@ -323,7 +323,7 @@ class RootActions
         ...payload
       });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
@@ -367,7 +367,7 @@ class RootActions
         }
       });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
@@ -389,8 +389,8 @@ class RootActions
       };
       this.tabs.actions.setTabLazyProps(payload);
     } catch (error) {
-      this.showError({ error });
-      this.removeTab({ key });
+      this.actions.showError({ error });
+      this.actions.removeTab({ key });
     }
   }
 
@@ -405,7 +405,7 @@ class RootActions
       };
       this.tabs.actions.addOrSelect({ tab });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
@@ -433,8 +433,8 @@ class RootActions
       };
       this.tabs.actions.setTabLazyProps(payload);
     } catch (error) {
-      this.showError({ error });
-      this.removeTab({ key });
+      this.actions.showError({ error });
+      this.actions.removeTab({ key });
     }
   }
 
@@ -486,4 +486,12 @@ export const withStore = tsx.componentFactory.mixin(
 
 export function useRootModule() {
   return rootModule.context(store);
+}
+
+export function useErrorReporterModule() {
+  return errorReporterModule.context(store);
+}
+
+export function useDialogModule() {
+  return dialogModule.context(store);
 }

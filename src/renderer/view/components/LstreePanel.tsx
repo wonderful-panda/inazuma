@@ -10,7 +10,7 @@ import {
 } from "vue-vtable";
 import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
-import { getExtension, updateEmitter, withPseudoSetter } from "core/utils";
+import { getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
 import VBackdropSpinner from "./base/VBackdropSpinner";
@@ -122,29 +122,37 @@ const ExpandButton = withClass(
   `
 );
 
-const FilterToolbar = _fc<{
-  filterText: string;
-  expandAll: () => void;
-  collapseAll: () => void;
-}>(({ props, listeners }) => {
-  const filterText = withPseudoSetter(props, "filterText", listeners);
-  return (
-    <div style={{ display: "flex" }}>
-      <VTextField
-        class={style.filterField}
-        inlineIcon="filter_list"
-        tooltip="Filename filter"
-        size={1}
-        value={__sync(filterText.value, filterText.setValue)}
-      />
-      <ExpandButton tooltip="Expand all" action={props.expandAll}>
-        expand_more
-      </ExpandButton>
-      <ExpandButton tooltip="Collapse all" action={props.collapseAll}>
-        expand_less
-      </ExpandButton>
-    </div>
-  );
+const FilterToolbar = vca.component({
+  name: "FilterToolbar",
+  props: {
+    filterText: p(String).required,
+    expandAll: p.ofFunction<() => void>().required,
+    collapseAll: p.ofFunction<() => void>().required
+  },
+  setup(p, ctx) {
+    const update = vca.updateEmitter<typeof p>();
+    const filterText = computed({
+      get: () => p.filterText,
+      set: v => update(ctx, "filterText", v)
+    });
+    return () => (
+      <div style={{ display: "flex" }}>
+        <VTextField
+          class={style.filterField}
+          inlineIcon="filter_list"
+          tooltip="Filename filter"
+          size={1}
+          value={__sync(filterText.value)}
+        />
+        <ExpandButton tooltip="Expand all" action={p.expandAll}>
+          expand_more
+        </ExpandButton>
+        <ExpandButton tooltip="Collapse all" action={p.collapseAll}>
+          expand_less
+        </ExpandButton>
+      </div>
+    );
+  }
 });
 
 const LeftPanel = vca.component({
@@ -154,7 +162,7 @@ const LeftPanel = vca.component({
     selectedPath: p(String).required
   },
   setup(props, ctx) {
-    const emitUpdate = updateEmitter<typeof props>();
+    const emitUpdate = vca.updateEmitter<typeof props>();
     const filterText = ref("");
     const filteredRoots = ref(props.rootNodes);
     watch(

@@ -1,11 +1,9 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import { modifiers as m } from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
 import { MdButton, MdTooltip } from "./md";
-const m = tsx.modifiers;
 
-// @vue/component
-export default tsx.component({
+export default vca.component({
   name: "VButton",
   props: {
     href: String,
@@ -17,32 +15,31 @@ export default tsx.component({
     accent: Boolean,
     action: p.ofFunction<() => void>().required
   },
-  computed: {
-    classes(): object {
-      return {
-        "md-mini": this.mini,
-        "md-raised": this.raised,
-        "md-primary": this.primary,
-        "md-accent": this.accent
+  setup(p, ctx) {
+    return () => {
+      const classes = {
+        "md-mini": p.mini,
+        "md-raised": p.raised,
+        "md-primary": p.primary,
+        "md-accent": p.accent
       };
-    }
-  },
-  render(): VNode {
-    const tooltip = this.tooltip ? (
-      <MdTooltip>{this.tooltip}</MdTooltip>
-    ) : (
-      undefined
-    );
-    return (
-      <MdButton
-        class={this.classes}
-        href={this.href}
-        disabled={this.disabled}
-        onClick={m.stop(this.action)}
-      >
-        {this.$slots.default}
-        {tooltip}
-      </MdButton>
-    );
+
+      const tooltip = p.tooltip ? (
+        <MdTooltip>{p.tooltip}</MdTooltip>
+      ) : (
+        undefined
+      );
+      return (
+        <MdButton
+          class={classes}
+          href={p.href}
+          disabled={p.disabled}
+          onClick={m.stop(p.action)}
+        >
+          {ctx.slots.default()}
+          {tooltip}
+        </MdButton>
+      );
+    };
   }
 });

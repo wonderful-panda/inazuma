@@ -1,5 +1,9 @@
-import { VNode } from "vue";
-import { withStore, rootMapper } from "../store";
+import {
+  useErrorReporterModule,
+  useDialogModule,
+  useRootModule
+} from "../store";
+import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
 import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
@@ -9,90 +13,79 @@ import PreferencePanel from "./PreferencePanel";
 import { __capture, __sync } from "view/utils/modifiers";
 import { MdList } from "./base/md";
 import * as emotion from "emotion";
-import { errorReporterMapper } from "view/store/errorReporterModule";
-import { dialogMapper } from "view/store/dialogModule";
+import { ref, computed } from "@vue/composition-api";
+import { evaluateSlot } from "core/utils";
 const css = emotion.css;
 
-// @vue/component
-export default withStore.create({
+export default vca.component({
   name: "BaseLayout",
   props: {
     title: p(String).required
   },
-  data() {
-    return { menuVisible: false };
-  },
-  computed: {
-    ...errorReporterMapper.mapGetters({ errorMessage: "message" })
-  },
-  methods: {
-    ...rootMapper.mapActions([
-      "hideNotification",
-      "hidePreference",
-      "resetConfig"
-    ]),
-    ...errorReporterMapper.mapActions({ clearError: "clear" }),
-    ...dialogMapper.mapActions({
-      acceptDialog: "accept",
-      cancelDialog: "cancel"
-    }),
-    toggleMenu(): void {
-      this.menuVisible = !this.menuVisible;
-    }
-  },
-  render(): VNode {
-    const state = this.state;
-    return (
-      <div staticClass={style.container}>
-        <md-app md-mode="fixed">
-          <md-app-drawer md-fixed md-active={__sync(this.menuVisible)}>
-            <md-toolbar staticClass="md-transparent" md-elevation={0}>
-              <div staticClass="md-toolbar-section-end">
-                <VIconButton mini action={this.toggleMenu}>
-                  keyboard_arrow_left
-                </VIconButton>
+  setup(p, ctx) {
+    const rootModule = useRootModule();
+    const errorReporterModule = useErrorReporterModule();
+    const dialogModule = useDialogModule();
+    const menuVisible = ref(false);
+    const dialogState = computed(() => ({ ...dialogModule.state }));
+    const toggleMenu = () => {
+      menuVisible.value = !menuVisible.value;
+    };
+    return () => {
+      return (
+        <div staticClass={style.container}>
+          <md-app md-mode="fixed">
+            <md-app-drawer md-fixed md-active={__sync(menuVisible.value)}>
+              <md-toolbar staticClass="md-transparent" md-elevation={0}>
+                <div staticClass="md-toolbar-section-end">
+                  <VIconButton mini action={toggleMenu}>
+                    keyboard_arrow_left
+                  </VIconButton>
+                </div>
+              </md-toolbar>
+              <MdList nativeOn-click={__capture(toggleMenu)}>
+                {evaluateSlot(ctx, "drawer-navigations")}
+              </MdList>
+            </md-app-drawer>
+
+            <md-app-content staticClass={style.contentWrapper}>
+              <div staticClass={style.titleBar}>
+                <TitleBarButton action={toggleMenu}>menu</TitleBarButton>
+                <span style="flex: 1">{p.title}</span>
+                {evaluateSlot(ctx, "titlebar-buttons")}
               </div>
-            </md-toolbar>
-            <MdList nativeOn-click={__capture(this.toggleMenu)}>
-              {this.$slots["drawer-navigations"]}
-            </MdList>
-          </md-app-drawer>
+              <div staticClass={style.content}>
+                {evaluateSlot(ctx, "default")}
+              </div>
+            </md-app-content>
+          </md-app>
 
-          <md-app-content staticClass={style.contentWrapper}>
-            <div staticClass={style.titleBar}>
-              <TitleBarButton action={this.toggleMenu}>menu</TitleBarButton>
-              <span style="flex: 1">{this.title}</span>
-              {this.$slots["titlebar-buttons"]}
-            </div>
-            <div staticClass={style.content}>{this.$slots.default}</div>
-          </md-app-content>
-        </md-app>
-
-        <PreferencePanel
-          active={state.preferenceShown}
-          initialConfig={state.config}
-          hide={this.hidePreference}
-          save={this.resetConfig}
-        />
-        <VNotification
-          icon="info"
-          message={state.notification}
-          color="primary"
-          hide={this.hideNotification}
-        />
-        <VNotification
-          icon="warning"
-          message={this.errorMessage}
-          color="accent"
-          hide={this.clearError}
-        />
-        <VDialogBase
-          state={state.dialog}
-          accept={this.acceptDialog}
-          cancel={this.cancelDialog}
-        />
-      </div>
-    );
+          <PreferencePanel
+            active={rootModule.state.preferenceShown}
+            initialConfig={rootModule.state.config}
+            hide={rootModule.actions.hidePreference}
+            save={rootModule.actions.resetConfig}
+          />
+          <VNotification
+            icon="info"
+            message={rootModule.state.notification}
+            color="primary"
+            hide={rootModule.actions.hideNotification}
+          />
+          <VNotification
+            icon="warning"
+            message={errorReporterModule.getters.message}
+            color="accent"
+            hide={errorReporterModule.actions.clear}
+          />
+          <VDialogBase
+            state={dialogState.value}
+            accept={dialogModule.actions.accept}
+            cancel={dialogModule.actions.cancel}
+          />
+        </div>
+      );
+    };
   }
 });
 
