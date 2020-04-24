@@ -1,40 +1,36 @@
-import Vue, { VNode } from "vue";
+import Vue from "vue";
+import * as vca from "vue-tsx-support/lib/vca";
 import { IPty, spawn } from "node-pty";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import p from "vue-strict-prop";
-import { withStore, rootMapper } from "view/store";
+import { useRootModule } from "view/store";
 import ResizeSensor from "vue-resizesensor";
+import { ref, watch, onBeforeUnmount, onActivated } from "@vue/composition-api";
 
 type Shell = { pty: IPty; term: Terminal; fitAddon: FitAddon };
 
-export default withStore.create({
+export default vca.component({
   name: "Terminal",
   props: {
     cmd: p(String).required,
+    hide: p.ofFunction<() => void>().required,
     args: p.ofArray<string>().default(() => []),
     cwd: p(String).default("."),
     fontFamily: p(String).default("monospace"),
     fontSize: p(Number).default(14)
   },
-  data() {
-    return { shell: null as Shell | null };
-  },
-  activated() {
-    this.openShell();
-  },
-  beforeDestroy() {
-    this.terminateShell();
-  },
-  methods: {
-    ...rootMapper.mapActions(["hideTerminal", "showError"]),
-    openShell(): void {
-      if (this.shell) {
-        this.shell.term.focus();
+  setup(p) {
+    const rootModule = useRootModule();
+    const shell = ref<Shell | null>(null);
+    const el = ref<HTMLDivElement | null>(null);
+    const openShell = () => {
+      if (shell.value) {
+        shell.value.term.focus();
         return;
       }
       try {
-        const { cmd, args, cwd, fontFamily, fontSize } = this;
+        const { cmd, args, cwd, fontFamily, fontSize } = p;
         const pty = spawn(cmd, args, { cwd });
         const term = new Terminal({ fontFamily, fontSize });
         const fitAddon = new FitAddon();
@@ -43,52 +39,63 @@ export default withStore.create({
         pty.on("exit", () => {
           term.dispose();
           fitAddon.dispose();
-          this.shell = null;
-          this.hideTerminal();
+          shell.value = null;
+          p.hide();
         });
         term.onData(data => pty.write(data));
         term.onResize(({ cols, rows }) => pty.resize(cols, rows));
-        this.shell = { pty, term, fitAddon };
+        shell.value = { pty, term, fitAddon };
         Vue.nextTick(() => {
-          term.open(this.$el as HTMLElement);
-          fitAddon.fit();
-          term.focus();
+          if (el.value) {
+            term.open(el.value);
+            fitAddon.fit();
+            term.focus();
+          }
         });
       } catch (error) {
-        this.showError({ error });
-        this.hideTerminal();
+        rootModule.actions.showError({ error });
+        p.hide();
       }
-    },
-    terminateShell(): void {
-      if (!this.shell) {
+    };
+    const terminateShell = () => {
+      if (!shell.value) {
         return;
       }
-      this.shell.pty.kill();
-      this.shell = null;
-    },
-    onResized(): void {
-      if (this.shell !== null) {
-        this.shell.fitAddon.fit();
-        this.shell.term.refresh(0, this.shell.term.rows - 1);
+      shell.value.pty.kill();
+      shell.value = null;
+    };
+    const onResized = () => {
+      if (shell.value !== null) {
+        shell.value.fitAddon.fit();
+        shell.value.term.refresh(0, shell.value.term.rows - 1);
       }
-    }
-  },
-  watch: {
-    fontFamily() {
-      if (this.shell) {
-        this.shell.term.setOption("fontFamily", this.fontFamily);
+    };
+
+    onActivated(openShell);
+    onBeforeUnmount(terminateShell);
+
+    watch(
+      () => p.fontFamily,
+      v => {
+        if (shell.value) {
+          shell.value.term.setOption("fontFamily", v);
+        }
       }
-    },
-    fontSize() {
-      if (this.shell) {
-        this.shell.term.setOption("fontSize", this.fontSize);
+    );
+    watch(
+      () => p.fontSize,
+      v => {
+        if (shell.value) {
+          shell.value.term.setOption("fontSize", v);
+        }
       }
-    }
-  },
-  render(): VNode {
-    return (
-      <div style="position: relative; flex: 1; overflow: hidden;">
-        <ResizeSensor debounce={0} throttle={50} onResized={this.onResized} />
+    );
+    return () => (
+      <div
+        ref={el as any}
+        style="position: relative; flex: 1; overflow: hidden;"
+      >
+        <ResizeSensor debounce={0} throttle={50} onResized={onResized} />
       </div>
     );
   }

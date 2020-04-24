@@ -57,3 +57,16 @@ export function toNumber(val: any): string | number {
   const n = parseFloat(val);
   return isNaN(n) ? val : n;
 }
+
+export function omit<B, K extends string[]>(
+  obj: B,
+  keys: K
+): Omit<B, K & keyof B> {
+  const ret = { ...obj } as any;
+  for (const key of keys) {
+    if (key in ret) {
+      delete ret[key];
+    }
+  }
+  return ret;
+}

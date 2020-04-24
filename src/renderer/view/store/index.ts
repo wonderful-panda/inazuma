@@ -495,3 +495,7 @@ export function useErrorReporterModule() {
 export function useDialogModule() {
   return dialogModule.context(store);
 }
+
+export function useTabsModule() {
+  return tabsModule.context(store);
+}

@@ -1,9 +1,8 @@
-import { VNode } from "vue";
 import Electron from "electron";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import BaseLayout from "./BaseLayout";
 import DrawerNavigation from "./DrawerNavigation";
-import { getFileName, normalizePathSeparator } from "core/utils";
+import { getFileName, normalizePathSeparator, omit } from "core/utils";
 import * as md from "view/utils/md-classes";
 import {
   MdIcon,
@@ -15,7 +14,8 @@ import {
 } from "./base/md";
 import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
-import { rootMapper } from "view/store";
+import { useRootModule } from "view/store";
+import { provideNamespacedStorage, rootStorage } from "./base/useStorage";
 const { dialog, BrowserWindow } = Electron.remote;
 const css = emotion.css;
 
@@ -25,9 +25,13 @@ const RepositoryListItem = _fc<{
   description: string;
   action: () => void;
   remove?: () => void;
-}>(({ props, data: { scopedSlots, ...rest } }) => {
+}>(({ props, data: { scopedSlots, attrs, ...rest } }) => {
   return (
-    <MdListItem onClick={props.action} {...rest}>
+    <MdListItem
+      onClick={props.action}
+      {...rest}
+      attrs={omit(attrs, Object.keys(props))}
+    >
       <MdIcon>{props.icon}</MdIcon>
       <MdListItemText>
         <span class={[md.SUBHEADING, style.repoName]}>{props.text}</span>
@@ -46,27 +50,16 @@ const RepositoryListItem = _fc<{
   );
 });
 
-// @vue/component
-export default tsx.component({
+export default vca.component({
   name: "TheWelcomePage",
   components: {
     BaseLayout,
     DrawerNavigation
   },
-  computed: {
-    ...rootMapper.mapGetters(["visibleRecentList"]),
-    recentOpened(): string[] {
-      return this.visibleRecentList;
-    }
-  },
-  methods: {
-    ...rootMapper.mapActions([
-      "openRepository",
-      "removeRecentList",
-      "showPreference",
-      "showVersionDialog"
-    ]),
-    async selectRepository(): Promise<void> {
+  setup() {
+    provideNamespacedStorage(rootStorage.subStorage("TheWelcomePage"));
+    const rootModule = useRootModule();
+    const selectRepository = async (): Promise<void> => {
       const parent = BrowserWindow.getFocusedWindow();
       const options: Electron.OpenDialogOptions = {
         properties: ["openDirectory"]
@@ -78,56 +71,58 @@ export default tsx.component({
         return;
       }
       const repoPath = normalizePathSeparator(result.filePaths[0]);
-      this.openRepository({ repoPath });
-    }
-  },
-  render(): VNode {
-    return (
-      <BaseLayout title="inazuma">
-        <template slot="drawer-navigations">
-          <DrawerNavigation
-            icon="settings"
-            text="Preferences"
-            action={this.showPreference}
-          />
-          <DrawerNavigation
-            icon="info_outline"
-            text="About"
-            action={this.showVersionDialog}
-          />
-        </template>
-        <div class={style.content}>
-          <h3 class={md.TITLE}>SELECT REPOSITORY</h3>
-          <div class={style.leftPanel}>
-            <MdDoubleLineList>
-              <RepositoryListItem
-                key=":browser"
-                icon="search"
-                text="BROWSE..."
-                description="Select repositories by folder browser"
-                action={this.selectRepository}
-              />
-              <MdDivider class={style.divider} />
-              <MdSubheader class={[md.PRIMARY, md.CAPTION]}>
-                Recent opened
-              </MdSubheader>
-              <transition-group name="recents">
-                {this.recentOpened.map(repoPath => (
-                  <RepositoryListItem
-                    key={repoPath}
-                    icon="history"
-                    text={getFileName(repoPath)}
-                    description={repoPath}
-                    action={() => this.openRepository({ repoPath })}
-                    remove={() => this.removeRecentList({ repoPath })}
-                  />
-                ))}
-              </transition-group>
-            </MdDoubleLineList>
+      rootModule.actions.openRepository({ repoPath });
+    };
+
+    return () => {
+      const { actions, getters } = rootModule;
+      return (
+        <BaseLayout title="inazuma">
+          <template slot="drawer-navigations">
+            <DrawerNavigation
+              icon="settings"
+              text="Preferences"
+              action={actions.showPreference}
+            />
+            <DrawerNavigation
+              icon="info_outline"
+              text="About"
+              action={actions.showVersionDialog}
+            />
+          </template>
+          <div class={style.content}>
+            <h3 class={md.TITLE}>SELECT REPOSITORY</h3>
+            <div class={style.leftPanel}>
+              <MdDoubleLineList>
+                <RepositoryListItem
+                  key=":browser"
+                  icon="search"
+                  text="BROWSE..."
+                  description="Select repositories by folder browser"
+                  action={selectRepository}
+                />
+                <MdDivider class={style.divider} />
+                <MdSubheader class={[md.PRIMARY, md.CAPTION]}>
+                  Recent opened
+                </MdSubheader>
+                <transition-group name="recents">
+                  {getters.visibleRecentList.map(repoPath => (
+                    <RepositoryListItem
+                      key={repoPath}
+                      icon="history"
+                      text={getFileName(repoPath)}
+                      description={repoPath}
+                      action={() => actions.openRepository({ repoPath })}
+                      remove={() => actions.removeRecentList({ repoPath })}
+                    />
+                  ))}
+                </transition-group>
+              </MdDoubleLineList>
+            </div>
           </div>
-        </div>
-      </BaseLayout>
-    );
+        </BaseLayout>
+      );
+    };
   }
 });
 
