@@ -7654,11 +7654,6 @@ vue-monaco@^1.1.0:
     monaco-editor "^0.17.0"
     nano-assign "^1.0.0"
 
-vue-persist@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/vue-persist/-/vue-persist-0.4.0.tgz#88aeabcdf5c65704363f585e03ba7a591783052c"
-  integrity sha512-j2MAsLVoFW3rHcfqDHniNpI46m8Llep8q0rxAzcAdwZdYQ6bZrw5NjzM3P57ka1pFMA4whrCUHtNtMxbF2HAsg==
-
 vue-property-decorator@^8.3.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/vue-property-decorator/-/vue-property-decorator-8.3.0.tgz#536f027dc7d626f37c8d85a2dc02f0a6cb979440"

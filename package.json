@@ -91,7 +91,6 @@
     "vue-css-definition": "^0.1.0",
     "vue-material": "1.0.0-beta-11",
     "vue-monaco": "^1.1.0",
-    "vue-persist": "^0.4.0",
     "vue-property-decorator": "^8.3.0",
     "vue-resizesensor": "^0.3.0",
     "vue-strict-prop": "^0.3.4",
