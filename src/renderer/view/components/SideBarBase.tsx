@@ -1,31 +1,28 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
 import VCloseButton from "./base/VCloseButton";
 import * as emotion from "emotion";
-import { rootMapper } from "view/store";
+import { evaluateSlot } from "core/utils";
 const css = emotion.css;
 
-// @vue/component
-export default tsx.component({
+export default vca.component({
   name: "SideBarBase",
-  components: {
-    VCloseButton
-  },
   props: {
-    title: p(String).required
+    title: p(String).required,
+    hide: p.ofFunction<() => void>().required
   },
-  methods: { ...rootMapper.mapActions(["hideSidebar"]) },
-  render(): VNode {
-    return (
+  setup(p, ctx) {
+    return () => (
       <transition name="sidebar" mode="out-in">
         <div staticClass={style.wrapper}>
           <div staticClass={style.container}>
             <div staticClass={style.titlebar}>
-              <span staticClass={style.title}>{this.title}</span>
-              <VCloseButton action={this.hideSidebar} />
+              <span staticClass={style.title}>{p.title}</span>
+              <VCloseButton action={p.hide} />
             </div>
-            <div staticClass={style.content}>{this.$slots.default}</div>
+            <div staticClass={style.content}>
+              {evaluateSlot(ctx, "default")}
+            </div>
           </div>
         </div>
       </transition>

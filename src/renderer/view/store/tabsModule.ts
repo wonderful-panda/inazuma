@@ -1,12 +1,6 @@
 import Vue from "vue";
 import { TabDefinition } from "view/mainTypes";
-import {
-  Mutations,
-  Getters,
-  Actions,
-  Module,
-  createMapper
-} from "vuex-smart-module";
+import { Mutations, Getters, Actions, Module } from "vuex-smart-module";
 
 class TabsState {
   tabs: TabDefinition[] = [];
@@ -109,5 +103,3 @@ export const tabsModule = new Module({
   getters: TabsGetters,
   actions: TabsActions
 });
-
-export const tabsMapper = createMapper(tabsModule);

@@ -1,11 +1,15 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import SideBarBase from "./SideBarBase";
+import { useRootModule } from "view/store";
 
-// @vue/component
-export default tsx.component({
+export default vca.component({
   name: "SideBarRemotes",
-  render(): VNode {
-    return <SideBarBase title="Remotes">Not implemented</SideBarBase>;
+  setup() {
+    const rootModule = useRootModule();
+    return () => (
+      <SideBarBase title="Remotes" hide={rootModule.actions.hideSidebar}>
+        Not implemented
+      </SideBarBase>
+    );
   }
 });

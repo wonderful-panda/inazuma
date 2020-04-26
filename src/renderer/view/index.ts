@@ -1,9 +1,11 @@
 import "./install-vue";
-import Vue, { VNode } from "vue";
+import * as vca from "vue-tsx-support/lib/vca";
+import Vue from "vue";
 import Electron from "electron";
-import { store, rootModule, rootMapper, withStore } from "./store";
+import { store, rootModule, useRootModule } from "./store";
 import { asAsyncComponent } from "./utils/async-component";
 import TheWelcomePage from "./components/TheWelcomePage";
+import { createElement, onMounted } from "@vue/composition-api";
 
 const TheRepositoryPage = asAsyncComponent(async () =>
   import(
@@ -74,20 +76,20 @@ store.watch(
   }
 );
 
-const App = withStore.create({
+const App = vca.component({
   name: "App",
-  methods: rootMapper.mapActions(["openRepository"]),
-  mounted() {
-    if (initialRepo) {
-      this.openRepository({ repoPath: initialRepo });
-    }
-  },
-  render(h): VNode {
-    if (this.state.repoPath === "") {
-      return h(TheWelcomePage);
-    } else {
-      return h(TheRepositoryPage);
-    }
+  setup() {
+    const rootModule = useRootModule();
+    onMounted(() => {
+      if (initialRepo) {
+        rootModule.actions.openRepository({ repoPath: initialRepo });
+      }
+    });
+    return () => {
+      return createElement(
+        rootModule.state.repoPath === "" ? TheWelcomePage : TheRepositoryPage
+      );
+    };
   }
 });
 

@@ -1,5 +1,4 @@
-import Vue, { VueConstructor } from "vue";
-import * as tsx from "vue-tsx-support";
+import Vue from "vue";
 import {
   LogItem,
   ErrorLikeObject,
@@ -22,8 +21,7 @@ import {
   Context,
   Actions,
   Module,
-  createStore,
-  createMapper
+  createStore
 } from "vuex-smart-module";
 import { Store } from "vuex";
 
@@ -461,8 +459,6 @@ export const rootModule = new Module({
   modules
 });
 
-export const rootMapper = createMapper(rootModule);
-
 type ModuleState<M> = M extends Module<infer S, any, any, any> ? S : {};
 
 type CombinedState<
@@ -473,16 +469,6 @@ type CombinedState<
 export type AppState = CombinedState<RootState, typeof modules>;
 export type AppStore = Store<AppState>;
 export const store: AppStore = createStore(rootModule);
-
-export const withStore = tsx.componentFactory.mixin(
-  (Vue as VueConstructor<Vue & { $store: AppStore }>).extend({
-    computed: {
-      state(): AppState {
-        return this.$store.state;
-      }
-    }
-  })
-);
 
 export function useRootModule() {
   return rootModule.context(store);
