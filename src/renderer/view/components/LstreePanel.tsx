@@ -21,11 +21,11 @@ import { filterTreeNodes } from "core/tree";
 import { MdEmptyState } from "./base/md";
 import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
-import { useRootModule } from "view/store";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, watch, computed, reactive } from "@vue/composition-api";
 import { withClass } from "./base/withClass";
-import { useStorage, injectNamespacedStorage } from "./base/useStorage";
+import { injectErrorHandler } from "./injection/errorHandler";
+import { injectStorage, useStorage } from "./injection/storage";
 const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
@@ -282,6 +282,7 @@ const RightPanel = vca.component({
 
 const LstreePanel = vca.component({
   props: {
+    repoPath: p(String).required,
     sha: p(String).required,
     rootNodes: p.ofRoArray<LsTreeEntry>().required
   },
@@ -292,7 +293,8 @@ const LstreePanel = vca.component({
       blamePath: "",
       blame: undefined as undefined | Blame
     });
-    const storage = injectNamespacedStorage();
+    const errorHandler = injectErrorHandler();
+    const storage = injectStorage();
     const persistState = useStorage(
       {
         columnWidths: {} as Record<string, number>,
@@ -301,8 +303,6 @@ const LstreePanel = vca.component({
       storage,
       "LsTreePanel"
     );
-
-    const rootCtx = useRootModule();
 
     watch(
       () => state.treePath,
@@ -314,16 +314,15 @@ const LstreePanel = vca.component({
         }
         try {
           state.loading = true;
-          const { repoPath } = rootCtx.state;
           const blame = await browserCommand.getBlame({
-            repoPath,
+            repoPath: props.repoPath,
             relPath: value,
             sha: props.sha
           });
           state.blamePath = value;
           state.blame = blame;
         } catch (error) {
-          rootCtx.actions.showError({ error });
+          errorHandler.handleError({ error });
         } finally {
           state.loading = false;
         }

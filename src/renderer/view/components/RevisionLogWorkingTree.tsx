@@ -10,8 +10,8 @@ import {
   fileCommandDiffStaged as diffStaged,
   fileCommandDiffUnstaged as diffUnstaged
 } from "../commands/fileCommandDiff";
-import { injectNamespacedStorage, useStorage } from "./base/useStorage";
 import { computed } from "@vue/composition-api";
+import { injectStorage, useStorage } from "./injection/storage";
 const css = emotion.css;
 
 export default vca.component({
@@ -20,7 +20,7 @@ export default vca.component({
     commit: p.ofType<CommitDetail>().required
   },
   setup(p) {
-    const storage = injectNamespacedStorage();
+    const storage = injectStorage();
     const persist = useStorage(
       {
         splitterRatio: 0.5,

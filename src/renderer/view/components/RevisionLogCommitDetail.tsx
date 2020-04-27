@@ -9,7 +9,7 @@ import { fileCommandDiffWithParent } from "../commands/fileCommandDiff";
 import { computed } from "@vue/composition-api";
 import { GitHash } from "./GitHash";
 import { formatDateL } from "core/utils";
-import { useStorage, injectNamespacedStorage } from "./base/useStorage";
+import { injectStorage, useStorage } from "./injection/storage";
 const css = emotion.css;
 
 const style = {
@@ -68,7 +68,7 @@ export default vca.component({
     commit: p.ofType<CommitDetail>().required
   },
   setup(p) {
-    const storage = injectNamespacedStorage();
+    const storage = injectStorage();
     const persist = useStorage(
       { columnWidths: {} as Record<string, number> },
       storage,

@@ -6,6 +6,8 @@ import { store, rootModule, useRootModule } from "./store";
 import { asAsyncComponent } from "./utils/async-component";
 import TheWelcomePage from "./components/TheWelcomePage";
 import { createElement, onMounted } from "@vue/composition-api";
+import { provideErrorHandler } from "./components/injection/errorHandler";
+import { provideStorage } from "./components/injection/storage";
 
 const TheRepositoryPage = asAsyncComponent(async () =>
   import(
@@ -80,6 +82,13 @@ const App = vca.component({
   name: "App",
   setup() {
     const rootModule = useRootModule();
+    provideStorage({ storage: localStorage, namespace: "" });
+    provideErrorHandler({
+      handleError: e => {
+        console.log(e);
+        rootModule.actions.showError(e);
+      }
+    });
     onMounted(() => {
       if (initialRepo) {
         rootModule.actions.openRepository({ repoPath: initialRepo });

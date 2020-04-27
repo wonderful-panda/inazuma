@@ -14,10 +14,10 @@ import { useRootModule, useTabsModule } from "view/store";
 import { asAsyncComponent } from "view/utils/async-component";
 import { computed } from "@vue/composition-api";
 import {
-  useStorage,
-  provideNamespacedStorage,
-  rootStorage
-} from "./base/useStorage";
+  injectStorage,
+  provideStorageWithAdditionalNamespace,
+  useStorage
+} from "./injection/storage";
 
 const TabFile = asAsyncComponent(() =>
   import(
@@ -73,13 +73,13 @@ const TabContent = _fc<{ tab: RepositoryTabDefinition }>(ctx => {
 
 export default vca.component({
   setup() {
-    const storage = rootStorage.subStorage("TheRepositoryPage");
-    provideNamespacedStorage(storage);
+    const storage = injectStorage();
     const persist = useStorage(
       { splitter: { ratio: 0.8, direction: "vertical" as SplitterDirection } },
       storage,
       "RepositoryPage"
     );
+    provideStorageWithAdditionalNamespace("repository", storage);
     const rootModule = useRootModule();
     const tabsModule = useTabsModule();
     const selectedTabIndex = computed({

@@ -4,9 +4,9 @@ import { IPty, spawn } from "node-pty";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import p from "vue-strict-prop";
-import { useRootModule } from "view/store";
 import ResizeSensor from "vue-resizesensor";
 import { ref, watch, onBeforeUnmount, onActivated } from "@vue/composition-api";
+import { injectErrorHandler } from "./injection/errorHandler";
 
 type Shell = { pty: IPty; term: Terminal; fitAddon: FitAddon };
 
@@ -21,9 +21,9 @@ export default vca.component({
     fontSize: p(Number).default(14)
   },
   setup(p) {
-    const rootModule = useRootModule();
     const shell = ref<Shell | null>(null);
     const el = ref<HTMLDivElement | null>(null);
+    const errorHandler = injectErrorHandler();
     const openShell = () => {
       if (shell.value) {
         shell.value.term.focus();
@@ -53,7 +53,7 @@ export default vca.component({
           }
         });
       } catch (error) {
-        rootModule.actions.showError({ error });
+        errorHandler.handleError({ error });
         p.hide();
       }
     };

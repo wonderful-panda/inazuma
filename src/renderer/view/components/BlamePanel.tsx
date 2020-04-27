@@ -11,7 +11,7 @@ import * as emotion from "emotion";
 import { showFileContextMenu } from "../commands";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, computed } from "@vue/composition-api";
-import { useStorage, injectNamespacedStorage } from "./base/useStorage";
+import { injectStorage, useStorage } from "./injection/storage";
 const css = emotion.css;
 
 const BlamePanel = vca.component({
@@ -22,7 +22,7 @@ const BlamePanel = vca.component({
   },
   setup(props) {
     const selectedCommitId = ref("");
-    const storage = injectNamespacedStorage();
+    const storage = injectStorage();
     const persist = useStorage(
       {
         columnWidths: {} as Record<string, number>,

@@ -15,7 +15,7 @@ import {
 import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
 import { useRootModule } from "view/store";
-import { provideNamespacedStorage, rootStorage } from "./base/useStorage";
+import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 const { dialog, BrowserWindow } = Electron.remote;
 const css = emotion.css;
 
@@ -57,7 +57,7 @@ export default vca.component({
     DrawerNavigation
   },
   setup() {
-    provideNamespacedStorage(rootStorage.subStorage("TheWelcomePage"));
+    provideStorageWithAdditionalNamespace("welcome");
     const rootModule = useRootModule();
     const selectRepository = async (): Promise<void> => {
       const parent = BrowserWindow.getFocusedWindow();

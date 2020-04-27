@@ -10,18 +10,16 @@ import { LogItem, SplitterDirection } from "../mainTypes";
 import { __sync } from "view/utils/modifiers";
 import { showCommitContextMenu } from "../commands";
 import {
-  provideNamespacedStorage,
-  useStorage,
-  injectNamespacedStorage
-} from "./base/useStorage";
+  injectStorage,
+  provideStorageWithAdditionalNamespace,
+  useStorage
+} from "./injection/storage";
 
 export default vca.component({
   setup() {
     const rootCtx = useRootModule();
-    const storage = injectNamespacedStorage();
-    if (storage) {
-      provideNamespacedStorage(storage.subStorage("TabLog"));
-    }
+    const storage = injectStorage();
+    provideStorageWithAdditionalNamespace("TabLog", storage);
     const persistData = useStorage(
       {
         splitter: { ratio: 0.6, direction: "horizontal" as SplitterDirection },

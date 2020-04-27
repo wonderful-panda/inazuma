@@ -5,10 +5,7 @@ import VBackdropSpinner from "./base/VBackdropSpinner";
 import BlamePanel from "./BlamePanel";
 import * as emotion from "emotion";
 import { onMounted } from "@vue/composition-api";
-import {
-  provideNamespacedStorage,
-  injectNamespacedStorage
-} from "./base/useStorage";
+import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 const css = emotion.css;
 
 const style = css`
@@ -24,10 +21,7 @@ export default vca.component({
   },
   setup(props) {
     const rootCtx = useRootModule();
-    const storage = injectNamespacedStorage();
-    if (storage) {
-      provideNamespacedStorage(storage.subStorage("TabFile"));
-    }
+    provideStorageWithAdditionalNamespace("TabFile");
 
     onMounted(() => {
       rootCtx.actions.loadFileTabLazyProps({ key: props.tabkey });

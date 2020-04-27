@@ -200,7 +200,6 @@ class RootActions
   }
 
   showError(payload: { error: ErrorLikeObject }) {
-    console.log(payload.error);
     this.errorReporter.actions.show(payload);
   }
 
