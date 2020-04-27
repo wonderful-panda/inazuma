@@ -4,7 +4,7 @@ import { useRootModule } from "../store";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import LstreePanel from "./LstreePanel";
 import { onMounted } from "@vue/composition-api";
-import { provideNamespacedStorage, rootStorage } from "./base/useStorage";
+import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 
 export default vca.component({
   props: {
@@ -14,7 +14,7 @@ export default vca.component({
   },
   setup(props) {
     const rootCtx = useRootModule();
-    provideNamespacedStorage(rootStorage.subStorage("TabTree"));
+    provideStorageWithAdditionalNamespace("TabTree");
 
     onMounted(() => {
       rootCtx.actions.loadTreeTabLazyProps({ key: props.tabkey });
@@ -23,7 +23,13 @@ export default vca.component({
       if (!props.rootNodes) {
         return <VBackdropSpinner />;
       } else {
-        return <LstreePanel rootNodes={props.rootNodes} sha={props.sha} />;
+        return (
+          <LstreePanel
+            repoPath={rootCtx.state.repoPath}
+            rootNodes={props.rootNodes}
+            sha={props.sha}
+          />
+        );
       }
     };
   }

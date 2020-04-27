@@ -1,5 +1,4 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
 import VSplitterPanel from "./base/VSplitterPanel";
 import FileTable from "./FileTable";
@@ -11,82 +10,82 @@ import {
   fileCommandDiffStaged as diffStaged,
   fileCommandDiffUnstaged as diffUnstaged
 } from "../commands/fileCommandDiff";
-import { withPersist } from "./base/withPersist";
+import { computed } from "@vue/composition-api";
+import { injectStorage, useStorage } from "./injection/storage";
 const css = emotion.css;
 
-const RevisionLogWorkingTree = tsx.component(
-  // @vue/component
-  {
-    name: "RevisionLogWorkingTree",
-    props: {
-      commit: p.ofType<CommitDetail>().required
-    },
-    data() {
-      return {
+export default vca.component({
+  name: "RevisionLogWorkingTree",
+  props: {
+    commit: p.ofType<CommitDetail>().required
+  },
+  setup(p) {
+    const storage = injectStorage();
+    const persist = useStorage(
+      {
         splitterRatio: 0.5,
         columnWidths: {
           staged: {} as Record<string, number>,
           unstaged: {} as Record<string, number>
         }
-      };
-    },
-    computed: {
-      stagedFiles(): FileEntry[] {
-        return this.commit.files.filter(f => {
-          return f.inIndex;
-        });
       },
-      unstagedFiles(): FileEntry[] {
-        return this.commit.files.filter(f => {
-          return f.inWorkingTree;
-        });
+      storage,
+      "RevisionLogWorkingTree"
+    );
+    const stagedFiles = computed(() => p.commit.files.filter(f => f.inIndex));
+    const unstagedFiles = computed(() =>
+      p.commit.files.filter(f => f.inWorkingTree)
+    );
+    const showExternalDiffCommittedAndStaged = ({
+      item
+    }: {
+      item: FileEntry;
+    }) => {
+      if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
+        return;
       }
-    },
-    methods: {
-      showExternalDiffCommittedAndStaged({ item }: { item: FileEntry }) {
-        if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
-          return;
-        }
-        executeFileCommand(diffStaged, this.commit, item, item.path);
-      },
-      showExternalDiffStagedAndUnstaged({ item }: { item: FileEntry }) {
-        if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
-          return;
-        }
-        executeFileCommand(diffUnstaged, this.commit, item, item.path);
+      executeFileCommand(diffStaged, p.commit, item, item.path);
+    };
+    const showExternalDiffStagedAndUnstaged = ({
+      item
+    }: {
+      item: FileEntry;
+    }) => {
+      if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
+        return;
       }
-    },
-    render(): VNode {
-      return (
-        <VSplitterPanel
-          staticClass={style.container}
-          direction="vertical"
-          splitterWidth={5}
-          minSizeFirst="20%"
-          minSizeSecond="20%"
-          ratio={__sync(this.splitterRatio)}
-        >
-          <div slot="first" staticClass={style.splitterPane}>
-            <div staticClass={md.TITLE}>Changes to be committed</div>
-            <FileTable
-              files={this.stagedFiles}
-              widths={__sync(this.columnWidths.staged)}
-              onRowdblclick={this.showExternalDiffCommittedAndStaged}
-            />
-          </div>
-          <div slot="second" staticClass={style.splitterPane}>
-            <div staticClass={md.TITLE}>Changes not staged</div>
-            <FileTable
-              files={this.unstagedFiles}
-              widths={__sync(this.columnWidths.unstaged)}
-              onRowdblclick={this.showExternalDiffStagedAndUnstaged}
-            />
-          </div>
-        </VSplitterPanel>
-      );
-    }
+      executeFileCommand(diffUnstaged, p.commit, item, item.path);
+    };
+
+    return () => (
+      <VSplitterPanel
+        staticClass={style.container}
+        direction="vertical"
+        splitterWidth={5}
+        minSizeFirst="20%"
+        minSizeSecond="20%"
+        ratio={__sync(persist.splitterRatio)}
+      >
+        <div slot="first" staticClass={style.splitterPane}>
+          <div staticClass={md.TITLE}>Changes to be committed</div>
+          <FileTable
+            files={stagedFiles.value}
+            widths={__sync(persist.columnWidths.staged)}
+            onRowdblclick={showExternalDiffCommittedAndStaged}
+          />
+        </div>
+        <div slot="second" staticClass={style.splitterPane}>
+          <div staticClass={md.TITLE}>Changes not staged</div>
+          <FileTable
+            files={unstagedFiles.value}
+            widths={__sync(persist.columnWidths.unstaged)}
+            onRowdblclick={showExternalDiffStagedAndUnstaged}
+          />
+        </div>
+      </VSplitterPanel>
+    );
   }
-);
+});
 
 const style = {
   container: css`
@@ -102,9 +101,3 @@ const style = {
     padding: 0;
   `
 };
-
-export default withPersist(
-  RevisionLogWorkingTree,
-  ["splitterRatio", "columnWidths"],
-  "RevisionLogWorkingTree"
-);

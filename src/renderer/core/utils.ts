@@ -1,6 +1,6 @@
-import { SetupContext } from "@vue/composition-api";
 import moment from "moment";
-import { RenderContext } from "vue";
+import { SetupContext } from "@vue/composition-api";
+import { VNode } from "vue/types/umd";
 
 export function getFileName(fullpath: string): string {
   return fullpath.split("/").pop()!;
@@ -36,44 +36,37 @@ export function formatDateL(v: number): string {
     .format("L");
 }
 
-export function asTuple<T1, T2>(v1: T1, v2: T2): [T1, T2];
-export function asTuple<T1, T2, T3>(v1: T1, v2: T2, v3: T3): [T1, T2, T3];
-export function asTuple<T1, T2, T3, T4>(
-  v1: T1,
-  v2: T2,
-  v3: T3,
-  v4: T4
-): [T1, T2, T3, T4];
-export function asTuple(...values: any[]) {
-  return values;
+export function evaluateSlot<
+  CTX extends SetupContext,
+  K extends keyof CTX["slots"]
+>(
+  ctx: CTX,
+  slotName: K,
+  ...args: Parameters<CTX["slots"][K]>
+): VNode | VNode[] | undefined {
+  const slot = ctx.slots[slotName as string];
+  if (!slot) {
+    return undefined;
+  } else {
+    return slot(...args);
+  }
 }
 
-export function updateEmitter<Props>() {
-  return <K extends keyof Props & string>(
-    ctx: SetupContext,
-    name: K,
-    value: Props[K]
-  ) => {
-    ctx.emit("update:" + name, value);
-  };
+// This method is originated in vuejs/vue. https://github.com/vuejs/vue
+export function toNumber(val: any): string | number {
+  const n = parseFloat(val);
+  return isNaN(n) ? val : n;
 }
 
-export function withPseudoSetter<Props, K extends keyof Props>(
-  props: Props,
-  name: K,
-  listeners: RenderContext["listeners"]
-) {
-  const handler = listeners["update:" + name];
-  return {
-    value: props[name],
-    setValue: (v: Props[K]) => {
-      if (handler) {
-        if (handler instanceof Array) {
-          handler.forEach(h => h(v));
-        } else {
-          handler(v);
-        }
-      }
+export function omit<B, K extends string[]>(
+  obj: B,
+  keys: K
+): Omit<B, K & keyof B> {
+  const ret = { ...obj } as any;
+  for (const key of keys) {
+    if (key in ret) {
+      delete ret[key];
     }
-  };
+  }
+  return ret;
 }

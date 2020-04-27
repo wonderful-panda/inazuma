@@ -1,15 +1,14 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
 import { clamp } from "core/utils";
 import { CssProperties } from "vue-css-definition";
 import VSplitter, { SplitterEventArgs } from "./VSplitter";
-import { __relay } from "view/utils/modifiers";
+import { __sync } from "view/utils/modifiers";
+import { ref, computed } from "@vue/composition-api";
 
 const FLEX_SUM = 1000;
 
-// @vue/component
-export default tsx.component({
+export default vca.component({
   name: "VSplitterPanel",
   props: {
     direction: p.ofStringLiterals("horizontal", "vertical").required,
@@ -21,108 +20,93 @@ export default tsx.component({
     showSecond: p(Boolean).default(true),
     allowDirectionChange: p(Boolean).default(false)
   },
-  data() {
-    return {
-      dragging: false
-    };
-  },
-  computed: {
-    flexFirst(): number {
-      return Math.floor(FLEX_SUM * this.ratio);
-    },
-    flexSecond(): number {
-      return FLEX_SUM - this.flexFirst;
-    },
-    horizontal(): boolean {
-      return this.direction === "horizontal";
-    },
-    containerStyle(): CssProperties {
-      return {
-        display: "flex",
-        flexDirection: this.horizontal ? "row" : "column",
-        flexWrap: "nowrap",
-        alignItems: "stretch",
-        overflow: "hidden"
-      };
-    },
-    firstPanelStyle(): CssProperties {
-      const horizontal = this.horizontal;
-      return {
-        display: "flex",
-        flex: this.flexFirst,
-        flexDirection: horizontal ? "column" : "row",
-        alignItems: "stretch",
-        overflow: "auto",
-        minWidth: horizontal ? this.minSizeFirst : undefined,
-        minHeight: horizontal ? undefined : this.minSizeFirst
-      };
-    },
-    secondPanelStyle(): CssProperties {
-      const horizontal = this.horizontal;
-      return {
-        display: "flex",
-        flex: this.flexSecond,
-        flexDirection: horizontal ? "column" : "row",
-        alignItems: "stretch",
-        overflow: "auto",
-        minWidth: horizontal ? this.minSizeSecond : undefined,
-        minHeight: horizontal ? undefined : this.minSizeSecond
-      };
-    }
-  },
-  methods: {
-    onSplitterMove({ pagePosition }: SplitterEventArgs) {
+  setup(p, ctx) {
+    const flexFirst = computed(() => Math.floor(FLEX_SUM * p.ratio));
+    const flexSecond = computed(() => FLEX_SUM - flexFirst.value);
+    const containerStyle = computed(
+      () =>
+        ({
+          display: "flex",
+          flexDirection: p.direction === "horizontal" ? "row" : "column",
+          flexWrap: "nowrap",
+          alignItems: "stretch",
+          overflow: "hidden"
+        } as CssProperties)
+    );
+    const firstPanelStyle = computed(() => ({
+      display: "flex",
+      flex: flexFirst.value,
+      flexDirection: p.direction === "horizontal" ? "column" : "row",
+      alignItems: "stretch",
+      overflow: "auto",
+      minWidth: p.direction === "horizontal" ? p.minSizeFirst : undefined,
+      minHeight: p.direction === "horizontal" ? undefined : p.minSizeFirst
+    }));
+    const secondPanelStyle = computed(() => ({
+      display: "flex",
+      flex: flexSecond.value,
+      flexDirection: p.direction === "horizontal" ? "column" : "row",
+      alignItems: "stretch",
+      overflow: "auto",
+      minWidth: p.direction === "horizontal" ? p.minSizeSecond : undefined,
+      minHeight: p.direction === "horizontal" ? undefined : p.minSizeSecond
+    }));
+
+    const first = ref(null as HTMLDivElement | null);
+    const second = ref(null as HTMLDivElement | null);
+
+    const update = vca.updateEmitter<typeof p>();
+    const onSplitterMove = ({ pagePosition }: SplitterEventArgs) => {
+      if (!first.value || !second.value) {
+        return;
+      }
       const docBound = document.body.getBoundingClientRect();
-      const first = this.$refs.first as HTMLDivElement;
-      const second = this.$refs.second as HTMLDivElement;
-      const firstBound = first.getBoundingClientRect();
+      const firstBound = first.value.getBoundingClientRect();
       let newRatio: number;
-      if (this.horizontal) {
-        const firstClientWidth = first.clientWidth;
-        const sum = firstClientWidth + second.clientWidth;
+      if (p.direction === "horizontal") {
+        const firstClientWidth = first.value.clientWidth;
+        const sum = firstClientWidth + second.value.clientWidth;
         const newFirstClientWidth =
           pagePosition -
           (firstBound.left - docBound.left) /* pageX of first panel */ -
           (firstBound.width - firstClientWidth); /* maybe scrollbar width */
         newRatio = newFirstClientWidth / sum;
       } else {
-        const firstClientHeight = first.clientHeight;
-        const sum = firstClientHeight + second.clientHeight;
+        const firstClientHeight = first.value.clientHeight;
+        const sum = firstClientHeight + second.value.clientHeight;
         const newFirstClientHeight =
           pagePosition -
           (firstBound.top - docBound.top) /* pageY of first panel */ -
           (firstBound.height - firstClientHeight); /* maybe scrollbar height */
         newRatio = newFirstClientHeight / sum;
       }
-      this.$emit("update:ratio", clamp(newRatio, 0, 1));
-    }
-  },
-  render(): VNode {
-    const { first, second } = this.$slots;
-    return (
-      <div class="splitter-panel-container" style={this.containerStyle}>
+      update(ctx, "ratio", clamp(newRatio, 0, 1));
+    };
+
+    return () => (
+      <div class="splitter-panel-container" style={containerStyle.value}>
         <div
-          ref="first"
-          v-show={this.showFirst}
+          ref={first as any}
+          v-show={p.showFirst}
           class="splitter-panel-first"
-          style={this.firstPanelStyle}
+          style={firstPanelStyle.value}
         >
-          {first}
+          {ctx.slots.first()}
         </div>
         <VSplitter
-          v-show={this.showFirst && this.showSecond}
-          direction={__relay(this.direction)}
-          thickness={this.splitterWidth}
-          onDragmove={this.onSplitterMove}
-          allowDirectionChange={this.allowDirectionChange}
+          v-show={p.showFirst && p.showSecond}
+          direction={__sync(p.direction, v => update(ctx, "direction", v))}
+          thickness={p.splitterWidth}
+          onDragmove={onSplitterMove}
+          allowDirectionChange={p.allowDirectionChange}
         />
         <div
-          ref="second"
-          v-show={this.showSecond}
+          ref={second as any}
+          v-show={p.showSecond}
           class="splitter-panel-second"
-          style={this.secondPanelStyle}
+          style={secondPanelStyle.value}
         >
-          {second}
+          {ctx.slots.second()}
         </div>
       </div>
     );

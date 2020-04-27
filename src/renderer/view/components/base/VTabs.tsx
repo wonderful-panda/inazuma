@@ -1,10 +1,11 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import Vue from "vue";
+import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
 import VButton from "./VButton";
 import VIconButton from "./VIconButton";
 import { TabDefinition } from "view/mainTypes";
 import * as emotion from "emotion";
+import { watch, ref } from "@vue/composition-api";
 const css = emotion.css;
 
 const TabButton = _fc<{
@@ -32,55 +33,65 @@ const TabButton = _fc<{
 interface ScopedSlotArgs {
   default: { tab: TabDefinition };
 }
-export default tsx.componentFactoryOf<{}, ScopedSlotArgs>().create({
+
+export default vca.component({
   name: "VTabs",
   props: {
     tabs: p.ofRoArray<TabDefinition>().required,
     selectedIndex: p(Number).required,
     closeTab: p.ofFunction<(key: string) => void>().required
   },
-  watch: {
-    selectedIndex(value: number) {
-      this.$nextTick(() => {
-        const tabButton = (this.$refs.tabButton as HTMLDivElement[])[value];
-        tabButton.scrollIntoView({ block: "nearest" });
-      });
-    }
-  },
-  methods: {
-    selectTab(index: number) {
-      this.$emit("update:selectedIndex", index);
-    }
-  },
-  render(): VNode {
-    const { tabs } = this;
-    const renderTab = this.$scopedSlots.default;
-    return (
-      <div class={style.container}>
-        <div class={style.tabbar}>
+  setup(p, ctx: vca.SetupContext<{}, ScopedSlotArgs>) {
+    const tabButton = ref(null as HTMLDivElement[] | null);
+    const update = vca.updateEmitter<typeof p>();
+    watch(
+      () => p.selectedIndex,
+      v => {
+        // scroll to selected tab
+        Vue.nextTick(() => {
+          if (!tabButton.value) {
+            return;
+          }
+          const el = tabButton.value[v];
+          el.scrollIntoView({ block: "nearest" });
+        });
+      }
+    );
+
+    const selectTab = (index: number) => {
+      update(ctx, "selectedIndex", index);
+    };
+
+    return () => {
+      const { tabs, closeTab, selectedIndex } = p;
+      const renderTab = ctx.slots.default;
+      return (
+        <div class={style.container}>
+          <div class={style.tabbar}>
+            {tabs.map((tab, index) => (
+              <TabButton
+                ref={tabButton as any}
+                refInFor
+                key={tab.key}
+                tab={tab}
+                selected={index === selectedIndex}
+                select={() => selectTab(index)}
+                close={() => closeTab(tab.key)}
+              />
+            ))}
+          </div>
           {tabs.map((tab, index) => (
-            <TabButton
-              ref="tabButton"
-              refInFor
+            <div
               key={tab.key}
-              tab={tab}
-              selected={index === this.selectedIndex}
-              select={() => this.selectTab(index)}
-              close={() => this.closeTab(tab.key)}
-            />
+              class={style.tabContent}
+              v-show={index === selectedIndex}
+            >
+              {renderTab({ tab })}
+            </div>
           ))}
         </div>
-        {tabs.map((tab, index) => (
-          <div
-            key={tab.key}
-            class={style.tabContent}
-            v-show={index === this.selectedIndex}
-          >
-            {renderTab({ tab })}
-          </div>
-        ))}
-      </div>
-    );
+      );
+    };
   }
 });
 

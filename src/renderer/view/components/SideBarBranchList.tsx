@@ -1,9 +1,7 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import { RenderContext } from "vue";
 import p from "vue-strict-prop";
 import { shortHash } from "view/filters";
 import * as md from "view/utils/md-classes";
-import { CssProperties } from "vue-css-definition";
 import {
   MdIcon,
   MdDoubleLineList,
@@ -11,85 +9,92 @@ import {
   MdListItem,
   MdListItemText
 } from "./base/md";
+import * as vca from "vue-tsx-support/lib/vca";
 import * as emotion from "emotion";
+import { ref, computed } from "@vue/composition-api";
 const css = emotion.css;
 
-// @vue/component
-export default tsx.componentFactoryOf<{ onClick: Ref }>().create({
+const getRefName = (b: Ref) => {
+  if (b.type === "heads" || b.type === "remotes" || b.type === "tags") {
+    return b.name;
+  } else {
+    return b.fullname;
+  }
+};
+
+const RefListItem = _fc(
+  ({ props }: RenderContext<{ r: Ref; handleClick: () => void }>) => {
+    return (
+      <MdListItem
+        class={style.listItem(props.r.type === "heads" && props.r.current)}
+        onClick={props.handleClick}
+      >
+        <MdListItemText>
+          <span class={[md.SUBHEADING, style.branchName]}>
+            {getRefName(props.r)}
+          </span>
+          <span class={[md.CAPTION, style.commitId]}>
+            {shortHash(props.r.id)}
+          </span>
+        </MdListItemText>
+      </MdListItem>
+    );
+  }
+);
+
+export default vca.component({
   name: "SideBarBranchList",
   props: {
     title: p(String).required,
     branches: p.ofRoArray<Ref>().required
   },
-  data() {
-    return {
-      expanded: true
+  setup(p, ctx: vca.SetupContext<{ onClick: (r: Ref) => void }>) {
+    const expanded = ref(true);
+    const listStyle = computed(() => ({
+      height: `${ListItemHeight * p.branches.length}px`
+    }));
+    const expandIconStyle = computed(() => ({
+      transform: `rotateX(${expanded.value ? 180 : 0}deg)`
+    }));
+    const toggleExpand = () => {
+      expanded.value = !expanded.value;
     };
-  },
-  computed: {
-    listStyle(): CssProperties {
-      return {
-        height: `${ListItemHeight * this.branches.length}px`
-      };
-    },
-    expandIconStyle(): CssProperties {
-      const deg = this.expanded ? 180 : 0;
-      return { transform: `rotateX(${deg}deg)` };
-    },
-    listItems(): VNode[] {
-      return this.branches.map(b => {
-        let name: string;
-        if (b.type === "heads" || b.type === "remotes" || b.type === "tags") {
-          name = b.name;
-        } else {
-          name = b.fullname;
-        }
-        const currentBranch = b.type === "heads" && b.current;
-        return (
-          <MdListItem
-            key={b.fullname}
-            class={style.listItem(currentBranch)}
-            onClick={() => this.$emit("click", b)}
+    const handleItemClick = (r: Ref) => {
+      vca.emitOn(ctx, "onClick", r);
+    };
+
+    return () => {
+      return (
+        <div class={style.wrapper}>
+          <MdSubheader
+            class={["md-primary", style.header]}
+            nativeOn-click={toggleExpand}
           >
-            <MdListItemText>
-              <span class={[md.SUBHEADING, style.branchName]}>{name}</span>
-              <span class={[md.CAPTION, style.commitId]}>
-                {shortHash(b.id)}
-              </span>
-            </MdListItemText>
-          </MdListItem>
-        );
-      });
-    }
-  },
-  methods: {
-    toggleExpand() {
-      this.expanded = !this.expanded;
-    }
-  },
-  render(): VNode {
-    return (
-      <div class={style.wrapper}>
-        <MdSubheader
-          class={["md-primary", style.header]}
-          nativeOn-click={this.toggleExpand}
-        >
-          <span>{this.title}</span>
-          <MdIcon class={style.expandIcon} style={this.expandIconStyle}>
-            arrow_drop_down
-          </MdIcon>
-        </MdSubheader>
-        <transition>
-          <div
-            v-show={this.expanded}
-            class={style.container}
-            style={this.listStyle}
-          >
-            <MdDoubleLineList>{this.listItems}</MdDoubleLineList>
-          </div>
-        </transition>
-      </div>
-    );
+            <span>{p.title}</span>
+            <MdIcon class={style.expandIcon} style={expandIconStyle.value}>
+              arrow_drop_down
+            </MdIcon>
+          </MdSubheader>
+          <transition>
+            <div
+              v-show={expanded.value}
+              class={style.container}
+              style={listStyle.value}
+            >
+              <MdDoubleLineList>
+                {p.branches.map(r => (
+                  <RefListItem
+                    key={r.fullname}
+                    r={r}
+                    handleClick={() => handleItemClick(r)}
+                  />
+                ))}
+              </MdDoubleLineList>
+            </div>
+          </transition>
+        </div>
+      );
+    };
   }
 });
 

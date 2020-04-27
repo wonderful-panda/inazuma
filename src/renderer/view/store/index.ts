@@ -1,5 +1,4 @@
-import Vue, { VueConstructor } from "vue";
-import * as tsx from "vue-tsx-support";
+import Vue from "vue";
 import {
   LogItem,
   ErrorLikeObject,
@@ -22,8 +21,7 @@ import {
   Context,
   Actions,
   Module,
-  createStore,
-  createMapper
+  createStore
 } from "vuex-smart-module";
 import { Store } from "vuex";
 
@@ -202,7 +200,6 @@ class RootActions
   }
 
   showError(payload: { error: ErrorLikeObject }) {
-    console.log(payload.error);
     this.errorReporter.actions.show(payload);
   }
 
@@ -239,7 +236,7 @@ class RootActions
       }
       this.actions.showCommits({ commits, refs });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
@@ -269,14 +266,14 @@ class RootActions
       });
       this.actions.showCommitDetail({ commit });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
   selectCommit(payload: { commitId: string }): Promise<void> {
     const index = this.state.commits.findIndex(c => c.id === payload.commitId);
     if (0 <= index) {
-      return this.setSelectedIndex({ index });
+      return this.actions.setSelectedIndex({ index });
     } else {
       return Promise.resolve();
     }
@@ -323,7 +320,7 @@ class RootActions
         ...payload
       });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
@@ -367,7 +364,7 @@ class RootActions
         }
       });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
@@ -389,8 +386,8 @@ class RootActions
       };
       this.tabs.actions.setTabLazyProps(payload);
     } catch (error) {
-      this.showError({ error });
-      this.removeTab({ key });
+      this.actions.showError({ error });
+      this.actions.removeTab({ key });
     }
   }
 
@@ -405,7 +402,7 @@ class RootActions
       };
       this.tabs.actions.addOrSelect({ tab });
     } catch (error) {
-      this.showError({ error });
+      this.actions.showError({ error });
     }
   }
 
@@ -433,8 +430,8 @@ class RootActions
       };
       this.tabs.actions.setTabLazyProps(payload);
     } catch (error) {
-      this.showError({ error });
-      this.removeTab({ key });
+      this.actions.showError({ error });
+      this.actions.removeTab({ key });
     }
   }
 
@@ -461,8 +458,6 @@ export const rootModule = new Module({
   modules
 });
 
-export const rootMapper = createMapper(rootModule);
-
 type ModuleState<M> = M extends Module<infer S, any, any, any> ? S : {};
 
 type CombinedState<
@@ -474,16 +469,18 @@ export type AppState = CombinedState<RootState, typeof modules>;
 export type AppStore = Store<AppState>;
 export const store: AppStore = createStore(rootModule);
 
-export const withStore = tsx.componentFactory.mixin(
-  (Vue as VueConstructor<Vue & { $store: AppStore }>).extend({
-    computed: {
-      state(): AppState {
-        return this.$store.state;
-      }
-    }
-  })
-);
-
 export function useRootModule() {
   return rootModule.context(store);
+}
+
+export function useErrorReporterModule() {
+  return errorReporterModule.context(store);
+}
+
+export function useDialogModule() {
+  return dialogModule.context(store);
+}
+
+export function useTabsModule() {
+  return tabsModule.context(store);
 }

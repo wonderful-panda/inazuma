@@ -1,9 +1,8 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import { MdTooltip, MdIcon, MdInput, MdField } from "./md";
+import { toNumber } from "core/utils";
 
-// @vue/component
-export default tsx.component({
+export default vca.component({
   name: "VTextField",
   props: {
     value: [String, Number],
@@ -20,49 +19,44 @@ export default tsx.component({
     max: Number,
     size: Number
   },
-  computed: {},
-  methods: {
-    labelNode(name: string | undefined): VNode | undefined {
-      return name ? <label>{name}</label> : undefined;
-    },
-    helperTextNode(name: string | undefined): VNode | undefined {
-      return name ? (
-        <span staticClass="md-helper-text">{name}</span>
-      ) : (
-        undefined
-      );
-    },
-    iconNode(name: string | undefined): VNode | undefined {
-      return name ? <MdIcon>{name}</MdIcon> : undefined;
-    },
-    tooltipNode(text: string | undefined): VNode | undefined {
-      return text ? <MdTooltip>{text}</MdTooltip> : undefined;
-    },
-    onInput(value: string | number | undefined) {
-      if (this.type === "number") {
-        this.$emit("update:value", (this as any)._n(value));
+  setup(p, ctx) {
+    const update = vca.updateEmitter<typeof p>();
+    const labelNode = (name: string | undefined) =>
+      name ? <label>{name}</label> : undefined;
+
+    const helperTextNode = (name: string | undefined) =>
+      name ? <span staticClass="md-helper-text">{name}</span> : undefined;
+
+    const iconNode = (name: string | undefined) =>
+      name ? <MdIcon>{name}</MdIcon> : undefined;
+
+    const tooltipNode = (text: string | undefined) =>
+      text ? <MdTooltip>{text}</MdTooltip> : undefined;
+
+    const onInput = (value: string | number) => {
+      if (p.type === "number") {
+        update(ctx, "value", toNumber(value));
       } else {
-        this.$emit("update:value", value);
+        update(ctx, "value", value);
       }
-    }
-  },
-  render(): VNode {
-    return (
+    };
+
+    return () => (
       <MdField>
-        {this.iconNode(this.headIcon)}
-        {this.labelNode(this.label)}
+        {iconNode(p.headIcon)}
+        {labelNode(p.label)}
         <MdInput
-          type={this.type}
-          placeholder={this.placeholder}
-          value={this.value}
-          onInput={this.onInput}
-          required={this.required}
-          disabled={this.disabled}
-          {...{ attrs: { min: this.min, max: this.max, size: this.size } }}
+          type={p.type}
+          placeholder={p.placeholder}
+          value={p.value}
+          onInput={onInput}
+          required={p.required}
+          disabled={p.disabled}
+          {...{ attrs: { min: p.min, max: p.max, size: p.size } }}
         />
-        {this.helperTextNode(this.helperText)}
-        {this.iconNode(this.inlineIcon)}
-        {this.tooltipNode(this.tooltip)}
+        {helperTextNode(p.helperText)}
+        {iconNode(p.inlineIcon)}
+        {tooltipNode(p.tooltip)}
       </MdField>
     );
   }

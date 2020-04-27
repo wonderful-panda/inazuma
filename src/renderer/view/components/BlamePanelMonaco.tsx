@@ -7,7 +7,7 @@ import Vue from "vue";
 import { __sync } from "../utils/modifiers";
 import * as emotion from "emotion";
 import { ref, computed, watch } from "@vue/composition-api";
-import { updateEmitter, formatDateL } from "core/utils";
+import { formatDateL } from "core/utils";
 const css = emotion.css;
 
 const style = css`
@@ -52,7 +52,7 @@ export const BlamePanelMonaco = vca.component({
     selectedCommitId: p(String).required
   },
   setup(props, ctx: vca.SetupContext<PrefixedEvents>) {
-    const emitUpdate = updateEmitter<typeof props>();
+    const emitUpdate = vca.updateEmitter<typeof props>();
     const editor = ref(
       undefined as monaco.editor.IStandaloneCodeEditor | undefined
     );

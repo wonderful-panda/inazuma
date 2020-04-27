@@ -10,7 +10,7 @@ import {
 } from "vue-vtable";
 import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
-import { getExtension, updateEmitter, withPseudoSetter } from "core/utils";
+import { getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
 import VBackdropSpinner from "./base/VBackdropSpinner";
@@ -21,11 +21,11 @@ import { filterTreeNodes } from "core/tree";
 import { MdEmptyState } from "./base/md";
 import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
-import { useRootModule } from "view/store";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, watch, computed, reactive } from "@vue/composition-api";
 import { withClass } from "./base/withClass";
-import { useStorage, injectNamespacedStorage } from "./base/useStorage";
+import { injectErrorHandler } from "./injection/errorHandler";
+import { injectStorage, useStorage } from "./injection/storage";
 const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
@@ -122,29 +122,37 @@ const ExpandButton = withClass(
   `
 );
 
-const FilterToolbar = _fc<{
-  filterText: string;
-  expandAll: () => void;
-  collapseAll: () => void;
-}>(({ props, listeners }) => {
-  const filterText = withPseudoSetter(props, "filterText", listeners);
-  return (
-    <div style={{ display: "flex" }}>
-      <VTextField
-        class={style.filterField}
-        inlineIcon="filter_list"
-        tooltip="Filename filter"
-        size={1}
-        value={__sync(filterText.value, filterText.setValue)}
-      />
-      <ExpandButton tooltip="Expand all" action={props.expandAll}>
-        expand_more
-      </ExpandButton>
-      <ExpandButton tooltip="Collapse all" action={props.collapseAll}>
-        expand_less
-      </ExpandButton>
-    </div>
-  );
+const FilterToolbar = vca.component({
+  name: "FilterToolbar",
+  props: {
+    filterText: p(String).required,
+    expandAll: p.ofFunction<() => void>().required,
+    collapseAll: p.ofFunction<() => void>().required
+  },
+  setup(p, ctx) {
+    const update = vca.updateEmitter<typeof p>();
+    const filterText = computed({
+      get: () => p.filterText,
+      set: v => update(ctx, "filterText", v)
+    });
+    return () => (
+      <div style={{ display: "flex" }}>
+        <VTextField
+          class={style.filterField}
+          inlineIcon="filter_list"
+          tooltip="Filename filter"
+          size={1}
+          value={__sync(filterText.value)}
+        />
+        <ExpandButton tooltip="Expand all" action={p.expandAll}>
+          expand_more
+        </ExpandButton>
+        <ExpandButton tooltip="Collapse all" action={p.collapseAll}>
+          expand_less
+        </ExpandButton>
+      </div>
+    );
+  }
 });
 
 const LeftPanel = vca.component({
@@ -154,7 +162,7 @@ const LeftPanel = vca.component({
     selectedPath: p(String).required
   },
   setup(props, ctx) {
-    const emitUpdate = updateEmitter<typeof props>();
+    const emitUpdate = vca.updateEmitter<typeof props>();
     const filterText = ref("");
     const filteredRoots = ref(props.rootNodes);
     watch(
@@ -274,6 +282,7 @@ const RightPanel = vca.component({
 
 const LstreePanel = vca.component({
   props: {
+    repoPath: p(String).required,
     sha: p(String).required,
     rootNodes: p.ofRoArray<LsTreeEntry>().required
   },
@@ -284,7 +293,8 @@ const LstreePanel = vca.component({
       blamePath: "",
       blame: undefined as undefined | Blame
     });
-    const storage = injectNamespacedStorage();
+    const errorHandler = injectErrorHandler();
+    const storage = injectStorage();
     const persistState = useStorage(
       {
         columnWidths: {} as Record<string, number>,
@@ -293,8 +303,6 @@ const LstreePanel = vca.component({
       storage,
       "LsTreePanel"
     );
-
-    const rootCtx = useRootModule();
 
     watch(
       () => state.treePath,
@@ -306,16 +314,15 @@ const LstreePanel = vca.component({
         }
         try {
           state.loading = true;
-          const { repoPath } = rootCtx.state;
           const blame = await browserCommand.getBlame({
-            repoPath,
+            repoPath: props.repoPath,
             relPath: value,
             sha: props.sha
           });
           state.blamePath = value;
           state.blame = blame;
         } catch (error) {
-          rootCtx.actions.showError({ error });
+          errorHandler.handleError({ error });
         } finally {
           state.loading = false;
         }

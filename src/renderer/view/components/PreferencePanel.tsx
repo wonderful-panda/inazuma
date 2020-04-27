@@ -1,5 +1,4 @@
-import Vue, { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
+import * as vca from "vue-tsx-support/lib/vca";
 import p from "vue-strict-prop";
 import VButton from "./base/VButton";
 import VModal, { ModalContainerClass } from "./base/VModal";
@@ -8,6 +7,8 @@ import * as md from "view/utils/md-classes";
 import { __sync } from "babel-plugin-vue-jsx-modifier/lib/modifiers";
 import { MdSubheader } from "./base/md";
 import * as emotion from "emotion";
+import { ref, reactive } from "@vue/composition-api";
+import { withClass } from "./base/withClass";
 const css = emotion.css;
 
 const style = {
@@ -50,8 +51,9 @@ const style = {
   `
 };
 
-// @vue/component
-export default tsx.component({
+const SubHeader = withClass(MdSubheader, [md.PRIMARY, style.subHeader]);
+
+export default vca.component({
   name: "PreferencePanel",
   props: {
     active: p(Boolean).required,
@@ -59,80 +61,68 @@ export default tsx.component({
     save: p.ofFunction<(config: Config) => Promise<void>>().required,
     hide: p.ofFunction<() => void>().required
   },
-  data() {
-    // don't use passed config directly.
-    return {
-      config: JSON.parse(JSON.stringify(this.initialConfig)) as Config
-    };
-  },
-  mounted() {
-    Vue.nextTick(() => {
-      const input = this.$el.querySelector("input") as HTMLInputElement;
-      if (input) {
-        input.focus();
-      }
-    });
-  },
-  methods: {
-    async onOk() {
-      await this.save(this.config);
-      this.hide();
-    },
-    renderSubheader(text: string): VNode {
-      return (
-        <MdSubheader class={[md.PRIMARY, style.subHeader]}>{text}</MdSubheader>
-      );
-    }
-  },
-  render(): VNode {
-    if (!this.active) {
-      return <div style={{ display: "none" }} />;
-    }
-    const config = this.config;
-    return (
-      <VModal class={style.modalBase} title="PREFERENCE" close={this.hide}>
-        <form class={style.modalContent} action="#">
-          {this.renderSubheader("Font settings")}
-          <VTextField
-            class={style.input}
-            label="Default font"
-            value={__sync(config.fontFamily.standard)}
-          />
-          <VTextField
-            class={style.input}
-            label="Monospace font"
-            value={__sync(config.fontFamily.monospace)}
-          />
-          {this.renderSubheader("External tools")}
-          <VTextField
-            class={style.input}
-            label="Path of external diff tool"
-            value={__sync(config.externalDiffTool)}
-          />
-          <VTextField
-            class={style.input}
-            label="Interactive shell command"
-            value={__sync(config.interactiveShell)}
-          />
-          {this.renderSubheader("Miscellaneous")}
-          <VTextField
-            type="number"
-            class={style.numberInput}
-            label="Number of recent opened list"
-            min={0}
-            max={20}
-            value={__sync(config.recentListCount)}
-          />
-        </form>
-        <template slot="footer-buttons">
-          <VButton primary mini action={this.onOk}>
-            <span class={md.TITLE}>SAVE</span>
-          </VButton>
-          <VButton mini action={this.hide}>
-            <span class={md.TITLE}>CANCEL</span>
-          </VButton>
-        </template>
-      </VModal>
+  setup(p) {
+    const formRef = ref(null as HTMLFormElement | null);
+    const config = reactive(
+      JSON.parse(JSON.stringify(p.initialConfig)) as Config
     );
+    const onOk = async () => {
+      await p.save(config);
+      p.hide();
+    };
+    return () => {
+      if (!p.active) {
+        return <div style={{ display: "none" }} />;
+      }
+      return (
+        <VModal class={style.modalBase} title="PREFERENCE" close={p.hide}>
+          <form
+            ref={formRef.value as any}
+            class={style.modalContent}
+            action="#"
+          >
+            <SubHeader>Font Settings</SubHeader>
+            <VTextField
+              class={style.input}
+              label="Default font"
+              value={__sync(config.fontFamily.standard)}
+            />
+            <VTextField
+              class={style.input}
+              label="Monospace font"
+              value={__sync(config.fontFamily.monospace)}
+            />
+            <SubHeader>External tools</SubHeader>
+            <VTextField
+              class={style.input}
+              label="Path of external diff tool"
+              value={__sync(config.externalDiffTool)}
+            />
+            <VTextField
+              class={style.input}
+              label="Interactive shell command"
+              value={__sync(config.interactiveShell)}
+            />
+            <SubHeader>Miscellaneous</SubHeader>
+            <VTextField
+              type="number"
+              class={style.numberInput}
+              label="Number of recent opened list"
+              min={0}
+              max={20}
+              value={__sync(config.recentListCount)}
+            />
+          </form>
+          <template slot="footer-buttons">
+            <VButton primary mini action={onOk}>
+              <span class={md.TITLE}>SAVE</span>
+            </VButton>
+            <VButton mini action={p.hide}>
+              <span class={md.TITLE}>CANCEL</span>
+            </VButton>
+          </template>
+        </VModal>
+      );
+    };
   }
 });

@@ -1,5 +1,4 @@
 import { VNode } from "vue";
-import moment from "moment";
 import * as tsx from "vue-tsx-support";
 import { vtableOf, VtableColumn, Vtable, VtableEventsOn } from "vue-vtable";
 import p from "vue-strict-prop";
@@ -7,6 +6,9 @@ import LogTableCellGraph from "./LogTableCellGraph";
 import LogTableCellSummary from "./LogTableCellSummary";
 import { LogItem } from "../mainTypes";
 import * as emotion from "emotion";
+import { GitHash } from "./GitHash";
+import { MonoSpan } from "./base/mono";
+import { formatDateL } from "core/utils";
 const css = emotion.css;
 
 const VtableT = vtableOf<LogItem>();
@@ -65,21 +67,11 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create({
             <LogTableCellGraph graph={item.graph} gridWidth={12} height={24} />
           );
         case "id":
-          return (
-            <span class="fontfamily--monospace" title={item.commit.id}>
-              {item.commit.id.substring(0, 8)}
-            </span>
-          );
+          return <GitHash hash={item.commit.id} />;
         case "author":
           return item.commit.author;
         case "date":
-          return (
-            <span class="fontfamily--monospace">
-              {moment(item.commit.date)
-                .local()
-                .format("L")}
-            </span>
-          );
+          return <MonoSpan>{formatDateL(item.commit.date)}</MonoSpan>;
         case "comment":
           return <LogTableCellSummary commit={item.commit} refs={item.refs} />;
         default:
