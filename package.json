@@ -96,7 +96,7 @@
     "vue-strict-prop": "^0.3.4",
     "vue-template-compiler": "^2.6.11",
     "vue-tsx-support": "3.0.0-dev.8b",
-    "vue-vtable": "1.0.0-beta.7",
+    "vue-vtable": "1.0.0-beta.8a",
     "vuex": "^3.1.2",
     "vuex-smart-module": "^0.3.2",
     "webpack": "^4.41.5",

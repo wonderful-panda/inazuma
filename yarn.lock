@@ -7687,10 +7687,10 @@ vue-tsx-support@3.0.0-dev.8b:
   resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-dev.8b.tgz#3ab31afda79e84b28cf7effed786095aaeefa230"
   integrity sha512-oWj/hfvavCo5a3OxHKYsAcYJxcIJ3kt3WDu9utcq5pENAdZC8SZRV4k2WvQKUjsLEXgBJOEmYVxo3l/A9Cm60Q==
 
-vue-vtable@1.0.0-beta.7:
-  version "1.0.0-beta.7"
-  resolved "https://registry.yarnpkg.com/vue-vtable/-/vue-vtable-1.0.0-beta.7.tgz#2bda40d402a4892b99efd2e5a6add95290a6ed48"
-  integrity sha512-gI2tpfrM6M3OLr3kY5jXR9bZutC0FoMfZK4RTkeLU4ZD5QEWZQVGQx1u37+2QqbqhBr+0z8znEQehEpoXUVboA==
+vue-vtable@1.0.0-beta.8a:
+  version "1.0.0-beta.8a"
+  resolved "https://registry.yarnpkg.com/vue-vtable/-/vue-vtable-1.0.0-beta.8a.tgz#9521dea13ace54cbc9cad708a1568707206f47c8"
+  integrity sha512-sNYmPJ4e9CwIReC11gDyVkdlAiTrYIroedNVFTanVFPWLDn8XGDRhEVRPupzV6qfZagtHEYfiDzCbM0zgAb2XQ==
 
 vue@^2.3.0:
   version "2.6.10"
