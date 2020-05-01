@@ -15,6 +15,7 @@ import { required } from "./base/prop";
 const css = emotion.css;
 
 const BlamePanel = vca.component({
+  name: "BlamePanel",
   props: {
     path: required(String),
     sha: required(String),

@@ -34,7 +34,7 @@ const fileColumns: readonly VtableColumn[] = Object.freeze([
 export default vca.component({
   name: "FileTable",
   props: {
-    files: required<readonly FileEntry[]>(),
+    files: required<readonly FileEntry[]>(Array),
     widths: required<Record<string, number>>(Object)
   },
   setup(p, ctx: vca.SetupContext<VtableEventsOn<FileEntry>>) {

@@ -13,6 +13,7 @@ const style = css`
 `;
 
 export default vca.component({
+  name: "RepositoryPageTabFile",
   props: {
     tabkey: required(String),
     path: required(String),

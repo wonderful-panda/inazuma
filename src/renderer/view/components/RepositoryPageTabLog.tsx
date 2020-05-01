@@ -16,6 +16,7 @@ import {
 } from "./injection/storage";
 
 export default vca.component({
+  name: "RepositoryPageTabLog",
   setup() {
     const rootCtx = useRootModule();
     const storage = injectStorage();

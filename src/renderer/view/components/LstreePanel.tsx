@@ -156,6 +156,7 @@ const FilterToolbar = vca.component({
 });
 
 const LeftPanel = vca.component({
+  name: "LstreeLeftPanel",
   props: {
     rootNodes: required<readonly LsTreeEntry[]>(Array),
     columnWidths: required<Record<string, number>>(Object),
@@ -246,6 +247,7 @@ const LeftPanel = vca.component({
 });
 
 const RightPanel = vca.component({
+  name: "LstreeRightPanel",
   props: {
     loading: required(Boolean),
     path: required(String),
@@ -281,6 +283,7 @@ const RightPanel = vca.component({
 });
 
 const LstreePanel = vca.component({
+  name: "LstreePanel",
   props: {
     repoPath: required(String),
     sha: required(String),

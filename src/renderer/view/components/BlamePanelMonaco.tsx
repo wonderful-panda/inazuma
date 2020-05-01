@@ -46,6 +46,7 @@ interface PrefixedEvents {
 }
 
 export const BlamePanelMonaco = vca.component({
+  name: "BlamePanelMonaco",
   props: {
     language: required(String),
     blame: required<Blame>(),

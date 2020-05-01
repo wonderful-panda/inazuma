@@ -8,14 +8,6 @@ const css = emotion.css;
 // @vue/component
 export default vca.component({
   name: "SideBarBranches",
-  /*
-  methods: {
-    ...rootMapper.mapActions(["selectCommit"]),
-    selectCommitByRef(r: Ref) {
-      this.selectCommit({ commitId: r.id });
-    }
-  },
-  */
   setup() {
     const rootModule = useRootModule();
     const selectCommitByRef = (r: Ref) =>

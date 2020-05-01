@@ -7,6 +7,7 @@ import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 import { required, optional } from "./base/prop";
 
 export default vca.component({
+  name: "RepositoryPageTabTree",
   props: {
     tabkey: required(String),
     sha: required(String),

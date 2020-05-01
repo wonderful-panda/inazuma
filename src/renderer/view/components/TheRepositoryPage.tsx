@@ -72,6 +72,7 @@ const TabContent = _fc<{ tab: RepositoryTabDefinition }>(ctx => {
 });
 
 export default vca.component({
+  name: "TheRepositoryPage",
   setup() {
     const storage = injectStorage();
     const persist = useStorage(

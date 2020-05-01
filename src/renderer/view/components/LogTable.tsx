@@ -1,6 +1,11 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
-import { vtableOf, VtableColumn, Vtable, VtableEventsOn } from "vue-vtable";
+import * as vca from "vue-tsx-support/lib/vca";
+import {
+  vtableOf,
+  VtableColumn,
+  Vtable,
+  VtableEventsOn,
+  VtableSlotCellProps
+} from "vue-vtable";
 import LogTableCellGraph from "./LogTableCellGraph";
 import LogTableCellSummary from "./LogTableCellSummary";
 import { LogItem } from "../mainTypes";
@@ -9,12 +14,41 @@ import { GitHash } from "./GitHash";
 import { MonoSpan } from "./base/mono";
 import { formatDateL } from "core/utils";
 import { required } from "./base/prop";
+import { watch, ref } from "@vue/composition-api";
 const css = emotion.css;
 
 const VtableT = vtableOf<LogItem>();
 
-// @vue/component
-export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create({
+const columns: readonly VtableColumn[] = Object.freeze([
+  {
+    id: "graph",
+    defaultWidth: 120,
+    minWidth: 40
+  },
+  {
+    id: "id",
+    defaultWidth: 80,
+    minWidth: 40
+  },
+  {
+    id: "author",
+    defaultWidth: 120,
+    minWidth: 40
+  },
+  {
+    id: "date",
+    defaultWidth: 100,
+    minWidth: 40
+  },
+  {
+    id: "comment",
+    defaultWidth: 600,
+    className: "flex--expand",
+    minWidth: 200
+  }
+]);
+
+export default vca.component({
   name: "LogTable",
   props: {
     items: required<readonly LogItem[]>(Array),
@@ -22,45 +56,19 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create({
     selectedIndex: required(Number),
     widths: required<Record<string, number>>(Object)
   },
-  computed: {
-    columns(): VtableColumn[] {
-      return [
-        {
-          id: "graph",
-          defaultWidth: 120,
-          minWidth: 40
-        },
-        {
-          id: "id",
-          defaultWidth: 80,
-          minWidth: 40
-        },
-        {
-          id: "author",
-          defaultWidth: 120,
-          minWidth: 40
-        },
-        {
-          id: "date",
-          defaultWidth: 100,
-          minWidth: 40
-        },
-        {
-          id: "comment",
-          defaultWidth: 600,
-          className: "flex--expand",
-          minWidth: 200
+  setup(p, ctx: vca.SetupContext<VtableEventsOn<LogItem>>) {
+    const vtableRef = ref<Vtable<LogItem> | null>(null);
+    watch(
+      () => p.selectedIndex,
+      newValue => {
+        if (vtableRef.value) {
+          vtableRef.value.ensureVisible(newValue);
         }
-      ];
-    }
-  },
-  watch: {
-    selectedIndex(newValue: number) {
-      (this.$refs.vtable as Vtable<LogItem>).ensureVisible(newValue);
-    }
-  },
-  methods: {
-    renderCell(columnId: string, item: LogItem): VNode | string {
+      }
+    );
+
+    const renderCell = (payload: VtableSlotCellProps<LogItem>) => {
+      const { columnId, item } = payload;
       switch (columnId) {
         case "graph":
           return (
@@ -75,29 +83,26 @@ export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create({
         case "comment":
           return <LogTableCellSummary commit={item.commit} refs={item.refs} />;
         default:
-          return "";
+          return undefined;
       }
-    }
-  },
-  render(): VNode {
-    const { rowHeight, selectedIndex } = this;
-    return (
+    };
+    const getItemKey = (item: LogItem) => item.commit.id;
+    const getRowClass = (_item: LogItem, index: number) =>
+      index === p.selectedIndex ? style.selectedRow : "";
+
+    return () => (
       <VtableT
-        ref="vtable"
+        ref={vtableRef as any}
         staticClass={style.container}
-        items={this.items}
-        columns={this.columns}
-        widths={this.widths}
-        rowHeight={rowHeight}
+        items={p.items}
+        columns={columns}
+        widths={p.widths}
+        rowHeight={p.rowHeight}
         rowStyleCycle={2}
-        getItemKey={item => item.commit.id}
-        getRowClass={(_item, index) =>
-          index === selectedIndex ? style.selectedRow : ""
-        }
-        {...{ on: this.$listeners }}
-        scopedSlots={{
-          cell: p => [this.renderCell(p.columnId, p.item)]
-        }}
+        getItemKey={getItemKey}
+        getRowClass={getRowClass}
+        {...{ on: ctx.listeners }}
+        scopedSlots={{ cell: renderCell }}
       />
     );
   }
