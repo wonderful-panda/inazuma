@@ -1,12 +1,12 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import { vtableOf, VtableColumn, Vtable, VtableEventsOn } from "vue-vtable";
-import p from "vue-strict-prop";
 import { LogItem } from "../mainTypes";
 import { style } from "./LogTable";
 import { ref, watch } from "@vue/composition-api";
 import { formatDateL } from "core/utils";
 import { GitHash } from "./GitHash";
 import { MonoSpan } from "./base/mono";
+import { required } from "./base/prop";
 
 const VtableT = vtableOf<FileCommit>();
 const columns: VtableColumn[] = [
@@ -41,10 +41,10 @@ const columns: VtableColumn[] = [
 export default vca.component({
   name: "FileLogTable",
   props: {
-    items: p.ofRoArray<FileCommit>().required,
-    rowHeight: p(Number).required,
-    selectedIndex: p(Number).required,
-    widths: p.ofObject<Dict<number>>().required
+    items: required<readonly FileCommit[]>(Array),
+    rowHeight: required(Number),
+    selectedIndex: required(Number),
+    widths: required<Record<string, number>>()
   },
   setup(p, ctx: vca.SetupContext<VtableEventsOn<FileCommit>>) {
     const vtableRef = ref(null as Vtable<LogItem> | null);

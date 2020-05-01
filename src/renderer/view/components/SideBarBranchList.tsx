@@ -1,5 +1,4 @@
 import { RenderContext } from "vue";
-import p from "vue-strict-prop";
 import { shortHash } from "view/filters";
 import * as md from "view/utils/md-classes";
 import {
@@ -12,6 +11,7 @@ import {
 import * as vca from "vue-tsx-support/lib/vca";
 import * as emotion from "emotion";
 import { ref, computed } from "@vue/composition-api";
+import { required } from "./base/prop";
 const css = emotion.css;
 
 const getRefName = (b: Ref) => {
@@ -45,8 +45,8 @@ const RefListItem = _fc(
 export default vca.component({
   name: "SideBarBranchList",
   props: {
-    title: p(String).required,
-    branches: p.ofRoArray<Ref>().required
+    title: required(String),
+    branches: required<readonly Ref[]>(Array)
   },
   setup(p, ctx: vca.SetupContext<{ onClick: (r: Ref) => void }>) {
     const expanded = ref(true);

@@ -4,7 +4,6 @@ import {
   useRootModule
 } from "../store";
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
 import TitleBarButton from "./TitleBarButton";
@@ -15,12 +14,13 @@ import { MdList } from "./base/md";
 import * as emotion from "emotion";
 import { ref, computed } from "@vue/composition-api";
 import { evaluateSlot } from "core/utils";
+import { required } from "./base/prop";
 const css = emotion.css;
 
 export default vca.component({
   name: "BaseLayout",
   props: {
-    title: p(String).required
+    title: required(String)
   },
   setup(p, ctx) {
     const rootModule = useRootModule();

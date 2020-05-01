@@ -1,12 +1,12 @@
 import * as tsx from "vue-tsx-support";
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import { queryFocusableElements } from "view/utils/dom";
 import VCloseButton from "./VCloseButton";
 import * as md from "view/utils/md-classes";
 import { __capture } from "view/utils/modifiers";
 import * as emotion from "emotion";
 import { onMounted, ref } from "@vue/composition-api";
+import { required } from "./prop";
 const css = emotion.css;
 
 const m = tsx.modifiers;
@@ -56,8 +56,8 @@ const style = {
 export default vca.component({
   name: "VModal",
   props: {
-    title: p(String).required,
-    close: p.ofFunction<() => void>().required
+    title: required(String),
+    close: required(Function)
   },
   setup(p, ctx) {
     const root = ref(null as null | HTMLDivElement);

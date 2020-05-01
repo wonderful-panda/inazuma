@@ -1,15 +1,15 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import VCloseButton from "./base/VCloseButton";
 import * as emotion from "emotion";
 import { evaluateSlot } from "core/utils";
+import { required } from "./base/prop";
 const css = emotion.css;
 
 export default vca.component({
   name: "SideBarBase",
   props: {
-    title: p(String).required,
-    hide: p.ofFunction<() => void>().required
+    title: required(String),
+    hide: required(Function)
   },
   setup(p, ctx) {
     return () => (

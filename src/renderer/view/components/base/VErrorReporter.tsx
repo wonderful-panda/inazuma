@@ -1,19 +1,19 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import { ErrorLikeObject } from "view/mainTypes";
 import VIconButton from "./VIconButton";
-import p from "vue-strict-prop";
 import * as md from "view/utils/md-classes";
 import { MdSnackbar, MdIcon } from "./md";
 import * as emotion from "emotion";
 import { __sync } from "view/utils/modifiers";
 import { computed } from "@vue/composition-api";
+import { optional, required } from "./prop";
 const css = emotion.css;
 
 export default vca.component({
   name: "VErrorReporter",
   props: {
-    error: p.ofObject<ErrorLikeObject>().optional,
-    hide: p.ofFunction<() => void>().required
+    error: optional<ErrorLikeObject>(),
+    hide: required(Function)
   },
   setup(p) {
     const hasError = computed({

@@ -1,24 +1,25 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import { clamp } from "core/utils";
 import { CssProperties } from "vue-css-definition";
 import VSplitter, { SplitterEventArgs } from "./VSplitter";
 import { __sync } from "view/utils/modifiers";
 import { ref, computed } from "@vue/composition-api";
+import { required, withDefault } from "./prop";
+import { SplitterDirection } from "view/mainTypes";
 
 const FLEX_SUM = 1000;
 
 export default vca.component({
   name: "VSplitterPanel",
   props: {
-    direction: p.ofStringLiterals("horizontal", "vertical").required,
-    splitterWidth: p(Number).validator(v => v > 0).required,
-    ratio: p(Number).validator(v => 0 <= v && v <= 1).required,
-    minSizeFirst: p(String, Number).default("10%"),
-    minSizeSecond: p(String, Number).default("10%"),
-    showFirst: p(Boolean).default(true),
-    showSecond: p(Boolean).default(true),
-    allowDirectionChange: p(Boolean).default(false)
+    direction: required<SplitterDirection>(String),
+    splitterWidth: required(Number),
+    ratio: required(Number),
+    minSizeFirst: withDefault([String, Number], "10%"),
+    minSizeSecond: withDefault([String, Number], "10%"),
+    showFirst: withDefault(Boolean, true),
+    showSecond: withDefault(Boolean, true),
+    allowDirectionChange: withDefault(Boolean, false)
   },
   setup(p, ctx) {
     const flexFirst = computed(() => Math.floor(FLEX_SUM * p.ratio));

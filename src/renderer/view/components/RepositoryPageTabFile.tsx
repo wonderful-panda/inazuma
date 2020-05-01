@@ -1,11 +1,11 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import { useRootModule } from "../store";
-import p from "vue-strict-prop";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import BlamePanel from "./BlamePanel";
 import * as emotion from "emotion";
 import { onMounted } from "@vue/composition-api";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";
+import { optional, required } from "./base/prop";
 const css = emotion.css;
 
 const style = css`
@@ -14,10 +14,10 @@ const style = css`
 
 export default vca.component({
   props: {
-    tabkey: p(String).required,
-    path: p(String).required,
-    sha: p(String).required,
-    blame: p.ofObject<Blame>().optional
+    tabkey: required(String),
+    path: required(String),
+    sha: required(String),
+    blame: optional<Blame>()
   },
   setup(props) {
     const rootCtx = useRootModule();

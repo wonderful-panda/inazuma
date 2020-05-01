@@ -5,6 +5,7 @@
 declare type Resolve<T> = (arg: T) => void;
 declare type Dict<T> = { [key: string]: T };
 declare type Consumer<T> = (value: T) => void;
+declare type Func<P, R> = (arg: P) => R;
 
 /**
  * Auto updated parsistent data written to .environment.json

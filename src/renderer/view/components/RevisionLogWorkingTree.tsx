@@ -1,5 +1,4 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import VSplitterPanel from "./base/VSplitterPanel";
 import FileTable from "./FileTable";
 import * as md from "view/utils/md-classes";
@@ -12,12 +11,13 @@ import {
 } from "../commands/fileCommandDiff";
 import { computed } from "@vue/composition-api";
 import { injectStorage, useStorage } from "./injection/storage";
+import { required } from "./base/prop";
 const css = emotion.css;
 
 export default vca.component({
   name: "RevisionLogWorkingTree",
   props: {
-    commit: p.ofType<CommitDetail>().required
+    commit: required<CommitDetail>()
   },
   setup(p) {
     const storage = injectStorage();

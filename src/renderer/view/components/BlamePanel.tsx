@@ -1,5 +1,4 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import { shortHash } from "../filters";
 import { getLangIdFromPath } from "view/monaco";
 import FileLogTable from "./FileLogTable";
@@ -12,13 +11,14 @@ import { showFileContextMenu } from "../commands";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, computed } from "@vue/composition-api";
 import { injectStorage, useStorage } from "./injection/storage";
+import { required } from "./base/prop";
 const css = emotion.css;
 
 const BlamePanel = vca.component({
   props: {
-    path: p(String).required,
-    sha: p(String).required,
-    blame: p.ofObject<Blame>().required
+    path: required(String),
+    sha: required(String),
+    blame: required<Blame>()
   },
   setup(props) {
     const selectedCommitId = ref("");

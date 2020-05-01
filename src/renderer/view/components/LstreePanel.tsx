@@ -9,7 +9,6 @@ import {
   Vtreetable
 } from "vue-vtable";
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import { getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
@@ -26,6 +25,7 @@ import { ref, watch, computed, reactive } from "@vue/composition-api";
 import { withClass } from "./base/withClass";
 import { injectErrorHandler } from "./injection/errorHandler";
 import { injectStorage, useStorage } from "./injection/storage";
+import { required, optional } from "./base/prop";
 const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
@@ -125,9 +125,9 @@ const ExpandButton = withClass(
 const FilterToolbar = vca.component({
   name: "FilterToolbar",
   props: {
-    filterText: p(String).required,
-    expandAll: p.ofFunction<() => void>().required,
-    collapseAll: p.ofFunction<() => void>().required
+    filterText: required(String),
+    expandAll: required(Function),
+    collapseAll: required(Function)
   },
   setup(p, ctx) {
     const update = vca.updateEmitter<typeof p>();
@@ -157,9 +157,9 @@ const FilterToolbar = vca.component({
 
 const LeftPanel = vca.component({
   props: {
-    rootNodes: p.ofRoArray<LsTreeEntry>().required,
-    columnWidths: p.ofObject<Record<string, number>>().required,
-    selectedPath: p(String).required
+    rootNodes: required<readonly LsTreeEntry[]>(Array),
+    columnWidths: required<Record<string, number>>(Object),
+    selectedPath: required(String)
   },
   setup(props, ctx) {
     const emitUpdate = vca.updateEmitter<typeof props>();
@@ -247,10 +247,10 @@ const LeftPanel = vca.component({
 
 const RightPanel = vca.component({
   props: {
-    loading: p(Boolean).required,
-    path: p(String).required,
-    sha: p(String).required,
-    blame: p.ofObject<Blame>().optional
+    loading: required(Boolean),
+    path: required(String),
+    sha: required(String),
+    blame: optional<Blame>(Object)
   },
   setup(props) {
     return () => {
@@ -282,9 +282,9 @@ const RightPanel = vca.component({
 
 const LstreePanel = vca.component({
   props: {
-    repoPath: p(String).required,
-    sha: p(String).required,
-    rootNodes: p.ofRoArray<LsTreeEntry>().required
+    repoPath: required(String),
+    sha: required(String),
+    rootNodes: required<readonly LsTreeEntry[]>(Array)
   },
   setup(props) {
     const state = reactive({

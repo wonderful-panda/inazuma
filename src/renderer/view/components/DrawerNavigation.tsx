@@ -1,15 +1,15 @@
 import { modifiers as m } from "vue-tsx-support";
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import { MdIcon, MdListItem } from "./base/md";
+import { required, optional } from "./base/prop";
 
 // @vue/component
 export default vca.component({
   name: "DrawerNavigation",
   props: {
-    icon: p(String).required,
-    text: p(String).required,
-    action: p.ofFunction<() => void>().optional
+    icon: required(String),
+    text: required(String),
+    action: optional(Function)
   },
   setup(p) {
     return () => {

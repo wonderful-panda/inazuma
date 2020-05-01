@@ -1,5 +1,4 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import VButton from "./base/VButton";
 import VModal, { ModalContainerClass } from "./base/VModal";
 import VTextField from "./base/VTextField";
@@ -9,6 +8,7 @@ import { MdSubheader } from "./base/md";
 import * as emotion from "emotion";
 import { ref, reactive } from "@vue/composition-api";
 import { withClass } from "./base/withClass";
+import { required } from "./base/prop";
 const css = emotion.css;
 
 const style = {
@@ -56,10 +56,10 @@ const SubHeader = withClass(MdSubheader, [md.PRIMARY, style.subHeader]);
 export default vca.component({
   name: "PreferencePanel",
   props: {
-    active: p(Boolean).required,
-    initialConfig: p.ofObject<Config>().required,
-    save: p.ofFunction<(config: Config) => Promise<void>>().required,
-    hide: p.ofFunction<() => void>().required
+    active: required(Boolean),
+    initialConfig: required<Config>(Object),
+    save: required<(config: Config) => Promise<void>>(Function),
+    hide: required(Function)
   },
   setup(p) {
     const formRef = ref(null as HTMLFormElement | null);

@@ -1,6 +1,5 @@
 import * as md from "view/utils/md-classes";
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import FileTable from "./FileTable";
 import { __sync } from "view/utils/modifiers";
 import * as emotion from "emotion";
@@ -10,6 +9,7 @@ import { computed } from "@vue/composition-api";
 import { GitHash } from "./GitHash";
 import { formatDateL } from "core/utils";
 import { injectStorage, useStorage } from "./injection/storage";
+import { required } from "./base/prop";
 const css = emotion.css;
 
 const style = {
@@ -65,7 +65,7 @@ const CommitAttr = _fc<{ name: string }>(({ props, children }) => (
 export default vca.component({
   name: "RevisionLogCommitDetail",
   props: {
-    commit: p.ofType<CommitDetail>().required
+    commit: required<CommitDetail>()
   },
   setup(p) {
     const storage = injectStorage();

@@ -1,8 +1,9 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import VIconButton from "./VIconButton";
 import * as emotion from "emotion";
 import { ref } from "@vue/composition-api";
+import { required, withDefault } from "./prop";
+import { SplitterDirection } from "view/mainTypes";
 const css = emotion.css;
 
 export interface SplitterEventArgs {
@@ -21,9 +22,9 @@ export default vca.component({
   name: "VSplitter",
   // prettier-ignore
   props: {
-    direction: p.ofStringLiterals("horizontal", "vertical").required,
-    thickness: p(Number).validator(v => v > 0).default(3),
-    allowDirectionChange: p(Boolean).required
+    direction: required<SplitterDirection>(String),
+    thickness: withDefault(Number, 3),
+    allowDirectionChange: required(Boolean)
   },
   setup(p, ctx: vca.SetupContext<SplitterEvents>) {
     const updater = vca.updateEmitter<typeof p>();

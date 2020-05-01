@@ -1,23 +1,24 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import { MdTooltip, MdIcon, MdInput, MdField } from "./md";
 import { toNumber } from "core/utils";
+import { optional } from "./prop";
 
 export default vca.component({
   name: "VTextField",
   props: {
-    value: [String, Number],
-    type: String,
-    label: String,
-    helperText: String,
-    required: Boolean,
-    disabled: Boolean,
-    placeholder: String,
-    headIcon: String,
-    inlineIcon: String,
-    tooltip: String,
-    min: Number,
-    max: Number,
-    size: Number
+    value: optional([String, Number]),
+    type: optional(String),
+    label: optional(String),
+    helperText: optional(String),
+    required: optional(Boolean),
+    disabled: optional(Boolean),
+    placeholder: optional(String),
+    headIcon: optional(String),
+    inlineIcon: optional(String),
+    tooltip: optional(String),
+    min: optional(Number),
+    max: optional(Number),
+    size: optional(Number)
   },
   setup(p, ctx) {
     const update = vca.updateEmitter<typeof p>();

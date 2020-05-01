@@ -1,7 +1,6 @@
 import { VNode } from "vue";
 import * as tsx from "vue-tsx-support";
 import { vtableOf, VtableColumn, Vtable, VtableEventsOn } from "vue-vtable";
-import p from "vue-strict-prop";
 import LogTableCellGraph from "./LogTableCellGraph";
 import LogTableCellSummary from "./LogTableCellSummary";
 import { LogItem } from "../mainTypes";
@@ -9,6 +8,7 @@ import * as emotion from "emotion";
 import { GitHash } from "./GitHash";
 import { MonoSpan } from "./base/mono";
 import { formatDateL } from "core/utils";
+import { required } from "./base/prop";
 const css = emotion.css;
 
 const VtableT = vtableOf<LogItem>();
@@ -17,10 +17,10 @@ const VtableT = vtableOf<LogItem>();
 export default tsx.componentFactoryOf<VtableEventsOn<LogItem>>().create({
   name: "LogTable",
   props: {
-    items: p.ofRoArray<LogItem>().required,
-    rowHeight: p(Number).required,
-    selectedIndex: p(Number).required,
-    widths: p.ofObject<Dict<number>>().required
+    items: required<readonly LogItem[]>(Array),
+    rowHeight: required(Number),
+    selectedIndex: required(Number),
+    widths: required<Record<string, number>>(Object)
   },
   computed: {
     columns(): VtableColumn[] {

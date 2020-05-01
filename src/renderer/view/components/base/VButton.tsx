@@ -1,19 +1,19 @@
 import { modifiers as m } from "vue-tsx-support";
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import { MdButton, MdTooltip } from "./md";
+import { required, optional } from "./prop";
 
 export default vca.component({
   name: "VButton",
   props: {
-    href: String,
-    tooltip: String,
-    mini: Boolean,
-    raised: Boolean,
-    disabled: Boolean,
-    primary: Boolean,
-    accent: Boolean,
-    action: p.ofFunction<() => void>().required
+    href: optional(String),
+    tooltip: optional(String),
+    mini: optional(Boolean),
+    raised: optional(Boolean),
+    disabled: optional(Boolean),
+    primary: optional(Boolean),
+    accent: optional(Boolean),
+    action: required(Function)
   },
   setup(p, ctx) {
     return () => {

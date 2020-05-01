@@ -1,18 +1,18 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import { DialogState } from "view/store/dialogModule";
 import VButton from "./VButton";
 import VModal, { ModalContainerClass } from "./VModal";
 import * as emotion from "emotion";
 import { createElement } from "@vue/composition-api";
+import { required } from "./prop";
 const css = emotion.css;
 
 export default vca.component({
   name: "VDialogBase",
   props: {
-    state: p.ofObject<DialogState>().required,
-    accept: p.ofFunction<{ buttonId: string }, void>().required,
-    cancel: p.ofFunction<() => void>().required
+    state: required<DialogState>(),
+    accept: required<Func<{ buttonId: string }, void>>(Function),
+    cancel: required(Function)
   },
   setup(p) {
     return () => {

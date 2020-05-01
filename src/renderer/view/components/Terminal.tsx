@@ -3,22 +3,22 @@ import * as vca from "vue-tsx-support/lib/vca";
 import { IPty, spawn } from "node-pty";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
-import p from "vue-strict-prop";
 import ResizeSensor from "vue-resizesensor";
 import { ref, watch, onBeforeUnmount, onActivated } from "@vue/composition-api";
 import { injectErrorHandler } from "./injection/errorHandler";
+import { required, withDefault } from "./base/prop";
 
 type Shell = { pty: IPty; term: Terminal; fitAddon: FitAddon };
 
 export default vca.component({
   name: "Terminal",
   props: {
-    cmd: p(String).required,
-    hide: p.ofFunction<() => void>().required,
-    args: p.ofArray<string>().default(() => []),
-    cwd: p(String).default("."),
-    fontFamily: p(String).default("monospace"),
-    fontSize: p(Number).default(14)
+    cmd: required(String),
+    hide: required(Function),
+    args: withDefault<readonly string[]>(Array, () => []),
+    cwd: withDefault(String, "."),
+    fontFamily: withDefault(String, "monospace"),
+    fontSize: withDefault(Number, 14)
   },
   setup(p) {
     const shell = ref<Shell | null>(null);
@@ -31,7 +31,7 @@ export default vca.component({
       }
       try {
         const { cmd, args, cwd, fontFamily, fontSize } = p;
-        const pty = spawn(cmd, args, { cwd });
+        const pty = spawn(cmd, args as string[], { cwd });
         const term = new Terminal({ fontFamily, fontSize });
         const fitAddon = new FitAddon();
         term.loadAddon(fitAddon);

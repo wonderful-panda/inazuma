@@ -1,20 +1,20 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import VIconButton from "./VIconButton";
-import p from "vue-strict-prop";
 import * as md from "view/utils/md-classes";
 import { MdSnackbar, MdIcon } from "./md";
 import * as emotion from "emotion";
 import { __sync } from "view/utils/modifiers";
 import { computed } from "@vue/composition-api";
+import { required } from "./prop";
 const css = emotion.css;
 
 export default vca.component({
   name: "VNotification",
   props: {
-    message: p(String).required,
-    icon: p(String).required,
-    color: p.ofStringLiterals("primary", "accent").required,
-    hide: p.ofFunction<() => void>().required
+    message: required(String),
+    icon: required(String),
+    color: required<"primary" | "accent">(String),
+    hide: required(Function)
   },
   setup(p) {
     const hasMessage = computed({

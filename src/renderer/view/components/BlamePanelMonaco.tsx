@@ -1,6 +1,5 @@
 import MonacoEditor from "vue-monaco";
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import { shortHash } from "../filters";
 import { lineIndicesToRanges } from "view/monaco";
 import Vue from "vue";
@@ -8,6 +7,7 @@ import { __sync } from "../utils/modifiers";
 import * as emotion from "emotion";
 import { ref, computed, watch } from "@vue/composition-api";
 import { formatDateL } from "core/utils";
+import { required } from "./base/prop";
 const css = emotion.css;
 
 const style = css`
@@ -47,9 +47,9 @@ interface PrefixedEvents {
 
 export const BlamePanelMonaco = vca.component({
   props: {
-    language: p(String).required,
-    blame: p.ofObject<Blame>().required,
-    selectedCommitId: p(String).required
+    language: required(String),
+    blame: required<Blame>(),
+    selectedCommitId: required(String)
   },
   setup(props, ctx: vca.SetupContext<PrefixedEvents>) {
     const emitUpdate = vca.updateEmitter<typeof props>();

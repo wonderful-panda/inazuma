@@ -1,14 +1,20 @@
-import { VNode } from "vue";
-import * as tsx from "vue-tsx-support";
-import p from "vue-strict-prop";
-import { vtableOf, VtableColumn, VtableEventsOn } from "vue-vtable";
+import * as vca from "vue-tsx-support/lib/vca";
+import {
+  vtableOf,
+  VtableColumn,
+  VtableEventsOn,
+  VtableSlotCellProps,
+  RowClickEventArgs
+} from "vue-vtable";
 import * as md from "view/utils/md-classes";
 import * as emotion from "emotion";
+import { required } from "./base/prop";
+import { ref } from "@vue/composition-api";
 const css = emotion.css;
 
 const Vtable = vtableOf<FileEntry>();
 
-const fileColumns: VtableColumn[] = [
+const fileColumns: readonly VtableColumn[] = Object.freeze([
   {
     id: "status",
     title: "",
@@ -22,51 +28,39 @@ const fileColumns: VtableColumn[] = [
     defaultWidth: 200,
     minWidth: 100
   }
-];
+]);
 
 // @vue/component
-export default tsx.componentFactoryOf<VtableEventsOn<FileEntry>>().create({
+export default vca.component({
   name: "FileTable",
   props: {
-    files: p.ofRoArray<FileEntry>().required,
-    widths: p.ofObject<Dict<number>>().required
+    files: required<readonly FileEntry[]>(),
+    widths: required<Record<string, number>>(Object)
   },
-  data() {
-    return { selectedFile: "" };
-  },
-  methods: {
-    getFileKey(item: FileEntry): string {
-      return item.path;
-    },
-    renderCell(columnId: string, item: FileEntry) {
-      if (columnId === "path") {
-        return item.path;
-      } else {
-        return item.statusCode;
-      }
-    }
-  },
-  render(): VNode {
-    return (
+  setup(p, ctx: vca.SetupContext<VtableEventsOn<FileEntry>>) {
+    const selectedFile = ref("");
+    const getFileKey = (item: FileEntry) => item.path;
+    const getRowClass = (item: FileEntry) =>
+      item.path === selectedFile.value ? "vtable-row-selected" : "vtable-row";
+    const getCellValue = (arg: VtableSlotCellProps<FileEntry>) =>
+      arg.columnId === "path" ? arg.item.path : arg.item.statusCode;
+    const onRowclick = (arg: RowClickEventArgs<FileEntry>) => {
+      selectedFile.value = arg.item.path;
+    };
+    return () => (
       <div staticClass={style.container}>
         <Vtable
-          items={this.files}
+          items={p.files}
           columns={fileColumns}
-          widths={this.widths}
+          widths={p.widths}
           rowHeight={24}
-          getItemKey={this.getFileKey}
-          getRowClass={arg => {
-            return arg.path === this.selectedFile
-              ? "vtable-row-selected"
-              : "vtable-row";
-          }}
-          onRowclick={arg => {
-            this.selectedFile = arg.item.path;
-          }}
+          getItemKey={getFileKey}
+          getRowClass={getRowClass}
+          onRowclick={onRowclick}
           scopedSlots={{
-            cell: p => this.renderCell(p.columnId, p.item)
+            cell: getCellValue
           }}
-          {...{ on: this.$listeners }}
+          {...{ on: ctx.listeners }}
         />
       </div>
     );

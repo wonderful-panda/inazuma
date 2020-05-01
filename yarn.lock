@@ -7669,11 +7669,6 @@ vue-resizesensor@^0.3.0:
     lodash "^4.13.1"
     vue "^2.3.0"
 
-vue-strict-prop@^0.3.4:
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/vue-strict-prop/-/vue-strict-prop-0.3.6.tgz#45b8ca9319e64fdaa739efe3cf0e75ac978a6f6e"
-  integrity sha512-SwF3Mw23ISsmZWeyBT8FSHQPb3+AOAqe76T/7+ksgCTJxyrSzYku4ikVDay02QU6+0X0kzEf0ctXlhbJUkQt0g==
-
 vue-template-compiler@^2.6.11:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/vue-template-compiler/-/vue-template-compiler-2.6.11.tgz#c04704ef8f498b153130018993e56309d4698080"

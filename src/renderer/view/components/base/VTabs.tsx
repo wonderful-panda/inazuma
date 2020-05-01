@@ -1,11 +1,11 @@
 import Vue from "vue";
 import * as vca from "vue-tsx-support/lib/vca";
-import p from "vue-strict-prop";
 import VButton from "./VButton";
 import VIconButton from "./VIconButton";
 import { TabDefinition } from "view/mainTypes";
 import * as emotion from "emotion";
 import { watch, ref } from "@vue/composition-api";
+import { required } from "./prop";
 const css = emotion.css;
 
 const TabButton = _fc<{
@@ -37,9 +37,9 @@ interface ScopedSlotArgs {
 export default vca.component({
   name: "VTabs",
   props: {
-    tabs: p.ofRoArray<TabDefinition>().required,
-    selectedIndex: p(Number).required,
-    closeTab: p.ofFunction<(key: string) => void>().required
+    tabs: required<readonly TabDefinition[]>(Array),
+    selectedIndex: required(Number),
+    closeTab: required<(key: string) => void>(Function)
   },
   setup(p, ctx: vca.SetupContext<{}, ScopedSlotArgs>) {
     const tabButton = ref(null as HTMLDivElement[] | null);
