@@ -1,6 +1,7 @@
 import Electron from "electron";
 import * as vca from "vue-tsx-support/lib/vca";
 import BaseLayout from "./BaseLayout";
+import VBackdropSpinner from "./base/VBackdropSpinner";
 import DrawerNavigation from "./DrawerNavigation";
 import { getFileName, normalizePathSeparator, omit } from "core/utils";
 import * as md from "view/utils/md-classes";
@@ -16,6 +17,7 @@ import * as emotion from "emotion";
 import VIconButton from "./base/VIconButton";
 import { useRootModule } from "view/store";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";
+import { ref } from "@vue/composition-api";
 const { dialog, BrowserWindow } = Electron.remote;
 const css = emotion.css;
 
@@ -59,6 +61,17 @@ export default vca.component({
   setup() {
     provideStorageWithAdditionalNamespace("welcome");
     const rootModule = useRootModule();
+    const loading = ref(false);
+
+    const openRepository = async (repoPath: string) => {
+      loading.value = true;
+      try {
+        await rootModule.actions.openRepository({ repoPath });
+      } finally {
+        loading.value = false;
+      }
+    };
+
     const selectRepository = async (): Promise<void> => {
       const parent = BrowserWindow.getFocusedWindow();
       const options: Electron.OpenDialogOptions = {
@@ -71,7 +84,7 @@ export default vca.component({
         return;
       }
       const repoPath = normalizePathSeparator(result.filePaths[0]);
-      rootModule.actions.openRepository({ repoPath });
+      openRepository(repoPath);
     };
 
     return () => {
@@ -90,6 +103,7 @@ export default vca.component({
               action={actions.showVersionDialog}
             />
           </template>
+          {loading.value && <VBackdropSpinner />}
           <div class={style.content}>
             <h3 class={md.TITLE}>SELECT REPOSITORY</h3>
             <div class={style.leftPanel}>
@@ -112,7 +126,7 @@ export default vca.component({
                       icon="history"
                       text={getFileName(repoPath)}
                       description={repoPath}
-                      action={() => actions.openRepository({ repoPath })}
+                      action={() => openRepository(repoPath)}
                       remove={() => actions.removeRecentList({ repoPath })}
                     />
                   ))}
