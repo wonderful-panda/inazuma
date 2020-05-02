@@ -15,7 +15,7 @@ export async function blame(
   const promiseFileLog = filelog(repository, 1000, [sha], relPath, c =>
     commits.push(c)
   );
-  const promiseContent = catFile(repository, relPath, sha);
+  const promiseContent = catFile(repository, { path: relPath, revspec: sha });
   const promiseBlame = exec("blame", {
     repository,
     args: [sha, "--incremental", "--", relPath],
@@ -38,7 +38,7 @@ export async function blame(
     promiseFileLog,
     promiseBlame
   ]);
-  const encoding = (chardet.detect(content) as string) || "utf8";
+  const encoding = chardet.detect(content) || "utf8";
   return {
     commits,
     commitIds,

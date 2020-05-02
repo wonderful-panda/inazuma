@@ -66,6 +66,9 @@ export function setupBrowserCommands(
     showExternalDiff({ repoPath, left, right }) {
       const rs = _repoSessions.prepare(repoPath);
       return showExternalDiff(rs, left, right);
+    },
+    getTextFileContent({ repoPath, file }) {
+      return git.getTextFileContent(repoPath, file);
     }
   };
   // register each methods as Electron ipc handlers
@@ -173,7 +176,7 @@ async function prepareDiffFile(
   if (await fs.pathExists(absPath)) {
     return absPath;
   }
-  await git.saveTo(rs.repoPath, file.path, file.revspec, absPath);
+  await git.saveTo(rs.repoPath, file, absPath);
   return absPath;
 }
 

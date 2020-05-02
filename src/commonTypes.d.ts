@@ -121,6 +121,11 @@ declare interface FileSpec {
   revspec: string;
 }
 
+declare interface TextFile extends FileSpec {
+  encoding: string;
+  content: string;
+}
+
 declare interface LsTreeEntry {
   data: {
     path: string;
@@ -154,4 +159,8 @@ declare interface BrowserCommand {
     left: FileSpec;
     right: FileSpec;
   }): Promise<void>;
+  getTextFileContent(params: {
+    repoPath: string;
+    file: FileSpec;
+  }): Promise<TextFile>;
 }
