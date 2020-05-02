@@ -90,7 +90,7 @@
     "vue-class-component": "^7.2.2",
     "vue-css-definition": "^0.1.0",
     "vue-material": "1.0.0-beta-11",
-    "vue-monaco": "^1.1.0",
+    "vue-monaco": "^1.2.0",
     "vue-property-decorator": "^8.3.0",
     "vue-resizesensor": "^0.3.0",
     "vue-template-compiler": "^2.6.11",
