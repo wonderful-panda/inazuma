@@ -17,8 +17,8 @@ export const fileCommandDiffWithParent: FileCommand = {
   },
   handler(commit, file) {
     rootCtx.actions.showExternalDiff({
-      left: { path: file.oldPath || file.path, sha: commit.id + "~1" },
-      right: { path: file.path, sha: commit.id }
+      left: { path: file.oldPath || file.path, revspec: commit.id + "~1" },
+      right: { path: file.path, revspec: commit.id }
     });
   }
 };
@@ -34,8 +34,8 @@ export const fileCommandDiffWithLocal: FileCommand = {
   },
   handler(commit, file, path) {
     rootCtx.actions.showExternalDiff({
-      left: { path: file.path, sha: commit.id },
-      right: { path, sha: "UNSTAGED" }
+      left: { path: file.path, revspec: commit.id },
+      right: { path, revspec: "UNSTAGED" }
     });
   }
 };
@@ -54,8 +54,8 @@ export const fileCommandDiffUnstaged: FileCommand = {
   },
   handler(_, file, path) {
     rootCtx.actions.showExternalDiff({
-      left: { path: file.path, sha: "STAGED" },
-      right: { path, sha: "UNSTAGED" }
+      left: { path: file.path, revspec: "STAGED" },
+      right: { path, revspec: "UNSTAGED" }
     });
   }
 };
@@ -74,8 +74,8 @@ export const fileCommandDiffStaged: FileCommand = {
   },
   handler(_, file, path) {
     rootCtx.actions.showExternalDiff({
-      left: { path: file.path, sha: "HEAD" },
-      right: { path, sha: "STAGED" }
+      left: { path: file.path, revspec: "HEAD" },
+      right: { path, revspec: "STAGED" }
     });
   }
 };

@@ -116,9 +116,9 @@ declare interface BroadcastAction {
   configChanged(payload: { config: Config }): void;
 }
 
-declare interface DiffFile {
+declare interface FileSpec {
   path: string;
-  sha: string;
+  revspec: string;
 }
 
 declare interface LsTreeEntry {
@@ -151,7 +151,7 @@ declare interface BrowserCommand {
   runInteractiveShell(curdir: string): Promise<void>;
   showExternalDiff(params: {
     repoPath: string;
-    left: DiffFile;
-    right: DiffFile;
+    left: FileSpec;
+    right: FileSpec;
   }): Promise<void>;
 }

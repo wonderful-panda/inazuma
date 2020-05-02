@@ -308,8 +308,8 @@ class RootActions
   }
 
   async showExternalDiff(payload: {
-    left: DiffFile;
-    right: DiffFile;
+    left: FileSpec;
+    right: FileSpec;
   }): Promise<void> {
     if (!this.state.config.externalDiffTool) {
       return;

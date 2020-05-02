@@ -126,8 +126,8 @@ async function getCommitDetail(
 
 async function showExternalDiff(
   rs: RepositorySession,
-  left: DiffFile,
-  right: DiffFile
+  left: FileSpec,
+  right: FileSpec
 ): Promise<void> {
   const externalDiffTool = config.data.externalDiffTool;
   if (!externalDiffTool) {
@@ -149,22 +149,22 @@ async function showExternalDiff(
 
 async function prepareDiffFile(
   rs: RepositorySession,
-  file: DiffFile
+  file: FileSpec
 ): Promise<string> {
-  if (file.sha === "UNSTAGED") {
+  if (file.revspec === "UNSTAGED") {
     // use file in the repository directly
     return path.join(rs.repoPath, file.path);
   }
 
   let absPath: string;
-  if (file.sha === "STAGED") {
+  if (file.revspec === "STAGED") {
     const fileName = path.basename(file.path);
     const tempFileName = `STAGED-${randomName(6)}-${fileName}`;
     // TODO: check file name conflict
     absPath = path.join(rs.tempdir, tempFileName);
   } else {
     // TODO: shorten path
-    absPath = path.join(rs.tempdir, file.sha, file.path);
+    absPath = path.join(rs.tempdir, file.revspec, file.path);
     const parentDir = path.dirname(absPath);
     if (!(await fs.pathExists(parentDir))) {
       await fs.mkdirs(parentDir);
@@ -173,7 +173,7 @@ async function prepareDiffFile(
   if (await fs.pathExists(absPath)) {
     return absPath;
   }
-  await git.saveTo(rs.repoPath, file.path, file.sha, absPath);
+  await git.saveTo(rs.repoPath, file.path, file.revspec, absPath);
   return absPath;
 }
 
