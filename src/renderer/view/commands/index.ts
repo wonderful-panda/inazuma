@@ -4,6 +4,7 @@ import { commitCommandBrowseTree } from "./commitCommandBrowseTree";
 import { commitCommandYankHash } from "./commitCommandYankHash";
 import {
   fileCommandDiffWithParent,
+  fileCommandDiffWithParentInternal,
   fileCommandDiffWithLocal
 } from "./fileCommandDiff";
 import { fileCommandYankPath } from "./fileCommandYankPath";
@@ -18,6 +19,7 @@ const commitCommands: CommitCommand[] = [
 const fileCommands: FileCommand[] = [
   fileCommandYankPath,
   fileCommandDiffWithParent,
+  fileCommandDiffWithParentInternal,
   fileCommandDiffWithLocal,
   fileCommandBlame,
   fileCommandBlameParent

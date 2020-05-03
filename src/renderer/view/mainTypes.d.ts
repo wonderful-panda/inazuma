@@ -34,11 +34,17 @@ export type TreeTabDefinition = TabDefinition<
   { sha: string },
   { rootNodes: ReadonlyArray<LsTreeEntry> }
 >;
+export type DiffTabDefinition = TabDefinition<
+  "diff",
+  { left: FileSpec; right: FileSpec },
+  { leftContent: TextFile; rightContent: TextFile }
+>;
 
 export type RepositoryTabDefinition =
   | LogTabDefinition
   | FileTabDefinition
-  | TreeTabDefinition;
+  | TreeTabDefinition
+  | DiffTabDefinition;
 
 export interface AppState {
   repoPath: string;

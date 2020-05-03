@@ -23,6 +23,26 @@ export const fileCommandDiffWithParent: FileCommand = {
   }
 };
 
+export const fileCommandDiffWithParentInternal: FileCommand = {
+  id: "DiffWithParentInternal",
+  label: "Compare with parent (INTERNAL)",
+  isVisible(commit, file) {
+    if (commit.parentIds.length === 0) {
+      return false;
+    }
+    if (file.statusCode === "A" || file.statusCode === "D") {
+      return false;
+    }
+    return true;
+  },
+  handler(commit, file) {
+    rootCtx.actions.showDiffTab({
+      left: { path: file.oldPath || file.path, revspec: commit.id + "~1" },
+      right: { path: file.path, revspec: commit.id }
+    });
+  }
+};
+
 export const fileCommandDiffWithLocal: FileCommand = {
   id: "DiffWithLocal",
   label: "Compare with local",

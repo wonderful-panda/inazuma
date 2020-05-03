@@ -8,6 +8,8 @@ declare module "vue-monaco" {
       language: string;
       value: string;
       options: monaco.editor.IEditorConstructionOptions;
+      diffEditor?: boolean;
+      original?: string;
     },
     {
       onEditorDidMount: monaco.editor.IStandaloneCodeEditor;
