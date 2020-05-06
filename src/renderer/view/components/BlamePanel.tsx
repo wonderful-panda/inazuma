@@ -6,13 +6,12 @@ import VSplitterPanel from "./base/VSplitterPanel";
 import BlamePanelFooter from "./BlamePanelFooter";
 import BlamePanelMonaco from "./BlamePanelMonaco";
 import { __sync } from "../utils/modifiers";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { showFileContextMenu } from "../commands";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, computed } from "@vue/composition-api";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
-const css = emotion.css;
 
 const BlamePanel = vca.component({
   name: "BlamePanel",

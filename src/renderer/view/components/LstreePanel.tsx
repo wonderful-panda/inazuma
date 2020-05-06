@@ -18,7 +18,7 @@ import { browserCommand } from "core/browser";
 import VTextField from "./base/VTextField";
 import { filterTreeNodes } from "core/tree";
 import { MdEmptyState } from "./base/md";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import VIconButton from "./base/VIconButton";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, watch, computed, reactive } from "@vue/composition-api";
@@ -26,7 +26,6 @@ import { withClass } from "./base/withClass";
 import { injectErrorHandler } from "./injection/errorHandler";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required, optional } from "./base/prop";
-const css = emotion.css;
 
 type Data = LsTreeEntry["data"];
 type TreeNodeWithState = TreeNodeWithState_<Data>;

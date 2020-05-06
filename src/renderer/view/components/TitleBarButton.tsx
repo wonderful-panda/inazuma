@@ -1,7 +1,6 @@
 import VIconButton from "./base/VIconButton";
 import { withClass } from "./base/withClass";
-import * as emotion from "emotion";
-const css = emotion.css;
+import { css } from "emotion";
 
 const titleBarIconStyle = css`
   min-height: 28px;

@@ -13,13 +13,12 @@ import {
   MdListItem,
   MdListItemText
 } from "./base/md";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import VIconButton from "./base/VIconButton";
 import { useRootModule } from "view/store";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 import { ref } from "@vue/composition-api";
 const { dialog, BrowserWindow } = Electron.remote;
-const css = emotion.css;
 
 const RepositoryListItem = _fc<{
   icon: string;

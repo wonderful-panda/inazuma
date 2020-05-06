@@ -7,10 +7,9 @@ import {
   RowClickEventArgs
 } from "vue-vtable";
 import * as md from "view/utils/md-classes";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { required } from "./base/prop";
 import { ref } from "@vue/composition-api";
-const css = emotion.css;
 
 const Vtable = vtableOf<FileEntry>();
 

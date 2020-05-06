@@ -2,7 +2,7 @@ import * as md from "view/utils/md-classes";
 import * as vca from "vue-tsx-support/lib/vca";
 import FileTable from "./FileTable";
 import { __sync } from "view/utils/modifiers";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { showFileContextMenu, executeFileCommand } from "../commands";
 import { fileCommandDiffWithParent } from "../commands/fileCommandDiff";
 import { computed } from "@vue/composition-api";
@@ -10,7 +10,6 @@ import { GitHash } from "./GitHash";
 import { formatDateL } from "core/utils";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
-const css = emotion.css;
 
 const style = {
   container: css`

@@ -5,11 +5,10 @@ import VTextField from "./base/VTextField";
 import * as md from "view/utils/md-classes";
 import { __sync } from "babel-plugin-vue-jsx-modifier/lib/modifiers";
 import { MdSubheader } from "./base/md";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { ref, reactive } from "@vue/composition-api";
 import { withClass } from "./base/withClass";
 import { required } from "./base/prop";
-const css = emotion.css;
 
 const style = {
   modalBase: css`

@@ -4,10 +4,9 @@ import { queryFocusableElements } from "view/utils/dom";
 import VCloseButton from "./VCloseButton";
 import * as md from "view/utils/md-classes";
 import { __capture } from "view/utils/modifiers";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { onMounted, ref } from "@vue/composition-api";
 import { required } from "./prop";
-const css = emotion.css;
 
 const m = tsx.modifiers;
 

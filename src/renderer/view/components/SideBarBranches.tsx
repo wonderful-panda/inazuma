@@ -1,9 +1,8 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import SideBarBase from "./SideBarBase";
 import SideBarBranchList from "./SideBarBranchList";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { useRootModule } from "view/store";
-const css = emotion.css;
 
 // @vue/component
 export default vca.component({

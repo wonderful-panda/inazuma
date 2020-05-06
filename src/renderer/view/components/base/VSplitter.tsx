@@ -1,10 +1,9 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import VIconButton from "./VIconButton";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { ref } from "@vue/composition-api";
 import { required, withDefault } from "./prop";
 import { SplitterDirection } from "view/mainTypes";
-const css = emotion.css;
 
 export interface SplitterEventArgs {
   pagePosition: number;

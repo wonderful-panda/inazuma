@@ -11,11 +11,10 @@ import VNotification from "./base/VNotification";
 import PreferencePanel from "./PreferencePanel";
 import { __capture, __sync } from "view/utils/modifiers";
 import { MdList } from "./base/md";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { ref, computed } from "@vue/composition-api";
 import { evaluateSlot } from "core/utils";
 import { required } from "./base/prop";
-const css = emotion.css;
 
 export default vca.component({
   name: "BaseLayout",

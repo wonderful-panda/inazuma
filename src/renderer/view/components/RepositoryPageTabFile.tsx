@@ -2,11 +2,10 @@ import * as vca from "vue-tsx-support/lib/vca";
 import { useRootModule } from "../store";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import BlamePanel from "./BlamePanel";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { onMounted } from "@vue/composition-api";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 import { optional, required } from "./base/prop";
-const css = emotion.css;
 
 const style = css`
   margin: 0.5em 1em 0.2em 1em;

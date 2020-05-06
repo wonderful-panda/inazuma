@@ -4,11 +4,10 @@ import { shortHash } from "../filters";
 import { lineIndicesToRanges } from "view/monaco";
 import Vue from "vue";
 import { __sync } from "../utils/modifiers";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { ref, computed, watch } from "@vue/composition-api";
 import { formatDateL } from "core/utils";
 import { required } from "./base/prop";
-const css = emotion.css;
 
 const style = css`
   position: absolute;

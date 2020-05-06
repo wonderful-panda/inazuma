@@ -1,6 +1,5 @@
 import { MdProgressSpinner } from "./md";
-import * as emotion from "emotion";
-const css = emotion.css;
+import { css } from "emotion";
 
 export default _fc(() => (
   <div class={style.backdrop}>

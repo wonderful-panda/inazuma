@@ -1,6 +1,5 @@
 import LogTableCellSummaryRef from "./LogTableCellSummaryRef";
-import * as emotion from "emotion";
-const css = emotion.css;
+import { css } from "emotion";
 
 const className = css`
   display: flex;

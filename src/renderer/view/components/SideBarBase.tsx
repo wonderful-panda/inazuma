@@ -1,9 +1,8 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import VCloseButton from "./base/VCloseButton";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { evaluateSlot } from "core/utils";
 import { required } from "./base/prop";
-const css = emotion.css;
 
 export default vca.component({
   name: "SideBarBase",

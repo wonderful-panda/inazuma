@@ -3,7 +3,7 @@ import VSplitterPanel from "./base/VSplitterPanel";
 import FileTable from "./FileTable";
 import * as md from "view/utils/md-classes";
 import { __sync } from "view/utils/modifiers";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { executeFileCommand } from "../commands";
 import {
   fileCommandDiffStaged as diffStaged,
@@ -12,7 +12,6 @@ import {
 import { computed } from "@vue/composition-api";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
-const css = emotion.css;
 
 export default vca.component({
   name: "RevisionLogWorkingTree",

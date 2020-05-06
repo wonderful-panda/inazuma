@@ -1,6 +1,5 @@
 import { dragdrop } from "../dragdrop";
-import * as emotion from "emotion";
-const css = emotion.css;
+import { css } from "emotion";
 
 const Head = _fc(() => <span class={style.head}>HEAD</span>);
 

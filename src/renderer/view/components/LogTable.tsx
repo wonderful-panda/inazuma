@@ -9,13 +9,12 @@ import {
 import LogTableCellGraph from "./LogTableCellGraph";
 import LogTableCellSummary from "./LogTableCellSummary";
 import { LogItem } from "../mainTypes";
-import * as emotion from "emotion";
+import { css } from "emotion";
 import { GitHash } from "./GitHash";
 import { MonoSpan } from "./base/mono";
 import { formatDateL } from "core/utils";
 import { required } from "./base/prop";
 import { watch, ref } from "@vue/composition-api";
-const css = emotion.css;
 
 const VtableT = vtableOf<LogItem>();
 
