@@ -13,6 +13,28 @@ import { ref, computed } from "@vue/composition-api";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
 
+const style = {
+  container: css`
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+    overflow: hidden;
+  `,
+  title: css`
+    font-family: var(--monospace-fontfamily);
+    padding-bottom: 4px;
+    height: 24px;
+    line-height: 24px;
+    flex: 0;
+  `,
+  path: css`
+    padding-right: 8px;
+  `,
+  sha: css`
+    color: #888;
+  `
+};
+
 const BlamePanel = vca.component({
   name: "BlamePanel",
   props: {
@@ -92,15 +114,14 @@ const BlamePanel = vca.component({
               }}
               onRowcontextmenu={showContextMenu}
             />
-            <div slot="second" class={style.editorWrapper}>
-              <BlamePanelMonaco
-                language={language.value}
-                blame={props.blame}
-                selectedCommitId={__sync(selectedCommitId.value)}
-                onContextMenu={showContextMenuFromMonaco}
-                onHoveredCommitIdChanged={onHoveredCommitIdChanged}
-              />
-            </div>
+            <BlamePanelMonaco
+              slot="second"
+              language={language.value}
+              blame={props.blame}
+              selectedCommitId={__sync(selectedCommitId.value)}
+              onContextMenu={showContextMenuFromMonaco}
+              onHoveredCommitIdChanged={onHoveredCommitIdChanged}
+            />
           </VSplitterPanel>
           <BlamePanelFooter commit={hoveredCommit.value} />
         </div>
@@ -110,31 +131,3 @@ const BlamePanel = vca.component({
 });
 
 export default BlamePanel;
-
-const style = {
-  container: css`
-    display: flex;
-    flex-flow: column nowrap;
-    flex: 1;
-    overflow: hidden;
-  `,
-  title: css`
-    font-family: var(--monospace-fontfamily);
-    padding-bottom: 4px;
-    height: 24px;
-    line-height: 24px;
-    flex: 0;
-  `,
-  path: css`
-    padding-right: 8px;
-  `,
-  sha: css`
-    color: #888;
-  `,
-  editorWrapper: css`
-    position: relative;
-    flex: 1;
-    border: 1px solid #444;
-    overflow: hidden;
-  `
-};
