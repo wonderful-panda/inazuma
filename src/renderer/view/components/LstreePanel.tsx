@@ -38,6 +38,16 @@ const style = {
     display: flex;
     flex: 1;
     padding: 1em;
+  `,
+  selectedRow: css`
+    background-color: #484848;
+  `,
+  leftPanel: css`
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0;
+    margin: 0;
 
     svg {
       fill: #ddd;
@@ -73,16 +83,6 @@ const style = {
     .vtable-dragging-splitter {
       background-color: #888;
     }
-  `,
-  selectedRow: css`
-    background-color: #484848;
-  `,
-  leftPanel: css`
-    flex: 1;
-    display: flex;
-    flex-flow: column nowrap;
-    padding: 0;
-    margin: 0;
   `,
   rightPanel: css`
     position: relative;
