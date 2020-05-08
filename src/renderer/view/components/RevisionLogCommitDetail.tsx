@@ -43,10 +43,8 @@ const style = {
     width: 100%;
   `,
   body: css`
-    margin: 0px 2px 8px 2px;
-    font-size: small;
-    background-color: #333;
-    padding: 0.2em;
+    margin: 0px 2px 8px 8px;
+    font-family: var(--default-fontfamily);
     min-height: 1em;
     max-height: 12em;
     white-space: pre-wrap;
@@ -91,6 +89,9 @@ export default vca.component({
         <div class={[style.summary, md.TITLE]}>
           {p.commit.summary || "No commit selected"}
         </div>
+        <pre v-show={p.commit.body} staticClass={style.body}>
+          {p.commit.body}
+        </pre>
         <table staticClass={style.attrTable}>
           <CommitAttr name="id">
             <GitHash hash={p.commit.id} />
@@ -103,9 +104,6 @@ export default vca.component({
           <CommitAttr name="author">{p.commit.author}</CommitAttr>
           <CommitAttr name="date">{formatDateL(p.commit.date)}</CommitAttr>
         </table>
-        <pre v-show={p.commit.body} staticClass={style.body}>
-          {p.commit.body}
-        </pre>
         <FileTable
           files={p.commit.files}
           widths={__sync(persist.columnWidths)}

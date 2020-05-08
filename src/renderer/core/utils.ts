@@ -31,6 +31,9 @@ export function normalizePathSeparator(path: string): string {
 }
 
 export function formatDateL(v: number): string {
+  if (v === 0) {
+    return "";
+  }
   return moment(v)
     .local()
     .format("L");
