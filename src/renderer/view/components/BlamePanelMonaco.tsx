@@ -1,14 +1,17 @@
-import MonacoEditor from "vue-monaco";
 import ResizeSensor from "vue-resizesensor";
 import * as vca from "vue-tsx-support/lib/vca";
 import { shortHash } from "../filters";
-import { lineIndicesToRanges } from "view/monaco";
 import Vue from "vue";
 import { __sync } from "../utils/modifiers";
 import { css } from "emotion";
 import { ref, computed, watch } from "@vue/composition-api";
 import { formatDateL } from "core/utils";
 import { required } from "./base/prop";
+import {
+  useDecoration,
+  onHoveredLineNumberChanged
+} from "./composition/monaco";
+import { VueMonacoEditor } from "./base/MonacoEditor";
 
 const style = {
   wrapper: css`
@@ -24,28 +27,42 @@ const style = {
     bottom: 0;
     right: 0;
 
-    .line-numbers {
-      color: #666;
-      cursor: pointer !important;
-      padding-left: 8px;
-      white-space: nowrap;
-    }
+    .monaco-editor {
+      .line-numbers {
+        color: #555;
+        cursor: pointer !important;
+        padding-left: 8px;
+        white-space: nowrap;
+      }
+      .hunk-head,
+      .hunk-head-margin {
+        border-top: 1px solid #444;
+      }
+      .hunk-head-margin ~ .line-numbers {
+        color: #ddd;
+      }
 
-    .hunk-head,
-    .hunk-head-margin {
-      border-top: 1px solid #444;
-    }
-    .hunk-head-margin ~ .line-numbers {
-      color: #ddd;
-    }
-
-    .selected-lines {
-      background-color: rgba(255, 140, 0, 0.6);
-      left: 0 !important;
-      width: 4px !important;
+      .selected-lines {
+        background-color: rgba(255, 140, 0, 0.6);
+        left: 0 !important;
+        width: 4px !important;
+      }
     }
   `
 };
+
+function createLineNumberFormatter(blame: Blame) {
+  const lineNoWidth = blame.commitIds.length.toString().length;
+  const dateMap = new Map(blame.commits.map(c => [c.id, formatDateL(c.date)]));
+  return (lineno: number) => {
+    const id = blame.commitIds[lineno - 1];
+    if (!id) {
+      return "";
+    }
+    const linenoStr = ("00000000" + lineno.toString()).slice(-1 * lineNoWidth);
+    return `${linenoStr} ${shortHash(id)} ${dateMap.get(id)}`;
+  };
+}
 
 interface PrefixedEvents {
   onHoveredCommitIdChanged: { commitId: string };
@@ -61,90 +78,57 @@ export const BlamePanelMonaco = vca.component({
   },
   setup(props, ctx: vca.SetupContext<PrefixedEvents>) {
     const emitUpdate = vca.updateEmitter<typeof props>();
-    const editor = ref(
-      undefined as monaco.editor.IStandaloneCodeEditor | undefined
-    );
-
-    const hoveredLineNumber = ref(-1);
-    watch(hoveredLineNumber, (newValue, oldValue) => {
-      if (newValue !== oldValue) {
-        const commitId = props.blame.commitIds[newValue - 1] || "";
-        vca.emitOn(ctx, "onHoveredCommitIdChanged", { commitId });
-      }
-    });
+    const editor = ref<monaco.editor.IStandaloneCodeEditor | null>(null);
 
     const options = computed<monaco.editor.IEditorConstructionOptions>(() => {
-      const blame = props.blame;
-      const lineNoWidth = blame.commitIds.length.toString().length;
-      const zeros = "00000000".slice(0, lineNoWidth + 1);
-      const dateMap = new Map(
-        blame.commits.map(c => [c.id, formatDateL(c.date)])
-      );
-      const lineNumbers = (lineno: number) => {
-        const linenoStr = (zeros + lineno.toString()).slice(-1 * lineNoWidth);
-        const id = blame.commitIds[lineno - 1];
-        if (!id) {
-          return "";
-        }
-        return `${linenoStr} ${shortHash(id)} ${dateMap.get(id)}`;
-      };
       return {
         theme: "vs-dark",
         readOnly: true,
         folding: false,
         minimap: { enabled: false },
-        lineDecorationsWidth: (lineNoWidth + 21) * 7,
-        lineNumbers,
+        lineDecorationsWidth: 180,
+        lineNumbers: createLineNumberFormatter(props.blame),
         selectOnLineNumbers: false,
         contextmenu: false
       };
     });
+    const lineNumberMap = computed(() => {
+      const ret: Record<string, number[]> = {};
+      props.blame.commitIds.forEach((commitId, index) => {
+        (ret[commitId] || (ret[commitId] = [])).push(index + 1);
+      });
+      return ret;
+    });
 
-    const staticDecorationIds = ref([] as string[]);
-    const updateStaticDecorations = () => {
+    const blameDecoration = useDecoration({
+      className: "hunk-head",
+      marginClassName: "hunk-head-margin",
+      isWholeLine: true
+    });
+    const updateBlameDecoration = () => {
       if (!editor.value) {
         return;
       }
-      const { commitIds } = props.blame;
-      const lineIndices = commitIds
-        .map((id, index) => (id !== commitIds[index - 1] ? index : -1))
+      const lineNumbers = props.blame.commitIds
+        .map((id, index, arr) => (id !== arr[index - 1] ? index + 1 : -1))
         .filter(v => v >= 0);
-      lineIndices.push(commitIds.length);
-      const ranges = lineIndicesToRanges(lineIndices);
-      const options: monaco.editor.IModelDecorationOptions = {
-        className: "hunk-head",
-        marginClassName: "hunk-head-margin",
-        isWholeLine: true
-      };
-      const decorations = ranges.map(range => ({ range, options }));
-      staticDecorationIds.value = editor.value.deltaDecorations(
-        staticDecorationIds.value,
-        decorations
-      );
+      lineNumbers.push(props.blame.commitIds.length + 1);
+      blameDecoration.update(editor.value, lineNumbers);
     };
 
-    const selectedCommitDecorationIds = ref([] as string[]);
-    const updateSelectedCommitDecorations = () => {
-      if (!editor.value) {
-        return;
+    const selectedCommitDecoration = useDecoration({
+      linesDecorationsClassName: "selected-lines",
+      isWholeLine: true,
+      overviewRuler: {
+        color: "rgba(255, 140, 0, 0.6)",
+        darkColor: "rgba(255, 140, 0, 0.6)",
+        position: monaco.editor.OverviewRulerLane.Right
       }
-      const { blame, selectedCommitId } = props;
-      const lineIndices = blame.commitIds
-        .map((v, index) => (v === selectedCommitId ? index : -1))
-        .filter(v => v >= 0);
-      const ranges = lineIndicesToRanges(lineIndices);
-      const options: monaco.editor.IModelDecorationOptions = {
-        linesDecorationsClassName: "selected-lines",
-        isWholeLine: true,
-        overviewRuler: {
-          color: "rgba(255, 140, 0, 0.6)",
-          darkColor: "rgba(255, 140, 0, 0.6)",
-          position: monaco.editor.OverviewRulerLane.Right
-        }
-      };
-      selectedCommitDecorationIds.value = editor.value.deltaDecorations(
-        selectedCommitDecorationIds.value,
-        ranges.map(range => ({ range, options }))
+    });
+    const updateSelectedCommitDecoration = () => {
+      selectedCommitDecoration.update(
+        editor.value,
+        lineNumberMap.value[props.selectedCommitId] || []
       );
     };
 
@@ -154,7 +138,7 @@ export const BlamePanelMonaco = vca.component({
         emitUpdate(ctx, "selectedCommitId", "");
         // decorations must be updated after text changed
         Vue.nextTick(() => {
-          updateStaticDecorations();
+          updateBlameDecoration();
           emitUpdate(ctx, "selectedCommitId", blame.commits[0].id);
           if (editor.value) {
             editor.value.setScrollPosition({ scrollLeft: 0, scrollTop: 0 });
@@ -164,7 +148,7 @@ export const BlamePanelMonaco = vca.component({
     );
     watch(
       () => props.selectedCommitId,
-      () => updateSelectedCommitDecorations()
+      () => updateSelectedCommitDecoration()
     );
 
     const onMouseDown = (e: monaco.editor.IEditorMouseEvent) => {
@@ -183,16 +167,6 @@ export const BlamePanelMonaco = vca.component({
       const commitId = props.blame.commitIds[position.lineNumber - 1] || "";
       emitUpdate(ctx, "selectedCommitId", commitId);
     };
-    const onMouseMove = (e: monaco.editor.IEditorMouseEvent) => {
-      if (e.target.position) {
-        hoveredLineNumber.value = e.target.position.lineNumber;
-      } else {
-        hoveredLineNumber.value = 0;
-      }
-    };
-    const onMouseLeave = () => {
-      hoveredLineNumber.value = 0;
-    };
     const onContextMenu = (e: monaco.editor.IEditorMouseEvent) => {
       if (e.target.position) {
         const lineNumber = e.target.position.lineNumber;
@@ -207,11 +181,14 @@ export const BlamePanelMonaco = vca.component({
     ) => {
       editor.value = rawEditor;
       rawEditor.onMouseDown(onMouseDown);
-      rawEditor.onMouseMove(onMouseMove);
-      rawEditor.onMouseLeave(onMouseLeave);
       rawEditor.onContextMenu(onContextMenu);
-      updateStaticDecorations();
-      updateSelectedCommitDecorations();
+      onHoveredLineNumberChanged(rawEditor, lineNumber => {
+        const commitId = props.blame.commitIds[lineNumber - 1] || "";
+        vca.emitOn(ctx, "onHoveredCommitIdChanged", { commitId });
+      });
+
+      updateBlameDecoration();
+      updateSelectedCommitDecoration();
     };
     const onResized = () => {
       if (editor.value) {
@@ -223,7 +200,7 @@ export const BlamePanelMonaco = vca.component({
       return (
         <div class={style.wrapper}>
           <ResizeSensor onResized={onResized} debounce={200} />
-          <MonacoEditor
+          <VueMonacoEditor
             class={style.editor}
             language={props.language}
             value={props.blame.content.text}

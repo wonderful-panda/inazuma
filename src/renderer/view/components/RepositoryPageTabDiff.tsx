@@ -1,5 +1,4 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import MonacoEditor from "vue-monaco";
 import { useRootModule } from "../store";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import { onMounted, computed } from "@vue/composition-api";
@@ -7,6 +6,7 @@ import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 import { required, optional } from "./base/prop";
 import * as emotion from "emotion";
 import { getLangIdFromPath } from "view/monaco";
+import { VueMonacoDiffEditor } from "./base/MonacoEditor";
 const css = emotion.css;
 
 const style = {
@@ -58,7 +58,7 @@ export default vca.component({
       } else {
         return (
           <div class={style.root}>
-            <MonacoEditor
+            <VueMonacoDiffEditor
               class={style.editor}
               diffEditor
               language={language.value}
