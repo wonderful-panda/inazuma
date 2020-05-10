@@ -4,14 +4,21 @@ import { shortHash } from "../filters";
 import Vue from "vue";
 import { __sync } from "../utils/modifiers";
 import { css } from "emotion";
-import { ref, computed, watch } from "@vue/composition-api";
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onBeforeUnmount
+} from "@vue/composition-api";
 import { formatDateL } from "core/utils";
 import { required } from "./base/prop";
 import {
   useDecoration,
-  onHoveredLineNumberChanged
+  onHoveredLineNumberChanged,
+  bindLanguage,
+  bindOptions
 } from "./composition/monaco";
-import { VueMonacoEditor } from "./base/MonacoEditor";
 
 const style = {
   wrapper: css`
@@ -28,6 +35,9 @@ const style = {
     right: 0;
 
     .monaco-editor {
+      .margin-view-overlays {
+        border-right: 2px solid #666;
+      }
       .line-numbers {
         color: #555;
         cursor: pointer !important;
@@ -52,14 +62,14 @@ const style = {
 };
 
 function createLineNumberFormatter(blame: Blame) {
-  const lineNoWidth = blame.commitIds.length.toString().length;
+  // const lineNoWidth = blame.commitIds.length.toString().length;
   const dateMap = new Map(blame.commits.map(c => [c.id, formatDateL(c.date)]));
   return (lineno: number) => {
     const id = blame.commitIds[lineno - 1];
     if (!id) {
       return "";
     }
-    const linenoStr = ("00000000" + lineno.toString()).slice(-1 * lineNoWidth);
+    const linenoStr = lineno.toString();
     return `${linenoStr} ${shortHash(id)} ${dateMap.get(id)}`;
   };
 }
@@ -78,16 +88,17 @@ export const BlamePanelMonaco = vca.component({
   },
   setup(props, ctx: vca.SetupContext<PrefixedEvents>) {
     const emitUpdate = vca.updateEmitter<typeof props>();
-    const editor = ref<monaco.editor.IStandaloneCodeEditor | null>(null);
+    let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 
     const options = computed<monaco.editor.IEditorConstructionOptions>(() => {
+      const blame = props.blame;
       return {
-        theme: "vs-dark",
         readOnly: true,
         folding: false,
+        renderIndentGuides: false,
         minimap: { enabled: false },
-        lineDecorationsWidth: 180,
-        lineNumbers: createLineNumberFormatter(props.blame),
+        lineNumbersMinChars: blame.commitIds.length.toString().length + 21,
+        lineNumbers: createLineNumberFormatter(blame),
         selectOnLineNumbers: false,
         contextmenu: false
       };
@@ -106,14 +117,14 @@ export const BlamePanelMonaco = vca.component({
       isWholeLine: true
     });
     const updateBlameDecoration = () => {
-      if (!editor.value) {
+      if (!editor) {
         return;
       }
       const lineNumbers = props.blame.commitIds
         .map((id, index, arr) => (id !== arr[index - 1] ? index + 1 : -1))
         .filter(v => v >= 0);
       lineNumbers.push(props.blame.commitIds.length + 1);
-      blameDecoration.update(editor.value, lineNumbers);
+      blameDecoration.update(editor, lineNumbers);
     };
 
     const selectedCommitDecoration = useDecoration({
@@ -127,25 +138,22 @@ export const BlamePanelMonaco = vca.component({
     });
     const updateSelectedCommitDecoration = () => {
       selectedCommitDecoration.update(
-        editor.value,
+        editor,
         lineNumberMap.value[props.selectedCommitId] || []
       );
     };
 
-    watch(
-      () => props.blame,
-      blame => {
-        emitUpdate(ctx, "selectedCommitId", "");
-        // decorations must be updated after text changed
-        Vue.nextTick(() => {
-          updateBlameDecoration();
-          emitUpdate(ctx, "selectedCommitId", blame.commits[0].id);
-          if (editor.value) {
-            editor.value.setScrollPosition({ scrollLeft: 0, scrollTop: 0 });
-          }
-        });
+    const updateContent = (blame: Blame) => {
+      emitUpdate(ctx, "selectedCommitId", "");
+      if (editor) {
+        editor.setValue(blame.content.text);
+        updateBlameDecoration();
+        emitUpdate(ctx, "selectedCommitId", blame.commits[0].id);
+        editor.setScrollPosition({ scrollLeft: 0, scrollTop: 0 });
       }
-    );
+    };
+
+    watch(() => props.blame, updateContent);
     watch(
       () => props.selectedCommitId,
       () => updateSelectedCommitDecoration()
@@ -176,37 +184,43 @@ export const BlamePanelMonaco = vca.component({
         }
       }
     };
-    const onEditorDidMount = (
-      rawEditor: monaco.editor.IStandaloneCodeEditor
-    ) => {
-      editor.value = rawEditor;
-      rawEditor.onMouseDown(onMouseDown);
-      rawEditor.onContextMenu(onContextMenu);
-      onHoveredLineNumberChanged(rawEditor, lineNumber => {
+    const onResized = () => {
+      if (editor) {
+        editor.layout();
+      }
+    };
+
+    const placeholder = ref<HTMLDivElement | null>(null);
+    onMounted(() => {
+      if (!placeholder.value) {
+        return;
+      }
+      editor = monaco.editor.create(placeholder.value, {
+        language: props.language,
+        ...options.value
+      });
+      bindLanguage(editor, () => props.language);
+      bindOptions(editor, options);
+      editor.onMouseDown(onMouseDown);
+      editor.onContextMenu(onContextMenu);
+      onHoveredLineNumberChanged(editor, lineNumber => {
         const commitId = props.blame.commitIds[lineNumber - 1] || "";
         vca.emitOn(ctx, "onHoveredCommitIdChanged", { commitId });
       });
-
-      updateBlameDecoration();
-      updateSelectedCommitDecoration();
-    };
-    const onResized = () => {
-      if (editor.value) {
-        editor.value.layout();
+      Vue.nextTick(() => updateContent(props.blame));
+    });
+    onBeforeUnmount(() => {
+      if (editor) {
+        editor.dispose();
+        editor = null;
       }
-    };
+    });
 
     return () => {
       return (
         <div class={style.wrapper}>
           <ResizeSensor onResized={onResized} debounce={200} />
-          <VueMonacoEditor
-            class={style.editor}
-            language={props.language}
-            value={props.blame.content.text}
-            options={options.value}
-            onEditorDidMount={onEditorDidMount}
-          />
+          <div ref={placeholder as any} class={style.editor} />
         </div>
       );
     };

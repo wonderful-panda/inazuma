@@ -43,12 +43,19 @@ export function useDecoration(
   };
 }
 
+export type WatcherSource<T> = Readonly<Ref<T>> | (() => T);
+
+function evaluateWatcherSource<T>(obj: WatcherSource<T>) {
+  return "value" in obj ? obj.value : obj();
+}
+
 export function bindLanguage(
   editor: monaco.editor.IStandaloneCodeEditor,
-  lang: Ref<string> | (() => string)
+  lang: WatcherSource<string>,
+  immediate: boolean = false
 ): void {
   let currentLanguage = "";
-  watch(lang, newValue => {
+  const handler = (newValue: string) => {
     if (currentLanguage !== newValue) {
       currentLanguage = newValue;
       const model = editor.getModel();
@@ -56,5 +63,29 @@ export function bindLanguage(
         monaco.editor.setModelLanguage(model, newValue);
       }
     }
+  };
+  watch(lang, handler);
+  if (immediate) {
+    handler(evaluateWatcherSource(lang));
+  }
+}
+export function bindOptions(
+  editor: monaco.editor.IStandaloneDiffEditor,
+  options: WatcherSource<monaco.editor.IDiffEditorOptions>,
+  immediate?: boolean
+): void;
+
+export function bindOptions(
+  editor: monaco.editor.IStandaloneCodeEditor,
+  options: WatcherSource<monaco.editor.IEditorOptions>,
+  immediate?: boolean
+): void;
+
+export function bindOptions(editor: any, options: any, immediate?: boolean) {
+  watch(options, newValue => {
+    editor.updateOptions(newValue);
   });
+  if (immediate) {
+    editor.updateOptions(evaluateWatcherSource(options));
+  }
 }
