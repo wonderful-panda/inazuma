@@ -12,12 +12,13 @@ import { __sync } from "../utils/modifiers";
 import { RepositoryTabDefinition, SplitterDirection } from "../mainTypes";
 import { useRootModule, useTabsModule } from "view/store";
 import { asAsyncComponent } from "view/utils/async-component";
-import { computed } from "@vue/composition-api";
+import { computed, ref } from "@vue/composition-api";
 import {
   injectStorage,
   provideStorageWithAdditionalNamespace,
   useStorage
 } from "./injection/storage";
+import VBackdropSpinner from "./base/VBackdropSpinner";
 
 const TabFile = asAsyncComponent(() =>
   import(
@@ -81,6 +82,7 @@ export default vca.component({
       "RepositoryPage"
     );
     provideStorageWithAdditionalNamespace("repository", storage);
+    const loading = ref(false);
     const rootModule = useRootModule();
     const tabsModule = useTabsModule();
     const selectedTabIndex = computed({
@@ -95,6 +97,14 @@ export default vca.component({
     const showWelcomePage = () => rootModule.actions.showWelcomePage();
     const showVersionDialog = () => rootModule.actions.showVersionDialog();
     const toggleTerminal = () => rootModule.actions.toggleTerminal();
+    const reload = async () => {
+      loading.value = true;
+      try {
+        await rootModule.actions.reload();
+      } finally {
+        loading.value = false;
+      }
+    };
     const closeTab = (key: string) => rootModule.actions.removeTab({ key });
 
     return () => {
@@ -130,7 +140,9 @@ export default vca.component({
           </template>
           <template slot="titlebar-buttons">
             <TitleBarButton action={toggleTerminal}>keyboard</TitleBarButton>
+            <TitleBarButton action={reload}>refresh</TitleBarButton>
           </template>
+          {loading.value && <VBackdropSpinner />}
           <keep-alive>
             <SideBar name={state.sidebar} />
           </keep-alive>

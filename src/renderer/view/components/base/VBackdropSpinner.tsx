@@ -18,6 +18,7 @@ const style = {
     right: 0;
     background-color: rgba(0, 0, 0, 0.5);
     overflow: hidden;
+    z-index: 999999;
   `,
   spinner: css`
     margin: auto;

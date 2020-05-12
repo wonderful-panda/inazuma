@@ -47,8 +47,8 @@ const template: Electron.MenuItemConstructorOptions[] = [
     label: "&View",
     submenu: [
       {
-        label: "&Reload",
-        accelerator: "Ctrl+R",
+        label: "Hard &Reload",
+        accelerator: "Ctrl+Shift+R",
         click: (_item, focusedWindow) => {
           focusedWindow.reload();
         }

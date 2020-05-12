@@ -240,6 +240,22 @@ class RootActions
     }
   }
 
+  async reload(): Promise<void> {
+    try {
+      const { repoPath, selectedIndex } = this.state;
+      if (!repoPath) {
+        return;
+      }
+      const { commits, refs } = await browserCommand.openRepository(repoPath);
+      this.actions.showCommits({ commits, refs });
+      if (selectedIndex === 0) {
+        this.actions.setSelectedIndex({ index: selectedIndex, force: true });
+      }
+    } catch (error) {
+      this.actions.showError({ error });
+    }
+  }
+
   private showCommits(payload: { commits: Commit[]; refs: Refs }) {
     const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
     const graphs = {} as { [id: string]: GraphFragment };
@@ -253,8 +269,11 @@ class RootActions
     this.mutations.setCommitDetail(payload);
   }
 
-  async setSelectedIndex(payload: { index: number }): Promise<void> {
-    if (this.state.selectedIndex === payload.index) {
+  async setSelectedIndex(payload: {
+    index: number;
+    force?: boolean;
+  }): Promise<void> {
+    if (!payload.force && this.state.selectedIndex === payload.index) {
       return;
     }
     try {
