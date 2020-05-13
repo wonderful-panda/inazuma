@@ -10,13 +10,19 @@ import { GitHash } from "./GitHash";
 import { formatDateL } from "core/utils";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
+import { Orientation } from "view/mainTypes";
 
 const style = {
-  container: css`
+  container: (orientation: Orientation) => css`
     display: flex;
     flex: 1;
+    flex-flow: ${orientation === "portrait" ? "column" : "row"} nowrap;
+    padding: 12px;
+  `,
+  metadata: css`
+    display: flex;
+    min-width: 40%;
     flex-flow: column nowrap;
-    padding: 8px;
   `,
   inactive: css`
     color: #666;
@@ -59,20 +65,46 @@ const CommitAttr = _fc<{ name: string }>(({ props, children }) => (
   </tr>
 ));
 
+const CommitMetadata = _fc<{ commit: CommitDetail }>(
+  ({ props: { commit } }) => (
+    <div class={style.metadata}>
+      <div class={[style.summary, md.TITLE]}>
+        {commit.summary || "No commit selected"}
+      </div>
+      <pre v-show={commit.body} staticClass={style.body}>
+        {commit.body}
+      </pre>
+      <table staticClass={style.attrTable}>
+        <CommitAttr name="id">
+          <GitHash hash={commit.id} />
+        </CommitAttr>
+        <CommitAttr name="parents">
+          {commit.parentIds.map(pid => (
+            <GitHash key={pid} hash={pid} style="display:block" />
+          ))}
+        </CommitAttr>
+        <CommitAttr name="author">{commit.author}</CommitAttr>
+        <CommitAttr name="date">{formatDateL(commit.date)}</CommitAttr>
+      </table>
+    </div>
+  )
+);
+
 export default vca.component({
   name: "RevisionLogCommitDetail",
   props: {
-    commit: required<CommitDetail>()
+    commit: required<CommitDetail>(),
+    orientation: required<Orientation>(String)
   },
   setup(p) {
     const storage = injectStorage();
     const persist = useStorage(
-      { columnWidths: {} as Record<string, number> },
+      { columnWidths: {} as Record<string, number>, splitterPosition: 0.4 },
       storage,
       "CommitDetail"
     );
     const classes = computed(() => ({
-      [style.container]: true,
+      [style.container(p.orientation)]: true,
       [md.SUBHEADING]: true,
       [style.inactive]: !p.commit.id
     }));
@@ -84,33 +116,18 @@ export default vca.component({
       showFileContextMenu(p.commit, item, item.path);
     };
 
-    return () => (
-      <div class={classes.value}>
-        <div class={[style.summary, md.TITLE]}>
-          {p.commit.summary || "No commit selected"}
+    return () => {
+      return (
+        <div class={classes.value}>
+          <CommitMetadata commit={p.commit} />
+          <FileTable
+            files={p.commit.files}
+            widths={__sync(persist.columnWidths)}
+            onRowdblclick={arg => showExternalDiff(arg.item)}
+            onRowcontextmenu={arg => showContextMenu(arg.item, arg.event)}
+          />
         </div>
-        <pre v-show={p.commit.body} staticClass={style.body}>
-          {p.commit.body}
-        </pre>
-        <table staticClass={style.attrTable}>
-          <CommitAttr name="id">
-            <GitHash hash={p.commit.id} />
-          </CommitAttr>
-          <CommitAttr name="parents">
-            {p.commit.parentIds.map(pid => (
-              <GitHash key={pid} hash={pid} style="display:block" />
-            ))}
-          </CommitAttr>
-          <CommitAttr name="author">{p.commit.author}</CommitAttr>
-          <CommitAttr name="date">{formatDateL(p.commit.date)}</CommitAttr>
-        </table>
-        <FileTable
-          files={p.commit.files}
-          widths={__sync(persist.columnWidths)}
-          onRowdblclick={arg => showExternalDiff(arg.item)}
-          onRowcontextmenu={arg => showContextMenu(arg.item, arg.event)}
-        />
-      </div>
-    );
+      );
+    };
   }
 });

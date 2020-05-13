@@ -6,7 +6,7 @@ import RevisionLogCommitDetail from "./RevisionLogCommitDetail";
 import LogTable from "./LogTable";
 import VSplitterPanel from "./base/VSplitterPanel";
 import { dragdrop } from "../dragdrop";
-import { LogItem, SplitterDirection } from "../mainTypes";
+import { LogItem, SplitterDirection, Orientation } from "../mainTypes";
 import { __sync } from "view/utils/modifiers";
 import { showCommitContextMenu } from "../commands";
 import {
@@ -14,6 +14,7 @@ import {
   provideStorageWithAdditionalNamespace,
   useStorage
 } from "./injection/storage";
+import { computed } from "@vue/composition-api";
 
 export default vca.component({
   name: "RepositoryPageTabLog",
@@ -58,6 +59,15 @@ export default vca.component({
 
     return () => {
       const state = rootCtx.state;
+      const detailOrientation = computed<Orientation>(() =>
+        persistData.splitter.direction === "horizontal"
+          ? "portrait"
+          : "landscape"
+      );
+      const SecondPane =
+        rootCtx.state.selectedCommit.id === "--"
+          ? RevisionLogWorkingTree
+          : RevisionLogCommitDetail;
       return (
         <VSplitterPanel
           style={{ flex: 1, margin: "2px" }}
@@ -79,13 +89,11 @@ export default vca.component({
             onRowdrop={onRowdrop}
             onRowcontextmenu={showContextMenu}
           />
-          <template slot="second">
-            {rootCtx.state.selectedCommit.id === "--" ? (
-              <RevisionLogWorkingTree commit={state.selectedCommit} />
-            ) : (
-              <RevisionLogCommitDetail commit={state.selectedCommit} />
-            )}
-          </template>
+          <SecondPane
+            slot="second"
+            commit={state.selectedCommit}
+            orientation={detailOrientation.value}
+          />
         </VSplitterPanel>
       );
     };

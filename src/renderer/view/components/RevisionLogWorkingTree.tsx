@@ -12,11 +12,13 @@ import {
 import { computed } from "@vue/composition-api";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
+import { Orientation, SplitterDirection } from "view/mainTypes";
 
 export default vca.component({
   name: "RevisionLogWorkingTree",
   props: {
-    commit: required<CommitDetail>()
+    commit: required<CommitDetail>(),
+    orientation: required<Orientation>(String)
   },
   setup(p) {
     const storage = injectStorage();
@@ -34,6 +36,9 @@ export default vca.component({
     const stagedFiles = computed(() => p.commit.files.filter(f => f.inIndex));
     const unstagedFiles = computed(() =>
       p.commit.files.filter(f => f.inWorkingTree)
+    );
+    const splitterDirection = computed<SplitterDirection>(() =>
+      p.orientation === "portrait" ? "vertical" : "horizontal"
     );
     const showExternalDiffCommittedAndStaged = ({
       item
@@ -59,7 +64,7 @@ export default vca.component({
     return () => (
       <VSplitterPanel
         staticClass={style.container}
-        direction="vertical"
+        direction={splitterDirection.value}
         splitterWidth={5}
         minSizeFirst="20%"
         minSizeSecond="20%"

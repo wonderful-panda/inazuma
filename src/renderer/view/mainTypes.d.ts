@@ -56,3 +56,4 @@ export interface AppState {
 }
 
 export type SplitterDirection = "horizontal" | "vertical";
+export type Orientation = "portrait" | "landscape";
