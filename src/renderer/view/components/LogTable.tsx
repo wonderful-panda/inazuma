@@ -91,7 +91,7 @@ export default vca.component({
 
     return () => (
       <VtableT
-        ref={vtableRef as any}
+        ref={vtableRef}
         staticClass={style.container}
         items={p.items}
         columns={columns}

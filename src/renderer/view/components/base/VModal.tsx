@@ -94,7 +94,7 @@ export default vca.component({
       return (
         <transition name="modal">
           <div
-            ref={root as any}
+            ref={root}
             class={["fullscreen-overlay", style.mask]}
             onClick={p.close}
             onKeydown={__capture(m.tab(onTabKeyDown))}

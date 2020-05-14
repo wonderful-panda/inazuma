@@ -69,7 +69,7 @@ export default vca.component({
           <div class={style.tabbar}>
             {tabs.map((tab, index) => (
               <TabButton
-                ref={tabButton as any}
+                ref={tabButton}
                 refInFor
                 key={tab.key}
                 tab={tab}

@@ -47,7 +47,7 @@ export default vca.component({
     widths: required<Record<string, number>>()
   },
   setup(p, ctx: vca.SetupContext<VtableEventsOn<FileCommit>>) {
-    const vtableRef = ref(null as Vtable<LogItem> | null);
+    const vtableRef = ref<Vtable<LogItem> | null>(null);
     watch(
       () => p.selectedIndex,
       newValue => {
@@ -77,7 +77,7 @@ export default vca.component({
       const { rowHeight, selectedIndex } = p;
       return (
         <VtableT
-          ref={vtableRef as any}
+          ref={vtableRef}
           staticClass={style.container}
           items={p.items}
           columns={columns}

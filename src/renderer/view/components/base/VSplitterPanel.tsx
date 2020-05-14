@@ -87,7 +87,7 @@ export default vca.component({
     return () => (
       <div class="splitter-panel-container" style={containerStyle.value}>
         <div
-          ref={first as any}
+          ref={first}
           v-show={p.showFirst}
           class="splitter-panel-first"
           style={firstPanelStyle.value}
@@ -102,7 +102,7 @@ export default vca.component({
           allowDirectionChange={p.allowDirectionChange}
         />
         <div
-          ref={second as any}
+          ref={second}
           v-show={p.showSecond}
           class="splitter-panel-second"
           style={secondPanelStyle.value}

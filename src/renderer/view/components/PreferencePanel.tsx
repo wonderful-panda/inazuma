@@ -75,11 +75,7 @@ export default vca.component({
       }
       return (
         <VModal class={style.modalBase} title="PREFERENCE" close={p.hide}>
-          <form
-            ref={formRef.value as any}
-            class={style.modalContent}
-            action="#"
-          >
+          <form ref={formRef} class={style.modalContent} action="#">
             <SubHeader>Font Settings</SubHeader>
             <VTextField
               class={style.input}

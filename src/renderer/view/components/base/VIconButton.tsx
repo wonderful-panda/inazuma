@@ -1,8 +1,8 @@
 import VButton from "./VButton";
 import { MdIcon } from "./md";
-import { PropsOf } from "vue-support";
+import { ComponentProps } from "vue-tsx-support/lib/advance";
 
-type Props = PropsOf<typeof VButton>;
+type Props = ComponentProps<typeof VButton>;
 
 export default _fc<Props>(({ props, children, data }) => {
   const { props: _, scopedSlots, ...rest } = data;

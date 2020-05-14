@@ -91,10 +91,7 @@ export default vca.component({
       }
     );
     return () => (
-      <div
-        ref={el as any}
-        style="position: relative; flex: 1; overflow: hidden;"
-      >
+      <div ref={el} style="position: relative; flex: 1; overflow: hidden;">
         <ResizeSensor debounce={0} throttle={50} onResized={onResized} />
       </div>
     );

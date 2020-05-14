@@ -4,7 +4,11 @@ declare module "vue-support" {
     RecordPropsDefinition,
     ArrayPropsDefinition
   } from "vue/types/options";
-  import { TsxComponent, TsxTypeInfoOf } from "vue-tsx-support";
+  import { _TsxComponentV3 } from "vue-tsx-support";
+  import {
+    ComponentProps,
+    ReplaceComponentProps
+  } from "vue-tsx-support/lib/advance";
   import { PropsOf as PropsOf_ } from "vue-tsx-support/types/base";
 
   type RequiredProps<Props, PD extends RecordPropsDefinition<Props>> = {
@@ -30,21 +34,20 @@ declare module "vue-support" {
   export type AsComponent<
     C extends VueConstructor | string
   > = C extends keyof VueTsxSupport.JSX.IntrinsicElements
-    ? TsxComponent<Vue, VueTsxSupport.JSX.IntrinsicElements[C]>
+    ? _TsxComponentV3<
+        Vue,
+        {},
+        VueTsxSupport.JSX.IntrinsicElements[C],
+        {},
+        {},
+        {}
+      >
     : C extends string
-    ? TsxComponent<Vue, any>
+    ? _TsxComponentV3<Vue, {}, any, {}, {}, {}>
     : C;
 
   export type WithProps<
     C extends VueConstructor,
     Props
-  > = C extends TsxComponent<infer V, infer P, infer E, infer S, infer A>
-    ? TsxComponent<V, P & Props, E, S, A>
-    : C extends VueConstructor<infer V>
-    ? TsxComponent<V, Props>
-    : never;
-
-  export type PropsOf<C extends Vue | VueConstructor> = PropsOf_<
-    C extends VueConstructor ? InstanceType<C> : C
-  >;
+  > = ReplaceComponentProps<C, ComponentProps<C> & Props>;
 }
