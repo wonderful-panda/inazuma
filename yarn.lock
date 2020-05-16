@@ -5163,11 +5163,6 @@ monaco-editor@^0.19.3:
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.19.3.tgz#1c994b3186c00650dbcd034d5370d46bf56c0663"
   integrity sha512-2n1vJBVQF2Hhi7+r1mMeYsmlf18hjVb6E0v5SoMZyb4aeOmYPKun+CE3gYpiNA1KEvtSdaDHFBqH9d7Wd9vREg==
 
-monaco-editor@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.20.0.tgz#5d5009343a550124426cb4d965a4d27a348b4dea"
-  integrity sha512-hkvf4EtPJRMQlPC3UbMoRs0vTAFAYdzFQ+gpMb8A+9znae1c43q8Mab9iVsgTcg/4PNiLGGn3SlDIa8uvK1FIQ==
-
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -5199,11 +5194,6 @@ nan@^2.12.1, nan@^2.13.2, nan@^2.14.0:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
-
-nano-assign@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/nano-assign/-/nano-assign-1.0.1.tgz#abb1c50d0416b865fb37bbd155c5368bb54378e5"
-  integrity sha512-1K8ncUoAYFPYcCZqrB+K2XQaFCmA35rryJCtPkGrG3zYkwm+iIUZRIHyaAfuy6zxaK9siPdjeJq7+Inijm6xhw==
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -7678,14 +7668,6 @@ vue-material@1.0.0-beta-11:
   resolved "https://registry.yarnpkg.com/vue-material/-/vue-material-1.0.0-beta-11.tgz#11baf0cdb22a35d35859c619099d6c3cb3cc2cc3"
   integrity sha512-1+dIVkQafMIA/zNONb7OwGaTjAxaWk/JhUA2/FInQvbArxf1ToKB+yIdeSfzopQ1KICnBTAmk9E0Vdr5p4MWNA==
 
-vue-monaco@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/vue-monaco/-/vue-monaco-1.2.0.tgz#7436e821af478aef7c707e21c4853f341d47345f"
-  integrity sha512-M+VyY2daIZ9RXQDMsRvIYgsHjR2CP1rAVDDw9ITpwGAK8WsWxRblJXbF2FeSHmYkI784xu8jh8YSngilf8EJDQ==
-  dependencies:
-    monaco-editor "^0.20.0"
-    nano-assign "^1.0.0"
-
 vue-property-decorator@^8.3.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/vue-property-decorator/-/vue-property-decorator-8.3.0.tgz#536f027dc7d626f37c8d85a2dc02f0a6cb979440"
@@ -7709,10 +7691,10 @@ vue-template-compiler@^2.6.11:
     de-indent "^1.0.2"
     he "^1.1.0"
 
-vue-tsx-support@3.0.0-beta.5:
-  version "3.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-beta.5.tgz#a5a1b643b31738a18fd9ebad33e6d032ef9696f0"
-  integrity sha512-KDh5Ue8+uRYeRNEPpQHqy+/2mNWoygqYXIPA1Yfoaqj/kP7Cp7eOUqCFlLwW4V1v+i9/xhZFlBNi7Ba1q6HWSA==
+vue-tsx-support@^3.0.0-beta.6:
+  version "3.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-beta.6.tgz#3cc02cbc109c6b84c287cbac3184c8eb92484cf1"
+  integrity sha512-WrQemM3/UBuVq/xosFtzltYq22Wz7pkNjDypy74jLIu/ABkW7O2RLEea+oYQCovblVyDaFArBj2UWrTIACbEDQ==
 
 vue-vtable@1.0.0-beta.8a:
   version "1.0.0-beta.8a"
