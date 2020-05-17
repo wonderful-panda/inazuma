@@ -1,7 +1,6 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import VSplitterPanel from "./base/VSplitterPanel";
-import FileTable from "./FileTable";
-import * as md from "view/utils/md-classes";
+import FileList from "./FileList";
 import { __sync } from "view/utils/modifiers";
 import { css } from "emotion";
 import { executeFileCommand } from "../commands";
@@ -14,10 +13,18 @@ import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
 import { Orientation, SplitterDirection } from "view/mainTypes";
 
+const rootStyle = css`
+  display: flex;
+  flex: 1;
+  flex-flow: column nowrap;
+  padding: 8px;
+`;
+
 export default vca.component({
   name: "RevisionLogWorkingTree",
   props: {
     commit: required<CommitDetail>(),
+    refs: required<readonly Ref[]>(Array),
     orientation: required<Orientation>(String)
   },
   setup(p) {
@@ -63,45 +70,26 @@ export default vca.component({
 
     return () => (
       <VSplitterPanel
-        staticClass={style.container}
+        staticClass={rootStyle}
         direction={splitterDirection.value}
         splitterWidth={5}
         minSizeFirst="20%"
         minSizeSecond="20%"
         ratio={__sync(persist.splitterRatio)}
       >
-        <div slot="first" staticClass={style.splitterPane}>
-          <div staticClass={md.TITLE}>Changes to be committed</div>
-          <FileTable
-            files={stagedFiles.value}
-            widths={__sync(persist.columnWidths.staged)}
-            onRowdblclick={showExternalDiffCommittedAndStaged}
-          />
-        </div>
-        <div slot="second" staticClass={style.splitterPane}>
-          <div staticClass={md.TITLE}>Changes not staged</div>
-          <FileTable
-            files={unstagedFiles.value}
-            widths={__sync(persist.columnWidths.unstaged)}
-            onRowdblclick={showExternalDiffStagedAndUnstaged}
-          />
-        </div>
+        <FileList
+          slot="first"
+          title="Changes to be committed"
+          files={stagedFiles.value}
+          onRowdblclick={showExternalDiffCommittedAndStaged}
+        />
+        <FileList
+          slot="second"
+          title="Changes not staged"
+          files={unstagedFiles.value}
+          onRowdblclick={showExternalDiffStagedAndUnstaged}
+        />
       </VSplitterPanel>
     );
   }
 });
-
-const style = {
-  container: css`
-    display: flex;
-    flex: 1;
-    flex-flow: column nowrap;
-    padding: 8px;
-  `,
-  splitterPane: css`
-    display: flex;
-    flex: 1;
-    flex-flow: column nowrap;
-    padding: 0;
-  `
-};

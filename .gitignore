@@ -4,3 +4,4 @@ dist
 out
 *.log
 __generated
+src/renderer/view/components/octicon-paths.tsx

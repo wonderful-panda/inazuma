@@ -15,6 +15,12 @@ import {
   useStorage
 } from "./injection/storage";
 import { computed } from "@vue/composition-api";
+import { css } from "emotion";
+
+const rootStyle = css`
+  flex: 1;
+  margin: 2px;
+`;
 
 export default vca.component({
   name: "RepositoryPageTabLog",
@@ -70,7 +76,7 @@ export default vca.component({
           : RevisionLogCommitDetail;
       return (
         <VSplitterPanel
-          style={{ flex: 1, margin: "2px" }}
+          class={rootStyle}
           allowDirectionChange
           direction={__sync(persistData.splitter.direction)}
           splitterWidth={5}
@@ -92,6 +98,7 @@ export default vca.component({
           <SecondPane
             slot="second"
             commit={state.selectedCommit}
+            refs={rootCtx.getters.selectedCommitRefs}
             orientation={detailOrientation.value}
           />
         </VSplitterPanel>
