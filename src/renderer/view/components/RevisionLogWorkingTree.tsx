@@ -12,6 +12,7 @@ import { computed } from "@vue/composition-api";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
 import { Orientation, SplitterDirection } from "view/mainTypes";
+import { FileAction } from "./CommitFileRow";
 
 const rootStyle = css`
   display: flex;
@@ -19,6 +20,26 @@ const rootStyle = css`
   flex-flow: column nowrap;
   padding: 8px;
 `;
+
+const stagedActions: readonly FileAction[] = [
+  { icon: "remove", tooltip: "Unstage file", action: () => {} },
+  {
+    icon: "compare_arrows",
+    tooltip: "Compare with committed",
+    action: () => {}
+  },
+  { icon: "more_horiz", tooltip: "Other actions", action: () => {} }
+];
+
+const unstagedActions: readonly FileAction[] = [
+  { icon: "add", tooltip: "Stage file", action: () => {} },
+  {
+    icon: "compare_arrows",
+    tooltip: "Compare with staged",
+    action: () => {}
+  },
+  { icon: "more_horiz", tooltip: "Other actions", action: () => {} }
+];
 
 export default vca.component({
   name: "RevisionLogWorkingTree",
@@ -81,12 +102,14 @@ export default vca.component({
           slot="first"
           title="Changes to be committed"
           files={stagedFiles.value}
+          actions={stagedActions}
           onRowdblclick={showExternalDiffCommittedAndStaged}
         />
         <FileList
           slot="second"
           title="Changes not staged"
           files={unstagedFiles.value}
+          actions={unstagedActions}
           onRowdblclick={showExternalDiffStagedAndUnstaged}
         />
       </VSplitterPanel>

@@ -1,6 +1,6 @@
 import * as md from "view/utils/md-classes";
 import * as vca from "vue-tsx-support/lib/vca";
-import FileList, { FileAction } from "./FileList";
+import FileList from "./FileList";
 import { __sync } from "view/utils/modifiers";
 import { css } from "emotion";
 import {
@@ -20,6 +20,8 @@ import RefBadge from "./RefBadge";
 import { commitCommandYankHash } from "view/commands/commitCommandYankHash";
 import { commitCommandBrowseTree } from "view/commands/commitCommandBrowseTree";
 import VSplitterPanel from "./base/VSplitterPanel";
+import { fileCommandBlame } from "view/commands/fileCommandBlame";
+import { FileAction } from "./CommitFileRow";
 
 const style = {
   container: css`
@@ -111,17 +113,6 @@ const CommitMetadata = vca.component({
   }
 });
 
-const actions: readonly FileAction[] = Object.freeze([
-  { icon: "code", tooltip: "Show file content", action: () => {} },
-  {
-    icon: "compare_arrows",
-    tooltip: "Compare with parent",
-    action: () => {},
-    enabled: ({ statusCode: s }) => s === "M" || s.startsWith("R")
-  },
-  { icon: "more_horiz", tooltip: "Other actions", action: () => {} }
-]);
-
 export default vca.component({
   name: "RevisionLogCommitDetail",
   props: {
@@ -143,6 +134,23 @@ export default vca.component({
       event.preventDefault();
       showFileContextMenu(p.commit, item, item.path);
     };
+    const actions: readonly FileAction[] = Object.freeze([
+      {
+        icon: "code",
+        tooltip: "Show file content",
+        action: item => {
+          executeFileCommand(fileCommandBlame, p.commit, item, item.path);
+        }
+      },
+      {
+        icon: "compare_arrows",
+        tooltip: "Compare with parent",
+        action: showExternalDiff,
+        enabled: ({ statusCode: s }) => s === "M" || s.startsWith("R")
+      },
+      { icon: "more_horiz", tooltip: "Other actions", action: () => {} }
+    ]);
+
     return () => {
       return (
         <VSplitterPanel

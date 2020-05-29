@@ -116,7 +116,7 @@ async function getCommitDetail(
 ): Promise<CommitDetail> {
   if (sha === PSEUDO_COMMIT_ID_WTREE) {
     const refs = await git.getRefs(repoPath);
-    const files = await git.status(repoPath);
+    const files = await git.statusWithStat(repoPath);
     return Object.assign(getWtreePseudoCommit(refs.head, refs.mergeHeads), {
       body: "",
       files

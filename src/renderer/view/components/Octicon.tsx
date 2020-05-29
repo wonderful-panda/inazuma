@@ -7,6 +7,7 @@ export const Octicon = _fc<{
   name: IconNames;
   color: string;
   size?: 16 | 24 | 32;
+  title?: string;
 }>(({ props, data }) => {
   const { scopedSlots, attrs, ...rest } = data;
   const size = props.size || 24;
@@ -17,8 +18,9 @@ export const Octicon = _fc<{
       height={size}
       style={`fill:${props.color}; padding:${padding}px;`}
       {...rest}
-      attrs={omit(attrs, ["name", "color", "size"])}
+      attrs={omit(attrs, Object.keys(props))}
     >
+      {props.title && <title>{props.title}</title>}
       {paths[props.name]()}
     </svg>
   );

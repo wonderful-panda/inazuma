@@ -1,4 +1,38 @@
 import { exec } from "./exec";
+import { getWorkingTreeStat } from "./diff";
+
+async function getUntrackedFiles(
+  repository: string
+): Promise<readonly FileEntry[]> {
+  const { stdout } = await exec("ls-files", {
+    repository,
+    args: ["-z", "--others", "--exclude-standard"]
+  });
+  const statusCode = "?";
+  const inWorkingTree = true;
+  const paths = stdout
+    .toString("utf8")
+    .split("\0")
+    .filter(path => !!path);
+  return paths.map(path => ({
+    path,
+    statusCode,
+    inWorkingTree
+  }));
+}
+
+export async function statusWithStat(
+  repository: string
+): Promise<readonly FileEntry[]> {
+  const [staged, unstaged, untracked] = await Promise.all([
+    getWorkingTreeStat(repository, true),
+    getWorkingTreeStat(repository, false),
+    getUntrackedFiles(repository)
+  ]);
+  return [...staged, ...unstaged, ...untracked].sort((a, b) =>
+    a.path.localeCompare(b.path)
+  );
+}
 
 export async function status(repository: string): Promise<FileEntry[]> {
   const ret: FileEntry[] = [];

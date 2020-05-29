@@ -1,4 +1,5 @@
 import { exec } from "./exec";
+import { parseNumstatRaw } from "./diff";
 
 interface LogKeyword {
   name: string;
@@ -208,71 +209,64 @@ export async function getCommitDetail(
      */
   const args = [
     commitId,
-    "--name-status",
+    "--raw",
+    "--numstat",
     "--find-renames",
     "-z",
     `--format=${_commitDetailFormat}`
   ];
-  const ret = { body: "", files: [] as FileEntry[] } as CommitDetail;
+  const ret: CommitDetail = {
+    id: "",
+    summary: "",
+    body: "",
+    author: "",
+    date: 0,
+    parentIds: [],
+    files: []
+  };
+  const { stdout } = await exec("show", { repository, args });
+  const lines = stdout.toString("utf8").split("\n");
+
   let region: "PROPS" | "BODY" | "FILES" = "PROPS";
-  await exec("show", {
-    repository,
-    args,
-    onEachLine: line => {
-      if (region === "PROPS") {
-        // read props of commit (id, parents, author, date, summary)
-        const p = line.indexOf(" ");
-        if (p <= 0) {
-          console.log("show/unexpected output:", line);
-          return;
-        }
-        const name = line.slice(0, p);
-        if (name === "body") {
-          region = "BODY";
-          return;
-        }
-        const proc = _procMap[name];
-        if (!proc) {
-          console.log("show/unexpected output:", line);
-          return;
-        }
-        proc(ret, line.slice(p + 1));
-      } else if (region === "BODY") {
-        // read body of commit
-        if (line === "}}}") {
-          ret.body = ret.body.replace(/\n$/, "");
-          region = "FILES";
-          return;
-        }
-        if (line.length === 0) {
-          console.log("show/unexpected output:", line);
-          return;
-        }
-        ret.body += line.slice(1) + "\n";
-      } else {
-        if (line === "") {
-          return;
-        }
-        const tokens = line.split("\0");
-        for (let i = 0; i < tokens.length; ++i) {
-          const statusCode = tokens[i];
-          if (statusCode.startsWith("R")) {
-            // rename
-            ret.files.push({
-              path: tokens[i + 2],
-              oldPath: tokens[i + 1],
-              statusCode
-            });
-            i += 2;
-          } else if (statusCode) {
-            ret.files.push({ path: tokens[i + 1], statusCode });
-            i += 1;
-          } else {
-            break;
-          }
-        }
+  for (const line of lines) {
+    if (region === "PROPS") {
+      // read props of commit (id, parents, author, date, summary)
+      const p = line.indexOf(" ");
+      if (p <= 0) {
+        console.log("show/unexpected output:", line);
+        continue;
       }
+      const name = line.slice(0, p);
+      if (name === "body") {
+        region = "BODY";
+        continue;
+      }
+      const proc = _procMap[name];
+      if (!proc) {
+        console.log("show/unexpected output:", line);
+        continue;
+      }
+      proc(ret, line.slice(p + 1));
+    } else if (region === "BODY") {
+      // read body of commit
+      if (line === "}}}") {
+        ret.body = ret.body.replace(/\n$/, "");
+        region = "FILES";
+        continue;
+      }
+      if (line.length === 0) {
+        console.log("show/unexpected output:", line);
+        continue;
+      }
+      ret.body += line.slice(1) + "\n";
+    } else {
+      // FILE region - raw output and numstat output
+      if (!line || line === "\0") {
+        continue;
+      }
+      ret.files = parseNumstatRaw(line);
+      break;
     }
-  });
+  }
   return ret;
 }
