@@ -21,7 +21,7 @@ import { commitCommandYankHash } from "view/commands/commitCommandYankHash";
 import { commitCommandBrowseTree } from "view/commands/commitCommandBrowseTree";
 import VSplitterPanel from "./base/VSplitterPanel";
 import { fileCommandBlame } from "view/commands/fileCommandBlame";
-import { FileAction } from "./CommitFileRow";
+import { FileAction } from "./FileListRow";
 
 const style = {
   container: css`

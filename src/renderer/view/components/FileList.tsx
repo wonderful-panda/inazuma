@@ -3,7 +3,7 @@ import { vlistOf, VtableEventsOn, RowClickEventArgs } from "vue-vtable";
 import { css } from "emotion";
 import { required, optional } from "./base/prop";
 import { ref } from "@vue/composition-api";
-import { FileAction, CommitFileRow, RowHeight } from "./CommitFileRow";
+import { FileAction, FileListRow, RowHeight } from "./FileListRow";
 
 const Vlist = vlistOf<FileEntry>();
 
@@ -77,7 +77,7 @@ export default vca.component({
             contentWidth={0}
             scopedSlots={{
               row: ({ item }) => (
-                <CommitFileRow
+                <FileListRow
                   class={getRowClass(item)}
                   item={item}
                   actions={p.actions}

@@ -143,7 +143,8 @@ const getFileType = (item: FileEntry) => {
     return "text";
   }
 };
-export const CommitFileRow = _fc<{
+
+export const FileListRow = _fc<{
   item: FileEntry;
   actions?: readonly FileAction[];
 }>(({ props: { item, actions } }) => {

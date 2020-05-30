@@ -12,7 +12,7 @@ import { computed } from "@vue/composition-api";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
 import { Orientation, SplitterDirection } from "view/mainTypes";
-import { FileAction } from "./CommitFileRow";
+import { FileAction } from "./FileListRow";
 
 const rootStyle = css`
   display: flex;
