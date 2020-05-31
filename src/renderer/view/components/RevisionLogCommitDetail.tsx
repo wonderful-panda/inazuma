@@ -8,7 +8,10 @@ import {
   executeFileCommand,
   executeCommitCommand
 } from "../commands";
-import { fileCommandDiffWithParent } from "../commands/fileCommandDiff";
+import {
+  fileCommandDiffWithParent,
+  fileCommandDiffWithLocal
+} from "../commands/fileCommandDiff";
 import { GitHash } from "./GitHash";
 import { formatDateLLL } from "core/utils";
 import { injectStorage, useStorage } from "./injection/storage";
@@ -20,8 +23,11 @@ import RefBadge from "./RefBadge";
 import { commitCommandYankHash } from "view/commands/commitCommandYankHash";
 import { commitCommandBrowseTree } from "view/commands/commitCommandBrowseTree";
 import VSplitterPanel from "./base/VSplitterPanel";
-import { fileCommandBlame } from "view/commands/fileCommandBlame";
-import { FileAction } from "./FileListRow";
+import {
+  fileCommandBlame,
+  fileCommandBlameParent
+} from "view/commands/fileCommandBlame";
+import { fileCommandYankPath } from "view/commands/fileCommandYankPath";
 
 const style = {
   container: css`
@@ -134,22 +140,6 @@ export default vca.component({
       event.preventDefault();
       showFileContextMenu(p.commit, item, item.path);
     };
-    const actions: readonly FileAction[] = Object.freeze([
-      {
-        icon: "code",
-        tooltip: "Show file content",
-        action: item => {
-          executeFileCommand(fileCommandBlame, p.commit, item, item.path);
-        }
-      },
-      {
-        icon: "compare_arrows",
-        tooltip: "Compare with parent",
-        action: showExternalDiff,
-        enabled: ({ statusCode: s }) => s === "M" || s.startsWith("R")
-      },
-      { icon: "more_horiz", tooltip: "Other actions", action: () => {} }
-    ]);
 
     return () => {
       return (
@@ -167,9 +157,15 @@ export default vca.component({
           />
           <FileList
             slot="second"
+            commit={p.commit}
             title={p.commit.id && "Changes"}
             files={p.commit.files}
-            actions={actions}
+            buttons={[fileCommandBlame, fileCommandDiffWithParent]}
+            menus={[
+              fileCommandBlameParent,
+              fileCommandDiffWithLocal,
+              fileCommandYankPath
+            ]}
             onRowdblclick={arg => showExternalDiff(arg.item)}
             onRowcontextmenu={arg => showContextMenu(arg.item, arg.event)}
           />

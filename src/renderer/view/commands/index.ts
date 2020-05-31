@@ -39,7 +39,7 @@ export function executeFileCommand(
   file: FileEntry,
   path: string
 ) {
-  const available = command.isEnabled || command.isVisible || (() => true);
+  const available = command.isEnabled || (() => true);
   if (!available(commit, file, path)) {
     return;
   }
@@ -77,13 +77,7 @@ function getFileMenuTemplate(
   if (commit.id === "--") {
     return [];
   }
-  const commands = fileCommands.filter(
-    c => c.isVisible === undefined || c.isVisible(commit, file, path)
-  );
-  if (commands.length === 0) {
-    return [];
-  }
-  return commands.map(
+  return fileCommands.map(
     c =>
       ({
         id: c.id,

@@ -4,8 +4,11 @@ import { withClass } from "./base/withClass";
 import VIconButton from "./base/VIconButton";
 import { MonoDiv } from "./base/mono";
 import { required } from "./base/prop";
+import { FileCommand } from "view/commands/types";
+import { executeFileCommand } from "view/commands";
+import { MdButton, MdIcon, MdTooltip } from "./base/md";
 
-export const RowHeight = 40;
+export const RowHeight = 42;
 
 const FileActionButtons = withClass("div", "file-action-buttons");
 
@@ -21,11 +24,11 @@ const Container = withClass(
     border-bottom: 1px solid #444;
     .file-action-buttons {
       position: absolute;
-      height: 26px;
-      padding: 2px;
-      border-radius: 4px;
-      right: 2px;
-      bottom: 2px;
+      height: 28px;
+      padding: 2px 4px;
+      border-radius: 14px;
+      right: 4px;
+      bottom: 4px;
       opacity: 0;
       background-color: #333;
     }
@@ -35,7 +38,7 @@ const Container = withClass(
       min-width: 22px !important;
       min-height: 22px !important;
       font-size: 14px;
-      margin: auto 2px;
+      margin: auto 4px;
     }
     :hover .file-action-buttons {
       opacity: 1;
@@ -59,7 +62,7 @@ const FirstLine = withClass(
   css`
     display: flex;
     flex-flow: row nowrap;
-    margin: auto 0px;
+    margin: 2px 0px;
     font-size: 14px;
     line-height: 18px;
     height: 18px;
@@ -81,9 +84,11 @@ const SecondLine = withClass(
 const FileType = withClass(
   "div",
   css`
-    color: #aaa;
-    text-transform: uppercase;
+    font-weight: bold;
+    padding: 0 2px;
+    color: #888;
     margin: auto 4px;
+    text-transform: uppercase;
   `
 );
 
@@ -117,19 +122,15 @@ const OldPath = withClass(
     text-overflow: ellipsis;
     color: #aaa;
     :before {
-      content: "${p.statusCode.startsWith("R") ? "rename" : "copy"}";
+      content: "${p.statusCode.startsWith("R") ? "Rename" : "Copy"} from";
+      font-weight: bold;
       padding: 0 2px;
-      border: 1px solid #aaa;
-      margin: auto 2px;
+      color: #222;
+      background: #888;
+      margin: auto 4px;
     }
   `
 );
-export type FileAction = {
-  icon: string;
-  action: (item: FileEntry) => void;
-  enabled?: (item: FileEntry) => boolean;
-  tooltip?: string;
-};
 
 const isNumberStat = (stat: "-" | number | undefined) =>
   stat !== undefined && stat !== "-";
@@ -146,8 +147,10 @@ const getFileType = (item: FileEntry) => {
 
 export const FileListRow = _fc<{
   item: FileEntry;
-  actions?: readonly FileAction[];
-}>(({ props: { item, actions } }) => {
+  commit: Commit;
+  buttons?: readonly FileCommand[];
+  menus?: readonly FileCommand[];
+}>(({ props: { item, commit, buttons, menus } }) => {
   return (
     <Container>
       <FileListIcon statusCode={item.statusCode} />
@@ -168,19 +171,51 @@ export const FileListRow = _fc<{
           </OldPath>
         </SecondLine>
       </RowContent>
-      {actions && (
+      {(buttons || menus) && (
         <FileActionButtons>
-          {actions.map((a, index) => (
-            <VIconButton
-              class="file-action-button"
-              key={index}
-              action={() => a.action(item)}
-              tooltip={a.tooltip}
-              disabled={a.enabled && !a.enabled(item)}
+          {buttons &&
+            buttons.map((a, index) => (
+              <VIconButton
+                class="file-action-button"
+                key={index}
+                action={() => executeFileCommand(a, commit, item, item.path)}
+                tooltip={a.label}
+                disabled={a.isEnabled && !a.isEnabled(commit, item, item.path)}
+              >
+                {a.icon}
+              </VIconButton>
+            ))}
+          {menus && (
+            <md-menu
+              key="other-actions"
+              md-close-on-click
+              md-align-trigger
+              md-size="auto"
             >
-              {a.icon}
-            </VIconButton>
-          ))}
+              <MdButton
+                class="md-icon-button file-action-button"
+                md-menu-trigger
+              >
+                <MdIcon>more_vert</MdIcon>
+                <MdTooltip>Other actions</MdTooltip>
+              </MdButton>
+              <md-menu-content>
+                {menus.map((m, index) => (
+                  <md-menu-item
+                    key={index}
+                    disabled={
+                      m.isEnabled && !m.isEnabled(commit, item, item.path)
+                    }
+                    onClick={() =>
+                      executeFileCommand(m, commit, item, item.path)
+                    }
+                  >
+                    {m.label}
+                  </md-menu-item>
+                ))}
+              </md-menu-content>
+            </md-menu>
+          )}
         </FileActionButtons>
       )}
     </Container>

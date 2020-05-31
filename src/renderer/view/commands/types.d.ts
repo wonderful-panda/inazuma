@@ -11,7 +11,7 @@ export interface CommitCommand {
 export interface FileCommand {
   id: string;
   label: string;
+  icon?: string;
   handler(commit: Commit, file: FileEntry, path: string): void;
-  isVisible?(commit: Commit, file: FileEntry, path: string): boolean;
   isEnabled?(commit: Commit, file: FileEntry, path: string): boolean;
 }

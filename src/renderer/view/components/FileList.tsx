@@ -3,7 +3,8 @@ import { vlistOf, VtableEventsOn, RowClickEventArgs } from "vue-vtable";
 import { css } from "emotion";
 import { required, optional } from "./base/prop";
 import { ref } from "@vue/composition-api";
-import { FileAction, FileListRow, RowHeight } from "./FileListRow";
+import { FileListRow, RowHeight } from "./FileListRow";
+import { FileCommand } from "view/commands/types";
 
 const Vlist = vlistOf<FileEntry>();
 
@@ -52,8 +53,10 @@ const headerStyle = css`
 export default vca.component({
   name: "FileList",
   props: {
+    commit: required<Commit>(),
     files: required<readonly FileEntry[]>(Array),
-    actions: optional<readonly FileAction[]>(Array),
+    buttons: optional<readonly FileCommand[]>(Array),
+    menus: optional<readonly FileCommand[]>(Array),
     title: optional(String)
   },
   setup(p, ctx: vca.SetupContext<VtableEventsOn<FileEntry>>) {
@@ -79,8 +82,10 @@ export default vca.component({
               row: ({ item }) => (
                 <FileListRow
                   class={getRowClass(item)}
+                  commit={p.commit}
                   item={item}
-                  actions={p.actions}
+                  buttons={p.buttons}
+                  menus={p.menus}
                 />
               )
             }}
