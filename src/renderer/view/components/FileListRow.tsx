@@ -10,8 +10,6 @@ import { MdButton, MdIcon, MdTooltip } from "./base/md";
 
 export const RowHeight = 42;
 
-const FileActionButtons = withClass("div", "file-action-buttons");
-
 const Container = withClass(
   "div",
   css`
@@ -145,6 +143,52 @@ const getFileType = (item: FileEntry) => {
   }
 };
 
+const FileActionButtons = _fc<{
+  item: FileEntry;
+  commit: Commit;
+  buttons?: readonly FileCommand[];
+  menus?: readonly FileCommand[];
+}>(({ props: { item, commit, buttons, menus } }) => {
+  const buttonNodes = (buttons || []).map((a, index) => (
+    <VIconButton
+      class="file-action-button"
+      key={index}
+      disabled={a.isEnabled && !a.isEnabled(commit, item, item.path)}
+      action={() => executeFileCommand(a, commit, item, item.path)}
+      tooltip={a.label}
+    >
+      {a.icon}
+    </VIconButton>
+  ));
+  if (menus) {
+    const menuNodes = menus.map((m, index) => (
+      <md-menu-item
+        key={index}
+        disabled={m.isEnabled && !m.isEnabled(commit, item, item.path)}
+        onClick={() => executeFileCommand(m, commit, item, item.path)}
+      >
+        {m.label}
+      </md-menu-item>
+    ));
+    buttonNodes.push(
+      <md-menu
+        key="other-actions"
+        md-close-on-click
+        md-align-trigger
+        md-size="auto"
+      >
+        <MdButton class="md-icon-button file-action-button" md-menu-trigger>
+          <MdIcon>more_vert</MdIcon>
+          <MdTooltip>Other actions</MdTooltip>
+        </MdButton>
+        <md-menu-content>{menuNodes}</md-menu-content>
+      </md-menu>
+    );
+  }
+
+  return <div staticClass="file-action-buttons">{buttonNodes}</div>;
+});
+
 export const FileListRow = _fc<{
   item: FileEntry;
   commit: Commit;
@@ -160,63 +204,24 @@ export const FileListRow = _fc<{
         </FirstLine>
         <SecondLine>
           <FileType>{getFileType(item)}</FileType>
-          <NumStat mode="+" v-show={isNumberStat(item.insertions)}>
-            {item.insertions}
-          </NumStat>
-          <NumStat mode="-" v-show={isNumberStat(item.deletions)}>
-            {item.deletions}
-          </NumStat>
-          <OldPath v-show={item.oldPath} statusCode={item.statusCode}>
-            {item.oldPath}
-          </OldPath>
+          {isNumberStat(item.insertions) && (
+            <NumStat mode="+">{item.insertions}</NumStat>
+          )}
+          {isNumberStat(item.deletions) && (
+            <NumStat mode="-">{item.deletions}</NumStat>
+          )}
+          {item.oldPath && (
+            <OldPath statusCode={item.statusCode}>{item.oldPath}</OldPath>
+          )}
         </SecondLine>
       </RowContent>
       {(buttons || menus) && (
-        <FileActionButtons>
-          {buttons &&
-            buttons.map((a, index) => (
-              <VIconButton
-                class="file-action-button"
-                key={index}
-                action={() => executeFileCommand(a, commit, item, item.path)}
-                tooltip={a.label}
-                disabled={a.isEnabled && !a.isEnabled(commit, item, item.path)}
-              >
-                {a.icon}
-              </VIconButton>
-            ))}
-          {menus && (
-            <md-menu
-              key="other-actions"
-              md-close-on-click
-              md-align-trigger
-              md-size="auto"
-            >
-              <MdButton
-                class="md-icon-button file-action-button"
-                md-menu-trigger
-              >
-                <MdIcon>more_vert</MdIcon>
-                <MdTooltip>Other actions</MdTooltip>
-              </MdButton>
-              <md-menu-content>
-                {menus.map((m, index) => (
-                  <md-menu-item
-                    key={index}
-                    disabled={
-                      m.isEnabled && !m.isEnabled(commit, item, item.path)
-                    }
-                    onClick={() =>
-                      executeFileCommand(m, commit, item, item.path)
-                    }
-                  >
-                    {m.label}
-                  </md-menu-item>
-                ))}
-              </md-menu-content>
-            </md-menu>
-          )}
-        </FileActionButtons>
+        <FileActionButtons
+          commit={commit}
+          item={item}
+          buttons={buttons}
+          menus={menus}
+        />
       )}
     </Container>
   );
