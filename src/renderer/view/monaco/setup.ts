@@ -5,12 +5,15 @@ installVueSyntax();
 monaco.editor.setTheme("vs-dark");
 
 const { typescript, json, css } = monaco.languages;
-[typescript.typescriptDefaults, typescript.javascriptDefaults].forEach(d =>
+[typescript.typescriptDefaults, typescript.javascriptDefaults].forEach(d => {
   d.setDiagnosticsOptions({
     noSemanticValidation: true,
     noSyntaxValidation: true
-  })
-);
+  });
+  d.setCompilerOptions({
+    noLib: true
+  });
+});
 
 json.jsonDefaults.setDiagnosticsOptions({
   validate: false
