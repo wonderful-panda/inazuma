@@ -5,7 +5,8 @@ import {
   TabDefinition,
   FileTabDefinition,
   TreeTabDefinition,
-  RepositoryTabDefinition
+  RepositoryTabDefinition,
+  DiffTabDefinition
 } from "../mainTypes";
 import { GraphFragment, Grapher } from "core/grapher";
 import { browserCommand } from "core/browser";
@@ -445,6 +446,48 @@ class RootActions
         key,
         lazyProps: {
           rootNodes: Object.freeze(rootNodes)
+        }
+      };
+      this.tabs.actions.setTabLazyProps(payload);
+    } catch (error) {
+      this.actions.showError({ error });
+      this.actions.removeTab({ key });
+    }
+  }
+
+  showDiffTab({ left, right }: { left: FileSpec; right: FileSpec }) {
+    try {
+      const tab: DiffTabDefinition = {
+        key: `tree/${left.path}:${left.revspec}/${right.path}:${right.revspec}`,
+        kind: "diff",
+        text: `DIFF(${getFileName(right.path)})`,
+        props: { left, right },
+        closable: true
+      };
+      this.tabs.actions.addOrSelect({ tab });
+    } catch (error) {
+      this.actions.showError({ error });
+    }
+  }
+
+  async loadDiffTabLazyProps({ key }: { key: string }) {
+    const tab = this.getters.repositoryTabs.find(t => t.key === key);
+    if (!tab || tab.kind !== "diff") {
+      return;
+    }
+    const repoPath = this.state.repoPath;
+    const { left, right } = tab.props;
+    try {
+      const [leftContent, rightContent] = await Promise.all([
+        browserCommand.getTextFileContent({ repoPath, file: left }),
+        browserCommand.getTextFileContent({ repoPath, file: right })
+      ]);
+      const payload: TabLazyPropPayload<DiffTabDefinition> = {
+        kind: "diff",
+        key,
+        lazyProps: {
+          leftContent,
+          rightContent
         }
       };
       this.tabs.actions.setTabLazyProps(payload);

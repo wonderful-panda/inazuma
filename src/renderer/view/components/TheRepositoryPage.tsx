@@ -32,6 +32,12 @@ const TabTree = asAsyncComponent(() =>
     "./RepositoryPageTabTree"
   ).then(mod => mod.default)
 );
+const TabDiff = asAsyncComponent(() =>
+  import(
+    /* webpackChunkName: "repositorypagetabdiff", webpackPrefetch: true */
+    "./RepositoryPageTabDiff"
+  ).then(mod => mod.default)
+);
 
 const SideBar = _fc<{ name: string }>(ctx => {
   switch (ctx.props.name) {
@@ -65,6 +71,21 @@ const TabContent = _fc<{ tab: RepositoryTabDefinition }>(ctx => {
         tabkey={key}
         sha={props.sha}
         rootNodes={lazyProps && lazyProps.rootNodes}
+      />
+    );
+  } else if (tab.kind === "diff") {
+    const { key, props, lazyProps } = tab;
+    return (
+      <TabDiff
+        tabkey={key}
+        left={props.left}
+        right={props.right}
+        content={
+          lazyProps && {
+            left: lazyProps.leftContent,
+            right: lazyProps.rightContent
+          }
+        }
       />
     );
   } else {

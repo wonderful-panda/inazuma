@@ -12,18 +12,17 @@ monaco.languages.getLanguages().forEach(lang => {
  * Make range list from line index list
  *
  * for example:
- *  [0, 1, 2, 4, 5, 8] => [(1 to 3), (5 to 6), (8 to 8)]
+ *  [1, 2, 4, 5, 6, 8] => [(1 to 2), (4 to 6), (8 to 8)]
  *
- * NOTE: line index is 0-based value, line number is 1-based value.
  */
-export function lineIndicesToRanges(
-  lineInidices: ReadonlyArray<number>
+export function lineNumbersToRanges(
+  lineNumbers: ReadonlyArray<number>
 ): monaco.IRange[] {
   const ret: monaco.IRange[] = [];
   let startLineNumber = -1;
   let endLineNumber = -1;
-  for (let i = 0; i < lineInidices.length + 1; ++i) {
-    const lineNumber = lineInidices[i] + 1; // index is 0-based, lineNumber is 1-based
+  for (let i = 0; i < lineNumbers.length + 1; ++i) {
+    const lineNumber = lineNumbers[i]; // index is 0-based, lineNumber is 1-based
     if (endLineNumber + 1 === lineNumber) {
       endLineNumber = lineNumber;
     } else {
