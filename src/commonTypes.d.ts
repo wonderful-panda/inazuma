@@ -103,13 +103,15 @@ declare interface FileEntry {
   path: string;
   oldPath?: string;
   statusCode: string;
+  insertions?: number | "-";
+  deletions?: number | "-";
   inIndex?: boolean;
   inWorkingTree?: boolean;
 }
 
 declare interface CommitDetail extends Commit {
   body: string;
-  files: FileEntry[];
+  files: readonly FileEntry[];
 }
 
 declare interface BroadcastAction {

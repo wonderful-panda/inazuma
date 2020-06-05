@@ -46,10 +46,18 @@ type TabLazyPropPayload<D extends TabDefinition> = Pick<
 class RootState {
   config: Config = { fontFamily: {}, recentListCount: 5 };
   repoPath = "";
-  recentList = [] as string[];
-  commits = [] as Commit[];
-  graphs = {} as Dict<GraphFragment>;
-  refs = {} as Refs;
+  recentList: readonly string[] = [];
+  commits: readonly Commit[] = [];
+  graphs: Record<string, GraphFragment> = {};
+  refs: Refs = {
+    mergeHeads: [],
+    refsById: {},
+    heads: [],
+    remotes: {},
+    tags: [],
+    head: undefined
+  };
+
   selectedIndex = -1;
   selectedCommit = emptyCommit;
   rowHeight = 24;
@@ -164,6 +172,13 @@ class RootGetters extends Getters<RootState> {
       );
       return { commit, graph, refs: refsOfThis };
     });
+  }
+
+  get selectedCommitRefs(): readonly Ref[] {
+    const { selectedCommit, refs } = this.state;
+    return (refs.refsById[selectedCommit.id] || []).filter(
+      r => r.type !== "MERGE_HEAD"
+    );
   }
 
   get repoPathEncoded(): string {

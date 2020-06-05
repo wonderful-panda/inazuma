@@ -6,7 +6,8 @@ const rootCtx = useRootModule();
 export const fileCommandDiffWithParent: FileCommand = {
   id: "DiffWithParent",
   label: "Compare with parent",
-  isVisible(commit, file) {
+  icon: "compare_arrows",
+  isEnabled(commit, file) {
     if (commit.parentIds.length === 0) {
       return false;
     }
@@ -26,7 +27,8 @@ export const fileCommandDiffWithParent: FileCommand = {
 export const fileCommandDiffWithParentInternal: FileCommand = {
   id: "DiffWithParentInternal",
   label: "Compare with parent (INTERNAL)",
-  isVisible(commit, file) {
+  icon: "compare_arrows",
+  isEnabled(commit, file) {
     if (commit.parentIds.length === 0) {
       return false;
     }
@@ -46,7 +48,8 @@ export const fileCommandDiffWithParentInternal: FileCommand = {
 export const fileCommandDiffWithLocal: FileCommand = {
   id: "DiffWithLocal",
   label: "Compare with local",
-  isVisible(_, file) {
+  icon: "compare_arrows",
+  isEnabled(_, file) {
     if (file.statusCode === "D") {
       return false;
     }
@@ -63,7 +66,8 @@ export const fileCommandDiffWithLocal: FileCommand = {
 export const fileCommandDiffUnstaged: FileCommand = {
   id: "DiffUnstaged",
   label: "Compare with Staged",
-  isVisible(commit, file) {
+  icon: "compare_arrows",
+  isEnabled(commit, file) {
     if (commit.id !== "--") {
       return false;
     }
@@ -83,7 +87,8 @@ export const fileCommandDiffUnstaged: FileCommand = {
 export const fileCommandDiffStaged: FileCommand = {
   id: "DiffUnstaged",
   label: "Compare with Staged",
-  isVisible(commit, file) {
+  icon: "compare_arrows",
+  isEnabled(commit, file) {
     if (commit.id !== "--") {
       return false;
     }

@@ -1,99 +1,129 @@
 import * as md from "view/utils/md-classes";
 import * as vca from "vue-tsx-support/lib/vca";
-import FileTable from "./FileTable";
+import FileList from "./FileList";
 import { __sync } from "view/utils/modifiers";
 import { css } from "emotion";
-import { showFileContextMenu, executeFileCommand } from "../commands";
-import { fileCommandDiffWithParent } from "../commands/fileCommandDiff";
-import { computed } from "@vue/composition-api";
+import {
+  showFileContextMenu,
+  executeFileCommand,
+  executeCommitCommand
+} from "../commands";
+import {
+  fileCommandDiffWithParent,
+  fileCommandDiffWithLocal
+} from "../commands/fileCommandDiff";
 import { GitHash } from "./GitHash";
-import { formatDateL } from "core/utils";
+import { formatDateLLL } from "core/utils";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
 import { Orientation } from "view/mainTypes";
+import VButton from "./base/VButton";
+import { withClass } from "./base/withClass";
+import RefBadge from "./RefBadge";
+import { commitCommandYankHash } from "view/commands/commitCommandYankHash";
+import { commitCommandBrowseTree } from "view/commands/commitCommandBrowseTree";
+import VSplitterPanel from "./base/VSplitterPanel";
+import {
+  fileCommandBlame,
+  fileCommandBlameParent
+} from "view/commands/fileCommandBlame";
+import { fileCommandYankPath } from "view/commands/fileCommandYankPath";
 
 const style = {
-  container: (orientation: Orientation) => css`
+  container: css`
     display: flex;
     flex: 1;
-    flex-flow: ${orientation === "portrait" ? "column" : "row"} nowrap;
     padding: 12px;
   `,
   metadata: css`
     display: flex;
-    min-width: 40%;
+    flex: 1;
+    margin: 2px !important;
     flex-flow: column nowrap;
+    background-color: #282828 !important;
   `,
-  inactive: css`
-    color: #666;
+  cardContent: css`
+    flex: 1;
+    margin: 0 16px;
+    padding: 0 8px 8px 8px !important;
+    overflow: auto;
   `,
-  summary: css`
-    padding: 4px;
-    margin-bottom: 8px;
+  refs: css`
+    margin: 4px 8px;
   `,
-  attrTable: css`
-    width: 100%;
-    margin-bottom: 8px;
-  `,
-  attrName: css`
-    background-color: #333;
-    padding: 0 8px;
-    vertical-align: middle;
-    font-family: var(--monospace-fontfamily);
-  `,
-  attrValue: css`
-    background-color: #333;
-    padding: 0 8px;
-    vertical-align: middle;
-    font-family: var(--monospace-fontfamily);
-    width: 100%;
-  `,
-  body: css`
-    margin: 0px 2px 8px 8px;
+  body: (orientation: Orientation) => css`
     font-family: var(--default-fontfamily);
     min-height: 1em;
-    max-height: 12em;
+    max-height: ${orientation === "portrait" && "8em"};
+    margin: 0;
     white-space: pre-wrap;
     overflow: auto;
+  `,
+  commitAttrIcon: css`
+    font-size: 20px !important;
+    margin-left: 8px;
+  `,
+  commitAttr: css`
+    vertical-align: middle;
   `
 };
 
-const CommitAttr = _fc<{ name: string }>(({ props, children }) => (
-  <tr>
-    <td staticClass={style.attrName}>{props.name}</td>
-    <td staticClass={style.attrValue}>{children}</td>
-  </tr>
-));
+const AttrIcon = withClass("md-icon", style.commitAttrIcon);
+const AttrText = withClass("span", style.commitAttr);
 
-const CommitMetadata = _fc<{ commit: CommitDetail }>(
-  ({ props: { commit } }) => (
-    <div class={style.metadata}>
-      <div class={[style.summary, md.TITLE]}>
-        {commit.summary || "No commit selected"}
-      </div>
-      <pre v-show={commit.body} staticClass={style.body}>
-        {commit.body}
-      </pre>
-      <table staticClass={style.attrTable}>
-        <CommitAttr name="id">
-          <GitHash hash={commit.id} />
-        </CommitAttr>
-        <CommitAttr name="parents">
-          {commit.parentIds.map(pid => (
-            <GitHash key={pid} hash={pid} style="display:block" />
-          ))}
-        </CommitAttr>
-        <CommitAttr name="author">{commit.author}</CommitAttr>
-        <CommitAttr name="date">{formatDateL(commit.date)}</CommitAttr>
-      </table>
-    </div>
-  )
-);
+const CommitMetadata = vca.component({
+  name: "CommitMetadata",
+  props: {
+    commit: required<CommitDetail>(Object),
+    refs: required<readonly Ref[]>(Array),
+    orientation: required<Orientation>(String)
+  },
+  setup(p) {
+    const yankHash = () => {
+      executeCommitCommand(commitCommandYankHash, p.commit);
+    };
+    const browseTree = () => {
+      executeCommitCommand(commitCommandBrowseTree, p.commit);
+    };
+    return () => {
+      const { commit, refs, orientation } = p;
+      return (
+        <md-card class={style.metadata}>
+          <md-card-header v-show={commit.id}>
+            <h2 class={md.TITLE}>{commit.summary}</h2>
+            <div class="md-subhead" v-show={commit.id}>
+              <GitHash class={style.commitAttr} hash={commit.id} />
+              <AttrIcon>face</AttrIcon>
+              <AttrText>{commit.author}</AttrText>
+              <AttrIcon>schedule</AttrIcon>
+              <AttrText>{formatDateLLL(commit.date)}</AttrText>
+            </div>
+            <div class={style.refs} v-show={refs}>
+              {refs.map(r => (
+                <RefBadge key={r.id} refObject={r} />
+              ))}
+            </div>
+          </md-card-header>
+          <md-card-content v-show={commit.id} class={style.cardContent}>
+            <pre v-show={commit.body} class={style.body(orientation)}>
+              {commit.body}
+            </pre>
+          </md-card-content>
+          <md-card-actions v-show={commit.id}>
+            <VButton action={yankHash}>Copy Hash</VButton>
+            <VButton action={browseTree}>Browse Tree</VButton>
+          </md-card-actions>
+        </md-card>
+      );
+    };
+  }
+});
 
 export default vca.component({
   name: "RevisionLogCommitDetail",
   props: {
     commit: required<CommitDetail>(),
+    refs: required<readonly Ref[]>(Array),
     orientation: required<Orientation>(String)
   },
   setup(p) {
@@ -103,11 +133,6 @@ export default vca.component({
       storage,
       "CommitDetail"
     );
-    const classes = computed(() => ({
-      [style.container(p.orientation)]: true,
-      [md.SUBHEADING]: true,
-      [style.inactive]: !p.commit.id
-    }));
     const showExternalDiff = (item: FileEntry) => {
       executeFileCommand(fileCommandDiffWithParent, p.commit, item, item.path);
     };
@@ -118,15 +143,33 @@ export default vca.component({
 
     return () => {
       return (
-        <div class={classes.value}>
-          <CommitMetadata commit={p.commit} />
-          <FileTable
+        <VSplitterPanel
+          class={style.container}
+          direction={p.orientation === "landscape" ? "horizontal" : "vertical"}
+          ratio={__sync(persist.splitterPosition)}
+          splitterWidth={5}
+        >
+          <CommitMetadata
+            slot="first"
+            commit={p.commit}
+            refs={p.refs}
+            orientation={p.orientation}
+          />
+          <FileList
+            slot="second"
+            commit={p.commit}
+            title={p.commit.id && "Changes"}
             files={p.commit.files}
-            widths={__sync(persist.columnWidths)}
+            buttons={[fileCommandBlame, fileCommandDiffWithParent]}
+            menus={[
+              fileCommandBlameParent,
+              fileCommandDiffWithLocal,
+              fileCommandYankPath
+            ]}
             onRowdblclick={arg => showExternalDiff(arg.item)}
             onRowcontextmenu={arg => showContextMenu(arg.item, arg.event)}
           />
-        </div>
+        </VSplitterPanel>
       );
     };
   }

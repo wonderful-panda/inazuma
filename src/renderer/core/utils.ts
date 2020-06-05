@@ -39,6 +39,15 @@ export function formatDateL(v: number): string {
     .format("L");
 }
 
+export function formatDateLLL(v: number): string {
+  if (v === 0) {
+    return "";
+  }
+  return moment(v)
+    .local()
+    .format("LLL");
+}
+
 export function evaluateSlot<
   CTX extends SetupContext,
   K extends keyof CTX["slots"]

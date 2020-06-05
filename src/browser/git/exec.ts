@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as cp from "child_process";
+import * as readline from "readline";
 
 const _gitCli = "git";
 
@@ -48,23 +49,10 @@ export function exec(command: string, params: ExecParams): Promise<ExecResult> {
 
   if (params.onEachLine) {
     const cb = params.onEachLine;
-    let lastLine = "";
-    p.stdout.on("data", (b: Buffer) => {
-      const lines = b.toString("utf8").split("\n");
-      if (lastLine) {
-        lines[0] = lastLine + lines[0];
-      }
-      lastLine = lines.pop()!;
-      for (const line of lines) {
-        if (cb(line) === false) {
-          p.kill();
-          break;
-        }
-      }
-    });
-    p.on("exit", () => {
-      if (lastLine) {
-        cb(lastLine);
+    const reader = readline.createInterface({ input: p.stdout });
+    reader.on("line", data => {
+      if (cb(data) === false) {
+        p.kill();
       }
     });
   }

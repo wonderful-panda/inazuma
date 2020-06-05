@@ -1,4 +1,4 @@
-import LogTableCellSummaryRef from "./LogTableCellSummaryRef";
+import RefBadge from "./RefBadge";
 import { css } from "emotion";
 
 const className = css`
@@ -10,7 +10,7 @@ const className = css`
 export default _fc<{ commit: Commit; refs: ReadonlyArray<Ref> }>(ctx => (
   <div class={className} {...ctx.data}>
     {ctx.props.refs.map(r => (
-      <LogTableCellSummaryRef key={r.fullname} refObject={r} />
+      <RefBadge key={r.fullname} refObject={r} />
     ))}
     <span key="summary">{ctx.props.commit.summary}</span>
   </div>
