@@ -1,6 +1,6 @@
 import { VueConstructor, CreateElement, VNode, RenderContext } from "vue";
 import { RecordPropsDefinition, ArrayPropsDefinition } from "vue/types/options";
-import { AsComponent, WithProps, OuterProps } from "vue-support";
+import { AsComponent, ExtendProps, OuterProps } from "vue-support";
 
 export type ClassBinding =
   | string
@@ -21,7 +21,7 @@ export function withClass<
   component: C,
   props: PropsDef & RecordPropsDefinition<Props>,
   newClass: (props: Props) => ClassBinding
-): WithProps<AsComponent<C>, OuterProps<Props, PropsDef>>;
+): ExtendProps<AsComponent<C>, OuterProps<Props, PropsDef>>;
 
 export function withClass<
   C extends VueConstructor | string,
@@ -31,7 +31,7 @@ export function withClass<
   component: C,
   props: PropsDef & ArrayPropsDefinition<Props>,
   newClass: (props: Props) => ClassBinding
-): WithProps<AsComponent<C>, OuterProps<Props, PropsDef>>;
+): ExtendProps<AsComponent<C>, OuterProps<Props, PropsDef>>;
 
 export function withClass(component: any, ...args: any[]): any {
   if (args.length === 1) {

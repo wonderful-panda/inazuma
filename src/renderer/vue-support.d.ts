@@ -5,10 +5,7 @@ declare module "vue-support" {
     ArrayPropsDefinition
   } from "vue/types/options";
   import { _TsxComponentV3 } from "vue-tsx-support";
-  import {
-    ComponentProps,
-    ReplaceComponentProps
-  } from "vue-tsx-support/lib/advance";
+  import { ComponentProps, WithProps } from "vue-tsx-support/lib/advance";
   import { PropsOf as PropsOf_ } from "vue-tsx-support/types/base";
 
   type RequiredProps<Props, PD extends RecordPropsDefinition<Props>> = {
@@ -46,8 +43,8 @@ declare module "vue-support" {
     ? _TsxComponentV3<Vue, {}, any, {}, {}, {}>
     : C;
 
-  export type WithProps<
-    C extends VueConstructor,
-    Props
-  > = ReplaceComponentProps<C, ComponentProps<C> & Props>;
+  export type ExtendProps<C extends VueConstructor, Props> = WithProps<
+    C,
+    ComponentProps<C> & Props
+  >;
 }

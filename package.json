@@ -97,7 +97,7 @@
     "vue-property-decorator": "^8.3.0",
     "vue-resizesensor": "^0.3.0",
     "vue-template-compiler": "^2.6.11",
-    "vue-tsx-support": "^3.0.0-beta.6",
+    "vue-tsx-support": "^3.0.0-beta.8",
     "vue-vtable": "1.0.0-beta.8a",
     "vuex": "^3.1.2",
     "vuex-smart-module": "^0.3.2",

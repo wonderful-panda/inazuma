@@ -7727,10 +7727,10 @@ vue-template-compiler@^2.6.11:
     de-indent "^1.0.2"
     he "^1.1.0"
 
-vue-tsx-support@^3.0.0-beta.6:
-  version "3.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-beta.6.tgz#3cc02cbc109c6b84c287cbac3184c8eb92484cf1"
-  integrity sha512-WrQemM3/UBuVq/xosFtzltYq22Wz7pkNjDypy74jLIu/ABkW7O2RLEea+oYQCovblVyDaFArBj2UWrTIACbEDQ==
+vue-tsx-support@^3.0.0-beta.8:
+  version "3.0.0-preview.1"
+  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.0.0-preview.1.tgz#11a446c6b8c84835681917450fa0455c8b3733f4"
+  integrity sha512-JmbF7yBSBdrYT90lmpee+0VeCbTpLU2Fz2mybHkxgxgF0PwrwC+DaWaQHajX3aVQX3ZaYOkVWIEGiK6Zo7U9AA==
 
 vue-vtable@1.0.0-beta.8a:
   version "1.0.0-beta.8a"
