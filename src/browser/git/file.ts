@@ -1,4 +1,5 @@
 import * as fs from "fs-extra";
+import * as path from "path";
 import * as chardet from "chardet";
 import * as iconv from "iconv-lite";
 import { exec } from "./exec";
@@ -7,6 +8,10 @@ export async function catFile(
   repository: string,
   file: FileSpec
 ): Promise<Buffer> {
+  if (file.revspec === "UNSTAGED") {
+    const abspath = path.join(repository, file.path);
+    return fs.readFile(abspath);
+  }
   const target = `${file.revspec === "STAGED" ? "" : file.revspec}:${
     file.path
   }`;

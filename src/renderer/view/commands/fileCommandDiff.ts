@@ -86,7 +86,7 @@ export const fileCommandDiffUnstaged: FileCommand = {
 
 export const fileCommandDiffStaged: FileCommand = {
   id: "DiffUnstaged",
-  label: "Compare with Staged",
+  label: "Compare with HEAD",
   icon: "compare_arrows",
   isEnabled(commit, file) {
     if (commit.id !== "--") {
@@ -99,6 +99,52 @@ export const fileCommandDiffStaged: FileCommand = {
   },
   handler(_, file, path) {
     rootCtx.actions.showExternalDiff({
+      left: { path: file.path, revspec: "HEAD" },
+      right: { path, revspec: "STAGED" }
+    });
+  }
+};
+
+export const fileCommandDiffUnstagedInternal: FileCommand = {
+  id: "DiffUnstaged",
+  label: "Compare with Staged / Edit Staged",
+  isEnabled(commit, file) {
+    if (commit.id !== "--") {
+      return false;
+    }
+    if (file.statusCode === "A" || file.statusCode === "D") {
+      return false;
+    }
+    if (file.insertions === "-" && file.deletions === "-") {
+      return false;
+    }
+    return true;
+  },
+  handler(_, file, path) {
+    rootCtx.actions.showDiffTab({
+      left: { path: file.path, revspec: "STAGED" },
+      right: { path, revspec: "UNSTAGED" }
+    });
+  }
+};
+
+export const fileCommandDiffStagedInternal: FileCommand = {
+  id: "DiffUnstaged",
+  label: "Compare with HEAD / Edit Staged",
+  isEnabled(commit, file) {
+    if (commit.id !== "--") {
+      return false;
+    }
+    if (file.statusCode === "A" || file.statusCode === "D") {
+      return false;
+    }
+    if (file.insertions === "-" && file.deletions === "-") {
+      return false;
+    }
+    return true;
+  },
+  handler(_, file, path) {
+    rootCtx.actions.showDiffTab({
       left: { path: file.path, revspec: "HEAD" },
       right: { path, revspec: "STAGED" }
     });
