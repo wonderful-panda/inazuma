@@ -10,9 +10,6 @@ const { typescript, json, css } = monaco.languages;
     noSemanticValidation: true,
     noSyntaxValidation: true
   });
-  d.setCompilerOptions({
-    noLib: true
-  });
 });
 
 json.jsonDefaults.setDiagnosticsOptions({
