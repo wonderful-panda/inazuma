@@ -1,8 +1,8 @@
 import VIconButton from "./base/VIconButton";
-import { withClass } from "./base/withClass";
+import { withclass } from "./base/withClass";
 import { css } from "emotion";
 
-const titleBarIconStyle = css`
+export default withclass(VIconButton)(css`
   min-height: 28px;
   max-height: 28px;
   min-width: 28px;
@@ -14,6 +14,4 @@ const titleBarIconStyle = css`
       color: #fff !important;
     }
   }
-`;
-
-export default withClass(VIconButton, titleBarIconStyle);
+`);

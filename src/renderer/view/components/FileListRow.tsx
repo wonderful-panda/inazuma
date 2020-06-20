@@ -1,17 +1,15 @@
 import { css } from "emotion";
 import { FileListIcon } from "./FileListIcon";
-import { withClass } from "./base/withClass";
+import { withclass } from "./base/withClass";
 import VIconButton from "./base/VIconButton";
 import { MonoDiv } from "./base/mono";
-import { required } from "./base/prop";
 import { FileCommand } from "view/commands/types";
 import { executeFileCommand } from "view/commands";
 import { MdButton, MdIcon, MdTooltip } from "./base/md";
 
 export const RowHeight = 42;
 
-const Container = withClass(
-  "div",
+const Container = withclass.div(
   css`
     padding: 2px 4px;
     overflow: hidden;
@@ -44,8 +42,7 @@ const Container = withClass(
   `
 );
 
-const RowContent = withClass(
-  MonoDiv,
+const RowContent = withclass(MonoDiv)(
   css`
     display: flex;
     flex: 1;
@@ -55,8 +52,7 @@ const RowContent = withClass(
   `
 );
 
-const FirstLine = withClass(
-  "div",
+const FirstLine = withclass.div(
   css`
     display: flex;
     flex-flow: row nowrap;
@@ -67,8 +63,7 @@ const FirstLine = withClass(
   `
 );
 
-const SecondLine = withClass(
-  "div",
+const SecondLine = withclass.div(
   css`
     display: flex;
     flex-flow: row nowrap;
@@ -79,8 +74,7 @@ const SecondLine = withClass(
   `
 );
 
-const FileType = withClass(
-  "div",
+const FileType = withclass.div(
   css`
     font-weight: bold;
     padding: 0 2px;
@@ -90,9 +84,7 @@ const FileType = withClass(
   `
 );
 
-const NumStat = withClass(
-  "div",
-  { mode: required<"-" | "+">() },
+const NumStat = withclass.div<{ mode: "-" | "+" }>(
   p => css`
     color: ${p.mode === "+" ? "lightgreen" : "hotpink"};
     margin: auto 4px;
@@ -102,8 +94,7 @@ const NumStat = withClass(
   `
 );
 
-const NewPath = withClass(
-  "div",
+const NewPath = withclass.div(
   css`
     overflow: hidden;
     white-space: nowrap;
@@ -111,9 +102,7 @@ const NewPath = withClass(
   `
 );
 
-const OldPath = withClass(
-  "div",
-  { statusCode: required(String) },
+const OldPath = withclass.div<{ statusCode: string }>(
   p => css`
     overflow: hidden;
     white-space: nowrap;

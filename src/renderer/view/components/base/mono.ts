@@ -1,4 +1,4 @@
-import { withClass } from "./withClass";
+import { withclass } from "./withClass";
 
-export const MonoSpan = withClass("span", "fontfamily--monospace");
-export const MonoDiv = withClass("div", "fontfamily--monospace");
+export const MonoSpan = withclass.span("fontfamily--monospace");
+export const MonoDiv = withclass.div("fontfamily--monospace");

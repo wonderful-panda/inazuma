@@ -18,7 +18,7 @@ import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
 import { Orientation } from "view/mainTypes";
 import VButton from "./base/VButton";
-import { withClass } from "./base/withClass";
+import { withclass } from "./base/withClass";
 import RefBadge from "./RefBadge";
 import { commitCommandYankHash } from "view/commands/commitCommandYankHash";
 import { commitCommandBrowseTree } from "view/commands/commitCommandBrowseTree";
@@ -68,8 +68,8 @@ const style = {
   `
 };
 
-const AttrIcon = withClass("md-icon", style.commitAttrIcon);
-const AttrText = withClass("span", style.commitAttr);
+const AttrIcon = withclass("md-icon")(style.commitAttrIcon);
+const AttrText = withclass.span(style.commitAttr);
 
 const CommitMetadata = vca.component({
   name: "CommitMetadata",
@@ -140,7 +140,6 @@ export default vca.component({
       event.preventDefault();
       showFileContextMenu(p.commit, item, item.path);
     };
-
     return () => {
       return (
         <VSplitterPanel

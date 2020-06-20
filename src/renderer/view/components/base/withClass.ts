@@ -1,91 +1,101 @@
 import { VueConstructor, CreateElement, VNode, RenderContext } from "vue";
-import { RecordPropsDefinition, ArrayPropsDefinition } from "vue/types/options";
-import { AsComponent, ExtendProps, OuterProps } from "vue-support";
+import { AsComponent, ExtendProps } from "vue-support";
+import { IntrinsicElements } from "vue-tsx-support/types/base";
 
-export type ClassBinding =
-  | string
-  | undefined
-  | Dict<boolean | undefined>
-  | ReadonlyArray<string | object | undefined>;
+const marker = Symbol("inazuma/vue-withclass");
 
-export function withClass<C extends VueConstructor | string>(
-  component: C,
-  newClass: ClassBinding
-): AsComponent<C>;
+type ClassBinding = string | ((props: any) => string);
 
-export function withClass<
-  C extends VueConstructor | string,
-  Props,
-  PropsDef extends RecordPropsDefinition<Props>
->(
-  component: C,
-  props: PropsDef & RecordPropsDefinition<Props>,
-  newClass: (props: Props) => ClassBinding
-): ExtendProps<AsComponent<C>, OuterProps<Props, PropsDef>>;
+type ClassedComponent = {
+  functional: true;
+  [marker]: null;
+  render(h: CreateElement, ctx: RenderContext): VNode;
+  __extend__(newClasses: ClassBinding[]): any;
+};
 
-export function withClass<
-  C extends VueConstructor | string,
-  Props,
-  PropsDef extends ArrayPropsDefinition<Props>
->(
-  component: C,
-  props: PropsDef & ArrayPropsDefinition<Props>,
-  newClass: (props: Props) => ClassBinding
-): ExtendProps<AsComponent<C>, OuterProps<Props, PropsDef>>;
+interface ClassedComponentFactory<C extends VueConstructor | string> {
+  (...staticClass: string[]): AsComponent<C>;
+  <Props>(dynamicClass: (props: Props) => string): ExtendProps<
+    AsComponent<C>,
+    Props
+  >;
+}
 
-export function withClass(component: any, ...args: any[]): any {
-  if (args.length === 1) {
-    return {
-      functional: true,
-      render(h: CreateElement, { data, children }: RenderContext): VNode {
-        data.class = mergeClassObject(data.class, args[0]);
-        return h(component, data, children);
+type WithClass = {
+  [K in keyof IntrinsicElements]: ClassedComponentFactory<K>;
+} & {
+  <C extends VueConstructor | string>(component: C): ClassedComponentFactory<C>;
+};
+
+function createClassedComponent(
+  component: VueConstructor | string,
+  classes: readonly ClassBinding[]
+): ClassedComponent {
+  const staticClasses: string[] = [];
+  const dynamicClasses: Array<(props: any) => string> = [];
+  classes.forEach(c => {
+    if (c instanceof Function) {
+      dynamicClasses.push(c);
+    } else {
+      staticClasses.push(c);
+    }
+  });
+  const staticClass = staticClasses.join(" ");
+  return {
+    functional: true,
+    [marker]: null,
+    render(h: CreateElement, { props, data, slots }: RenderContext): VNode {
+      const classes: string[] = [];
+      if (data.staticClass) {
+        classes.push(data.staticClass);
       }
-    };
+      if (staticClass) {
+        classes.push(staticClass);
+      }
+      if (dynamicClasses) {
+        classes.push(...dynamicClasses.map(c => c(props)));
+      }
+      const s = slots();
+      const children: VNode[] = [];
+      for (const slot in s) {
+        if (slot === "default") {
+          children.push(s[slot]);
+        } else {
+          children.push(h("template", { slot }, s[slot]));
+        }
+      }
+      return h(
+        component,
+        { ...data, staticClass: classes.join(" ") },
+        children
+      );
+    },
+    __extend__(newClasses) {
+      return createClassedComponent(component, [...classes, ...newClasses]);
+    }
+  };
+}
+
+function isClassedComponent(component: any): component is ClassedComponent {
+  return component instanceof Object && marker in component;
+}
+
+function createOrExtend(component: any, newClass: ClassBinding[]) {
+  if (isClassedComponent(component)) {
+    return component.__extend__(newClass);
   } else {
-    const newClass = args[1] as Function;
-    return {
-      functional: true,
-      props: args[0],
-      render(
-        h: CreateElement,
-        { props, data, children }: RenderContext
-      ): VNode {
-        data.class = mergeClassObject(data.class, newClass(props));
-        return h(component, data, children);
-      }
-    };
+    return createClassedComponent(component, newClass);
   }
 }
 
-function mergeClassObject(
-  base: ClassBinding | undefined,
-  newClass: ClassBinding | undefined
-): ClassBinding | undefined {
-  if (base === undefined || newClass === undefined) {
-    return base || newClass;
-  }
-  if (base instanceof Array) {
-    if (newClass instanceof Array) {
-      return [...base, ...newClass];
-    } else {
-      return [...base, newClass];
-    }
-  } else if (base instanceof String || typeof base === "string") {
-    if (newClass instanceof Array) {
-      return [base, ...newClass];
-    } else if (newClass instanceof String) {
-      return `${base} ${newClass}`;
-    } else {
-      return { [base as string]: true, ...(newClass as object) };
-    }
-  } else {
-    if (newClass instanceof Array) {
-      return [base, ...newClass];
-    } else if (newClass instanceof String || typeof newClass === "string") {
-      return { ...(base as object), [newClass as string]: true };
-    } else {
-      return { ...(base as object), ...(newClass as object) };
-    }
-  }
+function withclass_<C extends VueConstructor | string>(
+  component: C
+): ClassedComponentFactory<C> {
+  return (...newClass: ClassBinding[]) => createOrExtend(component, newClass);
 }
+
+export const withclass = new Proxy(withclass_, {
+  get(_, prop: string) {
+    return (...newClass: ClassBinding[]) => createOrExtend(prop, newClass);
+  }
+}) as WithClass;

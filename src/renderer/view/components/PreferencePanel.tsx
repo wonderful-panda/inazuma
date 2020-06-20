@@ -7,7 +7,7 @@ import { __sync } from "babel-plugin-vue-jsx-modifier/lib/modifiers";
 import { MdSubheader } from "./base/md";
 import { css } from "emotion";
 import { ref, reactive } from "@vue/composition-api";
-import { withClass } from "./base/withClass";
+import { withclass } from "./base/withClass";
 import { required } from "./base/prop";
 
 const style = {
@@ -50,7 +50,7 @@ const style = {
   `
 };
 
-const SubHeader = withClass(MdSubheader, [md.PRIMARY, style.subHeader]);
+const SubHeader = withclass(MdSubheader)(`${md.PRIMARY} ${style.subHeader}`);
 
 export default vca.component({
   name: "PreferencePanel",

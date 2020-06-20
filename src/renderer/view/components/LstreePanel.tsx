@@ -22,7 +22,7 @@ import { css } from "emotion";
 import VIconButton from "./base/VIconButton";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, watch, computed, reactive } from "@vue/composition-api";
-import { withClass } from "./base/withClass";
+import { withclass } from "./base/withClass";
 import { injectErrorHandler } from "./injection/errorHandler";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required, optional } from "./base/prop";
@@ -110,8 +110,7 @@ const treeViewColumns: VtableColumn[] = [
   { id: "extension", defaultWidth: 80, className: style.lastCell }
 ];
 
-const ExpandButton = withClass(
-  VIconButton,
+const ExpandButton = withclass(VIconButton)(
   css`
     min-width: 32px;
     max-width: 32px;
