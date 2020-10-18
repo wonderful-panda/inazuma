@@ -166,7 +166,7 @@ const LeftPanel = vca.component({
     const filteredRoots = ref(props.rootNodes);
     watch(
       filterText,
-      _.debounce(value => {
+      _.debounce((value: string) => {
         if (!value) {
           filteredRoots.value = props.rootNodes;
         } else {
@@ -175,9 +175,9 @@ const LeftPanel = vca.component({
         }
       }, 500)
     );
-    const tree = computed(() => ctx.refs.tree as Vtreetable<any>);
-    const expandAll = () => tree.value.expandAll();
-    const collapseAll = () => tree.value.collapseAll();
+    const tree = ref<null | Vtreetable<any>>(null);
+    const expandAll = () => tree.value?.expandAll();
+    const collapseAll = () => tree.value?.collapseAll();
     const getRowClass = ({ data }: TreeNodeWithState) => {
       return data.path === props.selectedPath ? style.selectedRow : undefined;
     };
@@ -187,7 +187,7 @@ const LeftPanel = vca.component({
       }
       event.preventDefault();
       event.stopPropagation();
-      tree.value.toggleExpand(item.data);
+      tree.value?.toggleExpand(item.data);
     };
     const onRowdblclick = ({ item, event }: RowEventArgs) => {
       const { path, type } = item.data;

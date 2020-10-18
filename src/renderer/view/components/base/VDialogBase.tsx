@@ -3,7 +3,7 @@ import { DialogState } from "view/store/dialogModule";
 import VButton from "./VButton";
 import VModal, { ModalContainerClass } from "./VModal";
 import { css } from "emotion";
-import { createElement } from "@vue/composition-api";
+import { h } from "@vue/composition-api";
 import { required } from "./prop";
 
 export default vca.component({
@@ -33,7 +33,7 @@ export default vca.component({
       ));
       return (
         <VModal staticClass={style.dialogBase} title={opt.title} close={cancel}>
-          {opt.renderContent(createElement)}
+          {opt.renderContent(h)}
           <template slot="footer-buttons">
             {buttons}
             <VButton key="__CANCEL__" mini action={cancel}>

@@ -5,7 +5,7 @@ import Electron from "electron";
 import { store, rootModule, useRootModule } from "./store";
 import { asAsyncComponent } from "./utils/async-component";
 import TheWelcomePage from "./components/TheWelcomePage";
-import { createElement, onMounted } from "@vue/composition-api";
+import { h, onMounted } from "@vue/composition-api";
 import { provideErrorHandler } from "./components/injection/errorHandler";
 import { provideStorage } from "./components/injection/storage";
 
@@ -95,7 +95,7 @@ const App = vca.component({
       }
     });
     return () => {
-      return createElement(
+      return h(
         rootModule.state.repoPath === "" ? TheWelcomePage : TheRepositoryPage
       );
     };

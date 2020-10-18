@@ -62,7 +62,7 @@ export function useStorage<T extends object>(
     value => {
       storage.setItem(key, JSON.stringify(value));
     },
-    { deep: true, lazy: true }
+    { deep: true }
   );
   return ret;
 }
