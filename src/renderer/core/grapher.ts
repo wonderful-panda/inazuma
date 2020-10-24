@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import assert from "assert";
 
 export interface InterEdge {
   index: number;
@@ -35,7 +34,6 @@ class ColorPallete {
   _used: Dict<number>;
   _queue: string[];
   constructor(public colors: string[]) {
-    assert(colors.length > 0);
     this._queue = [...colors];
     this._used = {};
     colors.forEach(c => {
