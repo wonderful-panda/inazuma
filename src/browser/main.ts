@@ -12,6 +12,8 @@ const options = parseCommandLine();
 const repoSessions = setupRepositorySessions();
 setupBrowserCommands(repoSessions);
 
+Electron.app.allowRendererProcessReuse = false;
+
 Electron.app.on("window-all-closed", () => {
   config.save();
   environment.save();
@@ -49,7 +51,7 @@ const template: Electron.MenuItemConstructorOptions[] = [
         label: "Hard &Reload",
         accelerator: "Ctrl+Shift+R",
         click: (_item, focusedWindow) => {
-          focusedWindow.reload();
+          focusedWindow?.reload();
         }
       },
       {
@@ -57,7 +59,7 @@ const template: Electron.MenuItemConstructorOptions[] = [
         accelerator:
           process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
         click: (_item, focusedWindow) => {
-          focusedWindow.webContents.toggleDevTools();
+          focusedWindow?.webContents.toggleDevTools();
         }
       }
     ]
@@ -69,7 +71,8 @@ function showMainWindow() {
     autoHideMenuBar: true,
     show: false,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      enableRemoteModule: true
     }
   });
   // restore window size
