@@ -50,7 +50,7 @@ export default vca.component({
     const vtableRef = ref<Vtable<LogItem> | null>(null);
     watch(
       () => p.selectedIndex,
-      newValue => {
+      (newValue) => {
         if (vtableRef.value) {
           vtableRef.value.ensureVisible(newValue);
         }
@@ -84,13 +84,11 @@ export default vca.component({
           widths={p.widths}
           rowHeight={rowHeight}
           rowStyleCycle={2}
-          getItemKey={item => item.id}
-          getRowClass={(_item, index) =>
-            index === selectedIndex ? style.selectedRow : ""
-          }
+          getItemKey={(item) => item.id}
+          getRowClass={(_item, index) => (index === selectedIndex ? style.selectedRow : "")}
           {...{ on: ctx.listeners }}
           scopedSlots={{
-            cell: p => renderCell(p.columnId, p.item)
+            cell: (p) => renderCell(p.columnId, p.item)
           }}
         />
       );

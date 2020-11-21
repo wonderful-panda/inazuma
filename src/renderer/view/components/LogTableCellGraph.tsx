@@ -70,8 +70,7 @@ export default _fc<Props>(({ props }) => {
   const nodeMask = `m:node:${shortId}`;
   const edgeMask = `m:edge:${shortId}`;
   const topMostEdges = graph.nodeEdges.filter(
-    (edge, i, arr) =>
-      (i === 0 || i === arr.length - 1) && edge.index !== node.index
+    (edge, i, arr) => (i === 0 || i === arr.length - 1) && edge.index !== node.index
   );
   return (
     <svg width={width} height={height}>
@@ -114,9 +113,7 @@ export default _fc<Props>(({ props }) => {
             edge={edge}
             width={gridWidth}
             height={height}
-            mask={
-              i === 0 || i === arr.length - 1 ? undefined : `url(#${edgeMask})`
-            }
+            mask={i === 0 || i === arr.length - 1 ? undefined : `url(#${edgeMask})`}
           />
         ))}
       </g>

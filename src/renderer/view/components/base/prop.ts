@@ -20,9 +20,7 @@ export function required<T extends ReadonlyArray<any>>(
 
 export function required<T>(): { type: () => T; required: true };
 
-export function required<T>(
-  type: Prop<T>
-): { type: Supplier<T>; required: true };
+export function required<T>(type: Prop<T>): { type: Supplier<T>; required: true };
 
 export function required<T, U>(
   types: [Prop<T>, Prop<U>]
@@ -52,9 +50,7 @@ export function optional<T extends ReadonlyArray<any>>(
   type: typeof Array
 ): { type: Supplier<T | undefined>; required: false };
 
-export function optional<T>(
-  type: Prop<T>
-): { type: Supplier<T | undefined>; required: false };
+export function optional<T>(type: Prop<T>): { type: Supplier<T | undefined>; required: false };
 
 export function optional<T>(): {
   type: Supplier<T | undefined>;

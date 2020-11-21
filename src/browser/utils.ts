@@ -6,8 +6,7 @@ export function splitCommandline(commandLine: string | undefined): string[] {
 }
 
 // length of CHARS must be 64
-const CHARS =
-  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~_";
+const CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~_";
 export function randomName(length: number): string {
   let name = "";
   let randomValue = Math.random() * Math.pow(64, length);

@@ -139,30 +139,12 @@ declare interface LsTreeEntry {
 
 declare interface BrowserCommand {
   openRepository(repoPath: string): Promise<{ commits: Commit[]; refs: Refs }>;
-  getCommitDetail(params: {
-    repoPath: string;
-    sha: string;
-  }): Promise<CommitDetail>;
-  getBlame(params: {
-    repoPath: string;
-    relPath: string;
-    sha: string;
-  }): Promise<Blame>;
-  getFileLog(params: {
-    repoPath: string;
-    relPath: string;
-    sha: string;
-  }): Promise<FileCommit[]>;
+  getCommitDetail(params: { repoPath: string; sha: string }): Promise<CommitDetail>;
+  getBlame(params: { repoPath: string; relPath: string; sha: string }): Promise<Blame>;
+  getFileLog(params: { repoPath: string; relPath: string; sha: string }): Promise<FileCommit[]>;
   getTree(params: { repoPath: string; sha: string }): Promise<LsTreeEntry[]>;
   resetConfig(config: Config): Promise<void>;
   runInteractiveShell(curdir: string): Promise<void>;
-  showExternalDiff(params: {
-    repoPath: string;
-    left: FileSpec;
-    right: FileSpec;
-  }): Promise<void>;
-  getTextFileContent(params: {
-    repoPath: string;
-    file: FileSpec;
-  }): Promise<TextFile>;
+  showExternalDiff(params: { repoPath: string; left: FileSpec; right: FileSpec }): Promise<void>;
+  getTextFileContent(params: { repoPath: string; file: FileSpec }): Promise<TextFile>;
 }

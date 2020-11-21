@@ -24,22 +24,22 @@ const TabFile = asAsyncComponent(() =>
   import(
     /* webpackChunkName: "repositorypagetabfile", webpackPrefetch: true */
     "./RepositoryPageTabFile"
-  ).then(mod => mod.default)
+  ).then((mod) => mod.default)
 );
 const TabTree = asAsyncComponent(() =>
   import(
     /* webpackChunkName: "repositorypagetabtree", webpackPrefetch: true */
     "./RepositoryPageTabTree"
-  ).then(mod => mod.default)
+  ).then((mod) => mod.default)
 );
 const TabDiff = asAsyncComponent(() =>
   import(
     /* webpackChunkName: "repositorypagetabdiff", webpackPrefetch: true */
     "./RepositoryPageTabDiff"
-  ).then(mod => mod.default)
+  ).then((mod) => mod.default)
 );
 
-const SideBar = _fc<{ name: string }>(ctx => {
+const SideBar = _fc<{ name: string }>((ctx) => {
   switch (ctx.props.name) {
     case "branches":
       return <SideBarBranches />;
@@ -50,7 +50,7 @@ const SideBar = _fc<{ name: string }>(ctx => {
   }
 });
 
-const TabContent = _fc<{ tab: RepositoryTabDefinition }>(ctx => {
+const TabContent = _fc<{ tab: RepositoryTabDefinition }>((ctx) => {
   const tab = ctx.props.tab;
   if (tab.kind === "log") {
     return <TabLog />;
@@ -66,13 +66,7 @@ const TabContent = _fc<{ tab: RepositoryTabDefinition }>(ctx => {
     );
   } else if (tab.kind === "tree") {
     const { key, props, lazyProps } = tab;
-    return (
-      <TabTree
-        tabkey={key}
-        sha={props.sha}
-        rootNodes={lazyProps && lazyProps.rootNodes}
-      />
-    );
+    return <TabTree tabkey={key} sha={props.sha} rootNodes={lazyProps && lazyProps.rootNodes} />;
   } else if (tab.kind === "diff") {
     const { key, props, lazyProps } = tab;
     return (
@@ -108,12 +102,10 @@ export default vca.component({
     const tabsModule = useTabsModule();
     const selectedTabIndex = computed({
       get: () => tabsModule.state.selectedIndex,
-      set: v => tabsModule.actions.select({ index: v })
+      set: (v) => tabsModule.actions.select({ index: v })
     });
-    const showSidebarBranches = () =>
-      rootModule.actions.showSidebar({ name: "branches" });
-    const showSidebarRemotes = () =>
-      rootModule.actions.showSidebar({ name: "remotes" });
+    const showSidebarBranches = () => rootModule.actions.showSidebar({ name: "branches" });
+    const showSidebarRemotes = () => rootModule.actions.showSidebar({ name: "remotes" });
     const showPreference = () => rootModule.actions.showPreference();
     const showWelcomePage = () => rootModule.actions.showWelcomePage();
     const showVersionDialog = () => rootModule.actions.showVersionDialog();
@@ -133,31 +125,11 @@ export default vca.component({
       return (
         <BaseLayout title={state.repoPath}>
           <template slot="drawer-navigations">
-            <DrawerNavigation
-              icon="local_offer"
-              text="Branches"
-              action={showSidebarBranches}
-            />
-            <DrawerNavigation
-              icon="cloud"
-              text="Remotes"
-              action={showSidebarRemotes}
-            />
-            <DrawerNavigation
-              icon="settings"
-              text="Preferences"
-              action={showPreference}
-            />
-            <DrawerNavigation
-              icon="home"
-              text="Go to Home"
-              action={showWelcomePage}
-            />
-            <DrawerNavigation
-              icon="info_outline"
-              text="About"
-              action={showVersionDialog}
-            />
+            <DrawerNavigation icon="local_offer" text="Branches" action={showSidebarBranches} />
+            <DrawerNavigation icon="cloud" text="Remotes" action={showSidebarRemotes} />
+            <DrawerNavigation icon="settings" text="Preferences" action={showPreference} />
+            <DrawerNavigation icon="home" text="Go to Home" action={showWelcomePage} />
+            <DrawerNavigation icon="info_outline" text="About" action={showVersionDialog} />
           </template>
           <template slot="titlebar-buttons">
             <TitleBarButton action={toggleTerminal}>keyboard</TitleBarButton>
@@ -181,9 +153,7 @@ export default vca.component({
               selectedIndex={__sync(selectedTabIndex.value)}
               closeTab={closeTab}
               scopedSlots={{
-                default: ({ tab }) => (
-                  <TabContent tab={tab as RepositoryTabDefinition} />
-                )
+                default: ({ tab }) => <TabContent tab={tab as RepositoryTabDefinition} />
               }}
             />
             <keep-alive slot="second">
@@ -193,9 +163,7 @@ export default vca.component({
                   cmd={state.config.interactiveShell}
                   hide={actions.hideTerminal}
                 />
-              ) : (
-                undefined
-              )}
+              ) : undefined}
             </keep-alive>
           </VSplitterPanel>
         </BaseLayout>

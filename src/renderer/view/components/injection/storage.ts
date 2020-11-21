@@ -1,10 +1,4 @@
-import {
-  InjectionKey,
-  inject,
-  provide,
-  reactive,
-  watch
-} from "@vue/composition-api";
+import { InjectionKey, inject, provide, reactive, watch } from "@vue/composition-api";
 
 export type StorageWithNamespace = {
   storage: Storage | null;
@@ -59,7 +53,7 @@ export function useStorage<T extends object>(
   const ret = reactive(value);
   watch(
     () => ret,
-    value => {
+    (value) => {
       storage.setItem(key, JSON.stringify(value));
     },
     { deep: true }

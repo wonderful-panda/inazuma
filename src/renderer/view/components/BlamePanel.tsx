@@ -54,16 +54,14 @@ const BlamePanel = vca.component({
       "BlamePanel"
     );
     const language = computed(() => getLangIdFromPath(props.path));
-    const commits = computed(
-      () => new Map(props.blame.commits.map(c => [c.id, c]))
-    );
+    const commits = computed(() => new Map(props.blame.commits.map((c) => [c.id, c])));
     const hoveredCommit = ref(undefined as FileCommit | undefined);
     const selectedCommitIndex = computed(() => {
       const id = selectedCommitId.value;
       if (!id) {
         return -1;
       } else {
-        return props.blame.commits.findIndex(c => c.id === id);
+        return props.blame.commits.findIndex((c) => c.id === id);
       }
     });
     const onHoveredCommitIdChanged = (e: { commitId: string }) => {
@@ -109,7 +107,7 @@ const BlamePanel = vca.component({
               rowHeight={24}
               selectedIndex={selectedCommitIndex.value}
               widths={__sync(persist.columnWidths)}
-              onRowclick={args => {
+              onRowclick={(args) => {
                 selectedCommitId.value = args.item.id;
               }}
               onRowcontextmenu={showContextMenu}

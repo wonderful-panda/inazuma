@@ -30,13 +30,7 @@ export function parseNumstatRaw(text: string): readonly FileEntry[] {
       // RAW OUTPUT
       const statusCode = token.split(" ")[4];
       const status = statusCode[0];
-      if (
-        status === "M" ||
-        status === "A" ||
-        status === "D" ||
-        status === "T" ||
-        status === "U"
-      ) {
+      if (status === "M" || status === "A" || status === "D" || status === "T" || status === "U") {
         const path = tokens[i + 1];
         files.set(path, { path, statusCode });
         i += 1;

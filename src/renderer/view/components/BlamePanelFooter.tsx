@@ -2,7 +2,7 @@ import { shortHash } from "../filters";
 import { css } from "@emotion/css";
 import { toLongDate } from "core/date";
 
-export default _fc<{ commit?: FileCommit }>(ctx => {
+export default _fc<{ commit?: FileCommit }>((ctx) => {
   const commit = ctx.props.commit;
   if (!commit) {
     return <div class={style.container} />;

@@ -62,9 +62,7 @@ export default vca.component({
   },
   setup(p) {
     const formRef = ref(null as HTMLFormElement | null);
-    const config = reactive(
-      JSON.parse(JSON.stringify(p.initialConfig)) as Config
-    );
+    const config = reactive(JSON.parse(JSON.stringify(p.initialConfig)) as Config);
     const onOk = async () => {
       await p.save(config);
       p.hide();

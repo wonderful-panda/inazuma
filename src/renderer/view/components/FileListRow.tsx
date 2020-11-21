@@ -85,7 +85,7 @@ const FileType = withclass.div(
 );
 
 const NumStat = withclass.div<{ mode: "-" | "+" }>(
-  p => css`
+  (p) => css`
     color: ${p.mode === "+" ? "lightgreen" : "hotpink"};
     margin: auto 4px;
     :before {
@@ -103,7 +103,7 @@ const NewPath = withclass.div(
 );
 
 const OldPath = withclass.div<{ statusCode: string }>(
-  p => css`
+  (p) => css`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -119,8 +119,7 @@ const OldPath = withclass.div<{ statusCode: string }>(
   `
 );
 
-const isNumberStat = (stat: "-" | number | undefined) =>
-  stat !== undefined && stat !== "-";
+const isNumberStat = (stat: "-" | number | undefined) => stat !== undefined && stat !== "-";
 
 const getFileType = (item: FileEntry) => {
   if (item.insertions === undefined) {
@@ -160,12 +159,7 @@ const FileActionButtons = _fc<{
       </md-menu-item>
     ));
     buttonNodes.push(
-      <md-menu
-        key="other-actions"
-        md-close-on-click
-        md-align-trigger
-        md-size="auto"
-      >
+      <md-menu key="other-actions" md-close-on-click md-align-trigger md-size="auto">
         <MdButton class="md-icon-button file-action-button" md-menu-trigger>
           <MdIcon>more_vert</MdIcon>
           <MdTooltip>Other actions</MdTooltip>
@@ -193,24 +187,13 @@ export const FileListRow = _fc<{
         </FirstLine>
         <SecondLine>
           <FileType>{getFileType(item)}</FileType>
-          {isNumberStat(item.insertions) && (
-            <NumStat mode="+">{item.insertions}</NumStat>
-          )}
-          {isNumberStat(item.deletions) && (
-            <NumStat mode="-">{item.deletions}</NumStat>
-          )}
-          {item.oldPath && (
-            <OldPath statusCode={item.statusCode}>{item.oldPath}</OldPath>
-          )}
+          {isNumberStat(item.insertions) && <NumStat mode="+">{item.insertions}</NumStat>}
+          {isNumberStat(item.deletions) && <NumStat mode="-">{item.deletions}</NumStat>}
+          {item.oldPath && <OldPath statusCode={item.statusCode}>{item.oldPath}</OldPath>}
         </SecondLine>
       </RowContent>
       {(buttons || menus) && (
-        <FileActionButtons
-          commit={commit}
-          item={item}
-          buttons={buttons}
-          menus={menus}
-        />
+        <FileActionButtons commit={commit} item={item} buttons={buttons} menus={menus} />
       )}
     </Container>
   );

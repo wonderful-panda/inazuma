@@ -1,13 +1,7 @@
 import { RenderContext } from "vue";
 import { shortHash } from "view/filters";
 import * as md from "view/utils/md-classes";
-import {
-  MdIcon,
-  MdDoubleLineList,
-  MdSubheader,
-  MdListItem,
-  MdListItemText
-} from "./base/md";
+import { MdIcon, MdDoubleLineList, MdSubheader, MdListItem, MdListItemText } from "./base/md";
 import * as vca from "vue-tsx-support/lib/vca";
 import { css } from "@emotion/css";
 import { ref, computed } from "@vue/composition-api";
@@ -21,25 +15,19 @@ const getRefName = (b: Ref) => {
   }
 };
 
-const RefListItem = _fc(
-  ({ props }: RenderContext<{ r: Ref; handleClick: () => void }>) => {
-    return (
-      <MdListItem
-        class={style.listItem(props.r.type === "heads" && props.r.current)}
-        onClick={props.handleClick}
-      >
-        <MdListItemText>
-          <span class={[md.SUBHEADING, style.branchName]}>
-            {getRefName(props.r)}
-          </span>
-          <span class={[md.CAPTION, style.commitId]}>
-            {shortHash(props.r.id)}
-          </span>
-        </MdListItemText>
-      </MdListItem>
-    );
-  }
-);
+const RefListItem = _fc(({ props }: RenderContext<{ r: Ref; handleClick: () => void }>) => {
+  return (
+    <MdListItem
+      class={style.listItem(props.r.type === "heads" && props.r.current)}
+      onClick={props.handleClick}
+    >
+      <MdListItemText>
+        <span class={[md.SUBHEADING, style.branchName]}>{getRefName(props.r)}</span>
+        <span class={[md.CAPTION, style.commitId]}>{shortHash(props.r.id)}</span>
+      </MdListItemText>
+    </MdListItem>
+  );
+});
 
 export default vca.component({
   name: "SideBarBranchList",
@@ -65,28 +53,17 @@ export default vca.component({
     return () => {
       return (
         <div class={style.wrapper}>
-          <MdSubheader
-            class={["md-primary", style.header]}
-            nativeOn-click={toggleExpand}
-          >
+          <MdSubheader class={["md-primary", style.header]} nativeOn-click={toggleExpand}>
             <span>{p.title}</span>
             <MdIcon class={style.expandIcon} style={expandIconStyle.value}>
               arrow_drop_down
             </MdIcon>
           </MdSubheader>
           <transition>
-            <div
-              v-show={expanded.value}
-              class={style.container}
-              style={listStyle.value}
-            >
+            <div v-show={expanded.value} class={style.container} style={listStyle.value}>
               <MdDoubleLineList>
-                {p.branches.map(r => (
-                  <RefListItem
-                    key={r.fullname}
-                    r={r}
-                    handleClick={() => handleItemClick(r)}
-                  />
+                {p.branches.map((r) => (
+                  <RefListItem key={r.fullname} r={r} handleClick={() => handleItemClick(r)} />
                 ))}
               </MdDoubleLineList>
             </div>

@@ -18,11 +18,7 @@ const TabButton = _fc<{
       <VButton class={style.tabButton(props.selected)} action={props.select}>
         {props.tab.text}
       </VButton>
-      <VIconButton
-        v-show={props.tab.closable}
-        class={style.closeIcon}
-        action={props.close}
-      >
+      <VIconButton v-show={props.tab.closable} class={style.closeIcon} action={props.close}>
         close
       </VIconButton>
     </div>
@@ -45,7 +41,7 @@ export default vca.component({
     const update = vca.updateEmitter<typeof p>();
     watch(
       () => p.selectedIndex,
-      v => {
+      (v) => {
         // scroll to selected tab
         Vue.nextTick(() => {
           if (!tabButton.value) {
@@ -80,11 +76,7 @@ export default vca.component({
             ))}
           </div>
           {tabs.map((tab, index) => (
-            <div
-              key={tab.key}
-              class={style.tabContent}
-              v-show={index === selectedIndex}
-            >
+            <div key={tab.key} class={style.tabContent} v-show={index === selectedIndex}>
               {renderTab({ tab })}
             </div>
           ))}
@@ -132,9 +124,7 @@ const style = {
     font-size: small;
     margin: 0;
     height: 22px;
-    background-color: ${selected
-      ? "var(--md-theme-default-background)"
-      : undefined};
+    background-color: ${selected ? "var(--md-theme-default-background)" : undefined};
     color: ${selected ? "var(--md-theme-default-primary)" : "#aaa"} !important;
 
     .md-button-content {

@@ -24,18 +24,9 @@ export default vca.component({
         "md-accent": p.accent
       };
 
-      const tooltip = p.tooltip ? (
-        <MdTooltip>{p.tooltip}</MdTooltip>
-      ) : (
-        undefined
-      );
+      const tooltip = p.tooltip ? <MdTooltip>{p.tooltip}</MdTooltip> : undefined;
       return (
-        <MdButton
-          class={classes}
-          href={p.href}
-          disabled={p.disabled}
-          onClick={m.stop(p.action)}
-        >
+        <MdButton class={classes} href={p.href} disabled={p.disabled} onClick={m.stop(p.action)}>
           {ctx.slots.default()}
           {tooltip}
         </MdButton>

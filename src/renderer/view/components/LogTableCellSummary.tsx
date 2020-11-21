@@ -7,9 +7,9 @@ const className = css`
   align-items: baseline;
 `;
 
-export default _fc<{ commit: Commit; refs: ReadonlyArray<Ref> }>(ctx => (
+export default _fc<{ commit: Commit; refs: ReadonlyArray<Ref> }>((ctx) => (
   <div class={className} {...ctx.data}>
-    {ctx.props.refs.map(r => (
+    {ctx.props.refs.map((r) => (
       <RefBadge key={r.fullname} refObject={r} />
     ))}
     <span key="summary">{ctx.props.commit.summary}</span>

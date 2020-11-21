@@ -65,21 +65,12 @@ const language = {
   tokenizer: {
     root: [
       [/<!--/, "comment", "@comment"],
-      [
-        /(<)((?:[\w-]+:)?[\w-]+)(\s*)(\/>)/,
-        ["delimiter", "tag", "", "delimiter"]
-      ],
+      [/(<)((?:[\w-]+:)?[\w-]+)(\s*)(\/>)/, ["delimiter", "tag", "", "delimiter"]],
       [/(<)(template)/, ["delimiter", { token: "tag", next: "@template" }]],
       [/(<)(script)/, ["delimiter", { token: "tag", next: "@script" }]],
       [/(<)(style)/, ["delimiter", { token: "tag", next: "@style" }]],
-      [
-        /(<)((?:[\w-]+:)?[\w-]+)/,
-        ["delimiter", { token: "tag", next: "@otherTag" }]
-      ],
-      [
-        /(<\/)((?:[\w-]+:)?[\w-]+)/,
-        ["delimiter", { token: "tag", next: "@otherTag" }]
-      ],
+      [/(<)((?:[\w-]+:)?[\w-]+)/, ["delimiter", { token: "tag", next: "@otherTag" }]],
+      [/(<\/)((?:[\w-]+:)?[\w-]+)/, ["delimiter", { token: "tag", next: "@otherTag" }]],
       [/</, "delimiter"],
       [/[^<]+/] // text
     ],
@@ -116,10 +107,7 @@ const language = {
         }
       ],
       [/[ \t\r\n]+/], // whitespace
-      [
-        /(<\/)(template\s*)(>)/,
-        ["delimiter", "tag", { token: "delimiter", next: "@pop" }]
-      ]
+      [/(<\/)(template\s*)(>)/, ["delimiter", "tag", { token: "delimiter", next: "@pop" }]]
     ],
 
     // After <template ... lang
@@ -139,14 +127,8 @@ const language = {
 
     // After <template ... lang =
     templateAfterLangEquals: [
-      [
-        /"([^"]*)"/,
-        { token: "attribute.value", switchTo: "@templateWithCustomLang.$1" }
-      ],
-      [
-        /'([^']*)'/,
-        { token: "attribute.value", switchTo: "@templateWithCustomLang.$1" }
-      ],
+      [/"([^"]*)"/, { token: "attribute.value", switchTo: "@templateWithCustomLang.$1" }],
+      [/'([^']*)'/, { token: "attribute.value", switchTo: "@templateWithCustomLang.$1" }],
       [
         />/,
         {
@@ -178,10 +160,7 @@ const language = {
     ],
 
     templateEmbedded: [
-      [
-        /<\/template/,
-        { token: "@rematch", next: "@pop", nextEmbedded: "@pop" }
-      ],
+      [/<\/template/, { token: "@rematch", next: "@pop", nextEmbedded: "@pop" }],
       [/[^<]+/, ""]
     ],
 
@@ -204,10 +183,7 @@ const language = {
         }
       ],
       [/[ \t\r\n]+/], // whitespace
-      [
-        /(<\/)(script\s*)(>)/,
-        ["delimiter", "tag", { token: "delimiter", next: "@pop" }]
-      ]
+      [/(<\/)(script\s*)(>)/, ["delimiter", "tag", { token: "delimiter", next: "@pop" }]]
     ],
 
     // After <script ... lang
@@ -227,18 +203,9 @@ const language = {
 
     // After <script ... lang =
     scriptAfterLangEquals: [
-      [
-        /"tsx?"|'tsx?'/,
-        { token: "attribute.value", switchTo: "@scriptWithCustomLang.ts" }
-      ],
-      [
-        /"([^"]*)"/,
-        { token: "attribute.value", switchTo: "@scriptWithCustomLang.$1" }
-      ],
-      [
-        /'([^']*)'/,
-        { token: "attribute.value", switchTo: "@scriptWithCustomLang.$1" }
-      ],
+      [/"tsx?"|'tsx?'/, { token: "attribute.value", switchTo: "@scriptWithCustomLang.ts" }],
+      [/"([^"]*)"/, { token: "attribute.value", switchTo: "@scriptWithCustomLang.$1" }],
+      [/'([^']*)'/, { token: "attribute.value", switchTo: "@scriptWithCustomLang.$1" }],
       [
         />/,
         {
@@ -255,7 +222,11 @@ const language = {
     scriptWithCustomLang: [
       [
         />/,
-        { token: "delimiter", next: "@scriptEmbedded.$S2", nextEmbedded: "$S2" }
+        {
+          token: "delimiter",
+          next: "@scriptEmbedded.$S2",
+          nextEmbedded: "$S2"
+        }
       ],
       [/"([^"]*)"/, "attribute.value"],
       [/'([^']*)'/, "attribute.value"],
@@ -282,13 +253,14 @@ const language = {
       [/=/, "delimiter"],
       [
         />/,
-        { token: "delimiter", next: "@styleEmbedded", nextEmbedded: "text/css" }
+        {
+          token: "delimiter",
+          next: "@styleEmbedded",
+          nextEmbedded: "text/css"
+        }
       ],
       [/[ \t\r\n]+/], // whitespace
-      [
-        /(<\/)(style\s*)(>)/,
-        ["delimiter", "tag", { token: "delimiter", next: "@pop" }]
-      ]
+      [/(<\/)(style\s*)(>)/, ["delimiter", "tag", { token: "delimiter", next: "@pop" }]]
     ],
 
     // After <style ... lang
@@ -296,7 +268,11 @@ const language = {
       [/=/, "delimiter", "@styleAfterLangEquals"],
       [
         />/,
-        { token: "delimiter", next: "@styleEmbedded", nextEmbedded: "text/css" }
+        {
+          token: "delimiter",
+          next: "@styleEmbedded",
+          nextEmbedded: "text/css"
+        }
       ], // cover invalid e.g. <style lang>
       [/[ \t\r\n]+/], // whitespace
       [/<\/style\s*>/, { token: "@rematch", next: "@pop" }]
@@ -304,17 +280,15 @@ const language = {
 
     // After <style ... lang =
     styleAfterLangEquals: [
-      [
-        /"([^"]*)"/,
-        { token: "attribute.value", switchTo: "@styleWithCustomLang.$1" }
-      ],
-      [
-        /'([^']*)'/,
-        { token: "attribute.value", switchTo: "@styleWithCustomLang.$1" }
-      ],
+      [/"([^"]*)"/, { token: "attribute.value", switchTo: "@styleWithCustomLang.$1" }],
+      [/'([^']*)'/, { token: "attribute.value", switchTo: "@styleWithCustomLang.$1" }],
       [
         />/,
-        { token: "delimiter", next: "@styleEmbedded", nextEmbedded: "text/css" }
+        {
+          token: "delimiter",
+          next: "@styleEmbedded",
+          nextEmbedded: "text/css"
+        }
       ], // cover invalid e.g. <style lang=>
       [/[ \t\r\n]+/], // whitespace
       [/<\/style\s*>/, { token: "@rematch", next: "@pop" }]
@@ -322,10 +296,7 @@ const language = {
 
     // After <style ... lang = $S2
     styleWithCustomLang: [
-      [
-        />/,
-        { token: "delimiter", next: "@styleEmbedded.$S2", nextEmbedded: "$S2" }
-      ],
+      [/>/, { token: "delimiter", next: "@styleEmbedded.$S2", nextEmbedded: "$S2" }],
       [/"([^"]*)"/, "attribute.value"],
       [/'([^']*)'/, "attribute.value"],
       [/[\w-]+/, "attribute.name"],

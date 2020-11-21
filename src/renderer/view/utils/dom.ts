@@ -1,6 +1,6 @@
 export function queryFocusableElements(root?: HTMLElement): HTMLElement[] {
   const elements = [...(root || document).querySelectorAll("*")];
-  return elements.filter(el => {
+  return elements.filter((el) => {
     if (
       el instanceof HTMLInputElement ||
       el instanceof HTMLButtonElement ||

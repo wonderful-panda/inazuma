@@ -35,14 +35,14 @@ export default vca.component({
         const term = new Terminal({ fontFamily, fontSize });
         const fitAddon = new FitAddon();
         term.loadAddon(fitAddon);
-        pty.on("data", data => term.write(data));
+        pty.on("data", (data) => term.write(data));
         pty.on("exit", () => {
           term.dispose();
           fitAddon.dispose();
           shell.value = null;
           p.hide();
         });
-        term.onData(data => pty.write(data));
+        term.onData((data) => pty.write(data));
         term.onResize(({ cols, rows }) => pty.resize(cols, rows));
         shell.value = { pty, term, fitAddon };
         Vue.nextTick(() => {
@@ -76,7 +76,7 @@ export default vca.component({
 
     watch(
       () => p.fontFamily,
-      v => {
+      (v) => {
         if (shell.value) {
           shell.value.term.setOption("fontFamily", v);
         }
@@ -84,7 +84,7 @@ export default vca.component({
     );
     watch(
       () => p.fontSize,
-      v => {
+      (v) => {
         if (shell.value) {
           shell.value.term.setOption("fontSize", v);
         }

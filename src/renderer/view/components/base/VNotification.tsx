@@ -18,13 +18,10 @@ export default vca.component({
   setup(p) {
     const hasMessage = computed({
       get: () => !!p.message,
-      set: v => v || p.hide()
+      set: (v) => v || p.hide()
     });
     return () => (
-      <MdSnackbar
-        class={style.container(p.color)}
-        md-active={__sync(hasMessage.value)}
-      >
+      <MdSnackbar class={style.container(p.color)} md-active={__sync(hasMessage.value)}>
         <div>
           <MdIcon>{p.icon}</MdIcon>
           <span class={[md.BODY1, style.message]}>{p.message}</span>

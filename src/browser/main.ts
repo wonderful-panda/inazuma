@@ -33,8 +33,7 @@ const template: Electron.MenuItemConstructorOptions[] = [
     submenu: [
       {
         label: "New window",
-        accelerator:
-          process.platform === "darwin" ? "Alt+Command+N" : "Ctrl+Shift+N",
+        accelerator: process.platform === "darwin" ? "Alt+Command+N" : "Ctrl+Shift+N",
         click: showMainWindow
       },
       {
@@ -56,8 +55,7 @@ const template: Electron.MenuItemConstructorOptions[] = [
       },
       {
         label: "Toggle &Developer Tools",
-        accelerator:
-          process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
+        accelerator: process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
         click: (_item, focusedWindow) => {
           focusedWindow?.webContents.toggleDevTools();
         }
@@ -92,9 +90,7 @@ function showMainWindow() {
     environment.setWindowSize(width, height, maximized);
   });
   mainWindow.setMenu(Electron.Menu.buildFromTemplate(template));
-  mainWindow.loadURL(
-    `file://${path.join(__dirname, "../renderer/index.html")}`
-  );
+  mainWindow.loadURL(`file://${path.join(__dirname, "../renderer/index.html")}`);
   mainWindow.show();
 }
 

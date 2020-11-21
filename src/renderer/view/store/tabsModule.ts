@@ -16,7 +16,7 @@ class TabsMutations extends Mutations<TabsState> {
 
   remove(payload: { key: string }) {
     const { tabs, selectedIndex } = this.state;
-    const index = tabs.findIndex(t => t.key === payload.key);
+    const index = tabs.findIndex((t) => t.key === payload.key);
     if (index < 0) {
       return;
     }
@@ -32,14 +32,10 @@ class TabsMutations extends Mutations<TabsState> {
     this.state.selectedIndex = payload.index;
   }
 
-  setTabLazyProps(payload: {
-    kind: string;
-    key: string;
-    lazyProps: {} | undefined;
-  }) {
+  setTabLazyProps(payload: { kind: string; key: string; lazyProps: {} | undefined }) {
     const { kind, key, lazyProps } = payload;
     const tabs = this.state.tabs;
-    const index = tabs.findIndex(t => t.key === key);
+    const index = tabs.findIndex((t) => t.key === key);
     if (index < 0) {
       return;
     }
@@ -68,7 +64,7 @@ class TabsGetters extends Getters<TabsState> {
 
 class TabsActions extends Actions<TabsState, TabsGetters, TabsMutations> {
   addOrSelect({ tab }: { tab: TabDefinition }) {
-    const index = this.state.tabs.findIndex(t => t.key === tab.key);
+    const index = this.state.tabs.findIndex((t) => t.key === tab.key);
     if (index < 0) {
       this.mutations.add({ tab });
     } else {
@@ -76,11 +72,7 @@ class TabsActions extends Actions<TabsState, TabsGetters, TabsMutations> {
     }
   }
 
-  setTabLazyProps(payload: {
-    kind: string;
-    key: string;
-    lazyProps: object | undefined;
-  }) {
+  setTabLazyProps(payload: { kind: string; key: string; lazyProps: object | undefined }) {
     this.mutations.setTabLazyProps(payload);
   }
 

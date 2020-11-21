@@ -1,10 +1,7 @@
 import { exec } from "./exec";
 import * as path_ from "path";
 
-export async function lsTree(
-  repository: string,
-  sha: string
-): Promise<LsTreeEntry[]> {
+export async function lsTree(repository: string, sha: string): Promise<LsTreeEntry[]> {
   const parents = {} as Dict<LsTreeEntry[]>;
   parents["."] = [];
   const re = /^[0-9]+ (blob|tree) [^ ]+\t(.*)$/;
@@ -12,7 +9,7 @@ export async function lsTree(
     repository,
     args: ["-r", "-t", sha],
     configs: ["core.quotePath=false"],
-    onEachLine: line => {
+    onEachLine: (line) => {
       const m = re.exec(line);
       if (!m) {
         return;

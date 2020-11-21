@@ -16,14 +16,7 @@ import { tabsModule } from "./tabsModule";
 import { getFileName } from "core/utils";
 import { shortHash } from "../filters";
 import { sortTreeInplace } from "core/tree";
-import {
-  Mutations,
-  Getters,
-  Context,
-  Actions,
-  Module,
-  createStore
-} from "vuex-smart-module";
+import { Mutations, Getters, Context, Actions, Module, createStore } from "vuex-smart-module";
 import { Store } from "vuex";
 
 const emptyCommit: CommitDetail = {
@@ -38,10 +31,7 @@ const emptyCommit: CommitDetail = {
 
 const MAX_RECENT_LIST = 20;
 
-type TabLazyPropPayload<D extends TabDefinition> = Pick<
-  Required<D>,
-  "kind" | "key" | "lazyProps"
->;
+type TabLazyPropPayload<D extends TabDefinition> = Pick<Required<D>, "kind" | "key" | "lazyProps">;
 
 class RootState {
   config: Config = { fontFamily: {}, recentListCount: 5 };
@@ -68,11 +58,7 @@ class RootState {
 }
 
 class RootMutations extends Mutations<RootState> {
-  resetItems(payload: {
-    commits: Commit[];
-    graphs: Dict<GraphFragment>;
-    refs: Refs;
-  }) {
+  resetItems(payload: { commits: Commit[]; graphs: Dict<GraphFragment>; refs: Refs }) {
     const state = this.state;
     state.commits = payload.commits;
     state.graphs = payload.graphs;
@@ -100,9 +86,7 @@ class RootMutations extends Mutations<RootState> {
     }
     this.state.recentList = [
       repoPath,
-      ...this.state.recentList
-        .filter(v => v !== repoPath)
-        .slice(0, MAX_RECENT_LIST - 1)
+      ...this.state.recentList.filter((v) => v !== repoPath).slice(0, MAX_RECENT_LIST - 1)
     ];
   }
 
@@ -164,21 +148,17 @@ class RootGetters extends Getters<RootState> {
 
   get items(): LogItem[] {
     const { commits, graphs, refs } = this.state;
-    return commits.map(commit => {
+    return commits.map((commit) => {
       const graph = graphs[commit.id];
       const { refsById } = refs;
-      const refsOfThis = (refsById[commit.id] || []).filter(
-        r => r.type !== "MERGE_HEAD"
-      );
+      const refsOfThis = (refsById[commit.id] || []).filter((r) => r.type !== "MERGE_HEAD");
       return { commit, graph, refs: refsOfThis };
     });
   }
 
   get selectedCommitRefs(): readonly Ref[] {
     const { selectedCommit, refs } = this.state;
-    return (refs.refsById[selectedCommit.id] || []).filter(
-      r => r.type !== "MERGE_HEAD"
-    );
+    return (refs.refsById[selectedCommit.id] || []).filter((r) => r.type !== "MERGE_HEAD");
   }
 
   get repoPathEncoded(): string {
@@ -234,9 +214,7 @@ class RootActions
   showRepositoryPage(payload: { repoPath: string; tabs?: TabDefinition[] }) {
     this.actions.setRepoPath({ repoPath: payload.repoPath });
     this.tabs.actions.reset({
-      tabs: payload.tabs || [
-        { key: "log", kind: "log", text: "COMMITS", props: {} }
-      ]
+      tabs: payload.tabs || [{ key: "log", kind: "log", text: "COMMITS", props: {} }]
     });
   }
 
@@ -275,7 +253,7 @@ class RootActions
   private showCommits(payload: { commits: Commit[]; refs: Refs }) {
     const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
     const graphs = {} as { [id: string]: GraphFragment };
-    payload.commits.forEach(c => {
+    payload.commits.forEach((c) => {
       graphs[c.id] = grapher.proceed(c);
     });
     this.mutations.resetItems({ graphs, ...payload });
@@ -285,10 +263,7 @@ class RootActions
     this.mutations.setCommitDetail(payload);
   }
 
-  async setSelectedIndex(payload: {
-    index: number;
-    force?: boolean;
-  }): Promise<void> {
+  async setSelectedIndex(payload: { index: number; force?: boolean }): Promise<void> {
     if (!payload.force && this.state.selectedIndex === payload.index) {
       return;
     }
@@ -306,7 +281,7 @@ class RootActions
   }
 
   selectCommit(payload: { commitId: string }): Promise<void> {
-    const index = this.state.commits.findIndex(c => c.id === payload.commitId);
+    const index = this.state.commits.findIndex((c) => c.id === payload.commitId);
     if (0 <= index) {
       return this.actions.setSelectedIndex({ index });
     } else {
@@ -335,17 +310,14 @@ class RootActions
       type: "show",
       options: {
         title: "Version",
-        renderContent: _h => "Version dialog: Not implemented",
+        renderContent: (_h) => "Version dialog: Not implemented",
         buttons: []
       }
     });
     return ret.accepted;
   }
 
-  async showExternalDiff(payload: {
-    left: FileSpec;
-    right: FileSpec;
-  }): Promise<void> {
+  async showExternalDiff(payload: { left: FileSpec; right: FileSpec }): Promise<void> {
     if (!this.state.config.externalDiffTool) {
       return;
     }
@@ -404,16 +376,14 @@ class RootActions
   }
 
   async loadFileTabLazyProps({ key }: { key: string }) {
-    const tab = this.getters.repositoryTabs.find(t => t.key === key);
+    const tab = this.getters.repositoryTabs.find((t) => t.key === key);
     if (!tab || tab.kind !== "file") {
       return;
     }
     const repoPath = this.state.repoPath;
     const { sha, relPath } = tab.props;
     try {
-      const blame = Object.freeze(
-        await browserCommand.getBlame({ repoPath, sha, relPath })
-      );
+      const blame = Object.freeze(await browserCommand.getBlame({ repoPath, sha, relPath }));
       const payload: TabLazyPropPayload<FileTabDefinition> = {
         kind: "file",
         key,
@@ -442,7 +412,7 @@ class RootActions
   }
 
   async loadTreeTabLazyProps({ key }: { key: string }) {
-    const tab = this.getters.repositoryTabs.find(t => t.key === key);
+    const tab = this.getters.repositoryTabs.find((t) => t.key === key);
     if (!tab || tab.kind !== "tree") {
       return;
     }
@@ -452,8 +422,7 @@ class RootActions
       const rootNodes = await browserCommand.getTree({ repoPath, sha });
       sortTreeInplace(rootNodes, (a, b) => {
         return (
-          a.data.type.localeCompare(b.data.type) * -1 ||
-          a.data.path.localeCompare(b.data.path)
+          a.data.type.localeCompare(b.data.type) * -1 || a.data.path.localeCompare(b.data.path)
         );
       });
       const payload: TabLazyPropPayload<TreeTabDefinition> = {
@@ -486,7 +455,7 @@ class RootActions
   }
 
   async loadDiffTabLazyProps({ key }: { key: string }) {
-    const tab = this.getters.repositoryTabs.find(t => t.key === key);
+    const tab = this.getters.repositoryTabs.find((t) => t.key === key);
     if (!tab || tab.kind !== "diff") {
       return;
     }
@@ -537,10 +506,8 @@ export const rootModule = new Module({
 
 type ModuleState<M> = M extends Module<infer S, any, any, any> ? S : {};
 
-type CombinedState<
-  RootState,
-  M extends { [key: string]: Module<any, any, any, any> }
-> = RootState & { [K in keyof M]: ModuleState<M[K]> };
+type CombinedState<RootState, M extends { [key: string]: Module<any, any, any, any> }> = RootState &
+  { [K in keyof M]: ModuleState<M[K]> };
 
 export type AppState = CombinedState<RootState, typeof modules>;
 export type AppStore = Store<AppState>;

@@ -131,7 +131,7 @@ const FilterToolbar = vca.component({
     const update = vca.updateEmitter<typeof p>();
     const filterText = computed({
       get: () => p.filterText,
-      set: v => update(ctx, "filterText", v)
+      set: (v) => update(ctx, "filterText", v)
     });
     return () => (
       <div style={{ display: "flex" }}>
@@ -227,11 +227,9 @@ const LeftPanel = vca.component({
             rootNodes={filteredRoots.value}
             indentWidth={12}
             rowHeight={24}
-            getItemKey={item => item.path}
+            getItemKey={(item) => item.path}
             getRowClass={getRowClass}
-            widths={__sync(props.columnWidths, v =>
-              emitUpdate(ctx, "columnWidths", v)
-            )}
+            widths={__sync(props.columnWidths, (v) => emitUpdate(ctx, "columnWidths", v))}
             scopedSlots={{
               cell: renderCell
             }}
@@ -307,7 +305,7 @@ const LstreePanel = vca.component({
 
     watch(
       () => state.treePath,
-      async value => {
+      async (value) => {
         if (!value) {
           state.blamePath = "";
           state.blame = undefined;

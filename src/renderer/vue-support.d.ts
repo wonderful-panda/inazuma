@@ -1,9 +1,6 @@
 declare module "vue-support" {
   import Vue, { VueConstructor } from "vue";
-  import {
-    RecordPropsDefinition,
-    ArrayPropsDefinition
-  } from "vue/types/options";
+  import { RecordPropsDefinition, ArrayPropsDefinition } from "vue/types/options";
   import { _TsxComponentV3 } from "vue-tsx-support";
   import { ComponentProps, WithProps } from "vue-tsx-support/lib/advance";
   import { PropsOf as PropsOf_ } from "vue-tsx-support/types/base";
@@ -31,14 +28,7 @@ declare module "vue-support" {
   export type AsComponent<
     C extends VueConstructor | string
   > = C extends keyof VueTsxSupport.JSX.IntrinsicElements
-    ? _TsxComponentV3<
-        Vue,
-        {},
-        VueTsxSupport.JSX.IntrinsicElements[C],
-        {},
-        {},
-        {}
-      >
+    ? _TsxComponentV3<Vue, {}, VueTsxSupport.JSX.IntrinsicElements[C], {}, {}, {}>
     : C extends string
     ? _TsxComponentV3<Vue, {}, any, {}, {}, {}>
     : C;

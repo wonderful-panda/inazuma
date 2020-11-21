@@ -3,15 +3,8 @@ import * as vca from "vue-tsx-support/lib/vca";
 import FileList from "./FileList";
 import { __sync } from "view/utils/modifiers";
 import { css } from "@emotion/css";
-import {
-  showFileContextMenu,
-  executeFileCommand,
-  executeCommitCommand
-} from "../commands";
-import {
-  fileCommandDiffWithParent,
-  fileCommandDiffWithLocal
-} from "../commands/fileCommandDiff";
+import { showFileContextMenu, executeFileCommand, executeCommitCommand } from "../commands";
+import { fileCommandDiffWithParent, fileCommandDiffWithLocal } from "../commands/fileCommandDiff";
 import { GitHash } from "./GitHash";
 import { formatDateLLL } from "core/date";
 import { injectStorage, useStorage } from "./injection/storage";
@@ -23,10 +16,7 @@ import RefBadge from "./RefBadge";
 import { commitCommandYankHash } from "view/commands/commitCommandYankHash";
 import { commitCommandBrowseTree } from "view/commands/commitCommandBrowseTree";
 import VSplitterPanel from "./base/VSplitterPanel";
-import {
-  fileCommandBlame,
-  fileCommandBlameParent
-} from "view/commands/fileCommandBlame";
+import { fileCommandBlame, fileCommandBlameParent } from "view/commands/fileCommandBlame";
 import { fileCommandYankPath } from "view/commands/fileCommandYankPath";
 
 const style = {
@@ -99,7 +89,7 @@ const CommitMetadata = vca.component({
               <AttrText>{formatDateLLL(commit.date)}</AttrText>
             </div>
             <div class={style.refs} v-show={refs}>
-              {refs.map(r => (
+              {refs.map((r) => (
                 <RefBadge key={r.id} refObject={r} />
               ))}
             </div>
@@ -160,13 +150,9 @@ export default vca.component({
             title={p.commit.id && "Changes"}
             files={p.commit.files}
             buttons={[fileCommandBlame, fileCommandDiffWithParent]}
-            menus={[
-              fileCommandBlameParent,
-              fileCommandDiffWithLocal,
-              fileCommandYankPath
-            ]}
-            onRowdblclick={arg => showExternalDiff(arg.item)}
-            onRowcontextmenu={arg => showContextMenu(arg.item, arg.event)}
+            menus={[fileCommandBlameParent, fileCommandDiffWithLocal, fileCommandYankPath]}
+            onRowdblclick={(arg) => showExternalDiff(arg.item)}
+            onRowcontextmenu={(arg) => showContextMenu(arg.item, arg.event)}
           />
         </VSplitterPanel>
       );

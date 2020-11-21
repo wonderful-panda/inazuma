@@ -2,9 +2,9 @@ import { getExtension } from "core/utils";
 import "./setup";
 
 const langMap = new Map<string, string>();
-monaco.languages.getLanguages().forEach(lang => {
+monaco.languages.getLanguages().forEach((lang) => {
   if (lang.extensions) {
-    lang.extensions.forEach(ext => langMap!.set(ext.toLowerCase(), lang.id));
+    lang.extensions.forEach((ext) => langMap!.set(ext.toLowerCase(), lang.id));
   }
 });
 
@@ -15,9 +15,7 @@ monaco.languages.getLanguages().forEach(lang => {
  *  [1, 2, 4, 5, 6, 8] => [(1 to 2), (4 to 6), (8 to 8)]
  *
  */
-export function lineNumbersToRanges(
-  lineNumbers: ReadonlyArray<number>
-): monaco.IRange[] {
+export function lineNumbersToRanges(lineNumbers: ReadonlyArray<number>): monaco.IRange[] {
   const ret: monaco.IRange[] = [];
   let startLineNumber = -1;
   let endLineNumber = -1;

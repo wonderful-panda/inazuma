@@ -3,11 +3,7 @@ interface DragData {
 }
 
 export const dragdrop = {
-  setData<K extends keyof DragData>(
-    event: DragEvent,
-    type: K,
-    data: DragData[K]
-  ): void {
+  setData<K extends keyof DragData>(event: DragEvent, type: K, data: DragData[K]): void {
     if (!event.dataTransfer) {
       return;
     }
@@ -19,10 +15,7 @@ export const dragdrop = {
     }
     return event.dataTransfer.types.indexOf(type) >= 0;
   },
-  getData<K extends keyof DragData>(
-    event: DragEvent,
-    type: K
-  ): DragData[K] | undefined {
+  getData<K extends keyof DragData>(event: DragEvent, type: K): DragData[K] | undefined {
     if (!event.dataTransfer) {
       return undefined;
     }

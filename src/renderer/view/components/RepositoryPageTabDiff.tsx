@@ -1,13 +1,7 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import { useRootModule } from "../store";
 import VBackdropSpinner from "./base/VBackdropSpinner";
-import {
-  onMounted,
-  computed,
-  ref,
-  watch,
-  onBeforeUnmount
-} from "@vue/composition-api";
+import { onMounted, computed, ref, watch, onBeforeUnmount } from "@vue/composition-api";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 import { required, optional } from "./base/prop";
 import * as emotion from "@emotion/css";
@@ -42,13 +36,8 @@ export function makeRangeFromLineChange(
   target: "original" | "modified"
 ): monaco.Range {
   const start =
-    target === "modified"
-      ? change.modifiedStartLineNumber
-      : change.originalStartLineNumber;
-  const end =
-    target === "modified"
-      ? change.modifiedEndLineNumber
-      : change.originalEndLineNumber;
+    target === "modified" ? change.modifiedStartLineNumber : change.originalStartLineNumber;
+  const end = target === "modified" ? change.modifiedEndLineNumber : change.originalEndLineNumber;
 
   if (end === 0) {
     // no lines contained
@@ -67,12 +56,8 @@ export function getChangeAtLine(
     return null;
   }
   for (const c of changes) {
-    const start =
-      target === "modified"
-        ? c.modifiedStartLineNumber
-        : c.originalStartLineNumber;
-    const end =
-      target === "modified" ? c.modifiedEndLineNumber : c.originalEndLineNumber;
+    const start = target === "modified" ? c.modifiedStartLineNumber : c.originalStartLineNumber;
+    const end = target === "modified" ? c.modifiedEndLineNumber : c.originalEndLineNumber;
     if (end === 0) {
       if (lineNumber === start + 1) {
         return c;
@@ -118,10 +103,7 @@ const DiffEditor = vca.component({
     }));
     const language = computed(() => getLangIdFromPath(p.right.path));
 
-    const copyDifference = (
-      current: "original" | "modified",
-      from: "original" | "modified"
-    ) => {
+    const copyDifference = (current: "original" | "modified", from: "original" | "modified") => {
       if (!editors) {
         return;
       }
@@ -136,9 +118,7 @@ const DiffEditor = vca.component({
       const range = makeRangeFromLineChange(change, from);
       const text = editors[from].getModel()?.getValueInRange(range) || "";
       console.log(text);
-      editors[to].executeEdits("", [
-        { range: makeRangeFromLineChange(change, to), text }
-      ]);
+      editors[to].executeEdits("", [{ range: makeRangeFromLineChange(change, to), text }]);
       editors[to].pushUndoStop();
     };
 
@@ -202,7 +182,7 @@ const DiffEditor = vca.component({
 
     watch(
       () => p.left.content,
-      newValue => {
+      (newValue) => {
         if (editors) {
           editors.original.setValue(newValue);
         }
@@ -210,7 +190,7 @@ const DiffEditor = vca.component({
     );
     watch(
       () => p.right.content,
-      newValue => {
+      (newValue) => {
         if (editors) {
           editors.modified.setValue(newValue);
         }
@@ -242,11 +222,7 @@ export default vca.component({
       } else {
         return (
           <div class={style.root}>
-            <DiffEditor
-              class={style.editor}
-              left={p.content.left}
-              right={p.content.right}
-            />
+            <DiffEditor class={style.editor} left={p.content.left} right={p.content.right} />
           </div>
         );
       }

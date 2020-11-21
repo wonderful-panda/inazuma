@@ -99,11 +99,7 @@ export default vca.component({
             onClick={p.close}
             onKeydown={__capture(m.tab(onTabKeyDown))}
           >
-            <div
-              class={ModalContainerClass}
-              onClick={m.stop}
-              onKeydown={m.esc(p.close)}
-            >
+            <div class={ModalContainerClass} onClick={m.stop} onKeydown={m.esc(p.close)}>
               <div staticClass={style.header}>
                 <div class={[style.title, md.TITLE]}>{p.title}</div>
                 <VCloseButton action={p.close} />

@@ -50,7 +50,7 @@ export function exec(command: string, params: ExecParams): Promise<ExecResult> {
   if (params.onEachLine) {
     const cb = params.onEachLine;
     const reader = readline.createInterface({ input: p.stdout });
-    reader.on("line", data => {
+    reader.on("line", (data) => {
       if (cb(data) === false) {
         p.kill();
       }

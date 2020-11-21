@@ -68,24 +68,14 @@ export default vca.component({
 
     return () => (
       <div
-        class={style.splitter(
-          p.direction === "horizontal",
-          p.thickness,
-          dragging.value
-        )}
+        class={style.splitter(p.direction === "horizontal", p.thickness, dragging.value)}
         onMousedown={onSplitterMouseDown}
       >
         {p.allowDirectionChange ? (
-          <VIconButton
-            raised
-            tooltip="Switch splitter orientation"
-            action={toggleDirection}
-          >
+          <VIconButton raised tooltip="Switch splitter orientation" action={toggleDirection}>
             swap_horiz
           </VIconButton>
-        ) : (
-          undefined
-        )}
+        ) : undefined}
       </div>
     );
   }

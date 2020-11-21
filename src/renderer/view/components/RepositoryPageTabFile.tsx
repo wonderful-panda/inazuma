@@ -31,14 +31,7 @@ export default vca.component({
       if (!props.blame) {
         return <VBackdropSpinner />;
       } else {
-        return (
-          <BlamePanel
-            class={style}
-            path={props.path}
-            sha={props.sha}
-            blame={props.blame}
-          />
-        );
+        return <BlamePanel class={style} path={props.path} sha={props.sha} blame={props.blame} />;
       }
     };
   }

@@ -15,10 +15,7 @@ type ClassedComponent = {
 
 interface ClassedComponentFactory<C extends VueConstructor | string> {
   (...staticClass: string[]): AsComponent<C>;
-  <Props>(dynamicClass: (props: Props) => string): ExtendProps<
-    AsComponent<C>,
-    Props
-  >;
+  <Props>(dynamicClass: (props: Props) => string): ExtendProps<AsComponent<C>, Props>;
 }
 
 type WithClass = {
@@ -33,7 +30,7 @@ function createClassedComponent(
 ): ClassedComponent {
   const staticClasses: string[] = [];
   const dynamicClasses: Array<(props: any) => string> = [];
-  classes.forEach(c => {
+  classes.forEach((c) => {
     if (c instanceof Function) {
       dynamicClasses.push(c);
     } else {
@@ -53,7 +50,7 @@ function createClassedComponent(
         classes.push(staticClass);
       }
       if (dynamicClasses) {
-        classes.push(...dynamicClasses.map(c => c(props)));
+        classes.push(...dynamicClasses.map((c) => c(props)));
       }
       const s = slots();
       const children: VNode[] = [];
@@ -64,11 +61,7 @@ function createClassedComponent(
           children.push(h("template", { slot }, s[slot]));
         }
       }
-      return h(
-        component,
-        { ...data, staticClass: classes.join(" ") },
-        children
-      );
+      return h(component, { ...data, staticClass: classes.join(" ") }, children);
     },
     __extend__(newClasses) {
       return createClassedComponent(component, [...classes, ...newClasses]);
@@ -88,9 +81,7 @@ function createOrExtend(component: any, newClass: ClassBinding[]) {
   }
 }
 
-function withclass_<C extends VueConstructor | string>(
-  component: C
-): ClassedComponentFactory<C> {
+function withclass_<C extends VueConstructor | string>(component: C): ClassedComponentFactory<C> {
   return (...newClass: ClassBinding[]) => createOrExtend(component, newClass);
 }
 

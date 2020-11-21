@@ -28,25 +28,17 @@ const RepositoryListItem = _fc<{
   remove?: () => void;
 }>(({ props, data: { scopedSlots, attrs, ...rest } }) => {
   return (
-    <MdListItem
-      onClick={props.action}
-      {...rest}
-      attrs={omit(attrs, Object.keys(props))}
-    >
+    <MdListItem onClick={props.action} {...rest} attrs={omit(attrs, Object.keys(props))}>
       <MdIcon>{props.icon}</MdIcon>
       <MdListItemText>
         <span class={[md.SUBHEADING, style.repoName]}>{props.text}</span>
-        <span class={[md.CAPTION, style.repoDescription]}>
-          {props.description}
-        </span>
+        <span class={[md.CAPTION, style.repoDescription]}>{props.description}</span>
       </MdListItemText>
       {props.remove ? (
         <VIconButton staticClass="md-list-action" mini action={props.remove}>
           close
         </VIconButton>
-      ) : (
-        undefined
-      )}
+      ) : undefined}
     </MdListItem>
   );
 });
@@ -91,16 +83,8 @@ export default vca.component({
       return (
         <BaseLayout title="inazuma">
           <template slot="drawer-navigations">
-            <DrawerNavigation
-              icon="settings"
-              text="Preferences"
-              action={actions.showPreference}
-            />
-            <DrawerNavigation
-              icon="info_outline"
-              text="About"
-              action={actions.showVersionDialog}
-            />
+            <DrawerNavigation icon="settings" text="Preferences" action={actions.showPreference} />
+            <DrawerNavigation icon="info_outline" text="About" action={actions.showVersionDialog} />
           </template>
           {loading.value && <VBackdropSpinner />}
           <div class={style.content}>
@@ -115,11 +99,9 @@ export default vca.component({
                   action={selectRepository}
                 />
                 <MdDivider class={style.divider} />
-                <MdSubheader class={[md.PRIMARY, md.CAPTION]}>
-                  Recent opened
-                </MdSubheader>
+                <MdSubheader class={[md.PRIMARY, md.CAPTION]}>Recent opened</MdSubheader>
                 <transition-group name="recents">
-                  {getters.visibleRecentList.map(repoPath => (
+                  {getters.visibleRecentList.map((repoPath) => (
                     <RepositoryListItem
                       key={repoPath}
                       icon="history"

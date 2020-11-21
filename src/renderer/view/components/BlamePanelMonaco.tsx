@@ -4,13 +4,7 @@ import { shortHash } from "../filters";
 import Vue from "vue";
 import { __sync } from "../utils/modifiers";
 import { css } from "@emotion/css";
-import {
-  ref,
-  computed,
-  watch,
-  onMounted,
-  onBeforeUnmount
-} from "@vue/composition-api";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "@vue/composition-api";
 import { formatDateL } from "core/date";
 import { required } from "./base/prop";
 import {
@@ -63,7 +57,7 @@ const style = {
 
 function createLineNumberFormatter(blame: Blame) {
   // const lineNoWidth = blame.commitIds.length.toString().length;
-  const dateMap = new Map(blame.commits.map(c => [c.id, formatDateL(c.date)]));
+  const dateMap = new Map(blame.commits.map((c) => [c.id, formatDateL(c.date)]));
   return (lineno: number) => {
     const id = blame.commitIds[lineno - 1];
     if (!id) {
@@ -122,7 +116,7 @@ export const BlamePanelMonaco = vca.component({
       }
       const lineNumbers = props.blame.commitIds
         .map((id, index, arr) => (id !== arr[index - 1] ? index + 1 : -1))
-        .filter(v => v >= 0);
+        .filter((v) => v >= 0);
       lineNumbers.push(props.blame.commitIds.length + 1);
       blameDecoration.update(editor, lineNumbers);
     };
@@ -137,10 +131,7 @@ export const BlamePanelMonaco = vca.component({
       }
     });
     const updateSelectedCommitDecoration = () => {
-      selectedCommitDecoration.update(
-        editor,
-        lineNumberMap.value[props.selectedCommitId] || []
-      );
+      selectedCommitDecoration.update(editor, lineNumberMap.value[props.selectedCommitId] || []);
     };
 
     const updateContent = (blame: Blame) => {
@@ -203,7 +194,7 @@ export const BlamePanelMonaco = vca.component({
       bindOptions(editor, options);
       editor.onMouseDown(onMouseDown);
       editor.onContextMenu(onContextMenu);
-      onHoveredLineNumberChanged(editor, lineNumber => {
+      onHoveredLineNumberChanged(editor, (lineNumber) => {
         const commitId = props.blame.commitIds[lineNumber - 1] || "";
         vca.emitOn(ctx, "onHoveredCommitIdChanged", { commitId });
       });

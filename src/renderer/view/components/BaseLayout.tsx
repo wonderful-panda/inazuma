@@ -1,8 +1,4 @@
-import {
-  useErrorReporterModule,
-  useDialogModule,
-  useRootModule
-} from "../store";
+import { useErrorReporterModule, useDialogModule, useRootModule } from "../store";
 import * as vca from "vue-tsx-support/lib/vca";
 import VDialogBase from "./base/VDialogBase";
 import VIconButton from "./base/VIconButton";
@@ -53,9 +49,7 @@ export default vca.component({
                 <span style="flex: 1">{p.title}</span>
                 {evaluateSlot(ctx, "titlebar-buttons")}
               </div>
-              <div staticClass={style.content}>
-                {evaluateSlot(ctx, "default")}
-              </div>
+              <div staticClass={style.content}>{evaluateSlot(ctx, "default")}</div>
             </md-app-content>
           </md-app>
 

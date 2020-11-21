@@ -13,7 +13,7 @@ const TheRepositoryPage = asAsyncComponent(async () =>
   import(
     /* webpackChunkName: "therepositorypage", webpackPrefetch: true */
     "./components/TheRepositoryPage"
-  ).then(mod => mod.default)
+  ).then((mod) => mod.default)
 );
 
 const initialRepo = sessionStorage.getItem("repoPath");
@@ -27,10 +27,7 @@ const initialRepo = sessionStorage.getItem("repoPath");
 
   try {
     const recentList = JSON.parse(localStorage.getItem("recentList") || "[]");
-    if (
-      recentList instanceof Array &&
-      recentList.every(v => typeof v === "string")
-    ) {
+    if (recentList instanceof Array && recentList.every((v) => typeof v === "string")) {
       root.commit("resetRecentList", { value: recentList });
     } else {
       console.warn("Failed to load recentList from localStorage");
@@ -48,23 +45,20 @@ const initialRepo = sessionStorage.getItem("repoPath");
 })();
 
 store.watch(
-  s => s.config.fontFamily,
-  value => {
+  (s) => s.config.fontFamily,
+  (value) => {
     document.body.style.setProperty(
       "--default-fontfamily",
       value.standard || "Meiryo, Helvetica, Yu Gothic"
     );
-    document.body.style.setProperty(
-      "--monospace-fontfamily",
-      value.monospace || "monospace"
-    );
+    document.body.style.setProperty("--monospace-fontfamily", value.monospace || "monospace");
   },
   { immediate: true }
 );
 
 store.watch(
-  s => s.repoPath,
-  value => {
+  (s) => s.repoPath,
+  (value) => {
     document.title = value ? `Inazuma (${value})` : "Inazuma";
     sessionStorage.setItem("repoPath", store.state.repoPath);
   },
@@ -72,8 +66,8 @@ store.watch(
 );
 
 store.watch(
-  s => s.recentList,
-  value => {
+  (s) => s.recentList,
+  (value) => {
     localStorage.setItem("recentList", JSON.stringify(value));
   }
 );
@@ -84,7 +78,7 @@ const App = vca.component({
     const rootModule = useRootModule();
     provideStorage({ storage: localStorage, namespace: "" });
     provideErrorHandler({
-      handleError: e => {
+      handleError: (e) => {
         console.log(e);
         rootModule.actions.showError(e);
       }
@@ -95,9 +89,7 @@ const App = vca.component({
       }
     });
     return () => {
-      return h(
-        rootModule.state.repoPath === "" ? TheWelcomePage : TheRepositoryPage
-      );
+      return h(rootModule.state.repoPath === "" ? TheWelcomePage : TheRepositoryPage);
     };
   }
 });

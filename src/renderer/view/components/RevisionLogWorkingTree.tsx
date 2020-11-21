@@ -40,28 +40,18 @@ export default vca.component({
       storage,
       "RevisionLogWorkingTree"
     );
-    const stagedFiles = computed(() => p.commit.files.filter(f => f.inIndex));
-    const unstagedFiles = computed(() =>
-      p.commit.files.filter(f => f.inWorkingTree)
-    );
+    const stagedFiles = computed(() => p.commit.files.filter((f) => f.inIndex));
+    const unstagedFiles = computed(() => p.commit.files.filter((f) => f.inWorkingTree));
     const splitterDirection = computed<SplitterDirection>(() =>
       p.orientation === "portrait" ? "vertical" : "horizontal"
     );
-    const showExternalDiffCommittedAndStaged = ({
-      item
-    }: {
-      item: FileEntry;
-    }) => {
+    const showExternalDiffCommittedAndStaged = ({ item }: { item: FileEntry }) => {
       if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
         return;
       }
       executeFileCommand(diffStaged, p.commit, item, item.path);
     };
-    const showExternalDiffStagedAndUnstaged = ({
-      item
-    }: {
-      item: FileEntry;
-    }) => {
+    const showExternalDiffStagedAndUnstaged = ({ item }: { item: FileEntry }) => {
       if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
         return;
       }

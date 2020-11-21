@@ -36,7 +36,7 @@ class ColorPallete {
   constructor(public colors: string[]) {
     this._queue = [...colors];
     this._used = {};
-    colors.forEach(c => {
+    colors.forEach((c) => {
       this._used[c] = 0;
     });
   }
@@ -74,7 +74,7 @@ export class Grapher {
     const secondaryParents = dagNode.parentIds.slice(1);
     const prevEdges = [] as InterEdge[];
     if (this._prev) {
-      this._prev.interEdges.forEach(e => {
+      this._prev.interEdges.forEach((e) => {
         prevEdges[e.index] = e;
       });
       this._prev.nodeEdges.forEach(({ index, id, color, type }) => {
@@ -87,7 +87,7 @@ export class Grapher {
     const interEdges: InterEdge[] = [];
     const nodeEdges: NodeEdge[] = [];
     const occupied: boolean[] = [];
-    prevEdges.forEach(e => {
+    prevEdges.forEach((e) => {
       const { id, childId, index, color } = e;
       if (id === dagNode.id) {
         nodeEdges.push({ type: "C", index, id: childId, color });

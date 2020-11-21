@@ -37,10 +37,7 @@ export default vca.component({
       "TabLog"
     );
 
-    const onRowdragover = ({
-      item,
-      event
-    }: RowEventArgs<LogItem, DragEvent>) => {
+    const onRowdragover = ({ item, event }: RowEventArgs<LogItem, DragEvent>) => {
       if (item.commit.id === "--") {
         return;
       }
@@ -66,14 +63,10 @@ export default vca.component({
     return () => {
       const state = rootCtx.state;
       const detailOrientation = computed<Orientation>(() =>
-        persistData.splitter.direction === "horizontal"
-          ? "portrait"
-          : "landscape"
+        persistData.splitter.direction === "horizontal" ? "portrait" : "landscape"
       );
       const SecondPane =
-        rootCtx.state.selectedCommit.id === "--"
-          ? RevisionLogWorkingTree
-          : RevisionLogCommitDetail;
+        rootCtx.state.selectedCommit.id === "--" ? RevisionLogWorkingTree : RevisionLogCommitDetail;
       return (
         <VSplitterPanel
           class={rootStyle}
@@ -88,9 +81,7 @@ export default vca.component({
             rowHeight={state.rowHeight}
             selectedIndex={state.selectedIndex}
             widths={__sync(persistData.columnWidths)}
-            onRowclick={e =>
-              rootCtx.actions.setSelectedIndex({ index: e.index })
-            }
+            onRowclick={(e) => rootCtx.actions.setSelectedIndex({ index: e.index })}
             onRowdragover={onRowdragover}
             onRowdrop={onRowdrop}
             onRowcontextmenu={showContextMenu}

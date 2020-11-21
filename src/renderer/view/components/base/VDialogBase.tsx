@@ -20,7 +20,7 @@ export default vca.component({
         return <div />;
       }
       const { accept, cancel } = p;
-      const buttons = opt.buttons.map(b => (
+      const buttons = opt.buttons.map((b) => (
         <VButton
           key={b.name}
           mini

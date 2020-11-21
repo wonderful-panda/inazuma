@@ -9,8 +9,7 @@ export default vca.component({
   name: "SideBarBranches",
   setup() {
     const rootModule = useRootModule();
-    const selectCommitByRef = (r: Ref) =>
-      rootModule.actions.selectCommit({ commitId: r.id });
+    const selectCommitByRef = (r: Ref) => rootModule.actions.selectCommit({ commitId: r.id });
     return () => {
       const {
         actions,
@@ -31,16 +30,11 @@ export default vca.component({
               branches={refs.tags}
               onClick={selectCommitByRef}
             />
-            {Object.keys(refs.remotes).map(name => {
+            {Object.keys(refs.remotes).map((name) => {
               const r = refs.remotes[name];
               const key = "remote/" + name;
               return (
-                <SideBarBranchList
-                  key={key}
-                  title={key}
-                  branches={r}
-                  onClick={selectCommitByRef}
-                />
+                <SideBarBranchList key={key} title={key} branches={r} onClick={selectCommitByRef} />
               );
             })}
           </div>

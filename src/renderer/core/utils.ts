@@ -29,10 +29,7 @@ export function normalizePathSeparator(path: string): string {
   return path.replace(/\\/g, "/").replace(/\/$/, "");
 }
 
-export function evaluateSlot<
-  CTX extends SetupContext,
-  K extends keyof CTX["slots"]
->(
+export function evaluateSlot<CTX extends SetupContext, K extends keyof CTX["slots"]>(
   ctx: CTX,
   slotName: K,
   ...args: Parameters<CTX["slots"][K]>
@@ -51,10 +48,7 @@ export function toNumber(val: any): string | number {
   return isNaN(n) ? val : n;
 }
 
-export function omit<B, K extends string[]>(
-  obj: B,
-  keys: K
-): Omit<B, K & keyof B> {
+export function omit<B, K extends string[]>(obj: B, keys: K): Omit<B, K & keyof B> {
   const ret = { ...obj } as any;
   for (const key of keys) {
     if (key in ret) {

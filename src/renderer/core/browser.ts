@@ -5,7 +5,7 @@ const { Menu } = remote;
 export const browserCommand = new Proxy(
   {},
   {
-    get: function(_target, name: string) {
+    get(_target, name: string) {
       return (params: any) => ipcPromise.send(name, params);
     }
   }

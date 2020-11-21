@@ -96,7 +96,7 @@ export default vca.component({
         </div>
         <VSplitter
           v-show={p.showFirst && p.showSecond}
-          direction={__sync(p.direction, v => update(ctx, "direction", v))}
+          direction={__sync(p.direction, (v) => update(ctx, "direction", v))}
           thickness={p.splitterWidth}
           onDragmove={onSplitterMove}
           allowDirectionChange={p.allowDirectionChange}

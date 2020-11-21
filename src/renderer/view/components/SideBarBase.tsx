@@ -19,9 +19,7 @@ export default vca.component({
               <span staticClass={style.title}>{p.title}</span>
               <VCloseButton action={p.hide} />
             </div>
-            <div staticClass={style.content}>
-              {evaluateSlot(ctx, "default")}
-            </div>
+            <div staticClass={style.content}>{evaluateSlot(ctx, "default")}</div>
           </div>
         </div>
       </transition>

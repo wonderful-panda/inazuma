@@ -20,13 +20,9 @@ export const broadcast = new Proxy(
   }
 ) as BroadcastAction;
 
-export function setupBrowserCommands(
-  _repoSessions: RepositorySessions
-): BrowserCommand {
+export function setupBrowserCommands(_repoSessions: RepositorySessions): BrowserCommand {
   const bc: BrowserCommand = {
-    async openRepository(
-      repoPath: string
-    ): Promise<{ commits: Commit[]; refs: Refs }> {
+    async openRepository(repoPath: string): Promise<{ commits: Commit[]; refs: Refs }> {
       const ret = await fetchHistory(repoPath, 1000);
       return ret;
     },
@@ -40,7 +36,7 @@ export function setupBrowserCommands(
     },
     async getFileLog({ repoPath, relPath, sha }): Promise<FileCommit[]> {
       const ret = [] as FileCommit[];
-      await git.filelog(repoPath, 100, [sha], relPath, c => ret.push(c));
+      await git.filelog(repoPath, 100, [sha], relPath, (c) => ret.push(c));
       return ret;
     },
     getTree({ repoPath, sha }): Promise<LsTreeEntry[]> {
@@ -72,10 +68,10 @@ export function setupBrowserCommands(
     }
   };
   // register each methods as Electron ipc handlers
-  Object.keys(bc).forEach(key => {
+  Object.keys(bc).forEach((key) => {
     const handler = (bc as any)[key] as (...args: any[]) => Promise<any>;
     ipcPromise.on(key, (arg: any) => {
-      return handler(arg).catch(e => {
+      return handler(arg).catch((e) => {
         throw _.toPlainObject(e);
       });
     });
@@ -83,10 +79,7 @@ export function setupBrowserCommands(
   return bc;
 }
 
-function getWtreePseudoCommit(
-  headId: string | undefined,
-  mergeHeads: string[]
-): Commit {
+function getWtreePseudoCommit(headId: string | undefined, mergeHeads: string[]): Commit {
   return {
     id: PSEUDO_COMMIT_ID_WTREE,
     parentIds: headId ? [headId, ...mergeHeads] : mergeHeads,
@@ -104,16 +97,13 @@ async function fetchHistory(
   const headId = refs.head;
 
   const commits = headId ? [getWtreePseudoCommit(headId, refs.mergeHeads)] : [];
-  await git.log(repoPath, num, Object.keys(refs.refsById), commit => {
+  await git.log(repoPath, num, Object.keys(refs.refsById), (commit) => {
     commits.push(commit);
   });
   return { commits, refs };
 }
 
-async function getCommitDetail(
-  repoPath: string,
-  sha: string
-): Promise<CommitDetail> {
+async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {
   if (sha === PSEUDO_COMMIT_ID_WTREE) {
     const refs = await git.getRefs(repoPath);
     const files = await git.statusWithStat(repoPath);
@@ -150,10 +140,7 @@ async function showExternalDiff(
   }).unref();
 }
 
-async function prepareDiffFile(
-  rs: RepositorySession,
-  file: FileSpec
-): Promise<string> {
+async function prepareDiffFile(rs: RepositorySession, file: FileSpec): Promise<string> {
   if (file.revspec === "UNSTAGED") {
     // use file in the repository directly
     return path.join(rs.repoPath, file.path);

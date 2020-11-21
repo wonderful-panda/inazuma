@@ -67,8 +67,7 @@ export default vca.component({
     const onRowclick = (arg: RowClickEventArgs<FileEntry>) => {
       selectedFile.value = arg.item.path;
     };
-    const sliceItems = (begin: number, end: number) =>
-      p.files.slice(begin, end);
+    const sliceItems = (begin: number, end: number) => p.files.slice(begin, end);
     return () => {
       return (
         <md-card staticClass={rootStyle}>

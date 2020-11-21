@@ -1,8 +1,6 @@
 import commandLineArgs, { OptionDefinition } from "command-line-args";
 
-const optionDefinitions = [
-  { name: "enable-devtools", type: Boolean }
-] as OptionDefinition[];
+const optionDefinitions = [{ name: "enable-devtools", type: Boolean }] as OptionDefinition[];
 
 export type CommandLineArgs = {
   enableDevtools?: boolean;

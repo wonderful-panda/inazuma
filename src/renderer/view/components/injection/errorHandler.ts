@@ -9,9 +9,7 @@ const nope: ErrorHandler = {
   handleError: () => {}
 };
 
-const key: InjectionKey<ErrorHandler> = Symbol(
-  "inazuma.vue.injection.ErrorHandler"
-);
+const key: InjectionKey<ErrorHandler> = Symbol("inazuma.vue.injection.ErrorHandler");
 
 export function injectErrorHandler(): ErrorHandler {
   return inject(key) || nope;

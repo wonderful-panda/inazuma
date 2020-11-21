@@ -3,9 +3,7 @@ import Electron from "electron";
 class WindowManager {
   private _wins: Dict<Electron.BrowserWindow> = {};
 
-  create(
-    opts?: Electron.BrowserWindowConstructorOptions
-  ): Electron.BrowserWindow {
+  create(opts?: Electron.BrowserWindowConstructorOptions): Electron.BrowserWindow {
     const win = new Electron.BrowserWindow(opts);
     const id = win.id;
     this._wins[id] = win;
@@ -16,7 +14,7 @@ class WindowManager {
   }
 
   broadcast(type: string, payload: any) {
-    Object.keys(this._wins).forEach(id => {
+    Object.keys(this._wins).forEach((id) => {
       this._wins[id].webContents.send("action", type, payload);
     });
   }

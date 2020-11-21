@@ -34,11 +34,8 @@ export function useDecoration(
         return;
       }
       const ranges = lineNumbersToRanges(lineNumbers);
-      const newDecorations = ranges.map(range => ({ range, options }));
-      currentDecolationIds = editor.deltaDecorations(
-        currentDecolationIds,
-        newDecorations
-      );
+      const newDecorations = ranges.map((range) => ({ range, options }));
+      currentDecolationIds = editor.deltaDecorations(currentDecolationIds, newDecorations);
     }
   };
 }
@@ -82,7 +79,7 @@ export function bindOptions(
 ): void;
 
 export function bindOptions(editor: any, options: any, immediate?: boolean) {
-  watch(options, newValue => {
+  watch(options, (newValue) => {
     editor.updateOptions(newValue);
   });
   if (immediate) {

@@ -3,7 +3,7 @@ import { css } from "@emotion/css";
 
 const Head = _fc(() => <span class={style.head}>HEAD</span>);
 
-const Branch = _fc<{ branch: BranchRef }>(ctx => {
+const Branch = _fc<{ branch: BranchRef }>((ctx) => {
   const branch = ctx.props.branch;
   const onDragStart = (e: DragEvent) => {
     if (!e.dataTransfer) {
@@ -16,19 +16,13 @@ const Branch = _fc<{ branch: BranchRef }>(ctx => {
     });
   };
   return (
-    <span
-      class={style.branch(branch.current)}
-      draggable
-      onDragstart={onDragStart}
-    >
+    <span class={style.branch(branch.current)} draggable onDragstart={onDragStart}>
       {branch.name}
     </span>
   );
 });
 
-const Tag = _fc<{ tag: TagRef }>(({ props: { tag } }) => (
-  <span class={style.tag}>{tag.name}</span>
-));
+const Tag = _fc<{ tag: TagRef }>(({ props: { tag } }) => <span class={style.tag}>{tag.name}</span>);
 
 const Remote = _fc<{ remote: RemoteRef }>(({ props: { remote } }) => (
   <span class={style.remote}>{remote.remote + "/" + remote.name}</span>

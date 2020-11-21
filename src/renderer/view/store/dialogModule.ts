@@ -46,13 +46,9 @@ class DialogMutations extends Mutations<DialogState> {
   }
 }
 
-export class DialogActions extends Actions<
-  DialogState,
-  Getters<DialogState>,
-  DialogMutations
-> {
+export class DialogActions extends Actions<DialogState, Getters<DialogState>, DialogMutations> {
   show({ options }: { options: DialogOptions }): Promise<DialogResult> {
-    return new Promise<DialogResult>(resolve => {
+    return new Promise<DialogResult>((resolve) => {
       this.mutations.init({ resolve, options });
     });
   }

@@ -1,11 +1,5 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import {
-  vtableOf,
-  VtableColumn,
-  Vtable,
-  VtableEventsOn,
-  VtableSlotCellProps
-} from "vue-vtable";
+import { vtableOf, VtableColumn, Vtable, VtableEventsOn, VtableSlotCellProps } from "vue-vtable";
 import LogTableCellGraph from "./LogTableCellGraph";
 import LogTableCellSummary from "./LogTableCellSummary";
 import { LogItem } from "../mainTypes";
@@ -59,7 +53,7 @@ export default vca.component({
     const vtableRef = ref<Vtable<LogItem> | null>(null);
     watch(
       () => p.selectedIndex,
-      newValue => {
+      (newValue) => {
         if (vtableRef.value) {
           vtableRef.value.ensureVisible(newValue);
         }
@@ -70,9 +64,7 @@ export default vca.component({
       const { columnId, item } = payload;
       switch (columnId) {
         case "graph":
-          return (
-            <LogTableCellGraph graph={item.graph} gridWidth={12} height={24} />
-          );
+          return <LogTableCellGraph graph={item.graph} gridWidth={12} height={24} />;
         case "id":
           return <GitHash hash={item.commit.id} />;
         case "author":

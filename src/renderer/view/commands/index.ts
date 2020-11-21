@@ -11,10 +11,7 @@ import { fileCommandYankPath } from "./fileCommandYankPath";
 import { fileCommandBlame, fileCommandBlameParent } from "./fileCommandBlame";
 const { Menu } = remote;
 
-const commitCommands: CommitCommand[] = [
-  commitCommandYankHash,
-  commitCommandBrowseTree
-];
+const commitCommands: CommitCommand[] = [commitCommandYankHash, commitCommandBrowseTree];
 
 const fileCommands: FileCommand[] = [
   fileCommandYankPath,
@@ -50,14 +47,12 @@ function getCommitMenuTemplate(commit: Commit): MenuItemConstructorOptions[] {
   if (commit.id === "--") {
     return [];
   }
-  const commands = commitCommands.filter(
-    c => c.isVisible === undefined || c.isVisible(commit)
-  );
+  const commands = commitCommands.filter((c) => c.isVisible === undefined || c.isVisible(commit));
   if (commands.length === 0) {
     return [];
   }
   return commands.map(
-    c =>
+    (c) =>
       ({
         id: c.id,
         label: c.label,
@@ -78,7 +73,7 @@ function getFileMenuTemplate(
     return [];
   }
   return fileCommands.map(
-    c =>
+    (c) =>
       ({
         id: c.id,
         label: c.label,

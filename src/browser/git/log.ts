@@ -45,11 +45,11 @@ const _logKeywords: LogKeyword[] = [
   }
 ];
 
-const _logFormat = _logKeywords.map(k => `${k.name} ${k.format}`).join("%n");
+const _logFormat = _logKeywords.map((k) => `${k.name} ${k.format}`).join("%n");
 const _procMap: {
   [name: string]: (commit: Commit, value: string) => void;
 } = {};
-_logKeywords.forEach(k => {
+_logKeywords.forEach((k) => {
   _procMap[k.name] = k.proc;
 });
 
@@ -80,7 +80,7 @@ export async function log(
   await exec("log", {
     repository,
     args,
-    onEachLine: line => {
+    onEachLine: (line) => {
       const p = line.indexOf(" ");
       if (p <= 0) {
         console.log("log/unexpected output:", line);
@@ -143,7 +143,7 @@ export async function filelog(
   await exec("log", {
     repository,
     args,
-    onEachLine: line => {
+    onEachLine: (line) => {
       if (line.length === 0) {
         return;
       }
@@ -186,10 +186,7 @@ export async function filelog(
 
 const _commitDetailFormat = _logFormat + "%nbody {{{%n%w(0,1,1)%b%n%w(0)}}}%n";
 
-export async function getCommitDetail(
-  repository: string,
-  commitId: string
-): Promise<CommitDetail> {
+export async function getCommitDetail(repository: string, commitId: string): Promise<CommitDetail> {
   /* Output format
 
      |id <hash>

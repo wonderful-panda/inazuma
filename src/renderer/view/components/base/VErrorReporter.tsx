@@ -17,7 +17,7 @@ export default vca.component({
   setup(p) {
     const hasError = computed({
       get: () => !!p.error,
-      set: v => v || p.hide()
+      set: (v) => v || p.hide()
     });
     return () => {
       return (

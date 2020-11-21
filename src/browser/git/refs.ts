@@ -88,7 +88,7 @@ export async function getRefs(repository: string): Promise<Refs> {
       "--format",
       "%(objectname)%00%(HEAD)%00%(*objectname)%00%(objecttype)%00%(refname)"
     ],
-    onEachLine: line => {
+    onEachLine: (line) => {
       const ref = parseForEachRefLine(line);
       if (ref) {
         addRef(refs, ref);
@@ -119,12 +119,10 @@ export async function getRefs(repository: string): Promise<Refs> {
       .toString()
       .replace(/\n$/, "")
       .split("\n")
-      .forEach((id, index) =>
-        addRef(refs, { fullname: `MERGE_HEAD/${index}`, type, id })
-      );
+      .forEach((id, index) => addRef(refs, { fullname: `MERGE_HEAD/${index}`, type, id }));
   }
   // sort each refsById entries
-  Object.keys(refs.refsById).forEach(key => {
+  Object.keys(refs.refsById).forEach((key) => {
     refs.refsById[key].sort((a, b) => SortOrder[a.type] - SortOrder[b.type]);
   });
   return refs;

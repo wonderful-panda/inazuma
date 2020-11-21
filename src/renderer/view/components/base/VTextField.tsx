@@ -22,14 +22,12 @@ export default vca.component({
   },
   setup(p, ctx) {
     const update = vca.updateEmitter<typeof p>();
-    const labelNode = (name: string | undefined) =>
-      name ? <label>{name}</label> : undefined;
+    const labelNode = (name: string | undefined) => (name ? <label>{name}</label> : undefined);
 
     const helperTextNode = (name: string | undefined) =>
       name ? <span staticClass="md-helper-text">{name}</span> : undefined;
 
-    const iconNode = (name: string | undefined) =>
-      name ? <MdIcon>{name}</MdIcon> : undefined;
+    const iconNode = (name: string | undefined) => (name ? <MdIcon>{name}</MdIcon> : undefined);
 
     const tooltipNode = (text: string | undefined) =>
       text ? <MdTooltip>{text}</MdTooltip> : undefined;

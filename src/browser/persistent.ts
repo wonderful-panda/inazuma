@@ -27,7 +27,7 @@ function load(file: string, schema: any) {
 }
 
 function replaceObjectContent(dest: any, src: any) {
-  Object.getOwnPropertyNames(dest).forEach(name => {
+  Object.getOwnPropertyNames(dest).forEach((name) => {
     delete dest[name];
   });
   Object.assign(dest, src);
@@ -78,10 +78,7 @@ const defaultConfigData: Config = {
 };
 
 export const config = {
-  data: Object.assign(
-    defaultConfigData,
-    load(configJsonPath, configSchema)
-  ) as Config,
+  data: Object.assign(defaultConfigData, load(configJsonPath, configSchema)) as Config,
   updateData(newData: Config) {
     replaceObjectContent(this.data, newData);
   },
