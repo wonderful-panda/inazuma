@@ -18,7 +18,7 @@ import { browserCommand } from "core/browser";
 import VTextField from "./base/VTextField";
 import { filterTreeNodes } from "core/tree";
 import { MdEmptyState } from "./base/md";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import VIconButton from "./base/VIconButton";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, watch, computed, reactive } from "@vue/composition-api";

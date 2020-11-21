@@ -2,7 +2,7 @@ import * as vca from "vue-tsx-support/lib/vca";
 import VSplitterPanel from "./base/VSplitterPanel";
 import FileList from "./FileList";
 import { __sync } from "view/utils/modifiers";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { executeFileCommand } from "../commands";
 import {
   fileCommandDiffStaged as diffStaged,

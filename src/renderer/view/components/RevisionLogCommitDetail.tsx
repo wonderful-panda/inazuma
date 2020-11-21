@@ -2,7 +2,7 @@ import * as md from "view/utils/md-classes";
 import * as vca from "vue-tsx-support/lib/vca";
 import FileList from "./FileList";
 import { __sync } from "view/utils/modifiers";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import {
   showFileContextMenu,
   executeFileCommand,

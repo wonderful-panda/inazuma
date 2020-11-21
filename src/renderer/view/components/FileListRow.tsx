@@ -1,4 +1,4 @@
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { FileListIcon } from "./FileListIcon";
 import { withclass } from "./base/withClass";
 import VIconButton from "./base/VIconButton";

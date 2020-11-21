@@ -9,7 +9,7 @@ import {
   MdListItemText
 } from "./base/md";
 import * as vca from "vue-tsx-support/lib/vca";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { ref, computed } from "@vue/composition-api";
 import { required } from "./base/prop";
 

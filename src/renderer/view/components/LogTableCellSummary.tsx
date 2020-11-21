@@ -1,5 +1,5 @@
 import RefBadge from "./RefBadge";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 
 const className = css`
   display: flex;

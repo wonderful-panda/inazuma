@@ -2,7 +2,7 @@ import * as vca from "vue-tsx-support/lib/vca";
 import { DialogState } from "view/store/dialogModule";
 import VButton from "./VButton";
 import VModal, { ModalContainerClass } from "./VModal";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { h } from "@vue/composition-api";
 import { required } from "./prop";
 

@@ -1,5 +1,5 @@
 import { shortHash, longDate } from "../filters";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 
 export default _fc<{ commit?: FileCommit }>(ctx => {
   const commit = ctx.props.commit;

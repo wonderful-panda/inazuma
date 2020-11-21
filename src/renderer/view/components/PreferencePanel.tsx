@@ -5,7 +5,7 @@ import VTextField from "./base/VTextField";
 import * as md from "view/utils/md-classes";
 import { __sync } from "babel-plugin-vue-jsx-modifier/lib/modifiers";
 import { MdSubheader } from "./base/md";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { ref, reactive } from "@vue/composition-api";
 import { withclass } from "./base/withClass";
 import { required } from "./base/prop";

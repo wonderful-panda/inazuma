@@ -1,5 +1,5 @@
 import VIconButton from "./VIconButton";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 
 // @vue/component
 export default _fc<{ disabled?: boolean; action: () => void }>(

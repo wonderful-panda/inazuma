@@ -1,6 +1,6 @@
 import VIconButton from "./base/VIconButton";
 import { withclass } from "./base/withClass";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 
 export default withclass(VIconButton)(css`
   min-height: 28px;

@@ -13,7 +13,7 @@ import {
   MdListItem,
   MdListItemText
 } from "./base/md";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import VIconButton from "./base/VIconButton";
 import { useRootModule } from "view/store";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";

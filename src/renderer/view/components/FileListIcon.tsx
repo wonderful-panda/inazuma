@@ -1,5 +1,5 @@
 import { Octicon, IconNames } from "./Octicon";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 
 const diffIconStyle = css`
   margin: auto 4px auto 8px;

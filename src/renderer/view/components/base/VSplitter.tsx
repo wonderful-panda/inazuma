@@ -1,6 +1,6 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import VIconButton from "./VIconButton";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { ref } from "@vue/composition-api";
 import { required, withDefault } from "./prop";
 import { SplitterDirection } from "view/mainTypes";

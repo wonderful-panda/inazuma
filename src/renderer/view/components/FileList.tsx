@@ -1,6 +1,6 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import { vlistOf, VtableEventsOn, RowClickEventArgs } from "vue-vtable";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { required, optional } from "./base/prop";
 import { ref } from "@vue/composition-api";
 import { FileListRow, RowHeight } from "./FileListRow";

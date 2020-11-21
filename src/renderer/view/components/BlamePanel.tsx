@@ -6,7 +6,7 @@ import VSplitterPanel from "./base/VSplitterPanel";
 import BlamePanelFooter from "./BlamePanelFooter";
 import BlamePanelMonaco from "./BlamePanelMonaco";
 import { __sync } from "../utils/modifiers";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { showFileContextMenu } from "../commands";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, computed } from "@vue/composition-api";

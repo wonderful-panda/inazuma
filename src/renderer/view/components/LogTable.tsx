@@ -9,7 +9,7 @@ import {
 import LogTableCellGraph from "./LogTableCellGraph";
 import LogTableCellSummary from "./LogTableCellSummary";
 import { LogItem } from "../mainTypes";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { GitHash } from "./GitHash";
 import { MonoSpan } from "./base/mono";
 import { formatDateL } from "core/utils";

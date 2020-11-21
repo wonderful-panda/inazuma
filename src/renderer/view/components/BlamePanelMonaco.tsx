@@ -3,7 +3,7 @@ import * as vca from "vue-tsx-support/lib/vca";
 import { shortHash } from "../filters";
 import Vue from "vue";
 import { __sync } from "../utils/modifiers";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import {
   ref,
   computed,

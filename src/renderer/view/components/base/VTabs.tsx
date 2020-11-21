@@ -3,7 +3,7 @@ import * as vca from "vue-tsx-support/lib/vca";
 import VButton from "./VButton";
 import VIconButton from "./VIconButton";
 import { TabDefinition } from "view/mainTypes";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { watch, ref } from "@vue/composition-api";
 import { required } from "./prop";
 

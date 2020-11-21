@@ -1,6 +1,6 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import VCloseButton from "./base/VCloseButton";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { evaluateSlot } from "core/utils";
 import { required } from "./base/prop";
 

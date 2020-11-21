@@ -2,7 +2,7 @@ import * as vca from "vue-tsx-support/lib/vca";
 import { useRootModule } from "../store";
 import VBackdropSpinner from "./base/VBackdropSpinner";
 import BlamePanel from "./BlamePanel";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { onMounted } from "@vue/composition-api";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 import { optional, required } from "./base/prop";

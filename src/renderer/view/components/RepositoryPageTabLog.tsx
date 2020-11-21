@@ -15,7 +15,7 @@ import {
   useStorage
 } from "./injection/storage";
 import { computed } from "@vue/composition-api";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 
 const rootStyle = css`
   flex: 1;

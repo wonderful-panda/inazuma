@@ -10,7 +10,7 @@ import {
 } from "@vue/composition-api";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 import { required, optional } from "./base/prop";
-import * as emotion from "emotion";
+import * as emotion from "@emotion/css";
 import { getLangIdFromPath } from "view/monaco";
 import { bindLanguage, bindOptions } from "./composition/monaco";
 const css = emotion.css;

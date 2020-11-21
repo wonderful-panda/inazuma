@@ -3,7 +3,7 @@ import { ErrorLikeObject } from "view/mainTypes";
 import VIconButton from "./VIconButton";
 import * as md from "view/utils/md-classes";
 import { MdSnackbar, MdIcon } from "./md";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { __sync } from "view/utils/modifiers";
 import { computed } from "@vue/composition-api";
 import { optional, required } from "./prop";
