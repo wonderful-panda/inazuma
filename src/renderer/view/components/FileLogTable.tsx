@@ -3,7 +3,7 @@ import { vtableOf, VtableColumn, Vtable, VtableEventsOn } from "vue-vtable";
 import { LogItem } from "../mainTypes";
 import { style } from "./LogTable";
 import { ref, watch } from "@vue/composition-api";
-import { formatDateL } from "core/utils";
+import { formatDateL } from "core/date";
 import { GitHash } from "./GitHash";
 import { MonoSpan } from "./base/mono";
 import { required } from "./base/prop";

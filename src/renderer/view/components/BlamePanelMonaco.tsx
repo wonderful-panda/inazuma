@@ -11,7 +11,7 @@ import {
   onMounted,
   onBeforeUnmount
 } from "@vue/composition-api";
-import { formatDateL } from "core/utils";
+import { formatDateL } from "core/date";
 import { required } from "./base/prop";
 import {
   useDecoration,

@@ -13,7 +13,7 @@ import {
   fileCommandDiffWithLocal
 } from "../commands/fileCommandDiff";
 import { GitHash } from "./GitHash";
-import { formatDateLLL } from "core/utils";
+import { formatDateLLL } from "core/date";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
 import { Orientation } from "view/mainTypes";

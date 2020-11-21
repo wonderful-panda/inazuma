@@ -1,4 +1,3 @@
-import moment from "moment";
 import { SetupContext } from "@vue/composition-api";
 import { VNode } from "vue/types/umd";
 
@@ -28,24 +27,6 @@ export function clamp(value: number, min: number, max: number) {
 
 export function normalizePathSeparator(path: string): string {
   return path.replace(/\\/g, "/").replace(/\/$/, "");
-}
-
-export function formatDateL(v: number): string {
-  if (v === 0) {
-    return "";
-  }
-  return moment(v)
-    .local()
-    .format("L");
-}
-
-export function formatDateLLL(v: number): string {
-  if (v === 0) {
-    return "";
-  }
-  return moment(v)
-    .local()
-    .format("LLL");
 }
 
 export function evaluateSlot<

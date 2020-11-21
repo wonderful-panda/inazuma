@@ -1,5 +1,6 @@
-import { shortHash, longDate } from "../filters";
+import { shortHash } from "../filters";
 import { css } from "@emotion/css";
+import { toLongDate } from "core/date";
 
 export default _fc<{ commit?: FileCommit }>(ctx => {
   const commit = ctx.props.commit;
@@ -9,7 +10,7 @@ export default _fc<{ commit?: FileCommit }>(ctx => {
     return (
       <div class={style.container}>
         <span class={style.sha}>{shortHash(commit.id)}</span>
-        <span class={style.date}>{longDate(commit.date)}</span>
+        <span class={style.date}>{toLongDate(commit.date)}</span>
         <span class={style.author}>{commit.author}</span>
         <span class={style.summary}>{commit.summary}</span>
       </div>

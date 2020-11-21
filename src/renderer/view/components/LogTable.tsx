@@ -12,7 +12,7 @@ import { LogItem } from "../mainTypes";
 import { css } from "@emotion/css";
 import { GitHash } from "./GitHash";
 import { MonoSpan } from "./base/mono";
-import { formatDateL } from "core/utils";
+import { formatDateL } from "core/date";
 import { required } from "./base/prop";
 import { watch, ref } from "@vue/composition-api";
 
