@@ -5,13 +5,12 @@ import { setupRepositorySessions } from "./repositorySession";
 import { setupBrowserCommands } from "./actions";
 import { parseCommandLine } from "./options";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import path from "path";
 
 const options = parseCommandLine();
 
 const repoSessions = setupRepositorySessions();
 setupBrowserCommands(repoSessions);
-
-const html = "../renderer/index.html";
 
 Electron.app.on("window-all-closed", () => {
   config.save();
@@ -90,7 +89,9 @@ function showMainWindow() {
     environment.setWindowSize(width, height, maximized);
   });
   mainWindow.setMenu(Electron.Menu.buildFromTemplate(template));
-  mainWindow.loadURL(`file://${__dirname}/${html}`);
+  mainWindow.loadURL(
+    `file://${path.join(__dirname, "../renderer/index.html")}`
+  );
   mainWindow.show();
 }
 

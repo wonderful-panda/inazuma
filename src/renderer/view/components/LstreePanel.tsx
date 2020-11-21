@@ -221,7 +221,7 @@ const LeftPanel = vca.component({
             collapseAll={collapseAll}
           />
           <VtreeTableT
-            ref="tree"
+            ref={tree}
             style={{ flex: 1 }}
             columns={treeViewColumns}
             rootNodes={filteredRoots.value}

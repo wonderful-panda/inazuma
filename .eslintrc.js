@@ -22,6 +22,7 @@ module.exports = {
     "space-infix-ops": "off",
     "no-useless-constructor": "off",
     "no-extra-parens": "off",
+    "no-redeclare": "off",
     "import/export": "off",
     "func-call-spacing": "off",
 
@@ -33,6 +34,7 @@ module.exports = {
     "react/jsx-curly-newline": "off",
     "react/jsx-indent": "off",
     "react/jsx-indent-props": "off",
+    "multiline-ternary": "off",
 
     // other code style
     yoda: "off",
@@ -43,6 +45,7 @@ module.exports = {
     "jsx-quotes": ["error", "prefer-double"],
 
     // vue
-    "vue/require-default-prop": "off"
+    "vue/require-default-prop": "off",
+    "vue/one-component-per-file": "off"
   }
 };

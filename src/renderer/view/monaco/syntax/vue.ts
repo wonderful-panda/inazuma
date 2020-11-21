@@ -50,8 +50,8 @@ const conf: monaco.languages.LanguageConfiguration = {
 
   folding: {
     markers: {
-      start: new RegExp("^\\s*<!--\\s*#region\\b.*-->"),
-      end: new RegExp("^\\s*<!--\\s*#endregion\\b.*-->")
+      start: /^\\s*<!--\\s*#region\\b.*-->/,
+      end: /^\\s*<!--\\s*#endregion\\b.*-->/
     }
   }
 };
