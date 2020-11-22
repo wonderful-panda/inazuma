@@ -1,5 +1,15 @@
 import { GraphFragment } from "core/grapher";
 
+declare global {
+  interface Window {
+    api: BrowserCommand;
+    addBrowserEventListener: <K extends keyof BrowserEvent>(
+      type: K,
+      listener: (payload: BrowserEvent[K]) => void
+    ) => void;
+  }
+}
+
 export interface ErrorLikeObject {
   message: string;
 }

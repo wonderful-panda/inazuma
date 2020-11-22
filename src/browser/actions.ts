@@ -1,8 +1,7 @@
-import * as _ from "lodash";
-import * as ipcPromise from "ipc-promise";
-import * as cp from "child_process";
-import * as path from "path";
-import * as fs from "fs-extra";
+import { BrowserWindow, Menu, clipboard, dialog, ipcMain, IpcMainInvokeEvent } from "electron";
+import cp from "child_process";
+import path from "path";
+import fs from "fs-extra";
 import { config } from "./persistent";
 import { splitCommandline, randomName } from "./utils";
 import git from "./git";
@@ -11,43 +10,44 @@ import { RepositorySessions, RepositorySession } from "./repositorySession";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
-export const broadcast = new Proxy(
-  {},
-  {
-    get(_target, name: string) {
-      return (payload: any) => wm.broadcast(name, payload);
-    }
-  }
-) as BroadcastAction;
+type BrowserCommandHandlers = {
+  [K in keyof BrowserCommand]: (
+    event: IpcMainInvokeEvent,
+    ...args: Parameters<BrowserCommand[K]>
+  ) => ReturnType<BrowserCommand[K]>;
+};
 
-export function setupBrowserCommands(_repoSessions: RepositorySessions): BrowserCommand {
-  const bc: BrowserCommand = {
-    async openRepository(repoPath: string): Promise<{ commits: Commit[]; refs: Refs }> {
+export function setupBrowserCommands(_repoSessions: RepositorySessions): BrowserCommandHandlers {
+  const bc: BrowserCommandHandlers & ThisType<void> = {
+    async openRepository(_, repoPath: string): Promise<{ commits: Commit[]; refs: Refs }> {
       const ret = await fetchHistory(repoPath, 1000);
       return ret;
     },
-    async getCommitDetail({ repoPath, sha }): Promise<CommitDetail> {
+    async getCommitDetail(_, { repoPath, sha }): Promise<CommitDetail> {
       const detail = await getCommitDetail(repoPath, sha);
       return detail;
     },
-    async getBlame({ repoPath, relPath, sha }): Promise<Blame> {
+    async getBlame(_, { repoPath, relPath, sha }): Promise<Blame> {
       const blame = await git.blame(repoPath, relPath, sha);
       return blame;
     },
-    async getFileLog({ repoPath, relPath, sha }): Promise<FileCommit[]> {
+    async getFileLog(_, { repoPath, relPath, sha }): Promise<FileCommit[]> {
       const ret = [] as FileCommit[];
       await git.filelog(repoPath, 100, [sha], relPath, (c) => ret.push(c));
       return ret;
     },
-    getTree({ repoPath, sha }): Promise<LsTreeEntry[]> {
+    getTree(_, { repoPath, sha }): Promise<LsTreeEntry[]> {
       return git.lsTree(repoPath, sha);
     },
-    resetConfig(cfg: Config): Promise<void> {
+    async getConfig(_): Promise<Config> {
+      return config.data;
+    },
+    resetConfig(_, cfg: Config): Promise<void> {
       config.updateData(cfg);
-      broadcast.configChanged({ config: cfg });
+      wm.emitEvent("configChanged", { config: cfg });
       return Promise.resolve();
     },
-    runInteractiveShell(cwd: string): Promise<void> {
+    runInteractiveShell(_, cwd: string): Promise<void> {
       const [command, ...args] = splitCommandline(config.data.interactiveShell);
       if (command) {
         cp.spawn(command, args, {
@@ -59,22 +59,38 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
       }
       return Promise.resolve();
     },
-    showExternalDiff({ repoPath, left, right }) {
+    showExternalDiff(_, { repoPath, left, right }) {
       const rs = _repoSessions.prepare(repoPath);
       return showExternalDiff(rs, left, right);
     },
-    getTextFileContent({ repoPath, file }) {
+    getTextFileContent(_, { repoPath, file }) {
       return git.getTextFileContent(repoPath, file);
+    },
+    async yankText(_, text) {
+      clipboard.writeText(text);
+    },
+    async showContextMenu(_, template) {
+      console.log(template);
+      const menu = Menu.buildFromTemplate(template);
+      menu.popup();
+    },
+    async showOpenDialog(_, options) {
+      const parent = BrowserWindow.getFocusedWindow();
+      try {
+        const result = await (parent
+          ? dialog.showOpenDialog(parent, options)
+          : dialog.showOpenDialog(options));
+        return result;
+      } catch (e) {
+        console.log(e);
+        throw e;
+      }
     }
   };
   // register each methods as Electron ipc handlers
   Object.keys(bc).forEach((key) => {
-    const handler = (bc as any)[key] as (...args: any[]) => Promise<any>;
-    ipcPromise.on(key, (arg: any) => {
-      return handler(arg).catch((e) => {
-        throw _.toPlainObject(e);
-      });
-    });
+    const handler = bc[key as keyof BrowserCommandHandlers] as (...args: any[]) => Promise<any>;
+    ipcMain.handle(key, handler);
   });
   return bc;
 }

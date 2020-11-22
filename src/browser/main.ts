@@ -70,7 +70,8 @@ function showMainWindow() {
     show: false,
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true
+      contextIsolation: false,
+      preload: path.join(__dirname, "preload/preload.js")
     }
   });
   // restore window size

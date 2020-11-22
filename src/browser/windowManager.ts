@@ -13,9 +13,9 @@ class WindowManager {
     return win;
   }
 
-  broadcast(type: string, payload: any) {
+  emitEvent<K extends keyof BrowserEvent>(type: K, payload: BrowserEvent[K]) {
     Object.keys(this._wins).forEach((id) => {
-      this._wins[id].webContents.send("action", type, payload);
+      this._wins[id].webContents.send(type, payload);
     });
   }
 }

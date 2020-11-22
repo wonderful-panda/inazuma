@@ -4051,11 +4051,6 @@ interpret@^2.2.0:
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-2.2.0.tgz#1a78a0b5965c40a5416d007ad6f50ad27c417df9"
   integrity sha512-Ju0Bz/cEia55xDwUWEa8+olFpCiQoypjnQySseKtmjNrnps3P+xfpUmGr90T7yjlVJmOtybRvPXhKMbHr+fWnw==
 
-ipc-promise@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/ipc-promise/-/ipc-promise-0.1.4.tgz#5274236976942c22b7945858ae7c0b7fcf3fc559"
-  integrity sha1-UnQjaXaULCK3lFhYrnwLf88/xVk=
-
 is-accessor-descriptor@^0.1.6:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/is-accessor-descriptor/-/is-accessor-descriptor-0.1.6.tgz#a9e12cb3ae8d876727eeef3843f8a0897b5c98d6"

@@ -1,4 +1,4 @@
-import Electron from "electron";
+import type { OpenDialogOptions } from "electron";
 import * as vca from "vue-tsx-support/lib/vca";
 import BaseLayout from "./BaseLayout";
 import VBackdropSpinner from "./base/VBackdropSpinner";
@@ -18,7 +18,7 @@ import VIconButton from "./base/VIconButton";
 import { useRootModule } from "view/store";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 import { ref } from "@vue/composition-api";
-const { dialog, BrowserWindow } = Electron.remote;
+import { browserCommand } from "core/browser";
 
 const RepositoryListItem = _fc<{
   icon: string;
@@ -64,18 +64,19 @@ export default vca.component({
     };
 
     const selectRepository = async (): Promise<void> => {
-      const parent = BrowserWindow.getFocusedWindow();
-      const options: Electron.OpenDialogOptions = {
+      const options: OpenDialogOptions = {
         properties: ["openDirectory"]
       };
-      const result = await (parent
-        ? dialog.showOpenDialog(parent, options)
-        : dialog.showOpenDialog(options));
-      if (result.canceled || !result.filePaths) {
-        return;
+      try {
+        const result = await browserCommand.showOpenDialog(options);
+        if (result.canceled || !result.filePaths) {
+          return;
+        }
+        const repoPath = normalizePathSeparator(result.filePaths[0]);
+        openRepository(repoPath);
+      } catch (error) {
+        rootModule.actions.showError({ error });
       }
-      const repoPath = normalizePathSeparator(result.filePaths[0]);
-      openRepository(repoPath);
     };
 
     return () => {

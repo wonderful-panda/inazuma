@@ -114,8 +114,8 @@ declare interface CommitDetail extends Commit {
   files: readonly FileEntry[];
 }
 
-declare interface BroadcastAction {
-  configChanged(payload: { config: Config }): void;
+declare interface BrowserEvent {
+  configChanged: { config: Config };
 }
 
 declare interface FileSpec {
@@ -143,8 +143,12 @@ declare interface BrowserCommand {
   getBlame(params: { repoPath: string; relPath: string; sha: string }): Promise<Blame>;
   getFileLog(params: { repoPath: string; relPath: string; sha: string }): Promise<FileCommit[]>;
   getTree(params: { repoPath: string; sha: string }): Promise<LsTreeEntry[]>;
+  getConfig(): Promise<Config>;
   resetConfig(config: Config): Promise<void>;
   runInteractiveShell(curdir: string): Promise<void>;
   showExternalDiff(params: { repoPath: string; left: FileSpec; right: FileSpec }): Promise<void>;
   getTextFileContent(params: { repoPath: string; file: FileSpec }): Promise<TextFile>;
+  yankText(text: string): Promise<void>;
+  showContextMenu(template: Electron.MenuItemConstructorOptions[]): Promise<void>;
+  showOpenDialog(options: Electron.OpenDialogOptions): Promise<Electron.OpenDialogReturnValue>;
 }

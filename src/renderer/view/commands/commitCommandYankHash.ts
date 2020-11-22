@@ -1,13 +1,17 @@
 import { CommitCommand } from "./types";
-import * as Electron from "electron";
 import { useRootModule } from "../store";
+import { browserCommand } from "core/browser";
 const rootCtx = useRootModule();
 
 export const commitCommandYankHash: CommitCommand = {
   id: "YankHash",
   label: "Copy full hash to clipboard",
-  handler(commit) {
-    Electron.clipboard.writeText(commit.id);
-    rootCtx.dispatch("showNotification", { message: `Copied: ${commit.id}` });
+  async handler(commit) {
+    try {
+      await browserCommand.yankText(commit.id);
+      rootCtx.dispatch("showNotification", { message: `Copied: ${commit.id}` });
+    } catch (error) {
+      rootCtx.actions.showError({ error });
+    }
   }
 };

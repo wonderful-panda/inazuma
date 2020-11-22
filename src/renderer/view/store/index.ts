@@ -178,9 +178,7 @@ class RootGetters extends Getters<RootState> {
   }
 }
 
-class RootActions
-  extends Actions<RootState, RootGetters, RootMutations, RootActions>
-  implements BroadcastAction {
+class RootActions extends Actions<RootState, RootGetters, RootMutations, RootActions> {
   tabs!: Context<typeof tabsModule>;
   errorReporter!: Context<typeof errorReporterModule>;
   dialog!: Context<typeof dialogModule>;
@@ -190,7 +188,6 @@ class RootActions
     this.dialog = dialogModule.context(store);
   }
 
-  // from BroadcastAction
   configChanged(payload: { config: Config }) {
     this.mutations.resetConfig(payload);
   }

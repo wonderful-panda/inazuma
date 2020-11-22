@@ -1,6 +1,6 @@
-import * as path from "path";
+import path from "path";
 import Electron from "electron";
-import * as fs from "fs";
+import fs from "fs";
 import { Validator, Schema } from "jsonschema";
 
 const validator = new Validator();
@@ -17,11 +17,11 @@ function load(file: string, schema: any) {
     if (result.errors.length === 0) {
       return obj;
     } else {
-      console.error(`invalid JSON data found in ${name}`, result.errors);
+      console.error(`invalid JSON data found in ${file}`, result.errors);
       return undefined;
     }
   } catch (e) {
-    console.error(`failed to load JSON data from ${name}`, e);
+    console.error(`failed to load JSON data from ${file}`, e);
     return undefined;
   }
 }

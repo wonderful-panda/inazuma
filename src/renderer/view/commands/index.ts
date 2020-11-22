@@ -1,4 +1,4 @@
-import { remote, MenuItemConstructorOptions } from "electron";
+import type { MenuItemConstructorOptions } from "electron";
 import { CommitCommand, FileCommand } from "./types";
 import { commitCommandBrowseTree } from "./commitCommandBrowseTree";
 import { commitCommandYankHash } from "./commitCommandYankHash";
@@ -9,7 +9,10 @@ import {
 } from "./fileCommandDiff";
 import { fileCommandYankPath } from "./fileCommandYankPath";
 import { fileCommandBlame, fileCommandBlameParent } from "./fileCommandBlame";
-const { Menu } = remote;
+import { browserCommand } from "core/browser";
+import { useRootModule } from "view/store";
+
+const rootCtx = useRootModule();
 
 const commitCommands: CommitCommand[] = [commitCommandYankHash, commitCommandBrowseTree];
 
@@ -85,16 +88,19 @@ function getFileMenuTemplate(
   );
 }
 
-export function showCommitContextMenu(commit: Commit) {
+export async function showCommitContextMenu(commit: Commit) {
   const template = getCommitMenuTemplate(commit);
   if (template.length === 0) {
     return;
   }
-  const menu = Menu.buildFromTemplate(template);
-  menu.popup({ window: remote.getCurrentWindow() });
+  try {
+    await browserCommand.showContextMenu(template);
+  } catch (error) {
+    rootCtx.actions.showError({ error });
+  }
 }
 
-export function showFileContextMenu(
+export async function showFileContextMenu(
   commit: Commit,
   file: FileEntry,
   path: string,
@@ -111,6 +117,9 @@ export function showFileContextMenu(
   if (template.length === 0) {
     return;
   }
-  const menu = Menu.buildFromTemplate(template);
-  menu.popup({ window: remote.getCurrentWindow() });
+  try {
+    await browserCommand.showContextMenu(template);
+  } catch (error) {
+    rootCtx.actions.showError({ error });
+  }
 }

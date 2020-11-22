@@ -13,12 +13,6 @@
     "jsx": "preserve",
     "jsxFactory": "VueTsxSupport"
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.vue",
-    "../ipc-promise.d.ts",
-    "../commonTypes.d.ts"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.vue", "../commonTypes.d.ts"],
   "exclude": ["node_modules"]
 }
