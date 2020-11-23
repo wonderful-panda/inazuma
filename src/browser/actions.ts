@@ -7,6 +7,7 @@ import { splitCommandline, randomName } from "./utils";
 import git from "./git";
 import wm from "./windowManager";
 import { RepositorySessions, RepositorySession } from "./repositorySession";
+import { openPty } from "./pty";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
@@ -85,6 +86,9 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
         console.log(e);
         throw e;
       }
+    },
+    async __openPty(event, options) {
+      openPty(event.sender, options);
     }
   };
   // register each methods as Electron ipc handlers

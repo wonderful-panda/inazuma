@@ -137,6 +137,27 @@ declare interface LsTreeEntry {
   children?: LsTreeEntry[];
 }
 
+declare type OpenPtyOptions = {
+  cwd: string;
+  file: string;
+  args: readonly string[];
+};
+
+declare type PtyEvents = {
+  data: string;
+  exit: { exitCode: number; signal?: number };
+};
+
+declare type PtyListeners = {
+  [K in keyof PtyEvents as `on${Capitalize<K>}`]: (payload: PtyEvents[K]) => void;
+};
+
+declare type PtyCommands = {
+  data: string;
+  resize: { cols: number; rows: number };
+  kill: { signal?: string };
+};
+
 declare interface BrowserCommand {
   openRepository(repoPath: string): Promise<{ commits: Commit[]; refs: Refs }>;
   getCommitDetail(params: { repoPath: string; sha: string }): Promise<CommitDetail>;
@@ -151,4 +172,25 @@ declare interface BrowserCommand {
   yankText(text: string): Promise<void>;
   showContextMenu(template: Electron.MenuItemConstructorOptions[]): Promise<void>;
   showOpenDialog(options: Electron.OpenDialogOptions): Promise<Electron.OpenDialogReturnValue>;
+  __openPty(options: OpenPtyOptions & { token: number }): Promise<void>;
+}
+
+declare interface RendererGlobals {
+  browserApi: BrowserCommand;
+  browserEvents: {
+    listen: <K extends keyof BrowserEvent>(
+      type: K,
+      listener: (payload: BrowserEvent[K]) => void
+    ) => void;
+  };
+  pty: {
+    open: (
+      options: OpenPtyOptions,
+      listeners: PtyListeners
+    ) => Promise<
+      {
+        [K in keyof PtyCommands]: (payload: PtyCommands[K]) => Promise<void>;
+      }
+    >;
+  };
 }

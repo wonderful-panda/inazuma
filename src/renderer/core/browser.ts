@@ -1,1 +1,1 @@
-export const browserCommand = window.api;
+export const browserCommand = window.browserApi;

@@ -1,4 +1,4 @@
-import { /* contextBridge, */ ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 
 const keys: Record<keyof BrowserCommand, null> = {
   openRepository: null,
@@ -13,24 +13,59 @@ const keys: Record<keyof BrowserCommand, null> = {
   getTextFileContent: null,
   yankText: null,
   showContextMenu: null,
-  showOpenDialog: null
+  showOpenDialog: null,
+  __openPty: null
 };
 
-type Handler = (...args: any[]) => Promise<any>;
-
-const bridge = {} as Record<string, Handler>;
+const bridge = {} as BrowserCommand;
 Object.keys(keys).forEach((key) => {
-  bridge[key] = (...args: any[]) => ipcRenderer.invoke(key, ...args);
+  (bridge as any)[key] = (...args: any[]) => ipcRenderer.invoke(key, ...args);
 });
 
-// This does not work yet. node-pty must be moved to browser process.
-// contextBridge.exposeInMainWorld("api", bridge);
-
-(window as any).api = bridge;
-
-(window as any).addBrowserEventListener = <K extends keyof BrowserEvent>(
-  type: K,
-  listener: (payload: BrowserEvent[K]) => void
-) => {
-  ipcRenderer.on(type, (_event, payload: any) => listener(payload));
+const expose = <K extends keyof RendererGlobals>(name: K, value: RendererGlobals[K]) => {
+  contextBridge.exposeInMainWorld(name, value);
 };
+
+expose("browserApi", bridge);
+
+expose("browserEvents", {
+  listen: (type, listener) => {
+    ipcRenderer.on(type, (_event, payload: any) => listener(payload));
+  }
+});
+
+const listenPtyEvent = <K extends keyof PtyEvents>(
+  type: K,
+  token: number,
+  listener: (payload: PtyEvents[K]) => void
+) => {
+  ipcRenderer.on(`${type}:${token}`, (_, payload) => listener(payload));
+};
+
+const invokePtyCommand = <K extends keyof PtyCommands>(
+  type: K,
+  token: number,
+  payload: PtyCommands[K]
+): Promise<void> => {
+  return ipcRenderer.invoke(`${type}:${token}`, payload);
+};
+
+let currentToken = 0;
+
+const openPty = async (
+  options: OpenPtyOptions,
+  listeners: PtyListeners
+): Promise<{ [K in keyof PtyCommands]: (payload: PtyCommands[K]) => Promise<void> }> => {
+  currentToken += 1;
+  const token = currentToken;
+  await bridge.__openPty({ token, ...options });
+  listenPtyEvent("data", token, listeners.onData);
+  listenPtyEvent("exit", token, listeners.onExit);
+  return {
+    data: (data) => invokePtyCommand("data", token, data),
+    resize: (payload) => invokePtyCommand("resize", token, payload),
+    kill: () => invokePtyCommand("kill", token, {})
+  };
+};
+
+expose("pty", { open: openPty });

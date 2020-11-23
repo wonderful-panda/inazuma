@@ -22,7 +22,7 @@ async function init() {
   const root = rootModule.context(store);
   try {
     const config = await browserCommand.getConfig();
-  root.commit("resetConfig", { config });
+    root.commit("resetConfig", { config });
   } catch (error) {
     console.log(error);
   }
@@ -38,7 +38,7 @@ async function init() {
     console.warn("Failed to load recentList from localStorage");
   }
 
-  window.addBrowserEventListener("configChanged", root.actions.configChanged);
+  window.browserEvents.listen("configChanged", root.actions.configChanged);
 
   if (initialRepo) {
     root.actions.showRepositoryPage({ repoPath: initialRepo });

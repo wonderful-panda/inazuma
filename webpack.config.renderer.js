@@ -43,8 +43,5 @@ module.exports = {
       config: [__filename]
     }
   },
-  plugins: [
-    new webpack.ExternalsPlugin("commonjs", ["electron", "node-pty"]),
-    new MonacoEditorPlugin()
-  ]
+  plugins: [new MonacoEditorPlugin()]
 };

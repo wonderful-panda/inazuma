@@ -1,6 +1,5 @@
 import Vue from "vue";
 import * as vca from "vue-tsx-support/lib/vca";
-import { IPty, spawn } from "node-pty";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import ResizeSensor from "vue-resizesensor";
@@ -8,7 +7,11 @@ import { ref, watch, onBeforeUnmount, onActivated } from "@vue/composition-api";
 import { injectErrorHandler } from "./injection/errorHandler";
 import { required, withDefault } from "./base/prop";
 
-type Shell = { pty: IPty; term: Terminal; fitAddon: FitAddon };
+type Shell = {
+  ptyCommands: { [K in keyof PtyCommands]: (payload: PtyCommands[K]) => Promise<void> };
+  term: Terminal;
+  fitAddon: FitAddon;
+};
 
 export default vca.component({
   name: "Terminal",
@@ -24,27 +27,30 @@ export default vca.component({
     const shell = ref<Shell | null>(null);
     const el = ref<HTMLDivElement | null>(null);
     const errorHandler = injectErrorHandler();
-    const openShell = () => {
+    const openShell = async () => {
       if (shell.value) {
         shell.value.term.focus();
         return;
       }
       try {
-        const { cmd, args, cwd, fontFamily, fontSize } = p;
-        const pty = spawn(cmd, args as string[], { cwd });
+        const { cmd: file, args, cwd, fontFamily, fontSize } = p;
         const term = new Terminal({ fontFamily, fontSize });
         const fitAddon = new FitAddon();
         term.loadAddon(fitAddon);
-        pty.on("data", (data) => term.write(data));
-        pty.on("exit", () => {
-          term.dispose();
-          fitAddon.dispose();
-          shell.value = null;
-          p.hide();
-        });
-        term.onData((data) => pty.write(data));
-        term.onResize(({ cols, rows }) => pty.resize(cols, rows));
-        shell.value = { pty, term, fitAddon };
+        const options = { file, args, cwd };
+        const listeners = {
+          onData: (data: string) => term.write(data),
+          onExit: () => {
+            term.dispose();
+            fitAddon.dispose();
+            shell.value = null;
+            p.hide();
+          }
+        };
+        const ptyInvoker = await window.pty.open(options, listeners);
+        term.onData((data) => ptyInvoker.data(data));
+        term.onResize((payload) => ptyInvoker.resize(payload));
+        shell.value = { ptyCommands: ptyInvoker, term, fitAddon };
         Vue.nextTick(() => {
           if (el.value) {
             term.open(el.value);
@@ -61,7 +67,7 @@ export default vca.component({
       if (!shell.value) {
         return;
       }
-      shell.value.pty.kill();
+      shell.value.ptyCommands.kill({});
       shell.value = null;
     };
     const onResized = () => {
