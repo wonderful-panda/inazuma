@@ -12,7 +12,6 @@ const keys: Record<keyof BrowserCommand, null> = {
   showExternalDiff: null,
   getTextFileContent: null,
   yankText: null,
-  showContextMenu: null,
   showOpenDialog: null,
   __openPty: null
 };

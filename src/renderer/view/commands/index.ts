@@ -1,4 +1,3 @@
-import type { MenuItemConstructorOptions } from "electron";
 import { CommitCommand, FileCommand } from "./types";
 import { commitCommandBrowseTree } from "./commitCommandBrowseTree";
 import { commitCommandYankHash } from "./commitCommandYankHash";
@@ -9,10 +8,7 @@ import {
 } from "./fileCommandDiff";
 import { fileCommandYankPath } from "./fileCommandYankPath";
 import { fileCommandBlame, fileCommandBlameParent } from "./fileCommandBlame";
-import { browserCommand } from "core/browser";
-import { useRootModule } from "view/store";
-
-const rootCtx = useRootModule();
+import { ContextMenuItem } from "view/components/injection/contextMenu";
 
 const commitCommands: CommitCommand[] = [commitCommandYankHash, commitCommandBrowseTree];
 
@@ -46,7 +42,7 @@ export function executeFileCommand(
   command.handler(commit, file, path);
 }
 
-function getCommitMenuTemplate(commit: Commit): MenuItemConstructorOptions[] {
+export function getCommitContextMenuItems(commit: Commit): ContextMenuItem[] {
   if (commit.id === "--") {
     return [];
   }
@@ -54,72 +50,37 @@ function getCommitMenuTemplate(commit: Commit): MenuItemConstructorOptions[] {
   if (commands.length === 0) {
     return [];
   }
-  return commands.map(
-    (c) =>
-      ({
-        id: c.id,
-        label: c.label,
-        enabled: c.isEnabled === undefined || c.isEnabled(commit),
-        click: () => {
-          executeCommitCommand(c, commit);
-        }
-      } as MenuItemConstructorOptions)
-  );
+  return commands.map((c) => ({
+    id: c.id,
+    label: c.label,
+    disabled: c.isEnabled !== undefined && !c.isEnabled(commit),
+    action: () => executeCommitCommand(c, commit)
+  }));
 }
 
-function getFileMenuTemplate(
-  commit: Commit,
-  file: FileEntry,
-  path: string
-): MenuItemConstructorOptions[] {
-  if (commit.id === "--") {
-    return [];
-  }
-  return fileCommands.map(
-    (c) =>
-      ({
-        id: c.id,
-        label: c.label,
-        enabled: c.isEnabled === undefined || c.isEnabled(commit, file, path),
-        click: () => {
-          executeFileCommand(c, commit, file, path);
-        }
-      } as MenuItemConstructorOptions)
-  );
-}
-
-export async function showCommitContextMenu(commit: Commit) {
-  const template = getCommitMenuTemplate(commit);
-  if (template.length === 0) {
-    return;
-  }
-  try {
-    await browserCommand.showContextMenu(template);
-  } catch (error) {
-    rootCtx.actions.showError({ error });
-  }
-}
-
-export async function showFileContextMenu(
+export function getFileContextMenuItems(
   commit: Commit,
   file: FileEntry,
   path: string,
-  includeCommitMenus: boolean = false
-) {
-  const template = getFileMenuTemplate(commit, file, path);
+  includeCommitMenus = false
+): ContextMenuItem[] {
+  if (commit.id === "--") {
+    return [];
+  }
+  const ret = fileCommands.map(
+    (c) =>
+      ({
+        id: c.id,
+        label: c.label,
+        disabled: c.isEnabled !== undefined && !c.isEnabled(commit, file, path),
+        action: () => {
+          executeFileCommand(c, commit, file, path);
+        }
+      } as ContextMenuItem)
+  );
   if (includeCommitMenus) {
-    const commitMenuTemplate = getCommitMenuTemplate(commit);
-    if (template.length > 0 && commitMenuTemplate.length > 0) {
-      template.push({ type: "separator" });
-    }
-    template.push(...commitMenuTemplate);
+    ret.push("separator", ...getCommitContextMenuItems(commit));
   }
-  if (template.length === 0) {
-    return;
-  }
-  try {
-    await browserCommand.showContextMenu(template);
-  } catch (error) {
-    rootCtx.actions.showError({ error });
-  }
+  return ret;
 }
+

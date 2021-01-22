@@ -71,3 +71,19 @@ export const MdInput = ofType<
     onInput: string | number;
   }
 >().convert(Vue.component("MdInput"));
+
+export const MdMenu = ofType<{
+  "md-active": boolean;
+  "md-close-on-click"?: boolean;
+  "md-close-on-select"?: boolean;
+  "md-direction"?: "bottom-start" | "bottom-end" | "top-start" | "top-end";
+  "md-align-trigger"?: boolean;
+  "md-offset-x"?: number;
+  "md-offset-y"?: number;
+  "md-size"?: "small" | "medium" | "big" | "huge" | "auto";
+}>().convert(Vue.component("MdMenu"));
+
+export const MdMenuContent = Vue.component("MdMenuContent");
+export const MdMenuItem = ofType<{ disabled?: boolean }, { onClick: MouseEvent }>().convert(
+  Vue.component("MdMenuItem")
+);

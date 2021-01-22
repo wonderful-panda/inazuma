@@ -8,7 +8,6 @@ import VSplitterPanel from "./base/VSplitterPanel";
 import { dragdrop } from "../dragdrop";
 import { LogItem, SplitterDirection, Orientation } from "../mainTypes";
 import { __sync } from "view/utils/modifiers";
-import { showCommitContextMenu } from "../commands";
 import {
   injectStorage,
   provideStorageWithAdditionalNamespace,
@@ -16,6 +15,8 @@ import {
 } from "./injection/storage";
 import { computed } from "@vue/composition-api";
 import { css } from "@emotion/css";
+import { injectContextMenu } from "./injection/contextMenu";
+import { getCommitContextMenuItems } from "view/commands";
 
 const rootStyle = css`
   flex: 1;
@@ -27,6 +28,7 @@ export default vca.component({
   setup() {
     const rootCtx = useRootModule();
     const storage = injectStorage();
+    const cmenu = injectContextMenu();
     provideStorageWithAdditionalNamespace("TabLog", storage);
     const persistData = useStorage(
       {
@@ -55,9 +57,10 @@ export default vca.component({
       console.log(data);
     };
 
-    const showContextMenu = ({ item, event }: RowEventArgs<LogItem, Event>) => {
+    const showContextMenu = ({ item, event }: RowEventArgs<LogItem, MouseEvent>) => {
       event.preventDefault();
-      showCommitContextMenu(item.commit);
+      const menuItems = getCommitContextMenuItems(item.commit);
+      cmenu.show(event, menuItems)
     };
 
     return () => {

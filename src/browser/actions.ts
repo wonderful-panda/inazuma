@@ -1,4 +1,4 @@
-import { BrowserWindow, Menu, clipboard, dialog, ipcMain, IpcMainInvokeEvent } from "electron";
+import { BrowserWindow, clipboard, dialog, ipcMain, IpcMainInvokeEvent } from "electron";
 import cp from "child_process";
 import path from "path";
 import fs from "fs-extra";
@@ -69,11 +69,6 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
     },
     async yankText(_, text) {
       clipboard.writeText(text);
-    },
-    async showContextMenu(_, template) {
-      console.log(template);
-      const menu = Menu.buildFromTemplate(template);
-      menu.popup();
     },
     async showOpenDialog(_, options) {
       const parent = BrowserWindow.getFocusedWindow();

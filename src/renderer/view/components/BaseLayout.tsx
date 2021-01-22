@@ -11,6 +11,8 @@ import { css } from "@emotion/css";
 import { ref, computed } from "@vue/composition-api";
 import { evaluateSlot } from "core/utils";
 import { required } from "./base/prop";
+import { ContextMenu } from "./ContextMenu";
+import { provideContextMenu } from "./injection/contextMenu";
 
 export default vca.component({
   name: "BaseLayout",
@@ -26,6 +28,12 @@ export default vca.component({
     const toggleMenu = () => {
       menuVisible.value = !menuVisible.value;
     };
+    const contextMenu = ref<InstanceType<typeof ContextMenu> | null>(null);
+    provideContextMenu({
+      show: (e, items) => {
+        contextMenu.value?.show(e, items);
+      }
+    });
     return () => {
       return (
         <div staticClass={style.container}>
@@ -52,6 +60,8 @@ export default vca.component({
               <div staticClass={style.content}>{evaluateSlot(ctx, "default")}</div>
             </md-app-content>
           </md-app>
+
+          <ContextMenu ref={contextMenu} />
 
           <PreferencePanel
             active={rootModule.state.preferenceShown}

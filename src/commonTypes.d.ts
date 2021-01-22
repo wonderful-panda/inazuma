@@ -170,7 +170,6 @@ declare interface BrowserCommand {
   showExternalDiff(params: { repoPath: string; left: FileSpec; right: FileSpec }): Promise<void>;
   getTextFileContent(params: { repoPath: string; file: FileSpec }): Promise<TextFile>;
   yankText(text: string): Promise<void>;
-  showContextMenu(template: Electron.MenuItemConstructorOptions[]): Promise<void>;
   showOpenDialog(options: Electron.OpenDialogOptions): Promise<Electron.OpenDialogReturnValue>;
   __openPty(options: OpenPtyOptions & { token: number }): Promise<void>;
 }

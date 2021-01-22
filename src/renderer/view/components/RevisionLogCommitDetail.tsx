@@ -3,7 +3,7 @@ import * as vca from "vue-tsx-support/lib/vca";
 import FileList from "./FileList";
 import { __sync } from "view/utils/modifiers";
 import { css } from "@emotion/css";
-import { showFileContextMenu, executeFileCommand, executeCommitCommand } from "../commands";
+import { getFileContextMenuItems, executeFileCommand, executeCommitCommand } from "../commands";
 import { fileCommandDiffWithParent, fileCommandDiffWithLocal } from "../commands/fileCommandDiff";
 import { GitHash } from "./GitHash";
 import { formatDateLLL } from "core/date";
@@ -18,6 +18,7 @@ import { commitCommandBrowseTree } from "view/commands/commitCommandBrowseTree";
 import VSplitterPanel from "./base/VSplitterPanel";
 import { fileCommandBlame, fileCommandBlameParent } from "view/commands/fileCommandBlame";
 import { fileCommandYankPath } from "view/commands/fileCommandYankPath";
+import { injectContextMenu } from "./injection/contextMenu";
 
 const style = {
   container: css`
@@ -123,12 +124,14 @@ export default vca.component({
       storage,
       "CommitDetail"
     );
+    const cmenu = injectContextMenu()
     const showExternalDiff = (item: FileEntry) => {
       executeFileCommand(fileCommandDiffWithParent, p.commit, item, item.path);
     };
-    const showContextMenu = (item: FileEntry, event: Event) => {
+    const showContextMenu = (item: FileEntry, event: MouseEvent) => {
       event.preventDefault();
-      showFileContextMenu(p.commit, item, item.path);
+      const items = getFileContextMenuItems(p.commit, item, item.path);
+      cmenu.show(event, items);
     };
     return () => {
       return (

@@ -7,11 +7,13 @@ import BlamePanelFooter from "./BlamePanelFooter";
 import BlamePanelMonaco from "./BlamePanelMonaco";
 import { __sync } from "../utils/modifiers";
 import { css } from "@emotion/css";
-import { showFileContextMenu } from "../commands";
+import { getFileContextMenuItems } from "../commands";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, computed } from "@vue/composition-api";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required } from "./base/prop";
+import { injectContextMenu } from "./injection/contextMenu";
+import { RowEventArgs } from "vue-vtable";
 
 const style = {
   container: css`
@@ -44,6 +46,7 @@ const BlamePanel = vca.component({
   },
   setup(props) {
     const selectedCommitId = ref("");
+    const cmenu = injectContextMenu();
     const storage = injectStorage();
     const persist = useStorage(
       {
@@ -70,10 +73,14 @@ const BlamePanel = vca.component({
       }
       hoveredCommit.value = commits.value.get(e.commitId);
     };
-    const showContextMenu = (arg: { item: FileCommit }) => {
-      showFileContextMenu(arg.item, arg.item, props.path, true);
+    const showContextMenu = (item: FileCommit, event: MouseEvent) => {
+      const items = getFileContextMenuItems(item, item, props.path, true);
+      cmenu.show(event, items);
     };
-    const showContextMenuFromMonaco = (arg: { commitId: string }) => {
+    const showContextMenuFromList = (arg: RowEventArgs<FileCommit, MouseEvent>) => {
+      showContextMenu(arg.item, arg.event);
+    };
+    const showContextMenuFromMonaco = (arg: { commitId: string, event: MouseEvent }) => {
       if (!arg.commitId) {
         return;
       }
@@ -81,7 +88,7 @@ const BlamePanel = vca.component({
       if (!commit) {
         return;
       }
-      showContextMenu({ item: commit });
+      showContextMenu(commit, arg.event);
     };
 
     return () => {
@@ -110,7 +117,7 @@ const BlamePanel = vca.component({
               onRowclick={(args) => {
                 selectedCommitId.value = args.item.id;
               }}
-              onRowcontextmenu={showContextMenu}
+              onRowcontextmenu={showContextMenuFromList}
             />
             <BlamePanelMonaco
               slot="second"

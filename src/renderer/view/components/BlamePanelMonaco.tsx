@@ -70,7 +70,7 @@ function createLineNumberFormatter(blame: Blame) {
 
 interface PrefixedEvents {
   onHoveredCommitIdChanged: { commitId: string };
-  onContextMenu: { commitId: string };
+  onContextMenu: { commitId: string, event: MouseEvent };
 }
 
 export const BlamePanelMonaco = vca.component({
@@ -171,7 +171,7 @@ export const BlamePanelMonaco = vca.component({
         const lineNumber = e.target.position.lineNumber;
         const commitId = props.blame.commitIds[lineNumber - 1];
         if (commitId) {
-          vca.emitOn(ctx, "onContextMenu", { commitId });
+          vca.emitOn(ctx, "onContextMenu", { commitId, event: e.event.browserEvent });
         }
       }
     };
