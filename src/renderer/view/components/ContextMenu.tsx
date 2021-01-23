@@ -18,7 +18,7 @@ const Wrapper = withclass.div(css`
 
 const MenuContent = withclass(MdMenuContent)(css`
   max-height: 60vh !important;
-`)
+`);
 
 const Item = _fc<{ data: ContextMenuItem }>((ctx) => {
   const data = ctx.props.data;
@@ -66,8 +66,8 @@ export const ContextMenu = vca.component({
       <Wrapper ref={el}>
         <MdMenu md-active={__sync(active.value)} md-close-on-click style={menuStyle.value}>
           <MenuContent>
-            {data.value.items.map((item) => (
-              <Item data={item} />
+            {data.value.items.map((item, index) => (
+              <Item key={index} data={item} />
             ))}
           </MenuContent>
         </MdMenu>
