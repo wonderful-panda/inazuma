@@ -80,7 +80,7 @@ const BlamePanel = vca.component({
     const showContextMenuFromList = (arg: RowEventArgs<FileCommit, MouseEvent>) => {
       showContextMenu(arg.item, arg.event);
     };
-    const showContextMenuFromMonaco = (arg: { commitId: string, event: MouseEvent }) => {
+    const showContextMenuFromMonaco = (arg: { commitId: string; event: MouseEvent }) => {
       if (!arg.commitId) {
         return;
       }

@@ -70,7 +70,7 @@ function createLineNumberFormatter(blame: Blame) {
 
 interface PrefixedEvents {
   onHoveredCommitIdChanged: { commitId: string };
-  onContextMenu: { commitId: string, event: MouseEvent };
+  onContextMenu: { commitId: string; event: MouseEvent };
 }
 
 export const BlamePanelMonaco = vca.component({

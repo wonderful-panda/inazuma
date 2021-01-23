@@ -124,7 +124,7 @@ export default vca.component({
       storage,
       "CommitDetail"
     );
-    const cmenu = injectContextMenu()
+    const cmenu = injectContextMenu();
     const showExternalDiff = (item: FileEntry) => {
       executeFileCommand(fileCommandDiffWithParent, p.commit, item, item.path);
     };

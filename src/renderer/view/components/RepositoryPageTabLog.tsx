@@ -60,7 +60,7 @@ export default vca.component({
     const showContextMenu = ({ item, event }: RowEventArgs<LogItem, MouseEvent>) => {
       event.preventDefault();
       const menuItems = getCommitContextMenuItems(item.commit);
-      cmenu.show(event, menuItems)
+      cmenu.show(event, menuItems);
     };
 
     return () => {
