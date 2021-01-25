@@ -9,6 +9,7 @@ import { MonoSpan } from "./base/mono";
 import { formatDateL } from "core/date";
 import { required } from "./base/prop";
 import { watch, ref } from "@vue/composition-api";
+import { normalizeListeners } from "core/utils";
 
 const VtableT = vtableOf<LogItem>();
 
@@ -92,7 +93,7 @@ export default vca.component({
         rowStyleCycle={2}
         getItemKey={getItemKey}
         getRowClass={getRowClass}
-        {...{ on: ctx.listeners }}
+        on={normalizeListeners(ctx)}
         scopedSlots={{ cell: renderCell }}
       />
     );

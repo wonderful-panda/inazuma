@@ -5,6 +5,7 @@ import { required, optional } from "./base/prop";
 import { ref } from "@vue/composition-api";
 import { FileListRow, RowHeight } from "./FileListRow";
 import { FileCommand } from "view/commands/types";
+import { normalizeListeners } from "core/utils";
 
 const Vlist = vlistOf<FileEntry>();
 
@@ -89,7 +90,7 @@ export default vca.component({
               )
             }}
             onRowclick={onRowclick}
-            {...{ on: ctx.listeners }}
+            on={normalizeListeners(ctx)}
           >
             {p.title && (
               <h2 class={["md-title", headerStyle]} slot="header">

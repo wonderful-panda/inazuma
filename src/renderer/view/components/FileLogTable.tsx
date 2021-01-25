@@ -7,6 +7,7 @@ import { formatDateL } from "core/date";
 import { GitHash } from "./GitHash";
 import { MonoSpan } from "./base/mono";
 import { required } from "./base/prop";
+import { normalizeListeners } from "core/utils";
 
 const VtableT = vtableOf<FileCommit>();
 const columns: VtableColumn[] = [
@@ -86,7 +87,7 @@ export default vca.component({
           rowStyleCycle={2}
           getItemKey={(item) => item.id}
           getRowClass={(_item, index) => (index === selectedIndex ? style.selectedRow : "")}
-          {...{ on: ctx.listeners }}
+          on={normalizeListeners(ctx)}
           scopedSlots={{
             cell: (p) => renderCell(p.columnId, p.item)
           }}

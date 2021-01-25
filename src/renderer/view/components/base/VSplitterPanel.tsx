@@ -1,5 +1,5 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import { clamp } from "core/utils";
+import { clamp, evaluateSlot } from "core/utils";
 import { CssProperties } from "vue-css-definition";
 import VSplitter, { SplitterEventArgs } from "./VSplitter";
 import { __sync } from "view/utils/modifiers";
@@ -92,7 +92,7 @@ export default vca.component({
           class="splitter-panel-first"
           style={firstPanelStyle.value}
         >
-          {ctx.slots.first()}
+          {evaluateSlot(ctx, "first")}
         </div>
         <VSplitter
           v-show={p.showFirst && p.showSecond}
@@ -107,7 +107,7 @@ export default vca.component({
           class="splitter-panel-second"
           style={secondPanelStyle.value}
         >
-          {ctx.slots.second()}
+          {evaluateSlot(ctx, "second")}
         </div>
       </div>
     );

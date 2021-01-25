@@ -1,3 +1,4 @@
+import { evaluateSlot } from "core/utils";
 import { modifiers as m } from "vue-tsx-support";
 import * as vca from "vue-tsx-support/lib/vca";
 import { MdButton, MdTooltip } from "./md";
@@ -27,7 +28,7 @@ export default vca.component({
       const tooltip = p.tooltip ? <MdTooltip>{p.tooltip}</MdTooltip> : undefined;
       return (
         <MdButton class={classes} href={p.href} disabled={p.disabled} onClick={m.stop(p.action)}>
-          {ctx.slots.default()}
+          {evaluateSlot(ctx, "default")}
           {tooltip}
         </MdButton>
       );

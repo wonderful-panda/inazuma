@@ -7,6 +7,7 @@ import { __capture } from "view/utils/modifiers";
 import { css } from "@emotion/css";
 import { onMounted, ref } from "@vue/composition-api";
 import { required } from "./prop";
+import { evaluateSlot } from "core/utils";
 
 const m = tsx.modifiers;
 
@@ -104,10 +105,10 @@ export default vca.component({
                 <div class={[style.title, md.TITLE]}>{p.title}</div>
                 <VCloseButton action={p.close} />
               </div>
-              <div staticClass={style.content}>{ctx.slots.default()}</div>
+              <div staticClass={style.content}>{evaluateSlot(ctx, "default")}</div>
               <div staticClass={style.footer}>
                 <div staticClass="flex--expand" />
-                {ctx.slots["footer-buttons"]()}
+                {evaluateSlot(ctx, "footer-buttons")}
               </div>
             </div>
           </div>

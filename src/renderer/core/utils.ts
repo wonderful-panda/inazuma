@@ -32,7 +32,7 @@ export function normalizePathSeparator(path: string): string {
 export function evaluateSlot<CTX extends SetupContext, K extends keyof CTX["slots"]>(
   ctx: CTX,
   slotName: K,
-  ...args: Parameters<CTX["slots"][K]>
+  ...args: Parameters<Exclude<CTX["slots"][K], undefined>>
 ): VNode | VNode[] | undefined {
   const slot = ctx.slots[slotName as string];
   if (!slot) {
@@ -41,6 +41,16 @@ export function evaluateSlot<CTX extends SetupContext, K extends keyof CTX["slot
     return slot(...args);
   }
 }
+
+export function normalizeListeners<CTX extends SetupContext>(
+  ctx: CTX
+): CTX["listeners"] & Record<string, Function | Function[]> {
+  const listeners = { ...ctx.listeners };
+  Object.keys(listeners).forEach(k => listeners[k] === undefined && delete listeners[k]);
+  return listeners as any;
+}
+
+
 
 // This method is originated in vuejs/vue. https://github.com/vuejs/vue
 export function toNumber(val: any): string | number {
