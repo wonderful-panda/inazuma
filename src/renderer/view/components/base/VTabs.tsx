@@ -1,7 +1,8 @@
 import Vue from "vue";
 import * as vca from "vue-tsx-support/lib/vca";
 import VButton from "./VButton";
-import VIconButton from "./VIconButton";
+import { VIconButton } from "./VIconButton";
+import { VMaterialIcon } from "./VMaterialIcon";
 import { TabDefinition } from "view/mainTypes";
 import { css } from "@emotion/css";
 import { watch, ref } from "@vue/composition-api";
@@ -18,8 +19,8 @@ const TabButton = _fc<{
       <VButton class={style.tabButton(props.selected)} action={props.select}>
         {props.tab.text}
       </VButton>
-      <VIconButton v-show={props.tab.closable} class={style.closeIcon} action={props.close}>
-        close
+      <VIconButton v-show={props.tab.closable} class={style.closeIconButton} action={props.close}>
+        <VMaterialIcon class={style.closeIcon} name="Close" size={16} />
       </VIconButton>
     </div>
   );
@@ -136,7 +137,7 @@ const style = {
     display: flex;
     flex: 1;
   `,
-  closeIcon: css`
+  closeIconButton: css`
     position: absolute;
     right: 0;
     margin: 0;
@@ -145,12 +146,11 @@ const style = {
     max-height: 20px;
     min-width: 20px;
     max-width: 20px;
-    .md-icon {
-      font-size: x-small !important;
-      color: #888 !important;
-      &:hover {
-        color: #fff !important;
-      }
+  `,
+  closeIcon: css`
+    color: #888 !important;
+    &:hover {
+      color: #fff !important;
     }
   `
 };

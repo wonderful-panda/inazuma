@@ -1,7 +1,8 @@
 import { RenderContext } from "vue";
 import { shortHash } from "view/filters";
 import * as md from "view/utils/md-classes";
-import { MdIcon, MdDoubleLineList, MdSubheader, MdListItem, MdListItemText } from "./base/md";
+import { MdDoubleLineList, MdSubheader, MdListItem, MdListItemText } from "./base/md";
+import { VMaterialIcon } from "./base/VMaterialIcon";
 import * as vca from "vue-tsx-support/lib/vca";
 import { css } from "@emotion/css";
 import { ref, computed } from "@vue/composition-api";
@@ -55,9 +56,12 @@ export default vca.component({
         <div class={style.wrapper}>
           <MdSubheader class={["md-primary", style.header]} nativeOn-click={toggleExpand}>
             <span>{p.title}</span>
-            <MdIcon class={style.expandIcon} style={expandIconStyle.value}>
-              arrow_drop_down
-            </MdIcon>
+            <VMaterialIcon
+              name="MenuDown"
+              size={20}
+              class={style.expandIcon}
+              style={expandIconStyle.value}
+            />
           </MdSubheader>
           <transition>
             <div v-show={expanded.value} class={style.container} style={listStyle.value}>

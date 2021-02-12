@@ -1,3 +1,4 @@
+import { MaterialIconNames } from "view/components/base/VMaterialIcon";
 import { AppStore } from "../store";
 
 export interface CommitCommand {
@@ -11,7 +12,7 @@ export interface CommitCommand {
 export interface FileCommand {
   id: string;
   label: string;
-  icon?: string;
+  icon?: MaterialIconNames;
   handler(commit: Commit, file: FileEntry, path: string): void;
   isEnabled?(commit: Commit, file: FileEntry, path: string): boolean;
 }

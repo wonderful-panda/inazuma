@@ -1,11 +1,12 @@
 import { css } from "@emotion/css";
 import { FileListIcon } from "./FileListIcon";
 import { withclass } from "./base/withClass";
-import VIconButton from "./base/VIconButton";
+import { VIconButton } from "./base/VIconButton";
 import { MonoDiv } from "./base/mono";
 import { FileCommand } from "view/commands/types";
 import { executeFileCommand } from "view/commands";
-import { MdButton, MdIcon, MdTooltip } from "./base/md";
+import { MdButton, MdTooltip } from "./base/md";
+import { VMaterialIcon } from "./base/VMaterialIcon";
 
 export const RowHeight = 42;
 
@@ -137,17 +138,20 @@ const FileActionButtons = _fc<{
   buttons?: readonly FileCommand[];
   menus?: readonly FileCommand[];
 }>(({ props: { item, commit, buttons, menus } }) => {
-  const buttonNodes = (buttons || []).map((a, index) => (
-    <VIconButton
-      class="file-action-button"
-      key={index}
-      disabled={a.isEnabled && !a.isEnabled(commit, item, item.path)}
-      action={() => executeFileCommand(a, commit, item, item.path)}
-      tooltip={a.label}
-    >
-      {a.icon}
-    </VIconButton>
-  ));
+  const buttonNodes = (buttons || []).map(
+    (a, index) =>
+      a.icon && (
+        <VIconButton
+          class="file-action-button"
+          key={index}
+          disabled={a.isEnabled && !a.isEnabled(commit, item, item.path)}
+          action={() => executeFileCommand(a, commit, item, item.path)}
+          tooltip={a.label}
+        >
+          <VMaterialIcon name={a.icon} />
+        </VIconButton>
+      )
+  );
   if (menus) {
     const menuNodes = menus.map((m, index) => (
       <md-menu-item
@@ -161,7 +165,7 @@ const FileActionButtons = _fc<{
     buttonNodes.push(
       <md-menu key="other-actions" md-close-on-click md-align-trigger md-size="auto">
         <MdButton class="md-icon-button file-action-button" md-menu-trigger>
-          <MdIcon>more_vert</MdIcon>
+          <VMaterialIcon name="DotsVertical" />
           <MdTooltip>Other actions</MdTooltip>
         </MdButton>
         <md-menu-content>{menuNodes}</md-menu-content>

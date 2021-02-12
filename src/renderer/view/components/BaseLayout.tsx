@@ -1,8 +1,9 @@
 import { useErrorReporterModule, useDialogModule, useRootModule } from "../store";
 import * as vca from "vue-tsx-support/lib/vca";
 import VDialogBase from "./base/VDialogBase";
-import VIconButton from "./base/VIconButton";
-import TitleBarButton from "./TitleBarButton";
+import { VIconButton } from "./base/VIconButton";
+import { VMaterialIcon } from "./base/VMaterialIcon";
+import { TitleBarButton } from "./TitleBarButton";
 import VNotification from "./base/VNotification";
 import PreferencePanel from "./PreferencePanel";
 import { __capture, __sync } from "view/utils/modifiers";
@@ -42,7 +43,7 @@ export default vca.component({
               <md-toolbar staticClass="md-transparent" md-elevation={0}>
                 <div staticClass="md-toolbar-section-end">
                   <VIconButton mini action={toggleMenu}>
-                    keyboard_arrow_left
+                    <VMaterialIcon name="ChevronLeft" />
                   </VIconButton>
                 </div>
               </md-toolbar>
@@ -53,7 +54,7 @@ export default vca.component({
 
             <md-app-content staticClass={style.contentWrapper}>
               <div staticClass={style.titleBar}>
-                <TitleBarButton action={toggleMenu}>menu</TitleBarButton>
+                <TitleBarButton action={toggleMenu} name="Menu" />
                 <span style="flex: 1">{p.title}</span>
                 {evaluateSlot(ctx, "titlebar-buttons")}
               </div>
@@ -70,13 +71,13 @@ export default vca.component({
             save={rootModule.actions.resetConfig}
           />
           <VNotification
-            icon="info"
+            icon="Information"
             message={rootModule.state.notification}
             color="primary"
             hide={rootModule.actions.hideNotification}
           />
           <VNotification
-            icon="warning"
+            icon="AlertCircle"
             message={errorReporterModule.getters.message}
             color="accent"
             hide={errorReporterModule.actions.clear}

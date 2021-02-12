@@ -5,23 +5,17 @@ import VBackdropSpinner from "./base/VBackdropSpinner";
 import DrawerNavigation from "./DrawerNavigation";
 import { getFileName, normalizePathSeparator, omit } from "core/utils";
 import * as md from "view/utils/md-classes";
-import {
-  MdIcon,
-  MdDoubleLineList,
-  MdSubheader,
-  MdDivider,
-  MdListItem,
-  MdListItemText
-} from "./base/md";
+import { MdDoubleLineList, MdSubheader, MdDivider, MdListItem, MdListItemText } from "./base/md";
+import { VMaterialIcon, MaterialIconNames } from "./base/VMaterialIcon";
 import { css } from "@emotion/css";
-import VIconButton from "./base/VIconButton";
+import { VIconButton } from "./base/VIconButton";
 import { useRootModule } from "view/store";
 import { provideStorageWithAdditionalNamespace } from "./injection/storage";
 import { ref } from "@vue/composition-api";
 import { browserCommand } from "core/browser";
 
 const RepositoryListItem = _fc<{
-  icon: string;
+  icon: MaterialIconNames;
   text: string;
   description: string;
   action: () => void;
@@ -29,14 +23,14 @@ const RepositoryListItem = _fc<{
 }>(({ props, data: { scopedSlots, attrs, ...rest } }) => {
   return (
     <MdListItem onClick={props.action} {...rest} attrs={omit(attrs, Object.keys(props))}>
-      <MdIcon>{props.icon}</MdIcon>
+      <VMaterialIcon name={props.icon} />
       <MdListItemText>
         <span class={[md.SUBHEADING, style.repoName]}>{props.text}</span>
         <span class={[md.CAPTION, style.repoDescription]}>{props.description}</span>
       </MdListItemText>
       {props.remove ? (
-        <VIconButton staticClass="md-list-action" mini action={props.remove}>
-          close
+        <VIconButton class="md-list-action" mini action={props.remove}>
+          <VMaterialIcon name="Close" />
         </VIconButton>
       ) : undefined}
     </MdListItem>
@@ -84,8 +78,12 @@ export default vca.component({
       return (
         <BaseLayout title="inazuma">
           <template slot="drawer-navigations">
-            <DrawerNavigation icon="settings" text="Preferences" action={actions.showPreference} />
-            <DrawerNavigation icon="info_outline" text="About" action={actions.showVersionDialog} />
+            <DrawerNavigation icon="Cog" text="Preferences" action={actions.showPreference} />
+            <DrawerNavigation
+              icon="InformationOutline"
+              text="About"
+              action={actions.showVersionDialog}
+            />
           </template>
           {loading.value && <VBackdropSpinner />}
           <div class={style.content}>
@@ -94,7 +92,7 @@ export default vca.component({
               <MdDoubleLineList>
                 <RepositoryListItem
                   key=":browser"
-                  icon="search"
+                  icon="Magnify"
                   text="BROWSE..."
                   description="Select repositories by folder browser"
                   action={selectRepository}
@@ -105,7 +103,7 @@ export default vca.component({
                   {getters.visibleRecentList.map((repoPath) => (
                     <RepositoryListItem
                       key={repoPath}
-                      icon="history"
+                      icon="History"
                       text={getFileName(repoPath)}
                       description={repoPath}
                       action={() => openRepository(repoPath)}
@@ -150,9 +148,6 @@ const style = {
     }
     .md-subheader {
       min-height: 32px !important;
-    }
-    .md-icon {
-      margin-right: 0 !important;
     }
     .md-list-action {
       opacity: 0;

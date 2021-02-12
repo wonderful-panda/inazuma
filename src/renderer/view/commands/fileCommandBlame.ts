@@ -4,7 +4,7 @@ const rootCtx = useRootModule();
 
 export const fileCommandBlame: FileCommand = {
   id: "Blame",
-  icon: "code",
+  icon: "CodeTags",
   label: "View(blame) this version",
   isEnabled(_, file) {
     return file.statusCode !== "D";
@@ -17,7 +17,7 @@ export const fileCommandBlame: FileCommand = {
 export const fileCommandBlameParent: FileCommand = {
   id: "BlameParent",
   label: "View(blame) previous version",
-  icon: "code",
+  icon: "CodeTags",
   isEnabled(commit, file) {
     return commit.parentIds.length > 0 && file.statusCode !== "A";
   },

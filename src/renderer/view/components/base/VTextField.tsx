@@ -1,5 +1,6 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import { MdTooltip, MdIcon, MdInput, MdField } from "./md";
+import { MdTooltip, MdInput, MdField } from "./md";
+import { VMaterialIcon, MaterialIconNames } from "./VMaterialIcon";
 import { toNumber } from "core/utils";
 import { optional } from "./prop";
 
@@ -13,8 +14,9 @@ export default vca.component({
     required: optional(Boolean),
     disabled: optional(Boolean),
     placeholder: optional(String),
-    headIcon: optional(String),
-    inlineIcon: optional(String),
+    headIcon: optional<MaterialIconNames>(String),
+    inlineIcon: optional<MaterialIconNames>(String),
+    iconSize: optional(Number),
     tooltip: optional(String),
     min: optional(Number),
     max: optional(Number),
@@ -22,15 +24,15 @@ export default vca.component({
   },
   setup(p, ctx) {
     const update = vca.updateEmitter<typeof p>();
-    const labelNode = (name: string | undefined) => (name ? <label>{name}</label> : undefined);
+    const labelNode = (name: string | undefined) => name && <label>{name}</label>;
 
     const helperTextNode = (name: string | undefined) =>
-      name ? <span staticClass="md-helper-text">{name}</span> : undefined;
+      name && <span staticClass="md-helper-text">{name}</span>;
 
-    const iconNode = (name: string | undefined) => (name ? <MdIcon>{name}</MdIcon> : undefined);
+    const iconNode = (name: MaterialIconNames | undefined) =>
+      name && <VMaterialIcon name={name} size={p.iconSize || 24} />;
 
-    const tooltipNode = (text: string | undefined) =>
-      text ? <MdTooltip>{text}</MdTooltip> : undefined;
+    const tooltipNode = (text: string | undefined) => text && <MdTooltip>{text}</MdTooltip>;
 
     const onInput = (value: string | number) => {
       if (p.type === "number") {

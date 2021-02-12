@@ -46,11 +46,9 @@ export function normalizeListeners<CTX extends SetupContext>(
   ctx: CTX
 ): CTX["listeners"] & Record<string, Function | Function[]> {
   const listeners = { ...ctx.listeners };
-  Object.keys(listeners).forEach(k => listeners[k] === undefined && delete listeners[k]);
+  Object.keys(listeners).forEach((k) => listeners[k] === undefined && delete listeners[k]);
   return listeners as any;
 }
-
-
 
 // This method is originated in vuejs/vue. https://github.com/vuejs/vue
 export function toNumber(val: any): string | number {

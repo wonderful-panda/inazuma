@@ -1,4 +1,5 @@
-import VIconButton from "./VIconButton";
+import { VIconButton } from "./VIconButton";
+import { VMaterialIcon } from "./VMaterialIcon";
 import { css } from "@emotion/css";
 
 // @vue/component
@@ -11,7 +12,7 @@ export default _fc<{ disabled?: boolean; action: () => void }>(
         action={props.action}
         {...rest}
       >
-        close
+        <VMaterialIcon name="Close" size={20} />
       </VIconButton>
     );
   }
@@ -23,8 +24,5 @@ const style = {
     min-height: 32px;
     margin: 0;
     padding: auto;
-    .md-icon {
-      font-size: 20px !important;
-    }
   `
 };

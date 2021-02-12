@@ -1,12 +1,13 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import { ErrorLikeObject } from "view/mainTypes";
-import VIconButton from "./VIconButton";
+import { VIconButton } from "./VIconButton";
 import * as md from "view/utils/md-classes";
-import { MdSnackbar, MdIcon } from "./md";
+import { MdSnackbar } from "./md";
 import { css } from "@emotion/css";
 import { __sync } from "view/utils/modifiers";
 import { computed } from "@vue/composition-api";
 import { optional, required } from "./prop";
+import { VMaterialIcon } from "./VMaterialIcon";
 
 export default vca.component({
   name: "VErrorReporter",
@@ -23,10 +24,12 @@ export default vca.component({
       return (
         <MdSnackbar class={style.container} md-active={__sync(hasError.value)}>
           <div>
-            <MdIcon>warning</MdIcon>
+            <VMaterialIcon name="AlertCircle" />
             <span class={[md.BODY1, style.message]}>{p.error?.message}</span>
           </div>
-          <VIconButton action={p.hide}>close</VIconButton>
+          <VIconButton action={p.hide}>
+            <VMaterialIcon name="Close" />
+          </VIconButton>
         </MdSnackbar>
       );
     };

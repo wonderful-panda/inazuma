@@ -7,7 +7,7 @@ import Terminal from "./Terminal";
 import VSplitterPanel from "./base/VSplitterPanel";
 import VTabs from "./base/VTabs";
 import DrawerNavigation from "./DrawerNavigation";
-import TitleBarButton from "./TitleBarButton";
+import { TitleBarButton } from "./TitleBarButton";
 import { __sync } from "../utils/modifiers";
 import { RepositoryTabDefinition, SplitterDirection } from "../mainTypes";
 import { useRootModule, useTabsModule } from "view/store";
@@ -125,15 +125,15 @@ export default vca.component({
       return (
         <BaseLayout title={state.repoPath}>
           <template slot="drawer-navigations">
-            <DrawerNavigation icon="local_offer" text="Branches" action={showSidebarBranches} />
-            <DrawerNavigation icon="cloud" text="Remotes" action={showSidebarRemotes} />
-            <DrawerNavigation icon="settings" text="Preferences" action={showPreference} />
-            <DrawerNavigation icon="home" text="Go to Home" action={showWelcomePage} />
-            <DrawerNavigation icon="info_outline" text="About" action={showVersionDialog} />
+            <DrawerNavigation icon="Tag" text="Branches" action={showSidebarBranches} />
+            <DrawerNavigation icon="Cloud" text="Remotes" action={showSidebarRemotes} />
+            <DrawerNavigation icon="Cog" text="Preferences" action={showPreference} />
+            <DrawerNavigation icon="Home" text="Go to Home" action={showWelcomePage} />
+            <DrawerNavigation icon="InformationOutline" text="About" action={showVersionDialog} />
           </template>
           <template slot="titlebar-buttons">
-            <TitleBarButton action={toggleTerminal}>keyboard</TitleBarButton>
-            <TitleBarButton action={reload}>refresh</TitleBarButton>
+            <TitleBarButton name="Console" action={toggleTerminal} />
+            <TitleBarButton name="Reload" action={reload} />
           </template>
           {loading.value && <VBackdropSpinner />}
           <keep-alive>

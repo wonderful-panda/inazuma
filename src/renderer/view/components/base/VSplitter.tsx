@@ -1,5 +1,6 @@
 import * as vca from "vue-tsx-support/lib/vca";
-import VIconButton from "./VIconButton";
+import { VIconButton } from "./VIconButton";
+import { VMaterialIcon } from "./VMaterialIcon";
 import { css } from "@emotion/css";
 import { ref } from "@vue/composition-api";
 import { required, withDefault } from "./prop";
@@ -73,7 +74,7 @@ export default vca.component({
       >
         {p.allowDirectionChange ? (
           <VIconButton raised tooltip="Switch splitter orientation" action={toggleDirection}>
-            swap_horiz
+            <VMaterialIcon name="ArrowSplitVertical" />
           </VIconButton>
         ) : undefined}
       </div>

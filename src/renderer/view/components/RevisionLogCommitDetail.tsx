@@ -19,6 +19,7 @@ import VSplitterPanel from "./base/VSplitterPanel";
 import { fileCommandBlame, fileCommandBlameParent } from "view/commands/fileCommandBlame";
 import { fileCommandYankPath } from "view/commands/fileCommandYankPath";
 import { injectContextMenu } from "./injection/contextMenu";
+import { MaterialIconNames, VMaterialIcon } from "./base/VMaterialIcon";
 
 const style = {
   container: css`
@@ -51,7 +52,6 @@ const style = {
     overflow: auto;
   `,
   commitAttrIcon: css`
-    font-size: 20px !important;
     margin-left: 8px;
   `,
   commitAttr: css`
@@ -59,7 +59,9 @@ const style = {
   `
 };
 
-const AttrIcon = withclass("md-icon")(style.commitAttrIcon);
+const AttrIcon = _fc<{ name: MaterialIconNames }>(({ props }) => (
+  <VMaterialIcon class={style.commitAttrIcon} name={props.name} size={20} />
+));
 const AttrText = withclass.span(style.commitAttr);
 
 const CommitMetadata = vca.component({
@@ -84,9 +86,9 @@ const CommitMetadata = vca.component({
             <h2 class={md.TITLE}>{commit.summary}</h2>
             <div class="md-subhead" v-show={commit.id}>
               <GitHash class={style.commitAttr} hash={commit.id} />
-              <AttrIcon>face</AttrIcon>
+              <AttrIcon name="Face" />
               <AttrText>{commit.author}</AttrText>
-              <AttrIcon>schedule</AttrIcon>
+              <AttrIcon name="ClockOutline" />
               <AttrText>{formatDateLLL(commit.date)}</AttrText>
             </div>
             <div class={style.refs} v-show={refs}>

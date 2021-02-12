@@ -8,6 +8,7 @@ import {
   RowEventArgs as RowEventArgs_,
   Vtreetable
 } from "vue-vtable";
+import { HEADLINE } from "../utils/md-classes";
 import * as vca from "vue-tsx-support/lib/vca";
 import { getExtension } from "core/utils";
 import { __sync } from "view/utils/modifiers";
@@ -17,9 +18,9 @@ import BlamePanel from "./BlamePanel";
 import { browserCommand } from "core/browser";
 import VTextField from "./base/VTextField";
 import { filterTreeNodes } from "core/tree";
-import { MdEmptyState } from "./base/md";
 import { css } from "@emotion/css";
-import VIconButton from "./base/VIconButton";
+import { VIconButton } from "./base/VIconButton";
+import { VMaterialIcon } from "./base/VMaterialIcon";
 import { SplitterDirection } from "view/mainTypes";
 import { ref, watch, computed, reactive } from "@vue/composition-api";
 import { withclass } from "./base/withClass";
@@ -92,6 +93,8 @@ const style = {
   noFileSelected: css`
     margin: auto;
     color: gray !important;
+    display: flex;
+    flex-flow: column nowrap;
   `,
   lastCell: css`
     flex: 1;
@@ -137,16 +140,17 @@ const FilterToolbar = vca.component({
       <div style={{ display: "flex" }}>
         <VTextField
           class={style.filterField}
-          inlineIcon="filter_list"
+          inlineIcon="Filter"
+          iconSize={20}
           tooltip="Filename filter"
           size={1}
           value={__sync(filterText.value)}
         />
         <ExpandButton tooltip="Expand all" action={p.expandAll}>
-          expand_more
+          <VMaterialIcon name="ChevronDown" />
         </ExpandButton>
         <ExpandButton tooltip="Collapse all" action={p.collapseAll}>
-          expand_less
+          <VMaterialIcon name="ChevronUp" />
         </ExpandButton>
       </div>
     );
@@ -260,12 +264,10 @@ const RightPanel = vca.component({
           style={{ margin: "0 0.2em" }}
         />
       ) : (
-        <MdEmptyState
-          style={{ transition: "none !important" }}
-          md-icon="no_sim"
-          md-label="No file selected"
-          md-description="Select file, and blame information will be shown here"
-        />
+        <div class={style.noFileSelected}>
+          <VMaterialIcon name="SimOff" size={160} />
+          <div class={HEADLINE}>No file selected</div>
+        </div>
       );
 
       return (
