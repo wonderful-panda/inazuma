@@ -1,5 +1,6 @@
 const webpack = require("webpack");
 const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const MonacoEditorPlugin = require("monaco-editor-webpack-plugin");
 const babelrc = require("./build/babelrc");
 
@@ -28,12 +29,24 @@ module.exports = {
         use: [{ loader: "babel-loader", options: babelrc }, "ts-loader"]
       },
       {
-        test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        test: /\.(css|scss)$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          {
+            loader: "sass-loader",
+            options: {
+              implementation: require("sass"),
+              sassOptions: {
+                fibers: require("fibers")
+              }
+            }
+          },
+        ]
       },
       {
         test: /\.ttf$/,
-        type: "asset/resource"
+        type: "asset/inline"
       }
     ]
   },
@@ -43,5 +56,8 @@ module.exports = {
       config: [__filename]
     }
   },
-  plugins: [new MonacoEditorPlugin()]
+  plugins: [
+    new MiniCssExtractPlugin(),
+    new MonacoEditorPlugin()
+  ]
 };

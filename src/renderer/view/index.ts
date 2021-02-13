@@ -1,3 +1,4 @@
+import "style";
 import "./install-vue";
 import * as vca from "vue-tsx-support/lib/vca";
 import Vue from "vue";
