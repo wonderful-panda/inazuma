@@ -6,8 +6,7 @@ const iconnames = [
   "diff-ignored",
   "diff-modified",
   "diff-removed",
-  "diff-renamed",
-  "line-arrow-left"
+  "diff-renamed"
 ];
 
 const paths = iconnames.reduce((prev, cur) => {
@@ -30,6 +29,6 @@ export const paths = {
 
 const template = HandleBars.compile(templateSource);
 fs.writeFileSync(
-  "src/renderer/view/components/octicon-paths.tsx",
+  "src/renderer/view/components/base/__octicon.tsx",
   template({ paths })
 );

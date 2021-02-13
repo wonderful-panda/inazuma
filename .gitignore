@@ -5,4 +5,4 @@ out
 *.log
 __generated
 __*.ts
-src/renderer/view/components/octicon-paths.tsx
+__*.tsx

@@ -19,7 +19,7 @@ interface ClassedComponentFactory<C extends VueConstructor | string> {
 }
 
 type WithClass = {
-  [K in keyof IntrinsicElements]: ClassedComponentFactory<K>;
+  [K in keyof IntrinsicElements | "svg"]: ClassedComponentFactory<K>;
 } & {
   <C extends VueConstructor | string>(component: C): ClassedComponentFactory<C>;
 };
