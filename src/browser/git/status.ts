@@ -19,7 +19,7 @@ async function getUntrackedFiles(repository: string): Promise<readonly FileEntry
   }));
 }
 
-export async function statusWithStat(repository: string): Promise<readonly FileEntry[]> {
+export async function statusWithStat(repository: string): Promise<FileEntry[]> {
   const [staged, unstaged, untracked] = await Promise.all([
     getWorkingTreeStat(repository, true),
     getWorkingTreeStat(repository, false),

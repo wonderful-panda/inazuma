@@ -6,3 +6,8 @@ out
 __generated
 __*.ts
 __*.tsx
+src/rust-backend/native/target
+src/rust-backend/native/index.node
+src/rust-backend/native/artifacts.json
+**/*~
+

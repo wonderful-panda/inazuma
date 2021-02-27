@@ -1,0 +1,20 @@
+[package]
+name = "inazuma-rust-backend"
+version = "0.1.0"
+authors = ["iwata hidetaka <iwata0303@gmail.com>"]
+license = "MIT"
+build = "build.rs"
+edition = "2018"
+exclude = ["artifacts.json", "index.node"]
+
+[lib]
+name = "inazuma_rust_backend"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+neon-build = "0.7.1"
+
+[dependencies]
+neon = "0.7.1"
+regex = "1"
+thiserror = "1.0"

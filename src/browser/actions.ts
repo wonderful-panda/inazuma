@@ -8,6 +8,9 @@ import git from "./git";
 import wm from "./windowManager";
 import { RepositorySessions, RepositorySession } from "./repositorySession";
 import { openPty } from "./pty";
+import { blame } from "./blame";
+import { getTextFileContent, saveTo } from "./file";
+import { logAsync, filelogAsync, refsAsync, getCommitDetailAsync } from "inazuma-rust-backend";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
@@ -25,16 +28,13 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
       return ret;
     },
     async getCommitDetail(_, { repoPath, sha }): Promise<CommitDetail> {
-      const detail = await getCommitDetail(repoPath, sha);
-      return detail;
+      return await getCommitDetail(repoPath, sha);
     },
     async getBlame(_, { repoPath, relPath, sha }): Promise<Blame> {
-      const blame = await git.blame(repoPath, relPath, sha);
-      return blame;
+      return await blame(repoPath, relPath, sha);
     },
     async getFileLog(_, { repoPath, relPath, sha }): Promise<FileCommit[]> {
-      const ret = [] as FileCommit[];
-      await git.filelog(repoPath, 100, [sha], relPath, (c) => ret.push(c));
+      const ret = await filelogAsync(repoPath, relPath, 100, [sha]);
       return ret;
     },
     getTree(_, { repoPath, sha }): Promise<LsTreeEntry[]> {
@@ -65,7 +65,7 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
       return showExternalDiff(rs, left, right);
     },
     getTextFileContent(_, { repoPath, file }) {
-      return git.getTextFileContent(repoPath, file);
+      return getTextFileContent(repoPath, file);
     },
     async yankText(_, text) {
       clipboard.writeText(text);
@@ -104,30 +104,55 @@ function getWtreePseudoCommit(headId: string | undefined, mergeHeads: string[]):
   };
 }
 
+async function getRefs(repoPath: string): Promise<Refs> {
+  const refs_ = await refsAsync(repoPath);
+  const refs: Refs = {
+    ...refs_,
+    refsById: {}
+  };
+  if (refs.head) {
+    refs.refsById[refs.head] = [{ id: refs.head, type: "HEAD", fullname: "HEAD" }];
+  }
+  const remotes = Object.values(refs.remotes).reduce((prev, cur) => {
+    prev.push(...cur);
+    return prev;
+  }, [] as Ref[]);
+  const sortedHeads = refs.heads.sort((a, b) => {
+    if (a.current) {
+      return -1;
+    } else if (b.current) {
+      return 1;
+    } else {
+      return a.name.localeCompare(b.name);
+    }
+  });
+  for (const r of [...sortedHeads, ...refs.tags, ...remotes]) {
+    (refs.refsById[r.id] || (refs.refsById[r.id] = [])).push(r);
+  }
+  return refs;
+}
+
 async function fetchHistory(
   repoPath: string,
   num: number
 ): Promise<{ commits: Commit[]; refs: Refs }> {
-  const refs = await git.getRefs(repoPath);
-  const headId = refs.head;
-
-  const commits = headId ? [getWtreePseudoCommit(headId, refs.mergeHeads)] : [];
-  await git.log(repoPath, num, Object.keys(refs.refsById), (commit) => {
-    commits.push(commit);
-  });
+  const [refs, commits] = await Promise.all([getRefs(repoPath), logAsync(repoPath, num)]);
+  if (refs.head) {
+    commits.unshift(getWtreePseudoCommit(refs.head, refs.mergeHeads));
+  }
   return { commits, refs };
 }
 
 async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {
   if (sha === PSEUDO_COMMIT_ID_WTREE) {
-    const refs = await git.getRefs(repoPath);
+    const refs = await getRefs(repoPath);
     const files = await git.statusWithStat(repoPath);
     return Object.assign(getWtreePseudoCommit(refs.head, refs.mergeHeads), {
       body: "",
       files
     });
   } else {
-    const commits = await git.getCommitDetail(repoPath, sha);
+    const commits = await getCommitDetailAsync(repoPath, sha);
     return commits;
   }
 }
@@ -178,7 +203,7 @@ async function prepareDiffFile(rs: RepositorySession, file: FileSpec): Promise<s
   if (await fs.pathExists(absPath)) {
     return absPath;
   }
-  await git.saveTo(rs.repoPath, file, absPath);
+  await saveTo(rs.repoPath, file, absPath);
   return absPath;
 }
 

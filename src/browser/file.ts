@@ -2,19 +2,15 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import * as chardet from "chardet";
 import * as iconv from "iconv-lite";
-import { exec } from "./exec";
+import { getContentAsync, saveToAsync } from "inazuma-rust-backend";
 
 export async function catFile(repository: string, file: FileSpec): Promise<Buffer> {
   if (file.revspec === "UNSTAGED") {
     const abspath = path.join(repository, file.path);
     return fs.readFile(abspath);
   }
-  const target = `${file.revspec === "STAGED" ? "" : file.revspec}:${file.path}`;
-  const { stdout } = await exec("show", {
-    repository,
-    args: ["-p", target]
-  });
-  return stdout;
+  const content = await getContentAsync(repository, file.path, file.revspec);
+  return content;
 }
 
 export async function getTextFileContent(repository: string, file: FileSpec): Promise<TextFile> {
@@ -25,6 +21,9 @@ export async function getTextFileContent(repository: string, file: FileSpec): Pr
 }
 
 export async function saveTo(repository: string, file: FileSpec, destPath: string): Promise<void> {
-  const stdout = await catFile(repository, file);
-  await fs.writeFile(destPath, stdout);
+  if (file.revspec === "UNSTAGED") {
+    const abspath = path.join(repository, file.path);
+    await fs.copyFile(abspath, destPath);
+  }
+  await saveToAsync(repository, file.path, file.revspec, destPath);
 }
