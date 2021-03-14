@@ -1,7 +1,7 @@
 import * as vca from "vue-tsx-support/lib/vca";
 import { RowEventArgs } from "vue-vtable";
 import { useRootModule } from "../store";
-import RevisionLogWorkingTree from "./RevisionLogWorkingTree";
+// import RevisionLogWorkingTree from "./RevisionLogWorkingTree";
 import RevisionLogCommitDetail from "./RevisionLogCommitDetail";
 import LogTable from "./LogTable";
 import VSplitterPanel from "./base/VSplitterPanel";
@@ -17,6 +17,7 @@ import { computed } from "@vue/composition-api";
 import { css } from "@emotion/css";
 import { injectContextMenu } from "./injection/contextMenu";
 import { getCommitContextMenuItems } from "view/commands";
+import RevisionLogWorkingTree from "./RevisionLogWorkingTree";
 
 const rootStyle = css`
   flex: 1;
@@ -68,8 +69,23 @@ export default vca.component({
       const detailOrientation = computed<Orientation>(() =>
         persistData.splitter.direction === "horizontal" ? "portrait" : "landscape"
       );
-      const SecondPane =
-        rootCtx.state.selectedCommit.id === "--" ? RevisionLogWorkingTree : RevisionLogCommitDetail;
+      const logDetail = rootCtx.state.selectedCommit;
+      const detailPanel =
+        logDetail.type === "status" ? (
+          <RevisionLogWorkingTree
+            slot="second"
+            status={logDetail}
+            orientation={detailOrientation.value}
+          />
+        ) : (
+          <RevisionLogCommitDetail
+            slot="second"
+            commit={logDetail}
+            refs={rootCtx.getters.selectedCommitRefs}
+            orientation={detailOrientation.value}
+          />
+        );
+
       return (
         <VSplitterPanel
           class={rootStyle}
@@ -89,12 +105,7 @@ export default vca.component({
             onRowdrop={onRowdrop}
             onRowcontextmenu={showContextMenu}
           />
-          <SecondPane
-            slot="second"
-            commit={state.selectedCommit}
-            refs={rootCtx.getters.selectedCommitRefs}
-            orientation={detailOrientation.value}
-          />
+          {detailPanel}
         </VSplitterPanel>
       );
     };

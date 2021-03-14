@@ -21,7 +21,7 @@ const fileCommands: FileCommand[] = [
   fileCommandBlameParent
 ];
 
-export function executeCommitCommand(command: CommitCommand, commit: Commit) {
+export function executeCommitCommand(command: CommitCommand, commit: DagNode) {
   const available = command.isEnabled || command.isVisible || (() => true);
   if (!available(commit)) {
     return;
@@ -31,7 +31,7 @@ export function executeCommitCommand(command: CommitCommand, commit: Commit) {
 
 export function executeFileCommand(
   command: FileCommand,
-  commit: Commit,
+  commit: DagNode,
   file: FileEntry,
   path: string
 ) {

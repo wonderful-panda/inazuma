@@ -5,10 +5,20 @@ import { VIconButton } from "./base/VIconButton";
 import { MonoDiv } from "./base/mono";
 import { FileCommand } from "view/commands/types";
 import { executeFileCommand } from "view/commands";
-import { MdButton, MdTooltip } from "./base/md";
 import { VMaterialIcon } from "./base/VMaterialIcon";
 
 export const RowHeight = 42;
+
+const FileListRowButton = withclass(VIconButton)(
+  css`
+    max-width: 22px !important;
+    max-height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    font-size: 14px;
+    margin: auto 4px;
+  `
+);
 
 const Container = withclass.div(
   css`
@@ -21,21 +31,11 @@ const Container = withclass.div(
     border-bottom: 1px solid #444;
     .file-action-buttons {
       position: absolute;
-      height: 28px;
+      height: 26px;
       padding: 2px 4px;
-      border-radius: 14px;
       right: 4px;
-      bottom: 4px;
+      bottom: 2px;
       opacity: 0;
-      background-color: #333;
-    }
-    .file-action-button {
-      max-width: 22px !important;
-      max-height: 22px !important;
-      min-width: 22px !important;
-      min-height: 22px !important;
-      font-size: 14px;
-      margin: auto 4px;
     }
     :hover .file-action-buttons {
       opacity: 1;
@@ -134,29 +134,28 @@ const getFileType = (item: FileEntry) => {
 
 const FileActionButtons = _fc<{
   item: FileEntry;
-  commit: Commit;
+  commit: DagNode;
   buttons?: readonly FileCommand[];
   menus?: readonly FileCommand[];
 }>(({ props: { item, commit, buttons, menus } }) => {
   const buttonNodes = (buttons || []).map(
     (a, index) =>
       a.icon && (
-        <VIconButton
-          class="file-action-button"
+        <FileListRowButton
           key={index}
           disabled={a.isEnabled && !a.isEnabled(commit, item, item.path)}
           action={() => executeFileCommand(a, commit, item, item.path)}
           tooltip={a.label}
         >
           <VMaterialIcon name={a.icon} />
-        </VIconButton>
+        </FileListRowButton>
       )
   );
   if (menus) {
     const menuNodes = menus.map((m, index) => (
       <md-menu-item
         key={index}
-        disabled={m.isEnabled && !m.isEnabled(commit, item, item.path)}
+        disabled={m.disabled?.(commit, item, item.path)}
         onClick={() => executeFileCommand(m, commit, item, item.path)}
       >
         {m.label}
@@ -164,10 +163,9 @@ const FileActionButtons = _fc<{
     ));
     buttonNodes.push(
       <md-menu key="other-actions" md-close-on-click md-align-trigger md-size="auto">
-        <MdButton class="md-icon-button file-action-button" md-menu-trigger>
+        <FileListRowButton tooltip="Other actions" action="menu-trigger">
           <VMaterialIcon name="DotsVertical" />
-          <MdTooltip>Other actions</MdTooltip>
-        </MdButton>
+        </FileListRowButton>
         <md-menu-content>{menuNodes}</md-menu-content>
       </md-menu>
     );
@@ -178,7 +176,7 @@ const FileActionButtons = _fc<{
 
 export const FileListRow = _fc<{
   item: FileEntry;
-  commit: Commit;
+  commit: DagNode;
   buttons?: readonly FileCommand[];
   menus?: readonly FileCommand[];
 }>(({ props: { item, commit, buttons, menus } }) => {

@@ -23,8 +23,7 @@ const rootStyle = css`
 export default vca.component({
   name: "RevisionLogWorkingTree",
   props: {
-    commit: required<CommitDetail>(),
-    refs: required<readonly Ref[]>(Array),
+    status: required<WorkingTreeStat>(),
     orientation: required<Orientation>(String)
   },
   setup(p) {
@@ -40,22 +39,21 @@ export default vca.component({
       storage,
       "RevisionLogWorkingTree"
     );
-    const stagedFiles = computed(() => p.commit.files.filter((f) => f.inIndex));
-    const unstagedFiles = computed(() => p.commit.files.filter((f) => f.inWorkingTree));
     const splitterDirection = computed<SplitterDirection>(() =>
       p.orientation === "portrait" ? "vertical" : "horizontal"
     );
+    const node = computed<DagNode>(() => ({ id: p.status.id, parentIds: p.status.parentIds }));
     const showExternalDiffCommittedAndStaged = ({ item }: { item: FileEntry }) => {
       if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
         return;
       }
-      executeFileCommand(diffStaged, p.commit, item, item.path);
+      executeFileCommand(diffStaged, node.value, item, item.path);
     };
     const showExternalDiffStagedAndUnstaged = ({ item }: { item: FileEntry }) => {
       if (item.statusCode !== "M" && !item.statusCode.startsWith("R")) {
         return;
       }
-      executeFileCommand(diffUnstaged, p.commit, item, item.path);
+      executeFileCommand(diffUnstaged, node.value, item, item.path);
     };
 
     return () => (
@@ -70,15 +68,15 @@ export default vca.component({
         <FileList
           slot="first"
           title="Changes to be committed"
-          commit={p.commit}
-          files={stagedFiles.value}
+          commit={node.value}
+          files={p.status.stagedFiles}
           onRowdblclick={showExternalDiffCommittedAndStaged}
         />
         <FileList
           slot="second"
           title="Changes not staged"
-          commit={p.commit}
-          files={unstagedFiles.value}
+          commit={node.value}
+          files={p.status.unstagedFiles}
           onRowdblclick={showExternalDiffStagedAndUnstaged}
         />
       </VSplitterPanel>

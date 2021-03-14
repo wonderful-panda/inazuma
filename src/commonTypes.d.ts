@@ -56,10 +56,17 @@ declare global {
 
   interface WorkingTreeStat {
     id: "--";
+    parentIds: string[];
     untrackedFiles: string[];
     unstagedFiles: FileEntry[];
     stagedFiles: FileEntry[];
   }
+
+  type LogDetail = {
+    type: "commit"
+  } & CommitDetail | {
+    type: "status"
+  } & WorkingTreeStat;
 
   interface Blame {
     commits: ReadonlyArray<FileCommit>;
@@ -116,7 +123,7 @@ declare global {
 
   interface BrowserCommand {
     openRepository(repoPath: string): Promise<{ commits: Commit[]; refs: Refs }>;
-    getCommitDetail(params: { repoPath: string; sha: string }): Promise<CommitDetail>;
+    getLogDetail(params: { repoPath: string; sha: string }): Promise<LogDetail>;
     getBlame(params: { repoPath: string; relPath: string; sha: string }): Promise<Blame>;
     getFileLog(params: { repoPath: string; relPath: string; sha: string }): Promise<FileCommit[]>;
     getTree(params: { repoPath: string; sha: string }): Promise<LsTreeEntry[]>;

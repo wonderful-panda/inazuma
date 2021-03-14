@@ -54,7 +54,7 @@ const headerStyle = css`
 export default vca.component({
   name: "FileList",
   props: {
-    commit: required<Commit>(),
+    commit: required<DagNode>(),
     files: required<readonly FileEntry[]>(Array),
     buttons: optional<readonly FileCommand[]>(Array),
     menus: optional<readonly FileCommand[]>(Array),

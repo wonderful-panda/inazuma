@@ -2,7 +2,7 @@ import { evaluateSlot } from "core/utils";
 import { modifiers as m } from "vue-tsx-support";
 import * as vca from "vue-tsx-support/lib/vca";
 import { MdButton, MdTooltip } from "./md";
-import { required, optional } from "./prop";
+import { optional, required } from "./prop";
 
 export default vca.component({
   name: "VButton",
@@ -14,7 +14,7 @@ export default vca.component({
     disabled: optional(Boolean),
     primary: optional(Boolean),
     accent: optional(Boolean),
-    action: required(Function)
+    action: required<(() => void) | "menu-trigger">()
   },
   setup(p, ctx) {
     return () => {
@@ -26,8 +26,12 @@ export default vca.component({
       };
 
       const tooltip = p.tooltip ? <MdTooltip>{p.tooltip}</MdTooltip> : undefined;
+      const spread =
+        p.action === "menu-trigger"
+          ? { attrs: { "md-menu-trigger": true } }
+          : { on: { click: m.stop(p.action) } };
       return (
-        <MdButton class={classes} href={p.href} disabled={p.disabled} onClick={m.stop(p.action)}>
+        <MdButton class={classes} href={p.href} disabled={p.disabled} {...spread}>
           {evaluateSlot(ctx, "default")}
           {tooltip}
         </MdButton>

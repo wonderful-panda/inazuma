@@ -2,7 +2,7 @@ import { contextBridge, ipcRenderer } from "electron";
 
 const keys: Record<keyof BrowserCommand, null> = {
   openRepository: null,
-  getCommitDetail: null,
+  getLogDetail: null,
   getBlame: null,
   getFileLog: null,
   getTree: null,

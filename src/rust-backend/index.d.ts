@@ -77,6 +77,8 @@ export declare function getWorkingTreeStatAsync(repoPath: string, cached: boolea
 
 export declare function getUntrackedFilesAsync(repoPath: string): Promise<string[]>;
 
+export declare function getWorkingTreeParentsAsync(repoPath: string): Promise<string[]>;
+
 export declare function refsAsync(repoPath: string): Promise<Refs>;
 
 export declare function blameAsync(

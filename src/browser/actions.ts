@@ -11,6 +11,7 @@ import { openPty } from "./pty";
 import { blame } from "./blame";
 import { getTextFileContent, saveTo } from "./file";
 import { logAsync, filelogAsync, refsAsync, getCommitDetailAsync } from "inazuma-rust-backend";
+import { status } from "./status";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
 
@@ -27,8 +28,8 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
       const ret = await fetchHistory(repoPath, 1000);
       return ret;
     },
-    async getCommitDetail(_, { repoPath, sha }): Promise<CommitDetail> {
-      return await getCommitDetail(repoPath, sha);
+    async getLogDetail(_, { repoPath, sha }): Promise<LogDetail> {
+      return await getLogDetail(repoPath, sha);
     },
     async getBlame(_, { repoPath, relPath, sha }): Promise<Blame> {
       return await blame(repoPath, relPath, sha);
@@ -143,17 +144,19 @@ async function fetchHistory(
   return { commits, refs };
 }
 
-async function getCommitDetail(repoPath: string, sha: string): Promise<CommitDetail> {
+async function getLogDetail(repoPath: string, sha: string): Promise<LogDetail> {
   if (sha === PSEUDO_COMMIT_ID_WTREE) {
-    const refs = await getRefs(repoPath);
-    const files = await git.statusWithStat(repoPath);
-    return Object.assign(getWtreePseudoCommit(refs.head, refs.mergeHeads), {
-      body: "",
-      files
-    });
+    const workingTreeStatus = await status(repoPath);
+    return {
+      type: "status",
+      ...workingTreeStatus
+    };
   } else {
-    const commits = await getCommitDetailAsync(repoPath, sha);
-    return commits;
+    const commitDetail = await getCommitDetailAsync(repoPath, sha);
+    return {
+      type: "commit",
+      ...commitDetail
+    };
   }
 }
 

@@ -1,8 +1,6 @@
 use super::types::*;
-use super::{exec, GitError};
+use super::{exec, merge_heads, rev_parse, GitError};
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::prelude::*;
 use std::path::Path;
 
 fn parse_refs_output(output: &str) -> Result<Refs, GitError> {
@@ -84,23 +82,8 @@ pub fn refs(repo_path: &Path) -> Result<Refs, GitError> {
     let stdout = std::str::from_utf8(&output.stdout).unwrap();
     let mut refs = parse_refs_output(stdout)?;
     if refs.head.is_none() {
-        let ret = exec(repo_path, "rev-parse", &vec!["HEAD"], &[])?;
-        if ret.status.success() {
-            let sha = std::str::from_utf8(&ret.stdout)
-                .unwrap()
-                .trim_end_matches('\n')
-                .to_string();
-            refs.head = Some(sha);
-        }
+        refs.head = rev_parse::rev_parse(repo_path, "HEAD")?;
     }
-    let merge_head_file = repo_path.join(".git/MERGE_HEAD");
-    if merge_head_file.exists() {
-        let mut file = File::open(merge_head_file)?;
-        let mut content = String::new();
-        file.read_to_string(&mut content)?;
-        for line in content.trim_end_matches('\n').lines() {
-            refs.merge_heads.push(line.to_string());
-        }
-    }
-    return Ok(refs);
+    refs.merge_heads = merge_heads::merge_heads(repo_path)?;
+    Ok(refs)
 }

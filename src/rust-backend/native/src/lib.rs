@@ -19,6 +19,10 @@ register_module!(mut cx, {
         "getUntrackedFilesAsync",
         bridge::status::get_untracked_files_async,
     )?;
+    cx.export_function(
+        "getWorkingTreeParentsAsync",
+        bridge::status::get_workingtree_parents_async,
+    )?;
     cx.export_function("refsAsync", refs::refs_async)?;
     cx.export_function("blameAsync", blame::blame_async)?;
     cx.export_function("getContentAsync", file::get_content_async)?;

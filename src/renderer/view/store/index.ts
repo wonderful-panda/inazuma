@@ -19,7 +19,8 @@ import { sortTreeInplace } from "core/tree";
 import { Mutations, Getters, Context, Actions, Module, createStore } from "vuex-smart-module";
 import { Store } from "vuex";
 
-const emptyCommit: CommitDetail = {
+const emptyDetail: LogDetail = {
+  type: "commit",
   id: "",
   summary: "",
   author: "",
@@ -49,7 +50,7 @@ class RootState {
   };
 
   selectedIndex = -1;
-  selectedCommit = emptyCommit;
+  selectedCommit = emptyDetail;
   rowHeight = 24;
   sidebar = "";
   preferenceShown = false;
@@ -64,7 +65,7 @@ class RootMutations extends Mutations<RootState> {
     state.graphs = payload.graphs;
     state.refs = payload.refs;
     state.selectedIndex = -1;
-    state.selectedCommit = emptyCommit;
+    state.selectedCommit = emptyDetail;
   }
 
   resetRefs(payload: { refs: Refs }) {
@@ -105,20 +106,20 @@ class RootMutations extends Mutations<RootState> {
     state.graphs = {};
     state.graphs = {};
     state.selectedIndex = -1;
-    state.selectedCommit = emptyCommit;
+    state.selectedCommit = emptyDetail;
   }
 
   setSelectedIndex(payload: { index: number }) {
     const state = this.state;
     state.selectedIndex = payload.index;
-    state.selectedCommit = emptyCommit;
+    state.selectedCommit = emptyDetail;
   }
 
-  setCommitDetail(payload: { commit: CommitDetail }) {
-    const commit = payload.commit;
+  setLogDetail(payload: { detail: LogDetail }) {
+    const detail = payload.detail;
     const { commits, selectedIndex } = this.state;
-    if (commits[selectedIndex].id === commit.id) {
-      this.state.selectedCommit = commit;
+    if (commits[selectedIndex].id === detail.id) {
+      this.state.selectedCommit = detail;
     }
   }
 
@@ -256,8 +257,8 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations, RootAct
     this.mutations.resetItems({ graphs, ...payload });
   }
 
-  showCommitDetail(payload: { commit: CommitDetail }) {
-    this.mutations.setCommitDetail(payload);
+  showLogDetail(payload: { detail: LogDetail }) {
+    this.mutations.setLogDetail(payload);
   }
 
   async setSelectedIndex(payload: { index: number; force?: boolean }): Promise<void> {
@@ -267,11 +268,11 @@ class RootActions extends Actions<RootState, RootGetters, RootMutations, RootAct
     try {
       this.mutations.setSelectedIndex(payload);
       const { repoPath, commits } = this.state;
-      const commit = await browserCommand.getCommitDetail({
+      const detail = await browserCommand.getLogDetail({
         repoPath,
         sha: commits[payload.index].id
       });
-      this.actions.showCommitDetail({ commit });
+      this.actions.showLogDetail({ detail });
     } catch (error) {
       this.actions.showError({ error });
     }
