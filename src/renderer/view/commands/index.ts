@@ -22,8 +22,7 @@ const fileCommands: FileCommand[] = [
 ];
 
 export function executeCommitCommand(command: CommitCommand, commit: DagNode) {
-  const available = command.isEnabled || command.isVisible || (() => true);
-  if (!available(commit)) {
+  if (command.disabled?.(commit)) {
     return;
   }
   command.handler(commit);
@@ -35,8 +34,7 @@ export function executeFileCommand(
   file: FileEntry,
   path: string
 ) {
-  const available = command.isEnabled || (() => true);
-  if (!available(commit, file, path)) {
+  if (command.disabled?.(commit, file, path)) {
     return;
   }
   command.handler(commit, file, path);
@@ -46,14 +44,14 @@ export function getCommitContextMenuItems(commit: Commit): ContextMenuItem[] {
   if (commit.id === "--") {
     return [];
   }
-  const commands = commitCommands.filter((c) => c.isVisible === undefined || c.isVisible(commit));
+  const commands = commitCommands.filter((c) => !c.hidden?.(commit));
   if (commands.length === 0) {
     return [];
   }
   return commands.map((c) => ({
     id: c.id,
     label: c.label,
-    disabled: c.isEnabled !== undefined && !c.isEnabled(commit),
+    disabled: c.disabled?.(commit),
     action: () => executeCommitCommand(c, commit)
   }));
 }
@@ -72,7 +70,7 @@ export function getFileContextMenuItems(
       ({
         id: c.id,
         label: c.label,
-        disabled: c.isEnabled !== undefined && !c.isEnabled(commit, file, path),
+        disabled: c.disabled?.(commit, file, path),
         action: () => {
           executeFileCommand(c, commit, file, path);
         }

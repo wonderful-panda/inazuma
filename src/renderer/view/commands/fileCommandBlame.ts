@@ -6,8 +6,8 @@ export const fileCommandBlame: FileCommand = {
   id: "Blame",
   icon: "CodeTags",
   label: "View(blame) this version",
-  isEnabled(_, file) {
-    return file.statusCode !== "D";
+  disabled(_, file) {
+    return file.statusCode === "D";
   },
   handler(commit, file) {
     rootCtx.dispatch("showFileTab", { sha: commit.id, relPath: file.path });
@@ -18,8 +18,8 @@ export const fileCommandBlameParent: FileCommand = {
   id: "BlameParent",
   label: "View(blame) previous version",
   icon: "CodeTags",
-  isEnabled(commit, file) {
-    return commit.parentIds.length > 0 && file.statusCode !== "A";
+  disabled(commit, file) {
+    return commit.parentIds.length === 0 || file.statusCode === "A";
   },
   handler(commit, file) {
     rootCtx.dispatch("showFileTab", {

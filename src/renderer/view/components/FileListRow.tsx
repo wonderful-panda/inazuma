@@ -143,7 +143,7 @@ const FileActionButtons = _fc<{
       a.icon && (
         <FileListRowButton
           key={index}
-          disabled={a.isEnabled && !a.isEnabled(commit, item, item.path)}
+          disabled={a.disabled?.(commit, item, item.path)}
           action={() => executeFileCommand(a, commit, item, item.path)}
           tooltip={a.label}
         >
