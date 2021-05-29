@@ -12,8 +12,6 @@ declare interface FileEntry {
   statusCode: string;
   insertions?: number | "-";
   deletions?: number | "-";
-  inWorkingTree?: boolean;
-  inIndex?: boolean;
 }
 
 declare interface CommitDetail extends Commit {
@@ -26,6 +24,14 @@ declare interface FileLogEntry extends Commit {
   oldPath?: string;
   statusCode: string;
 }
+
+declare type LstreeEntry = {
+  data: {
+    type: "blob" | "tree",
+    path: string
+  };
+  children?: LstreeEntry[];
+};
 
 declare interface RefBase<TypeName extends string> {
   type: TypeName;
@@ -78,6 +84,8 @@ export declare function getWorkingTreeStatAsync(repoPath: string, cached: boolea
 export declare function getUntrackedFilesAsync(repoPath: string): Promise<string[]>;
 
 export declare function getWorkingTreeParentsAsync(repoPath: string): Promise<string[]>;
+
+export declare function lstreeAsync(repoPath: string, sha: string): Promise<LstreeEntry[]>;
 
 export declare function refsAsync(repoPath: string): Promise<Refs>;
 

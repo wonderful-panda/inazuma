@@ -2,6 +2,7 @@ pub mod blame;
 pub mod commit_detail;
 pub mod file;
 pub mod log;
+pub mod lstree;
 pub mod refs;
 pub mod status;
 
@@ -282,6 +283,31 @@ impl ToJsValue for Refs {
             tags: self.tags,
             remotes: self.remotes
         });
+        Ok(obj)
+    }
+}
+
+impl ToJsValue for LstreeEntry {
+    type ValueType = JsObject;
+    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
+        let obj = JsObject::new(cx);
+        let data = JsObject::new(cx);
+        match &self {
+            LstreeEntry::Tree { path, children } => {
+                set_props!(cx, data, {
+                    type: "tree",
+                    path: path
+                });
+                set_props!(cx, obj, { children: children });
+            }
+            LstreeEntry::Blob { path } => {
+                set_props!(cx, data, {
+                    type: "blob",
+                    path: path
+                });
+            }
+        }
+        obj.set(cx, "data", data)?;
         Ok(obj)
     }
 }

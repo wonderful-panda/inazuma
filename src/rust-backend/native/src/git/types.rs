@@ -117,3 +117,13 @@ pub struct Refs {
     pub tags: Vec<TagRef>,
     pub remotes: HashMap<String, Vec<RemoteRef>>,
 }
+
+pub enum LstreeEntry {
+    Blob {
+        path: String,
+    },
+    Tree {
+        path: String,
+        children: Vec<LstreeEntry>,
+    },
+}

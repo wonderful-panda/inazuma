@@ -23,6 +23,7 @@ register_module!(mut cx, {
         "getWorkingTreeParentsAsync",
         bridge::status::get_workingtree_parents_async,
     )?;
+    cx.export_function("lstreeAsync", bridge::lstree::lstree_async)?;
     cx.export_function("refsAsync", refs::refs_async)?;
     cx.export_function("blameAsync", blame::blame_async)?;
     cx.export_function("getContentAsync", file::get_content_async)?;

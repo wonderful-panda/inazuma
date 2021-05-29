@@ -6,6 +6,7 @@ import type * as backend from "inazuma-rust-backend";
 declare global {
   type Commit = backend.Commit;
   type FileEntry = backend.FileEntry;
+  type LstreeEntry = backend.LstreeEntry;
   type CommitDetail = backend.CommitDetail;
   type BranchRef = backend.BranchRef;
   type HeadRef = backend.HeadRef;
@@ -91,15 +92,6 @@ declare global {
     content: string;
   }
 
-  interface LsTreeEntry {
-    data: {
-      path: string;
-      basename: string;
-      type: "blob" | "tree";
-    };
-    children?: LsTreeEntry[];
-  }
-
   type OpenPtyOptions = {
     cwd: string;
     file: string;
@@ -126,7 +118,7 @@ declare global {
     getLogDetail(params: { repoPath: string; sha: string }): Promise<LogDetail>;
     getBlame(params: { repoPath: string; relPath: string; sha: string }): Promise<Blame>;
     getFileLog(params: { repoPath: string; relPath: string; sha: string }): Promise<FileCommit[]>;
-    getTree(params: { repoPath: string; sha: string }): Promise<LsTreeEntry[]>;
+    getTree(params: { repoPath: string; sha: string }): Promise<LstreeEntry[]>;
     getConfig(): Promise<Config>;
     resetConfig(config: Config): Promise<void>;
     runInteractiveShell(curdir: string): Promise<void>;

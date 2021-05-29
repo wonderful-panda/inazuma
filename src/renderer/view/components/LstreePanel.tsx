@@ -10,7 +10,7 @@ import {
 } from "vue-vtable";
 import { HEADLINE } from "../utils/md-classes";
 import * as vca from "vue-tsx-support/lib/vca";
-import { getExtension } from "core/utils";
+import { getExtension, getFileName } from "core/utils";
 import { __sync } from "view/utils/modifiers";
 import VSplitterPanel from "./base/VSplitterPanel";
 import VBackdropSpinner from "./base/VBackdropSpinner";
@@ -28,7 +28,10 @@ import { injectErrorHandler } from "./injection/errorHandler";
 import { injectStorage, useStorage } from "./injection/storage";
 import { required, optional } from "./base/prop";
 
-type Data = LsTreeEntry["data"];
+interface Data {
+  path: string;
+  type: "blob" | "tree"
+};
 type TreeNodeWithState = TreeNodeWithState_<Data>;
 type VtableSlotCellProps = VtableSlotCellProps_<TreeNodeWithState>;
 type RowEventArgs = RowEventArgs_<TreeNodeWithState, MouseEvent>;
@@ -160,7 +163,7 @@ const FilterToolbar = vca.component({
 const LeftPanel = vca.component({
   name: "LstreeLeftPanel",
   props: {
-    rootNodes: required<readonly LsTreeEntry[]>(Array),
+    rootNodes: required<readonly LstreeEntry[]>(Array),
     columnWidths: required<Record<string, number>>(Object),
     selectedPath: required(String)
   },
@@ -174,7 +177,7 @@ const LeftPanel = vca.component({
         if (!value) {
           filteredRoots.value = props.rootNodes;
         } else {
-          const predicate = (v: Data) => v.basename.indexOf(value) >= 0;
+          const predicate = (v: Data) => v.path.indexOf(value) >= 0;
           filteredRoots.value = filterTreeNodes(props.rootNodes, predicate);
         }
       }, 500)
@@ -205,12 +208,12 @@ const LeftPanel = vca.component({
     };
 
     const renderCell = ({ item, columnId }: VtableSlotCellProps) => {
-      const { basename, type } = item.data;
+      const { path, type } = item.data;
       switch (columnId) {
         case "name":
-          return <ExpandableCell nodeState={item}>{basename}</ExpandableCell>;
+          return <ExpandableCell nodeState={item}>{getFileName((path))}</ExpandableCell>;
         case "extension":
-          return type === "blob" ? getExtension(basename) : "";
+          return type === "blob" ? getExtension(path) : "";
         default:
           return "NOT IMPLEMENTED: " + columnId;
       }
@@ -285,7 +288,7 @@ const LstreePanel = vca.component({
   props: {
     repoPath: required(String),
     sha: required(String),
-    rootNodes: required<readonly LsTreeEntry[]>(Array)
+    rootNodes: required<readonly LstreeEntry[]>(Array)
   },
   setup(props) {
     const state = reactive({

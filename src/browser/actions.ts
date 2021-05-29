@@ -4,13 +4,12 @@ import path from "path";
 import fs from "fs-extra";
 import { config } from "./persistent";
 import { splitCommandline, randomName } from "./utils";
-import git from "./git";
 import wm from "./windowManager";
 import { RepositorySessions, RepositorySession } from "./repositorySession";
 import { openPty } from "./pty";
 import { blame } from "./blame";
 import { getTextFileContent, saveTo } from "./file";
-import { logAsync, filelogAsync, refsAsync, getCommitDetailAsync } from "inazuma-rust-backend";
+import { logAsync, filelogAsync, refsAsync, getCommitDetailAsync, lstreeAsync } from "inazuma-rust-backend";
 import { status } from "./status";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
@@ -38,8 +37,8 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
       const ret = await filelogAsync(repoPath, relPath, 100, [sha]);
       return ret;
     },
-    getTree(_, { repoPath, sha }): Promise<LsTreeEntry[]> {
-      return git.lsTree(repoPath, sha);
+    getTree(_, { repoPath, sha }): Promise<LstreeEntry[]> {
+      return lstreeAsync(repoPath, sha);
     },
     async getConfig(_): Promise<Config> {
       return config.data;

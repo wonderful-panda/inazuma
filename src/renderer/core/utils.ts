@@ -2,7 +2,8 @@ import { SetupContext } from "@vue/composition-api";
 import { VNode } from "vue/types/umd";
 
 export function getFileName(fullpath: string): string {
-  return fullpath.split("/").pop()!;
+  const p = fullpath.lastIndexOf("/");
+  return 0 <= p ? fullpath.slice(p + 1) : fullpath;
 }
 
 export function getExtension(pathOrFileName: string): string {

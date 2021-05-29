@@ -55,6 +55,14 @@ export default vca.component({
       }
       executeFileCommand(diffUnstaged, node.value, item, item.path);
     };
+    const unstagedFiles = computed<FileEntry[]>(() => {
+      const ret = [
+        ...p.status.unstagedFiles,
+        ...p.status.untrackedFiles.map((f) => ({ path: f, statusCode: "?" }))
+      ];
+      ret.sort((a, b) => a.path.localeCompare(b.path))
+      return ret;
+    });
 
     return () => (
       <VSplitterPanel
@@ -76,7 +84,7 @@ export default vca.component({
           slot="second"
           title="Changes not staged"
           commit={node.value}
-          files={p.status.unstagedFiles}
+          files={unstagedFiles.value}
           onRowdblclick={showExternalDiffStagedAndUnstaged}
         />
       </VSplitterPanel>

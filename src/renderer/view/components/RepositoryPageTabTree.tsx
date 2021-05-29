@@ -11,7 +11,7 @@ export default vca.component({
   props: {
     tabkey: required(String),
     sha: required(String),
-    rootNodes: optional<readonly LsTreeEntry[]>(Array)
+    rootNodes: optional<readonly LstreeEntry[]>(Array)
   },
   setup(props) {
     const rootCtx = useRootModule();

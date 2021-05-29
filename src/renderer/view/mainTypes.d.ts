@@ -36,7 +36,7 @@ export type FileTabDefinition = TabDefinition<
 export type TreeTabDefinition = TabDefinition<
   "tree",
   { sha: string },
-  { rootNodes: ReadonlyArray<LsTreeEntry> }
+  { rootNodes: ReadonlyArray<LstreeEntry> }
 >;
 export type DiffTabDefinition = TabDefinition<
   "diff",
