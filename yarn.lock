@@ -6440,10 +6440,10 @@ vue-toc@0.0.1:
   dependencies:
     vue "^2.6.10"
 
-vue-tsx-support@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.1.0.tgz#8de51116017c1bb16a665222bd3d9846f2a058a6"
-  integrity sha512-zkdsR4lPRHUYs5hsAErSo7NunkFpgW2MprsH7ePCO6beGEYd/1KdLTA8CALZuUVkohnabEPe2Jcx8bMeeHZZ8g==
+vue-tsx-support@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/vue-tsx-support/-/vue-tsx-support-3.2.0.tgz#678b7ecc49473bf743be78482f8edad0331536c0"
+  integrity sha512-Uc3i9deEvZeHKc43Lcsh1ihCWvG1yygFnbY1jMe49K+DWCmGgwYWUkD0mxdgPwAMc6gi23CRVkrJsvamfCvD7A==
 
 vue-vtable@1.0.0-beta.8a:
   version "1.0.0-beta.8a"
