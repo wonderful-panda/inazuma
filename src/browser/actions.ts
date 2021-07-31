@@ -2,14 +2,20 @@ import { BrowserWindow, clipboard, dialog, ipcMain, IpcMainInvokeEvent } from "e
 import cp from "child_process";
 import path from "path";
 import fs from "fs-extra";
-import { config } from "./persistent";
+import { config, environment } from "./persistent";
 import { splitCommandline, randomName } from "./utils";
 import wm from "./windowManager";
 import { RepositorySessions, RepositorySession } from "./repositorySession";
 import { openPty } from "./pty";
 import { blame } from "./blame";
 import { getTextFileContent, saveTo } from "./file";
-import { logAsync, filelogAsync, refsAsync, getCommitDetailAsync, lstreeAsync } from "inazuma-rust-backend";
+import {
+  logAsync,
+  filelogAsync,
+  refsAsync,
+  getCommitDetailAsync,
+  lstreeAsync
+} from "inazuma-rust-backend";
 import { status } from "./status";
 
 const PSEUDO_COMMIT_ID_WTREE = "--";
@@ -81,6 +87,12 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
         console.log(e);
         throw e;
       }
+    },
+    async loadPersistentData(_) {
+      return { config: config.data, environment: environment.data };
+    },
+    async saveEnvironment(_, key, value) {
+      environment.updatePartial(key, value);
     },
     async __openPty(event, options) {
       openPty(event.sender, options);

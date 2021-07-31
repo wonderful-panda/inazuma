@@ -91,7 +91,7 @@ function showMainWindow() {
     environment.setWindowSize(width, height, maximized);
   });
   mainWindow.setMenu(Electron.Menu.buildFromTemplate(template));
-  mainWindow.loadURL(`file://${path.join(__dirname, "../renderer/index.html")}`);
+  mainWindow.loadURL("http://localhost:3000");
   mainWindow.show();
 }
 

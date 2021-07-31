@@ -124,8 +124,8 @@ export const environment = {
     defaultEnvironData,
     load(environmentJsonPath, environmentSchema)
   ) as Environment,
-  updateData(newData: Environment) {
-    replaceObjectContent(this.data, newData);
+  updatePartial<K extends keyof Environment>(key: K, value: Environment[K]) {
+    this.data[key] = value;
   },
   save() {
     save(environmentJsonPath, environmentSchema, this.data);

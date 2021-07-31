@@ -13,6 +13,8 @@ const keys: Record<keyof BrowserCommand, null> = {
   getTextFileContent: null,
   yankText: null,
   showOpenDialog: null,
+  loadPersistentData: null,
+  saveEnvironment: null,
   __openPty: null
 };
 

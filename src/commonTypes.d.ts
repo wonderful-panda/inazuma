@@ -2,6 +2,7 @@
  * Type definitions needed by both browser and renderer
  */
 import type * as backend from "inazuma-rust-backend";
+import type * as Electron from "electron";
 
 declare global {
   type Commit = backend.Commit;
@@ -29,6 +30,7 @@ declare global {
       height: number;
       maximized: boolean;
     };
+    recentOpened?: string[];
   }
 
   /**
@@ -63,11 +65,13 @@ declare global {
     stagedFiles: FileEntry[];
   }
 
-  type LogDetail = {
-    type: "commit"
-  } & CommitDetail | {
-    type: "status"
-  } & WorkingTreeStat;
+  type LogDetail =
+    | ({
+        type: "commit";
+      } & CommitDetail)
+    | ({
+        type: "status";
+      } & WorkingTreeStat);
 
   interface Blame {
     commits: ReadonlyArray<FileCommit>;
@@ -120,6 +124,8 @@ declare global {
     getFileLog(params: { repoPath: string; relPath: string; sha: string }): Promise<FileCommit[]>;
     getTree(params: { repoPath: string; sha: string }): Promise<LstreeEntry[]>;
     getConfig(): Promise<Config>;
+    loadPersistentData(): Promise<{ config: Config; environment: Environment }>;
+    saveEnvironment<K extends keyof Environment>(key: K, value: Environment[K]): Promise<void>;
     resetConfig(config: Config): Promise<void>;
     runInteractiveShell(curdir: string): Promise<void>;
     showExternalDiff(params: { repoPath: string; left: FileSpec; right: FileSpec }): Promise<void>;
