@@ -1,6 +1,6 @@
 import { AlertType } from "@/context/AlertContext";
 import { useAlert } from "@/hooks/useAlert";
-import { useDispatch } from "@/store";
+import { useDispatch, useSelector } from "@/store";
 import { ADD_TAB, CLOSE_REPOSITORY, TabType } from "@/store/repository";
 import { Button, withStyles } from "@material-ui/core";
 import { useCallback, useState } from "react";
@@ -8,6 +8,7 @@ import styled from "styled-components";
 import { SplitterDirection } from "../Splitter";
 import SplitterPanel from "../SplitterPanel";
 import { TabDefinition } from "../TabContainer";
+import CommitLog from "./CommitLog";
 
 const StyledButton = withStyles({
   root: {
@@ -24,6 +25,9 @@ const Content = styled.div`
 
 const Test: React.VFC<{ tab: TabDefinition<TabType> }> = ({ tab }) => {
   const alert = useAlert();
+  const commits = useSelector((state) => state.repository.commits);
+  const graph = useSelector((state) => state.repository.graph);
+  const refs = useSelector((state) => state.repository.refs);
   const dispatch = useDispatch();
   const addTab = useCallback(() => {
     const id = Date.now().toString();
@@ -68,7 +72,7 @@ const Test: React.VFC<{ tab: TabDefinition<TabType> }> = ({ tab }) => {
           ))}
         </Content>
       }
-      second={<Content>SECOND</Content>}
+      second={<CommitLog commits={commits} graph={graph} refs={refs} />}
     />
   );
 };

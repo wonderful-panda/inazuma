@@ -1,4 +1,5 @@
 import { TabDefinition } from "@/components/TabContainer";
+import { Grapher, GraphFragment } from "@/grapher";
 import useBrowserProcess from "@/hooks/useBrowserProcess";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -19,19 +20,25 @@ export interface State {
   recentOpened: string[];
   refs: Refs;
   commits: Commit[];
+  graph: Record<string, GraphFragment>;
   tabs: TabDefinition<TabType>[];
   currentTabIndex: number;
 }
 
 export const openRepository = createAsyncThunk<
-  { repoPath: string; commits: Commit[]; refs: Refs },
+  { repoPath: string; commits: Commit[]; refs: Refs; graph: Record<string, GraphFragment> },
   { repoPath: string; errorReporter: (e: unknown) => void; setLoading?: (loading: boolean) => void }
 >("repository/open", async ({ repoPath, errorReporter, setLoading }) => {
   try {
     setLoading?.(true);
     const browserProcess = useBrowserProcess();
     const ret = await browserProcess.openRepository(repoPath);
-    return { ...ret, repoPath };
+    const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
+    const graph: Record<string, GraphFragment> = {};
+    ret.commits.forEach((c) => {
+      graph[c.id] = grapher.proceed(c);
+    });
+    return { ...ret, graph, repoPath };
   } catch (e) {
     errorReporter(e);
     throw e;
@@ -44,6 +51,7 @@ const initialState: State = {
   repoPath: undefined,
   recentOpened: [],
   commits: [],
+  graph: {},
   refs: {
     heads: [],
     mergeHeads: [],
@@ -101,6 +109,7 @@ const slice = createSlice({
     builder.addCase(openRepository.fulfilled, (state, action) => {
       state.repoPath = action.payload.repoPath;
       state.commits = action.payload.commits;
+      state.graph = action.payload.graph;
       state.refs = action.payload.refs;
       state.tabs = [
         { type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false, payload: {} }
