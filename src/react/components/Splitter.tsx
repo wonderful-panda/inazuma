@@ -16,9 +16,9 @@ interface SplitterProps {
   onUpdateDirection?: (value: SplitterDirection) => void;
   onPositionChange: (position: number) => void;
 }
-const RotateButton = styled(IconButton)`
+const RotateButton = styled(IconButton)<{ dragging: boolean }>`
   &&& {
-    visibility: hidden;
+    visibility: ${(p) => (p.dragging ? "visible" : "hidden")};
     position: absolute;
     transition: transform 0.2s ease;
     margin: auto;
@@ -30,7 +30,6 @@ const RotateButton = styled(IconButton)`
     top: -24px;
     bottom: -24px;
     &:hover {
-      background-color: ${HOVER_COLOR};
       transform: rotate(90deg);
     }
   }
@@ -49,6 +48,7 @@ const SplitterDiv = styled.div<{
   cursor: ${(p) => (p.horiz ? "col-resize" : "row-resize")};
   margin: ${(p) => (p.horiz ? "0 1px" : "1px 0")};
   background-color: ${(p) => (p.dragging ? HOVER_COLOR : "inherit")};
+  z-index: 9999;
   &:hover {
     background-color: ${HOVER_COLOR};
     visibility: visible;
@@ -97,7 +97,7 @@ const Splitter: React.VFC<SplitterProps> = (p) => {
       onMouseDown={onMouseDown}
     >
       {p.allowDirectionChange && (
-        <RotateButton onClick={onUpdateDirection}>
+        <RotateButton dragging={dragging} onClick={onUpdateDirection}>
           {p.horiz ? <SwapHorizIcon /> : <SwapVertIcon />}
         </RotateButton>
       )}

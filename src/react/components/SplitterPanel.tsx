@@ -8,7 +8,7 @@ export interface SplitterPanelProps {
   first: React.ReactNode;
   second: React.ReactNode;
   direction?: SplitterDirection;
-  splitterThickness: number;
+  splitterThickness?: number;
   ratio: number;
   onUpdateRatio: (value: number) => void;
   firstPanelMinSize?: string;
@@ -45,7 +45,7 @@ const SplitterPanel: React.VFC<SplitterPanelProps> = ({
   first,
   second,
   direction = "horiz",
-  splitterThickness,
+  splitterThickness = 5,
   ratio,
   onUpdateRatio,
   firstPanelMinSize = "10%",
