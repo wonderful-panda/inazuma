@@ -1,3 +1,4 @@
+import { vname } from "@/cssvar";
 import { assertNever } from "@/util";
 import styled, { css } from "styled-components";
 
@@ -10,7 +11,7 @@ const Base = styled.span`
   padding: 0 0.4em 0 0.4em;
   box-sizing: content-box;
   cursor: default;
-  background-color: #222;
+  background-color: var(${vname("backgroundDefault")});
 `;
 
 const Branch = styled(Base)<{ current: boolean }>`

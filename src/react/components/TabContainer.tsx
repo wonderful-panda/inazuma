@@ -103,6 +103,7 @@ const TabButton: React.VFC<{
 const TabContent = styled.div<{ current: boolean }>`
   display: flex;
   flex: 1;
+  overflow: hidden;
   display: ${(p) => (p.current ? undefined : "none")};
 `;
 

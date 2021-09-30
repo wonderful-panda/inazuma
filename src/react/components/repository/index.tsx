@@ -4,6 +4,7 @@ import { assertNever } from "@/util";
 import { useCallback } from "react";
 import { MainWindow } from "../MainWindow";
 import TabContainer, { TabContainerProps } from "../TabContainer";
+import CommitLog from "./CommitLog";
 import Test from "./Test";
 
 const RepositoryPage: React.VFC<{ path: string }> = (props) => {
@@ -12,7 +13,7 @@ const RepositoryPage: React.VFC<{ path: string }> = (props) => {
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>((tab) => {
     switch (tab.type) {
       case "commits":
-        return <Test tab={tab} />;
+        return <CommitLog />;
       case "file":
         return <Test tab={tab} />;
       case "tree":

@@ -51,6 +51,7 @@ type Props = {
   graph: GraphFragment;
   height: number;
   head: boolean;
+  maskIdPrefix: string;
 };
 
 const GRID_WIDTH = 20;
@@ -60,7 +61,7 @@ const actualColor = (id: string, color: string) => {
   return id === "--" ? WORK_COLOR : color;
 };
 
-const GraphCell: React.VFC<Props> = ({ graph, height, head }) => {
+const GraphCell: React.VFC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   const node = graph.node;
   const width = GRID_WIDTH * graph.width;
   let radius: number;
@@ -74,8 +75,8 @@ const GraphCell: React.VFC<Props> = ({ graph, height, head }) => {
   const nodeX = c2x(node.index, GRID_WIDTH);
   const nodeY = height / 2;
   const shortId = shortHash(graph.id);
-  const nodeMask = `m:node:${shortId}`;
-  const edgeMask = `m:edge:${shortId}`;
+  const nodeMask = `${maskIdPrefix}:m:node:${shortId}`;
+  const edgeMask = `${maskIdPrefix}:m:edge:${shortId}`;
   const topMostEdges = graph.nodeEdges.filter(
     (edge, i, arr) => (i === 0 || i === arr.length - 1) && edge.index !== node.index
   );

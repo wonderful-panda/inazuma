@@ -1,47 +1,78 @@
-import { AutoSizer, List } from "react-virtualized";
-import { useCallback } from "react";
-import { GraphFragment } from "@/grapher";
-import CommitLogRow from "./CommitLogRow";
+import { useErrorReporter } from "@/hooks/useAlert";
+import { useDispatch, useSelector, RootState } from "@/store";
+import { selectLogEntry } from "@/store/repository";
+import { useCallback, useState } from "react";
+import { SplitterDirection } from "../Splitter";
+import SplitterPanel from "../SplitterPanel";
+import CommitDetail from "./CommitDetail";
+import CommitList from "./CommitList";
+import { createSelector } from "reselect";
+import styled from "styled-components";
+import WorkingTree from "./WorkingTree";
 
-const ROW_HEIGHT = 52;
+const Panel = styled.div`
+  padding: 0.5rem;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+`;
 
-export interface CommitLogProps {
-  commits: Commit[];
-  refs: Refs;
-  graph: Record<string, GraphFragment>;
-}
+const emptyRefs: Ref[] = [];
 
-const CommitLog: React.VFC<CommitLogProps> = ({ commits, graph, refs }) => {
-  const renderRow = useCallback(
-    ({ index, key, style }: { index: number; key: string; style: object }) => {
-      const commit = commits[index];
-      return (
-        <div key={key} style={style}>
-          <CommitLogRow
-            commit={commit}
-            head={commit.id === refs.head}
-            graph={graph[commit.id]}
-            refs={refs.refsById[commit.id]}
-            height={ROW_HEIGHT}
-          />
-        </div>
-      );
-    },
-    [commits, graph, refs]
-  );
+const entrySelector = (state: RootState) => state.repository.selectedLogEntry;
+const refsSelector = (state: RootState) => state.repository.refs;
+const currentRefsSelector = createSelector(
+  entrySelector,
+  refsSelector,
+  (entry, refs) => (entry && refs.refsById[entry.id]) || emptyRefs
+);
+
+const CommitLog: React.VFC = () => {
+  const commits = useSelector((state) => state.repository.commits);
+  const graph = useSelector((state) => state.repository.graph);
+  const selectedIndex = useSelector((state) => state.repository.selectedLogIndex);
+  const refs = useSelector(refsSelector);
+  const currentEntry = useSelector(entrySelector);
+  const currentRefs = useSelector(currentRefsSelector);
+  const errorReporter = useErrorReporter();
+  const handleRowclick = useCallback((_: React.MouseEvent, index: number) => {
+    dispatch(selectLogEntry({ index, errorReporter }));
+  }, []);
+  const dispatch = useDispatch();
+  const [ratio, setRatio] = useState(0.6);
+  const [direction, setDirection] = useState<SplitterDirection>("horiz");
+  const orientation = direction === "horiz" ? "portrait" : "landscape";
   return (
-    <AutoSizer style={{ flex: 1 }}>
-      {({ width, height }) => (
-        <List
-          width={width}
-          height={height}
-          overscanRowCount={8}
-          rowCount={commits.length}
-          rowHeight={ROW_HEIGHT}
-          rowRenderer={renderRow}
-        />
-      )}
-    </AutoSizer>
+    <SplitterPanel
+      direction={direction}
+      splitterThickness={5}
+      ratio={ratio}
+      allowDirectionChange
+      onUpdateRatio={setRatio}
+      onUpdateDirection={setDirection}
+      firstPanelMinSize="20%"
+      secondPanelMinSize="20%"
+      first={
+        <Panel>
+          <CommitList
+            commits={commits}
+            graph={graph}
+            refs={refs}
+            selectedIndex={selectedIndex}
+            onRowclick={handleRowclick}
+          />
+        </Panel>
+      }
+      second={
+        <Panel>
+          {currentEntry === undefined || currentEntry.type === "commit" ? (
+            <CommitDetail commit={currentEntry} refs={currentRefs} orientation={orientation} />
+          ) : (
+            <WorkingTree stat={currentEntry} orientation={orientation} />
+          )}
+        </Panel>
+      }
+    />
   );
 };
 

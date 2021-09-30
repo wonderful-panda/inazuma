@@ -16,9 +16,9 @@ interface SplitterProps {
   onUpdateDirection?: (value: SplitterDirection) => void;
   onPositionChange: (position: number) => void;
 }
-const RotateButton = styled(IconButton)<{ dragging: boolean }>`
+const RotateButton = styled(IconButton)<{ $dragging: boolean }>`
   &&& {
-    visibility: ${(p) => (p.dragging ? "visible" : "hidden")};
+    visibility: ${(p) => (p.$dragging ? "visible" : "hidden")};
     position: absolute;
     transition: transform 0.2s ease;
     margin: auto;
@@ -36,18 +36,18 @@ const RotateButton = styled(IconButton)<{ dragging: boolean }>`
 `;
 
 const SplitterDiv = styled.div<{
-  horiz: boolean;
-  thickness: number;
-  dragging: boolean;
+  $horiz: boolean;
+  $thickness: number;
+  $dragging: boolean;
 }>`
   flex-grow: 0;
   flex-shrink: 0;
-  flex-basis: ${(p) => p.thickness}px;
+  flex-basis: ${(p) => p.$thickness}px;
   box-sizing: border-box;
   position: relative;
-  cursor: ${(p) => (p.horiz ? "col-resize" : "row-resize")};
-  margin: ${(p) => (p.horiz ? "0 1px" : "1px 0")};
-  background-color: ${(p) => (p.dragging ? HOVER_COLOR : "inherit")};
+  cursor: ${(p) => (p.$horiz ? "col-resize" : "row-resize")};
+  margin: ${(p) => (p.$horiz ? "0 1px" : "1px 0")};
+  background-color: ${(p) => (p.$dragging ? HOVER_COLOR : "inherit")};
   z-index: 9999;
   &:hover {
     background-color: ${HOVER_COLOR};
@@ -91,13 +91,13 @@ const Splitter: React.VFC<SplitterProps> = (p) => {
   }, [p.horiz]);
   return (
     <SplitterDiv
-      horiz={p.horiz}
-      thickness={p.thickness}
-      dragging={dragging}
+      $horiz={p.horiz}
+      $thickness={p.thickness}
+      $dragging={dragging}
       onMouseDown={onMouseDown}
     >
       {p.allowDirectionChange && (
-        <RotateButton dragging={dragging} onClick={onUpdateDirection}>
+        <RotateButton $dragging={dragging} onClick={onUpdateDirection}>
           {p.horiz ? <SwapHorizIcon /> : <SwapVertIcon />}
         </RotateButton>
       )}

@@ -23,6 +23,8 @@ export interface State {
   graph: Record<string, GraphFragment>;
   tabs: TabDefinition<TabType>[];
   currentTabIndex: number;
+  selectedLogIndex: number;
+  selectedLogEntry: LogDetail | undefined;
 }
 
 export const openRepository = createAsyncThunk<
@@ -47,6 +49,33 @@ export const openRepository = createAsyncThunk<
   }
 });
 
+export const selectLogEntry = createAsyncThunk<
+  { entry?: LogDetail },
+  { index: number; errorReporter: (e: unknown) => void; setLoading?: (loading: boolean) => void }
+>("repository/selectCommit", async ({ index, errorReporter, setLoading }, { getState }) => {
+  try {
+    setLoading?.(true);
+    const state = (getState() as any).repository as State;
+    if (!state.repoPath) {
+      throw new Error("Repository is not opened");
+    }
+    if (index < 0) {
+      return { entry: undefined };
+    }
+    const browserProcess = useBrowserProcess();
+    const entry = await browserProcess.getLogDetail({
+      repoPath: state.repoPath,
+      sha: state.commits[index].id
+    });
+    return { entry };
+  } catch (e) {
+    errorReporter(e);
+    throw e;
+  } finally {
+    setLoading?.(false);
+  }
+});
+
 const initialState: State = {
   repoPath: undefined,
   recentOpened: [],
@@ -60,7 +89,9 @@ const initialState: State = {
     tags: []
   },
   tabs: [],
-  currentTabIndex: -1
+  currentTabIndex: -1,
+  selectedLogIndex: -1,
+  selectedLogEntry: undefined
 };
 
 const addTab = (state: State, action: PayloadAction<TabDefinition<TabType>>) => {
@@ -115,6 +146,8 @@ const slice = createSlice({
         { type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false, payload: {} }
       ];
       state.currentTabIndex = 0;
+      state.selectedLogIndex = -1;
+      state.selectedLogEntry = undefined;
       state.recentOpened = [
         action.payload.repoPath,
         ...state.recentOpened.filter((v) => v != action.payload.repoPath)
@@ -122,6 +155,12 @@ const slice = createSlice({
       if (MAX_RECENT_OPENED <= state.recentOpened.length) {
         state.recentOpened.length = MAX_RECENT_OPENED;
       }
+    });
+    builder.addCase(selectLogEntry.pending, (state, action) => {
+      state.selectedLogIndex = action.meta.arg.index;
+    });
+    builder.addCase(selectLogEntry.fulfilled, (state, action) => {
+      state.selectedLogEntry = action.payload.entry;
     });
   }
 });

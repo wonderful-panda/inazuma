@@ -36,7 +36,7 @@ const Panel = styled.div<{
   display: ${(p) => (p.show ? "flex" : "none")};
   flex-direction: ${(p) => (p.horiz ? "row" : "column")};
   align-items: stretch;
-  overflow: auto;
+  overflow: hidden;
   min-width: ${(p) => (p.horiz ? p.minSize : undefined)};
   min-height: ${(p) => (p.horiz ? undefined : p.minSize)};
 `;

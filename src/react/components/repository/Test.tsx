@@ -8,7 +8,7 @@ import styled from "styled-components";
 import { SplitterDirection } from "../Splitter";
 import SplitterPanel from "../SplitterPanel";
 import { TabDefinition } from "../TabContainer";
-import CommitLog from "./CommitLog";
+import CommitList from "./CommitList";
 
 const StyledButton = withStyles({
   root: {
@@ -72,7 +72,7 @@ const Test: React.VFC<{ tab: TabDefinition<TabType> }> = ({ tab }) => {
           ))}
         </Content>
       }
-      second={<CommitLog commits={commits} graph={graph} refs={refs} />}
+      second={<CommitList selectedIndex={0} commits={commits} graph={graph} refs={refs} />}
     />
   );
 };

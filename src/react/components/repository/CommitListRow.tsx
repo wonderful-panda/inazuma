@@ -2,26 +2,30 @@ import { vname } from "@/cssvar";
 import { formatDateLLL } from "@/date";
 import { GraphFragment } from "@/grapher";
 import { shortHash } from "@/util";
-import { Typography, withStyles } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import { memo } from "react";
 import styled from "styled-components";
 import GraphCell from "./GraphCell";
 import RefBadge from "./RefBadge";
 
-export interface CommitLogRowProps {
+export interface CommitListRowProps {
   height: number;
   commit: Commit;
   refs: Ref[];
   graph: GraphFragment;
   head: boolean;
+  selected: boolean;
+  parentId: string;
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-const Container = styled.div`
+const Container = styled.div<{ $selected: boolean }>`
   display: flex;
   box-sizing: border-box;
   cursor: pointer;
   padding-left: 1rem;
   border-bottom: 1px solid #333;
+  background-color: ${(p) => (p.$selected ? "#ffffff10" : undefined)};
   :hover {
     background-color: #ffffff10;
   }
@@ -43,20 +47,17 @@ const Badges = styled.div`
   padding: 6px;
 `;
 
-const FirstLine = withStyles({
-  root: {
+const useStyles = makeStyles({
+  firstLine: {
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
-  }
-})(Typography);
-
-const SecondLine = withStyles({
-  root: {
+  },
+  secondLine: {
     color: "#aaa",
     whiteSpace: "nowrap"
   }
-})(Typography);
+});
 
 const CommitId = styled.span`
   margin-left: 8px;
@@ -83,18 +84,30 @@ const Date = styled.span`
   }
 `;
 
-const CommitLogRow: React.VFC<CommitLogRowProps> = ({ height, commit, graph, refs, head }) => {
+const CommitListRow: React.VFC<CommitListRowProps> = ({
+  height,
+  commit,
+  graph,
+  refs,
+  head,
+  selected,
+  parentId,
+  onClick: handleClick
+}) => {
+  const styles = useStyles();
   const workingTree = commit.id === "--";
   return (
-    <Container>
-      <GraphCell graph={graph} height={height} head={head} />
+    <Container $selected={selected} onClick={handleClick}>
+      <GraphCell graph={graph} height={height} head={head} maskIdPrefix={parentId} />
       <Attributes>
-        <FirstLine variant="subtitle1">{commit.summary}</FirstLine>
-        <SecondLine variant="body2">
+        <Typography className={styles.firstLine} variant="subtitle1">
+          {commit.summary}
+        </Typography>
+        <Typography className={styles.secondLine} variant="body2">
           <CommitId>{shortHash(commit.id)}</CommitId>
           {!workingTree && <Author>{commit.author}</Author>}
           {!workingTree && <Date>{formatDateLLL(commit.date)}</Date>}
-        </SecondLine>
+        </Typography>
       </Attributes>
       {refs && (
         <Badges>
@@ -107,4 +120,4 @@ const CommitLogRow: React.VFC<CommitLogRowProps> = ({ height, commit, graph, ref
   );
 };
 
-export default memo(CommitLogRow);
+export default memo(CommitListRow);
