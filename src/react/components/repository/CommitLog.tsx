@@ -2,7 +2,6 @@ import { useErrorReporter } from "@/hooks/useAlert";
 import { useDispatch, useSelector, RootState } from "@/store";
 import { selectLogEntry } from "@/store/repository";
 import { useCallback, useState } from "react";
-import { SplitterDirection } from "../Splitter";
 import SplitterPanel from "../SplitterPanel";
 import CommitDetail from "./CommitDetail";
 import CommitList from "./CommitList";
@@ -40,7 +39,7 @@ const CommitLog: React.VFC = () => {
   }, []);
   const dispatch = useDispatch();
   const [ratio, setRatio] = useState(0.6);
-  const [direction, setDirection] = useState<SplitterDirection>("horiz");
+  const [direction, setDirection] = useState<Direction>("horiz");
   const orientation = direction === "horiz" ? "portrait" : "landscape";
   return (
     <SplitterPanel

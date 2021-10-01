@@ -4,8 +4,6 @@ import SplitterPanel from "../SplitterPanel";
 import styled from "styled-components";
 import FileList from "./FileList";
 
-export type Orientation = "portrait" | "landscape";
-
 export interface WorkingTreeProps {
   stat: WorkingTreeStat;
   orientation: Orientation;

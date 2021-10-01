@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useRef } from "react";
 import styled from "styled-components";
-import Splitter, { SplitterDirection } from "./Splitter";
+import Splitter from "./Splitter";
 
 const FLEX_SUM = 1000;
 
 export interface SplitterPanelProps {
   first: React.ReactNode;
   second: React.ReactNode;
-  direction?: SplitterDirection;
+  direction?: Direction;
   splitterThickness?: number;
   ratio: number;
   onUpdateRatio: (value: number) => void;
@@ -16,7 +16,7 @@ export interface SplitterPanelProps {
   showFirstPanel?: boolean;
   showSecondPanel?: boolean;
   allowDirectionChange?: boolean;
-  onUpdateDirection?: (value: SplitterDirection) => void;
+  onUpdateDirection?: (value: Direction) => void;
 }
 
 const Container = styled.div<{ horiz: boolean }>`

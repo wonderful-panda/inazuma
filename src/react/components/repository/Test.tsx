@@ -5,7 +5,6 @@ import { ADD_TAB, CLOSE_REPOSITORY, TabType } from "@/store/repository";
 import { Button, withStyles } from "@material-ui/core";
 import { useCallback, useState } from "react";
 import styled from "styled-components";
-import { SplitterDirection } from "../Splitter";
 import SplitterPanel from "../SplitterPanel";
 import { TabDefinition } from "../TabContainer";
 import CommitList from "./CommitList";
@@ -46,7 +45,7 @@ const Test: React.VFC<{ tab: TabDefinition<TabType> }> = ({ tab }) => {
     alert
   ]);
   const [ratio, setRatio] = useState(0.4);
-  const [direction, setDirection] = useState<SplitterDirection>("horiz");
+  const [direction, setDirection] = useState<Direction>("horiz");
   return (
     <SplitterPanel
       direction={direction}

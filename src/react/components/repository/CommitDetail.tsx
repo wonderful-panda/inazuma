@@ -11,8 +11,6 @@ import FileList from "./FileList";
 import { useDispatch } from "@/store";
 import { ADD_TAB } from "@/store/repository";
 
-export type Orientation = "portrait" | "landscape";
-
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
   refs: Ref[];

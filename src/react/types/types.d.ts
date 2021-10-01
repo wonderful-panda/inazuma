@@ -5,3 +5,6 @@ type ComponentRef<C> = C extends React.ForwardRefExoticComponent<infer P>
     ? T
     : never
   : never;
+
+type Orientation = "landscape" | "portrait";
+type Direction = "horiz" | "vert";

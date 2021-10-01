@@ -5,15 +5,13 @@ import styled from "styled-components";
 import SwapVertIcon from "@material-ui/icons/SwapVert";
 import SwapHorizIcon from "@material-ui/icons/SwapHoriz";
 
-export type SplitterDirection = "horiz" | "vert";
-
 const HOVER_COLOR = `var(${vname("backgroundPaper")})`;
 
 interface SplitterProps {
   horiz: boolean;
   thickness: number;
   allowDirectionChange: boolean;
-  onUpdateDirection?: (value: SplitterDirection) => void;
+  onUpdateDirection?: (value: Direction) => void;
   onPositionChange: (position: number) => void;
 }
 const RotateButton = styled(IconButton)<{ $dragging: boolean }>`
