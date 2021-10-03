@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useRef } from "react";
-import styled from "styled-components";
+import classNames from "classnames";
+import { forwardRef, useCallback, useMemo, useRef } from "react";
 import Splitter from "./Splitter";
 
 const FLEX_SUM = 1000;
@@ -19,27 +19,26 @@ export interface SplitterPanelProps {
   onUpdateDirection?: (value: Direction) => void;
 }
 
-const Container = styled.div<{ horiz: boolean }>`
-  display: flex;
-  flex: 1;
-  flex-direction: ${(p) => (p.horiz ? "row" : "column")};
-  flex-wrap: nowrap;
-  align-items: stretch;
-  overflow: hidden;
-`;
-
-const Panel = styled.div<{
-  show: boolean;
-  horiz: boolean;
-  minSize: string;
-}>`
-  display: ${(p) => (p.show ? "flex" : "none")};
-  flex-direction: ${(p) => (p.horiz ? "row" : "column")};
-  align-items: stretch;
-  overflow: hidden;
-  min-width: ${(p) => (p.horiz ? p.minSize : undefined)};
-  min-height: ${(p) => (p.horiz ? undefined : p.minSize)};
-`;
+const Panel = forwardRef<
+  HTMLDivElement,
+  { show: boolean; horiz: boolean; flex: number; minSize: string; children: React.ReactNode }
+>(({ show, horiz, flex, minSize, children }, ref) => (
+  <div
+    ref={ref}
+    className={classNames(
+      "items-stretch overflow-hidden",
+      show ? "flex" : "hidden",
+      horiz ? "flex-row" : "flex-col"
+    )}
+    style={{
+      minWidth: horiz ? minSize : undefined,
+      minHeight: horiz ? undefined : minSize,
+      flex
+    }}
+  >
+    {children}
+  </div>
+));
 
 const SplitterPanel: React.VFC<SplitterPanelProps> = ({
   first,
@@ -58,7 +57,7 @@ const SplitterPanel: React.VFC<SplitterPanelProps> = ({
   const [flexFirst, flexSecond] = useMemo(() => {
     const flexFirst = Math.floor(FLEX_SUM * ratio);
     const flexSecond = FLEX_SUM - flexFirst;
-    return [{ flex: flexFirst }, { flex: flexSecond }];
+    return [flexFirst, flexSecond];
   }, [ratio]);
 
   const firstRef = useRef<HTMLDivElement | null>(null);
@@ -95,13 +94,18 @@ const SplitterPanel: React.VFC<SplitterPanelProps> = ({
   );
 
   return (
-    <Container horiz={direction === "horiz"}>
+    <div
+      className={classNames("flex flex-1 flex-nowrap items-stretch overflow-hidden", {
+        "flex-row": direction === "horiz",
+        "flex-col": direction !== "horiz"
+      })}
+    >
       <Panel
         ref={firstRef}
         show={showFirstPanel}
         horiz={direction === "horiz"}
         minSize={firstPanelMinSize}
-        style={flexFirst}
+        flex={flexFirst}
       >
         {first}
       </Panel>
@@ -119,11 +123,11 @@ const SplitterPanel: React.VFC<SplitterPanelProps> = ({
         show={showSecondPanel}
         horiz={direction === "horiz"}
         minSize={secondPanelMinSize}
-        style={flexSecond}
+        flex={flexSecond}
       >
         {second}
       </Panel>
-    </Container>
+    </div>
   );
 };
 

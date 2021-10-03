@@ -25,6 +25,8 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
       direction={orientation === "portrait" ? "vert" : "horiz"}
       first={<FileListCard title="Unstaged changes" files={unstagedFiles} />}
       second={<FileListCard title="Staged changes" files={stat.stagedFiles} />}
+      firstPanelMinSize="20%"
+      secondPanelMinSize="20%"
     />
   );
 };

@@ -6,15 +6,7 @@ import SplitterPanel from "../SplitterPanel";
 import CommitDetail from "./CommitDetail";
 import CommitList from "./CommitList";
 import { createSelector } from "reselect";
-import styled from "styled-components";
 import WorkingTree from "./WorkingTree";
-
-const Panel = styled.div`
-  padding: 0.5rem;
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-`;
 
 const emptyRefs: Ref[] = [];
 
@@ -41,6 +33,7 @@ const CommitLog: React.VFC = () => {
   const [ratio, setRatio] = useState(0.6);
   const [direction, setDirection] = useState<Direction>("horiz");
   const orientation = direction === "horiz" ? "portrait" : "landscape";
+
   return (
     <SplitterPanel
       direction={direction}
@@ -52,7 +45,7 @@ const CommitLog: React.VFC = () => {
       firstPanelMinSize="20%"
       secondPanelMinSize="20%"
       first={
-        <Panel>
+        <div className="flex flex-1 overflow-hidden p-2">
           <CommitList
             commits={commits}
             graph={graph}
@@ -60,16 +53,16 @@ const CommitLog: React.VFC = () => {
             selectedIndex={selectedIndex}
             onRowclick={handleRowclick}
           />
-        </Panel>
+        </div>
       }
       second={
-        <Panel>
+        <div className="flex flex-1 overflow-hidden p-2">
           {currentEntry === undefined || currentEntry.type === "commit" ? (
             <CommitDetail commit={currentEntry} refs={currentRefs} orientation={orientation} />
           ) : (
             <WorkingTree stat={currentEntry} orientation={orientation} />
           )}
-        </Panel>
+        </div>
       }
     />
   );

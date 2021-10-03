@@ -1,12 +1,4 @@
-import { vname } from "@/cssvar";
-import {
-  IconButton,
-  makeStyles,
-  Slide,
-  Snackbar,
-  SnackbarContent,
-  Typography
-} from "@material-ui/core";
+import { IconButton, Slide, Snackbar, SnackbarContent, Typography } from "@material-ui/core";
 import SuccessIcon from "@material-ui/icons/CheckCircleOutlineOutlined";
 import WarningIcon from "@material-ui/icons/ReportProblemOutlined";
 import ErrorIcon from "@material-ui/icons/ErrorOutlineOutlined";
@@ -15,32 +7,9 @@ import CloseIcon from "@material-ui/icons/Close";
 import { memo, useEffect, useState } from "react";
 import { assertNever } from "@/util";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { AlertType } from "@/context/AlertContext";
 
 const Transition = (props: TransitionProps) => <Slide {...props} direction="up" />;
-
-const contentStyle = <T extends AlertType>(type: T): Record<T, CSSProperties> =>
-  ({
-    [type]: { backgroundColor: `var(${vname(type)})` }
-  } as Record<T, CSSProperties>);
-
-const useStyles = makeStyles({
-  root: {
-    maxWidth: "95%"
-  },
-  message: {
-    display: "flex",
-    color: "white"
-  },
-  messageText: {
-    marginLeft: "1rem"
-  },
-  ...contentStyle("success"),
-  ...contentStyle("warning"),
-  ...contentStyle("error"),
-  ...contentStyle("info")
-});
 
 const Icon: React.VFC<{ type: AlertType }> = (props) => {
   switch (props.type) {
@@ -57,13 +26,21 @@ const Icon: React.VFC<{ type: AlertType }> = (props) => {
   }
 };
 
+// tailwindcss classnames must be static literal.
+// composed string like `bg-${type}` does not work.
+const bg: Record<AlertType, string> = {
+  success: "bg-success",
+  warning: "bg-warning",
+  error: "bg-error",
+  info: "bg-info"
+};
+
 const Alert: React.VFC<{
   open: boolean;
   onClose?: (e: React.SyntheticEvent | React.MouseEvent, reason?: string) => void;
   message: string;
   type: AlertType;
 }> = (props) => {
-  const classes = useStyles();
   const [type, setType] = useState("info" as AlertType);
   const [message, setMessage] = useState("");
   useEffect(() => {
@@ -76,7 +53,7 @@ const Alert: React.VFC<{
   });
   return (
     <Snackbar
-      classes={{ root: classes.root }}
+      className="max-w-[95%]"
       open={props.open}
       onClose={props.onClose}
       anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
@@ -84,11 +61,11 @@ const Alert: React.VFC<{
       autoHideDuration={5000}
     >
       <SnackbarContent
-        classes={{ root: classes[type], message: classes.message }}
+        classes={{ root: bg[type], message: "flex text-white" }}
         message={
           <>
             <Icon type={type} />
-            <Typography classes={{ root: classes.messageText }} variant="body1">
+            <Typography className="ml-4" variant="body1">
               {message}
             </Typography>
           </>

@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html,
 body {
   font-size: medium;
@@ -12,24 +16,12 @@ body {
 
   --inazuma-standard-fontfamily: Roboto, Hervetica, "Yu Gothic", sans-serif;
   --inazuma-monospace-fontfamily: monospace;
-
-  --inazuma-primary: #aeea00;
-  --inazuma-secondary: #ffd600;
-
-  --inazuma-error: #d32f2f;
-  --inazuma-warning: #f57c00;
-  --inazuma-success: #388e3c;
-  --inazuma-info: #1976d2;
   --inazuma-background-default: #222;
-  --inazuma-background-paper: #333;
-  --inazuma-text-on-default: #ddd;
-  --inazuma-text-on-paper: #ddd;
-  --inazuma-text-on-primary: #000;
-  --inazuma-text-on-secondary: #000;
+  --inazuma-text-default: #ddd;
 
   font-family: var(--inazuma-standard-fontfamily);
   background-color: var(--inazuma-background-default);
-  color: var(--inazuma-text-on-default);
+  color: var(--inazuma-text-default);
 }
 
 ::-webkit-scrollbar {

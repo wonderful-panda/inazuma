@@ -1,15 +1,9 @@
-import { vname } from "@/cssvar";
 import { shortHash } from "@/util";
-import styled from "styled-components";
 
-const Div = styled.div`
-  white-space: nowrap;
-  font-family: var(${vname("monospaceFontfamily")});
-`;
-const GitHash: React.VFC<{ hash: string; className?: string }> = ({ hash, className }) => (
-  <Div title={hash} className={className}>
+const GitHash: React.VFC<{ hash: string }> = ({ hash }) => (
+  <div className="whitespace-nowrap font-mono" title={hash}>
     {shortHash(hash)}
-  </Div>
+  </div>
 );
 
 export default GitHash;

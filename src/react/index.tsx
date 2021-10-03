@@ -9,14 +9,21 @@ import RepositoryPage from "./components/repository";
 import { getCssVariable, setCssVariable } from "./cssvar";
 import { AlertProvider } from "./context/AlertContext";
 import { SET_RECENT_OPENED_ENTRIES } from "./store/repository";
+import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
 
-const defaultFontfamily = getCssVariable("standardFontfamily");
-const monospaceFontfamily = getCssVariable("monospaceFontfamily");
+const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
+const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");
 
 const init = async () => {
   const updateFont = (config: Config) => {
-    setCssVariable("standardFontfamily", config.fontFamily.standard || defaultFontfamily);
-    setCssVariable("monospaceFontfamily", config.fontFamily.monospace || monospaceFontfamily);
+    setCssVariable(
+      "--inazuma-standard-fontfamily",
+      config.fontFamily.standard || defaultFontfamily
+    );
+    setCssVariable(
+      "--inazuma-monospace-fontfamily",
+      config.fontFamily.monospace || monospaceFontfamily
+    );
   };
   const browserProcess = useBrowserProcess();
   const { config, environment } = await browserProcess.loadPersistentData();
@@ -36,20 +43,30 @@ const init = async () => {
     (state) => state.repository.recentOpened,
     (recentOpened) => browserProcess.saveEnvironment("recentOpened", recentOpened)
   );
+  // TODO: unify with talwind.config.js
   const muiTheme = createTheme({
     palette: {
       primary: {
-        main: getCssVariable("primary")
+        main: lime.A700
       },
       secondary: {
-        main: getCssVariable("secondary")
+        main: yellow.A700
+      },
+      error: {
+        main: red[700]
       },
       warning: {
-        main: getCssVariable("warning")
+        main: orange[700]
+      },
+      success: {
+        main: green[700]
+      },
+      info: {
+        main: blue[700]
       },
       background: {
-        default: getCssVariable("backgroundDefault"),
-        paper: getCssVariable("backgroundPaper")
+        default: "#222",
+        paper: "#383838"
       },
       type: "dark"
     },

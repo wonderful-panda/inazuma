@@ -1,22 +1,5 @@
-import { Card, CardActions, CardContent, makeStyles } from "@material-ui/core";
+import { Card, CardActions, CardContent } from "@material-ui/core";
 import { memo } from "react";
-
-const useStyles = makeStyles({
-  card: {
-    display: "flex",
-    flexFlow: "column nowrap",
-    flex: 1
-  },
-  cardContent: {
-    display: "flex",
-    flexFlow: "column nowrap",
-    flex: 1,
-    overflow: "hidden"
-  },
-  cardActions: {
-    marginLeft: "auto"
-  }
-});
 
 export interface FlexCardProps {
   content?: React.ReactNode;
@@ -24,11 +7,10 @@ export interface FlexCardProps {
 }
 
 const FlexCard: React.VFC<FlexCardProps> = ({ content, actions }) => {
-  const styles = useStyles();
   return (
-    <Card className={styles.card}>
-      <CardContent className={styles.cardContent}>{content}</CardContent>
-      {actions && <CardActions className={styles.cardActions}>{actions}</CardActions>}
+    <Card className="flex-col-nowrap flex-1">
+      <CardContent className="flex-col-nowrap flex-1 overflow-y-hidden">{content}</CardContent>
+      {actions && <CardActions className="ml-auto">{actions}</CardActions>}
     </Card>
   );
 };

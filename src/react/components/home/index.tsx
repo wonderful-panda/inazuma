@@ -1,5 +1,4 @@
-import styled from "styled-components";
-import { Divider, List, Typography, withStyles } from "@material-ui/core";
+import { Divider, List, Typography } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import HistoryIcon from "@material-ui/icons/History";
 import CloseIcon from "@material-ui/icons/Close";
@@ -11,20 +10,6 @@ import useBrowserProcess from "@/hooks/useBrowserProcess";
 import { openRepository, REMOVE_RECENT_OPENED_ENTRIES } from "@/store/repository";
 import { useErrorReporter } from "@/hooks/useAlert";
 import Loading from "../Loading";
-
-const Wrapper = styled.div`
-  display: flex;
-  flex: 1;
-  flex-flow: column nowrap;
-  max-width: 600px;
-  padding: 0.5rem 1rem;
-`;
-
-const StyledDivider = withStyles({
-  root: {
-    margin: "0 0 0.5rem 0"
-  }
-})(Divider);
 
 export default () => {
   const [loading, setLoading] = useState(false);
@@ -55,39 +40,41 @@ export default () => {
 
   return (
     <MainWindow title="Inazuma">
-      <Wrapper>
-        <h2>SELECT REPOSITORY</h2>
-        <List dense>
-          <RepositoryListItem
-            itemId="__browse__"
-            key="__browse__"
-            primary="BROWSE..."
-            secondary="Select repository by folder browser"
-            icon={<SearchIcon />}
-            action={handleBrowseClick}
-          />
-        </List>
-        <StyledDivider />
-        <Typography variant="body1" color="primary">
-          Recent Opened
-        </Typography>
-        <List dense>
-          {recentOpened.map((path) => (
+      <div className="flex-col-nowrap flex-1 flex-nowrap max-w-2xl p-4">
+        <h2 className="text-2xl my-2 font-bold">SELECT REPOSITORY</h2>
+        <div className="flex flex-1 flex-col flex-nowrap pl-4">
+          <List dense>
             <RepositoryListItem
-              key={path}
-              itemId={path}
-              primary={path.split("/").pop() || path}
-              secondary={path}
-              icon={<HistoryIcon />}
-              action={handleOpen}
-              secondaryAction={{
-                action: handleRemove,
-                icon: <CloseIcon />
-              }}
+              itemId="__browse__"
+              key="__browse__"
+              primary="BROWSE..."
+              secondary="Select repository by folder browser"
+              icon={<SearchIcon />}
+              action={handleBrowseClick}
             />
-          ))}
-        </List>
-      </Wrapper>
+          </List>
+          <Divider className="mb-2" />
+          <Typography variant="h6" color="primary">
+            Recent Opened
+          </Typography>
+          <List dense>
+            {recentOpened.map((path) => (
+              <RepositoryListItem
+                key={path}
+                itemId={path}
+                primary={path.split(/[\\\/]/).pop() || path}
+                secondary={<span className="font-mono">{path}</span>}
+                icon={<HistoryIcon />}
+                action={handleOpen}
+                secondaryAction={{
+                  action: handleRemove,
+                  icon: <CloseIcon />
+                }}
+              />
+            ))}
+          </List>
+        </div>
+      </div>
       <Loading open={loading} />
     </MainWindow>
   );

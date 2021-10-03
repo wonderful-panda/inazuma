@@ -1,12 +1,11 @@
-import { vname } from "@/cssvar";
-import { formatDateLLL } from "@/date";
+import classNames from "classnames";
 import { GraphFragment } from "@/grapher";
 import { shortHash } from "@/util";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { memo } from "react";
-import styled from "styled-components";
 import GraphCell from "./GraphCell";
 import RefBadge from "./RefBadge";
+import { formatDateLLL } from "@/date";
 
 export interface CommitListRowProps {
   height: number;
@@ -19,71 +18,6 @@ export interface CommitListRowProps {
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-const Container = styled.div<{ $selected: boolean }>`
-  display: flex;
-  box-sizing: border-box;
-  cursor: pointer;
-  padding-left: 1rem;
-  border-bottom: 1px solid #333;
-  background-color: ${(p) => (p.$selected ? "#ffffff10" : undefined)};
-  :hover {
-    background-color: #ffffff10;
-  }
-`;
-
-const Attributes = styled.div`
-  margin-left: 24px;
-  flex: 1;
-  display: flex;
-  position: relative;
-  flex-flow: column nowrap;
-  overflow: hidden;
-`;
-
-const Badges = styled.div`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 6px;
-`;
-
-const useStyles = makeStyles({
-  firstLine: {
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis"
-  },
-  secondLine: {
-    color: "#aaa",
-    whiteSpace: "nowrap"
-  }
-});
-
-const CommitId = styled.span`
-  margin-left: 8px;
-  white-space: nowrap;
-  font-family: var(${vname("monospaceFontfamily")});
-`;
-
-const Author = styled.span`
-  margin-left: 12px;
-  white-space: nowrap;
-  &::before {
-    content: "by ";
-  }
-  &::after {
-    content: ",";
-  }
-`;
-
-const Date = styled.span`
-  margin-left: 12px;
-  white-space: nowrap;
-  &::before {
-    content: "at ";
-  }
-`;
-
 const CommitListRow: React.VFC<CommitListRowProps> = ({
   height,
   commit,
@@ -94,29 +28,43 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
   parentId,
   onClick: handleClick
 }) => {
-  const styles = useStyles();
   const workingTree = commit.id === "--";
   return (
-    <Container $selected={selected} onClick={handleClick}>
+    <div
+      className={classNames(
+        "flex box-border cursor-pointer",
+        "pl-4 border-b border-solid border-paper",
+        "hover:bg-highlight",
+        { "bg-highlight": selected }
+      )}
+      onClick={handleClick}
+    >
       <GraphCell graph={graph} height={height} head={head} maskIdPrefix={parentId} />
-      <Attributes>
-        <Typography className={styles.firstLine} variant="subtitle1">
+      <div className="relative flex flex-col flex-nowrap flex-1 ml-6 overflow-hidden">
+        <Typography
+          variant="subtitle1"
+          className="whitespace-nowrap overflow-hidden overflow-ellipsis"
+        >
           {commit.summary}
         </Typography>
-        <Typography className={styles.secondLine} variant="body2">
-          <CommitId>{shortHash(commit.id)}</CommitId>
-          {!workingTree && <Author>{commit.author}</Author>}
-          {!workingTree && <Date>{formatDateLLL(commit.date)}</Date>}
+        <Typography variant="body2" className="text-greytext whitespace-nowrap">
+          <span className="ml-2 whitespace-nowrap font-mono">{shortHash(commit.id)}</span>
+          {!workingTree && (
+            <>
+              <span className="ml-3 whitespace-nowrap">by {commit.author},</span>
+              <span className="ml-3 whitespace-nowrap">at {formatDateLLL(commit.date)}</span>
+            </>
+          )}
         </Typography>
-      </Attributes>
+      </div>
       {refs && (
-        <Badges>
+        <div className="absolute right-0 bottom-0 p-2">
           {refs.map((r) => (
             <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
           ))}
-        </Badges>
+        </div>
       )}
-    </Container>
+    </div>
   );
 };
 

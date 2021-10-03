@@ -2,25 +2,11 @@ import { AlertType } from "@/context/AlertContext";
 import { useAlert } from "@/hooks/useAlert";
 import { useDispatch, useSelector } from "@/store";
 import { ADD_TAB, CLOSE_REPOSITORY, TabType } from "@/store/repository";
-import { Button, withStyles } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { useCallback, useState } from "react";
-import styled from "styled-components";
 import SplitterPanel from "../SplitterPanel";
 import { TabDefinition } from "../TabContainer";
 import CommitList from "./CommitList";
-
-const StyledButton = withStyles({
-  root: {
-    margin: "0.5rem"
-  }
-})(Button);
-
-const Content = styled.div`
-  flex: 1;
-  margin: 0.5rem;
-  padding: 0.5rem;
-  border: gray 1px solid;
-`;
 
 const Test: React.VFC<{ tab: TabDefinition<TabType> }> = ({ tab }) => {
   const alert = useAlert();
@@ -55,21 +41,21 @@ const Test: React.VFC<{ tab: TabDefinition<TabType> }> = ({ tab }) => {
       onUpdateRatio={setRatio}
       onUpdateDirection={setDirection}
       first={
-        <Content>
+        <div className="flex-1 m-2 p-2 border border-solid border-greytext">
           <h2>{`${tab.type}:${tab.title}`}</h2>
-          <StyledButton key="add-tab" variant="outlined" onClick={addTab}>
+          <Button className="m-2" key="add-tab" variant="outlined" onClick={addTab}>
             ADD TAB
-          </StyledButton>
-          <StyledButton key="close" variant="outlined" onClick={closeRepository}>
+          </Button>
+          <Button className="m-2" key="close" variant="outlined" onClick={closeRepository}>
             CLOSE
-          </StyledButton>
+          </Button>
           <br />
           {(["info", "success", "warning", "error"] as const).map((type) => (
-            <StyledButton key={type} variant="outlined" onClick={() => showAlert(type)}>
+            <Button className="m-2" key={type} variant="outlined" onClick={() => showAlert(type)}>
               {type.toUpperCase()}
-            </StyledButton>
+            </Button>
           ))}
-        </Content>
+        </div>
       }
       second={<CommitList selectedIndex={0} commits={commits} graph={graph} refs={refs} />}
     />

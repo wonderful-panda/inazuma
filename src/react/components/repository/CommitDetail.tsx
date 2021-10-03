@@ -1,11 +1,10 @@
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { memo, useCallback, useState } from "react";
 import PersonIcon from "@material-ui/icons/Person";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import GitHash from "../GitHash";
 import SplitterPanel from "../SplitterPanel";
 import { formatDateLLL } from "@/date";
-import styled from "styled-components";
 import RefBadge from "./RefBadge";
 import FileListCard from "./FileListCard";
 import { useDispatch } from "@/store";
@@ -17,33 +16,6 @@ export interface CommitDetailProps {
   refs: Ref[];
   orientation: Orientation;
 }
-
-const AttrDiv = styled.div`
-  margin-right: 12px;
-  display: flex;
-  flex-flow: row nowrap;
-`;
-
-const useStyles = makeStyles({
-  summary: {
-    borderBottom: "1px solid"
-  },
-  badges: {
-    display: "flex",
-    flexFlow: "row wrap"
-  },
-  attrs: {
-    display: "flex",
-    flexFlow: "row wrap",
-    color: "#aaa"
-  },
-  body: {
-    margin: "1rem",
-    flex: "0 1 auto",
-    padding: "0.5rem",
-    overflow: "auto"
-  }
-});
 
 const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => {
   const dispatch = useDispatch();
@@ -60,35 +32,50 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
     );
   }, []);
 
-  const styles = useStyles();
   if (!commit) {
     return <FlexCard />;
   }
+
   const content = (
     <>
-      <Typography variant="h5" component="div" className={styles.summary} gutterBottom>
+      <Typography
+        variant="h5"
+        component="div"
+        className="border-b border-solid border-current"
+        gutterBottom
+      >
         {commit.summary}
       </Typography>
-      <Typography variant="body1" component="div" className={styles.attrs} gutterBottom>
-        <AttrDiv>
+      <Typography
+        variant="body1"
+        component="div"
+        className="flex-row-wrap text-greytext"
+        gutterBottom
+      >
+        <div className="flex-row-nowrap mr-4">
           <GitHash hash={commit.id} />
-        </AttrDiv>
-        <AttrDiv>
+        </div>
+        <div className="flex-row-nowrap mr-4">
           <PersonIcon />
           {commit.author}
-        </AttrDiv>
-        <AttrDiv>
+        </div>
+        <div className="flex-row-nowrap mr-4">
           <AccessTimeIcon />
           {formatDateLLL(commit.date)}
-        </AttrDiv>
+        </div>
       </Typography>
-      <Typography variant="body1" className={styles.badges} gutterBottom>
+      <Typography variant="body1" className="flex-row-wrap" gutterBottom>
         {refs.map((r) => (
           <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
         ))}
       </Typography>
       {commit.body && (
-        <Typography variant="body1" component="pre" className={styles.body} gutterBottom>
+        <Typography
+          variant="body1"
+          component="pre"
+          className="flex-initial m-4 p-2 overflow-hidden"
+          gutterBottom
+        >
           {commit.body}
         </Typography>
       )}
@@ -118,6 +105,8 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
       direction={props.orientation === "portrait" ? "vert" : "horiz"}
       first={<CommitMetadata {...props} />}
       second={<FileListCard title={commit && "Changed files"} files={commit && commit.files} />}
+      firstPanelMinSize="20%"
+      secondPanelMinSize="20%"
     />
   );
 };

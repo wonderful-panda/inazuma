@@ -1,15 +1,9 @@
-import { Backdrop, CircularProgress, withStyles } from "@material-ui/core";
-
-const StyledBackdrop = withStyles({
-  root: {
-    zIndex: 9999
-  }
-})(Backdrop);
+import { Backdrop, CircularProgress } from "@material-ui/core";
 
 const Loading: React.VFC<{ open: boolean }> = ({ open }) => (
-  <StyledBackdrop open={open}>
+  <Backdrop className="z-9999" open={open}>
     <CircularProgress color="primary" size={64} />
-  </StyledBackdrop>
+  </Backdrop>
 );
 
 export default Loading;

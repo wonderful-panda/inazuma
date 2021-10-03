@@ -5,8 +5,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Slide,
-  withStyles
+  Slide
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
@@ -34,26 +33,6 @@ const Transition = forwardRef((props: TransitionProps, ref) => (
   <Slide direction="right" ref={ref} {...props} mountOnEnter unmountOnExit />
 ));
 
-const StyledDialogActions = withStyles({
-  root: {
-    paddingRight: "1rem"
-  }
-})(DialogActions);
-
-const CloseButton = withStyles({
-  root: {
-    position: "absolute",
-    top: 6,
-    right: 4
-  }
-})(IconButton);
-
-const DialogActionButton = withStyles({
-  root: {
-    fontSize: "1.2rem"
-  }
-})(Button);
-
 export const FullscreenDialog: React.FC<FullscreenDialogProps> = (props) => {
   const handleClose = useCallback(() => props.setOpened(false), []);
   return (
@@ -66,21 +45,21 @@ export const FullscreenDialog: React.FC<FullscreenDialogProps> = (props) => {
     >
       <DialogTitle>
         {props.title}
-        <CloseButton onClick={handleClose}>
+        <IconButton className="absolute top-2 right-2" onClick={handleClose}>
           <CloseIcon />
-        </CloseButton>
+        </IconButton>
       </DialogTitle>
       <DialogContent dividers>{props.children}</DialogContent>
-      <StyledDialogActions>
+      <DialogActions className="pr-4">
         {props.actions?.map((a, i) => (
-          <DialogActionButton key={i} size="large" onClick={a.onClick} color={a.color}>
+          <Button key={i} className="text-xl" size="large" onClick={a.onClick} color={a.color}>
             {a.text}
-          </DialogActionButton>
+          </Button>
         ))}
-        <DialogActionButton key="__cancel__" size="large" onClick={handleClose}>
+        <Button key="__cancel__" className="text-xl mr-2" size="large" onClick={handleClose}>
           Cancel
-        </DialogActionButton>
-      </StyledDialogActions>
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

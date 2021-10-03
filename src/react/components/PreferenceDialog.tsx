@@ -1,18 +1,11 @@
 import { assertNever } from "@/util";
 import { TextField, Typography } from "@material-ui/core";
 import { forwardRef, useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
-import styled from "styled-components";
 import { DialogHandler, FullscreenDialog } from "./FullscreenDialog";
 
-const Content = styled.div`
-  padding: 0.5rem;
-`;
-
-const SectionContent = styled.div`
-  padding: 0 1rem 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-`;
+const SectionContent: React.FC = ({ children }) => (
+  <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>
+);
 
 type Action =
   | {
@@ -73,7 +66,7 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
       save: () => props.onConfigChange(state)
     }));
     return (
-      <Content>
+      <div className="p-2">
         <Typography variant="h6" component="div" color="primary">
           Font
         </Typography>
@@ -121,7 +114,7 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
             onChange={(payload) => dispatch({ type: "recentListCount", payload })}
           />
         </SectionContent>
-      </Content>
+      </div>
     );
   }
 );
