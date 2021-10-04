@@ -31,6 +31,7 @@ declare global {
       maximized: boolean;
     };
     recentOpened?: string[];
+    state?: Record<string, string>;
   }
 
   /**

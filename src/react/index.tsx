@@ -10,6 +10,7 @@ import { getCssVariable, setCssVariable } from "./cssvar";
 import { AlertProvider } from "./context/AlertContext";
 import { SET_RECENT_OPENED_ENTRIES } from "./store/repository";
 import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
+import { PersistStateProvider } from "./context/PersistStateContext";
 
 const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
 const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");
@@ -26,12 +27,34 @@ const init = async () => {
     );
   };
   const browserProcess = useBrowserProcess();
-  const { config, environment } = await browserProcess.loadPersistentData();
+  const {
+    config,
+    environment: { recentOpened, state }
+  } = await browserProcess.loadPersistentData();
   store.dispatch(UPDATE_CONFIG(config));
   updateFont(config);
-  if (environment.recentOpened) {
-    store.dispatch(SET_RECENT_OPENED_ENTRIES(environment.recentOpened));
+  if (recentOpened) {
+    store.dispatch(SET_RECENT_OPENED_ENTRIES(recentOpened));
   }
+  if (state) {
+    // restore sessionStorage from envorinment.json
+    // The reason why we don't use localStorege is
+    // localStorage prevents multiple instance run at same time.
+    Object.getOwnPropertyNames(state).forEach((key) => {
+      sessionStorage.setItem(key, state[key]);
+    });
+  }
+  window.addEventListener("beforeunload", () => {
+    // save sessionStorage to envorinment.json
+    const state: Record<string, string> = {};
+    for (let i = 0; i < sessionStorage.length; ++i) {
+      const key = sessionStorage.key(i);
+      if (key && key.startsWith("inazuma:")) {
+        state[key] = sessionStorage.getItem(key)!;
+      }
+    }
+    browserProcess.saveEnvironment("state", state);
+  });
   watch(
     (state) => state.config,
     (config) => {
@@ -85,7 +108,11 @@ const init = async () => {
     const repoPath = useSelector((state) => state.repository.repoPath);
     return (
       <ThemeProvider theme={muiTheme}>
-        <AlertProvider>{repoPath ? <RepositoryPage path={repoPath} /> : <Home />}</AlertProvider>
+        <AlertProvider>
+          <PersistStateProvider storage={sessionStorage} prefix="inazuma:">
+            {repoPath ? <RepositoryPage path={repoPath} /> : <Home />}
+          </PersistStateProvider>
+        </AlertProvider>
       </ThemeProvider>
     );
   };

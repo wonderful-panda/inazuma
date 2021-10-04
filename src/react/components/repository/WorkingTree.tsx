@@ -1,4 +1,5 @@
-import { memo, useMemo, useState } from "react";
+import { usePersistState } from "@/hooks/usePersistState";
+import { memo, useMemo } from "react";
 import SplitterPanel from "../SplitterPanel";
 import FileListCard from "./FileListCard";
 
@@ -8,7 +9,10 @@ export interface WorkingTreeProps {
 }
 
 const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
-  const [splitterRatio, setSplitterRatio] = useState(0.5);
+  const [splitterRatio, setSplitterRatio] = usePersistState(
+    "repository/WorkingTree/splitter.ratio",
+    0.5
+  );
   const unstagedFiles = useMemo(() => {
     const ret = [
       ...stat.unstagedFiles,

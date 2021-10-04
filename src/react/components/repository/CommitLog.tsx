@@ -1,12 +1,13 @@
 import { useErrorReporter } from "@/hooks/useAlert";
 import { useDispatch, useSelector, RootState } from "@/store";
 import { selectLogEntry } from "@/store/repository";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import SplitterPanel from "../SplitterPanel";
 import CommitDetail from "./CommitDetail";
 import CommitList from "./CommitList";
 import { createSelector } from "reselect";
 import WorkingTree from "./WorkingTree";
+import { usePersistState } from "@/hooks/usePersistState";
 
 const emptyRefs: Ref[] = [];
 
@@ -30,8 +31,11 @@ const CommitLog: React.VFC = () => {
     dispatch(selectLogEntry({ index, errorReporter }));
   }, []);
   const dispatch = useDispatch();
-  const [ratio, setRatio] = useState(0.6);
-  const [direction, setDirection] = useState<Direction>("horiz");
+  const [ratio, setRatio] = usePersistState("repository/CommitLog/splitter.ratio", 0.6);
+  const [direction, setDirection] = usePersistState<Direction>(
+    "repository/ComitLog/splitter.dir",
+    "horiz"
+  );
   const orientation = direction === "horiz" ? "portrait" : "landscape";
 
   return (

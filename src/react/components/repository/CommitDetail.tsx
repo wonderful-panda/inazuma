@@ -1,5 +1,5 @@
 import { Button, Typography } from "@material-ui/core";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback } from "react";
 import PersonIcon from "@material-ui/icons/Person";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import GitHash from "../GitHash";
@@ -10,6 +10,7 @@ import FileListCard from "./FileListCard";
 import { useDispatch } from "@/store";
 import { ADD_TAB } from "@/store/repository";
 import FlexCard from "../FlexCard";
+import { usePersistState } from "@/hooks/usePersistState";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -95,7 +96,10 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
 });
 
 const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
-  const [splitterRatio, setSplitterRatio] = useState(0.5);
+  const [splitterRatio, setSplitterRatio] = usePersistState(
+    "repository/CommitDetail/splitter.ratio",
+    0.5
+  );
   const commit = props.commit;
   return (
     <SplitterPanel
@@ -104,7 +108,7 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
       allowDirectionChange={false}
       direction={props.orientation === "portrait" ? "vert" : "horiz"}
       first={<CommitMetadata {...props} />}
-      second={<FileListCard title={commit && "Changed files"} files={commit && commit.files} />}
+      second={<FileListCard title={commit && "Changes"} files={commit && commit.files} />}
       firstPanelMinSize="20%"
       secondPanelMinSize="20%"
     />
