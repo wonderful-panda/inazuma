@@ -66,7 +66,7 @@ const init = async () => {
       },
       background: {
         default: "#222",
-        paper: "#383838"
+        paper: "#333"
       },
       type: "dark"
     },

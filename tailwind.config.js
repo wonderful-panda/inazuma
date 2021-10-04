@@ -23,7 +23,7 @@ module.exports = {
         success: colors.green[700],
         info: colors.blue[700],
         background: "#222",
-        paper: "#3a3a3a",
+        paper: "#333",
         splitter: colors.grey[800],
         titlebar: "#2a2a2a",
         greytext: colors.grey[500],
