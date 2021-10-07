@@ -27,7 +27,7 @@ const TabButton: React.VFC<{
   return (
     <div
       className={classNames(
-        "relative h-6 leading-6 border-r-2 border-solid border-background m-0",
+        "relative h-7 leading-7 border-r-2 border-solid border-background m-0",
         {
           ["text-primary bg-background " + CURRENT_TABBUTTON_CLASS]: p.current
         }
@@ -35,8 +35,10 @@ const TabButton: React.VFC<{
     >
       <Button
         classes={{
-          root: classNames("normal-case m-0 p-0 h-6", { "font-bold text-primary": p.current }),
-          label: "mr-auto pl-2 pr-5 whitespace-nowrap"
+          root: classNames("normal-case m-0 p-0 h-7 leading-7", {
+            "font-bold text-primary": p.current
+          }),
+          label: "mr-auto pl-2 pr-6 whitespace-nowrap font-mono text-lg"
         }}
         onClick={p.select}
       >
@@ -86,7 +88,7 @@ const TabContainer = <T extends unknown = Record<string, any>>(p: TabContainerPr
     <div className="flex-col-nowrap flex-1 items-stretch overflow-hidden p-0">
       <div
         className={classNames(
-          "flex-row-nowrap overflow-x-auto overflow-y-hidden h-6 m-0 min-w-full",
+          "flex-row-nowrap overflow-x-auto overflow-y-hidden h-7 m-0 min-w-full",
           "bg-paper border-b border-solid border-background",
           styles.autohideScrollbar
         )}
