@@ -11,6 +11,9 @@ import { AlertProvider } from "./context/AlertContext";
 import { SET_RECENT_OPENED_ENTRIES } from "./store/repository";
 import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
+import { setup as setupMonaco } from "./monaco";
+
+setupMonaco();
 
 const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
 const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");
