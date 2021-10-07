@@ -1,11 +1,10 @@
 import classNames from "classnames";
 import { GraphFragment } from "@/grapher";
-import { shortHash } from "@/util";
-import { Typography } from "@material-ui/core";
 import { memo } from "react";
 import GraphCell from "./GraphCell";
 import RefBadge from "./RefBadge";
 import { formatDateLLL } from "@/date";
+import GitHash from "../GitHash";
 
 export interface CommitListRowProps {
   height: number;
@@ -15,7 +14,7 @@ export interface CommitListRowProps {
   head: boolean;
   selected: boolean;
   parentId: string;
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onClick?: (event: React.MouseEvent) => void;
 }
 
 const CommitListRow: React.VFC<CommitListRowProps> = ({
@@ -26,7 +25,7 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
   head,
   selected,
   parentId,
-  onClick: handleClick
+  onClick
 }) => {
   const workingTree = commit.id === "--";
   return (
@@ -37,25 +36,22 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
         "hover:bg-highlight",
         { "bg-highlight": selected }
       )}
-      onClick={handleClick}
+      onClick={onClick}
     >
       <GraphCell graph={graph} height={height} head={head} maskIdPrefix={parentId} />
-      <div className="relative flex flex-col flex-nowrap flex-1 ml-6 overflow-hidden">
-        <Typography
-          variant="subtitle1"
-          className="whitespace-nowrap overflow-hidden overflow-ellipsis"
-        >
+      <div className="relative my-auto flex flex-col flex-nowrap flex-1 ml-6 overflow-hidden">
+        <div className="text-lg leading-6 whitespace-nowrap overflow-hidden overflow-ellipsis">
           {commit.summary}
-        </Typography>
-        <Typography variant="body2" className="text-greytext whitespace-nowrap">
-          <span className="ml-2 whitespace-nowrap font-mono">{shortHash(commit.id)}</span>
+        </div>
+        <div className="flex-row-nowrap leading-5 pl-1 text-greytext whitespace-nowrap">
+          <GitHash hash={commit.id} />
           {!workingTree && (
             <>
               <span className="ml-3 whitespace-nowrap">by {commit.author},</span>
               <span className="ml-3 whitespace-nowrap">at {formatDateLLL(commit.date)}</span>
             </>
           )}
-        </Typography>
+        </div>
       </div>
       {refs && (
         <div className="absolute right-0 bottom-0 p-2">
