@@ -1,4 +1,5 @@
-import { AutoSizer, List } from "react-virtualized";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList } from "react-window";
 import { useCallback, useMemo } from "react";
 import FileListRow, { ROW_HEIGHT } from "./FileListRow";
 
@@ -30,12 +31,12 @@ const FileList: React.VFC<FileListProps> = ({ files, onRowClick, onRowDoubleClic
   const handleRowClick = createRowEventHandler(files, onRowClick);
   const handleRowDoubleClick = createRowEventHandler(files, onRowDoubleClick);
   const renderRow = useCallback(
-    ({ index, key, style }: { index: number; key: string; style: object }) => {
+    ({ index, style }: { index: number; style: object }) => {
       const file = files[index];
       return (
         <div
           data-index={index}
-          key={key}
+          key={`${file.path}:${file.statusCode}`}
           style={style}
           onClick={handleRowClick}
           onDoubleClick={handleRowDoubleClick}
@@ -49,14 +50,15 @@ const FileList: React.VFC<FileListProps> = ({ files, onRowClick, onRowDoubleClic
   return (
     <AutoSizer style={{ flex: 1 }}>
       {({ width, height }) => (
-        <List
+        <FixedSizeList
           width={width}
           height={height}
-          overscanRowCount={8}
-          rowCount={files.length}
-          rowHeight={ROW_HEIGHT}
-          rowRenderer={renderRow}
-        />
+          overscanCount={8}
+          itemCount={files.length}
+          itemSize={ROW_HEIGHT}
+        >
+          {renderRow}
+        </FixedSizeList>
       )}
     </AutoSizer>
   );

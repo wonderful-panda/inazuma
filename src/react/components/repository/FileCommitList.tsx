@@ -1,5 +1,6 @@
-import { AutoSizer, Index, List } from "react-virtualized";
-import { useCallback, useEffect, useState } from "react";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { VariableSizeList } from "react-window";
+import { useCallback } from "react";
 import FileCommitListRow, { getRowHeight } from "./FileCommitListRow";
 
 export interface FileCommitListProps {
@@ -15,19 +16,12 @@ const FileCommitList: React.VFC<FileCommitListProps> = ({
   selectedIndex,
   onRowclick
 }) => {
-  const [scrollToIndex, setScrollToIndex] = useState<number | undefined>(undefined);
-  useEffect(() => {
-    setScrollToIndex(selectedIndex);
-    setTimeout(() => {
-      setScrollToIndex(undefined);
-    }, 0);
-  }, [selectedIndex]);
   const renderRow = useCallback(
-    ({ index, key, style }: { index: number; key: string; style: object }) => {
+    ({ index, style }: { index: number; style: object }) => {
       const commit = commits[index];
       const handleClick = onRowclick && ((e: React.MouseEvent) => onRowclick(e, index, commit));
       return (
-        <div key={key} style={style}>
+        <div key={commit.id} style={style}>
           <FileCommitListRow
             commit={commit}
             selected={index === selectedIndex}
@@ -41,7 +35,7 @@ const FileCommitList: React.VFC<FileCommitListProps> = ({
     [commits, refs, selectedIndex, onRowclick]
   );
   const rowHeight = useCallback(
-    ({ index }: Index) => {
+    (index: number) => {
       return getRowHeight(commits[index]);
     },
     [commits]
@@ -50,16 +44,16 @@ const FileCommitList: React.VFC<FileCommitListProps> = ({
   return (
     <AutoSizer className="flex flex-1">
       {({ width, height }) => (
-        <List
+        <VariableSizeList
           className="flex-1"
           width={width}
           height={height}
-          overscanRowCount={8}
-          scrollToIndex={scrollToIndex}
-          rowCount={commits.length}
-          rowHeight={rowHeight}
-          rowRenderer={renderRow}
-        />
+          overscanCount={8}
+          itemCount={commits.length}
+          itemSize={rowHeight}
+        >
+          {renderRow}
+        </VariableSizeList>
       )}
     </AutoSizer>
   );

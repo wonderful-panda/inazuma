@@ -4,7 +4,7 @@ import { shortHash } from "@/util";
 import { makeStyles } from "@material-ui/core";
 import * as monaco from "monaco-editor";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { AutoSizer } from "react-virtualized";
+import AutoSizer from "react-virtualized-auto-sizer";
 import MonacoEditor from "../MonacoEditor";
 
 type IStandaloneCodeEditor = monaco.editor.IStandaloneCodeEditor;

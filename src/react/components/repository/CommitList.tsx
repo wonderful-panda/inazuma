@@ -1,4 +1,5 @@
-import { AutoSizer, List } from "react-virtualized";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList } from "react-window";
 import { useCallback, useMemo } from "react";
 import { GraphFragment } from "@/grapher";
 import CommitListRow from "./CommitListRow";
@@ -24,11 +25,11 @@ const CommitList: React.VFC<CommitListProps> = ({
 }) => {
   const instanceId = useMemo(() => (nextId++).toString(), []);
   const renderRow = useCallback(
-    ({ index, key, style }: { index: number; key: string; style: object }) => {
+    ({ index, style }: { index: number; style: object }) => {
       const commit = commits[index];
       const handleClick = onRowclick && ((e: React.MouseEvent) => onRowclick(e, index, commit));
       return (
-        <div key={key} style={style}>
+        <div key={commit.id} style={style}>
           <CommitListRow
             commit={commit}
             selected={index === selectedIndex}
@@ -45,16 +46,16 @@ const CommitList: React.VFC<CommitListProps> = ({
     [commits, graph, refs, selectedIndex, onRowclick]
   );
   return (
-    <AutoSizer style={{ flex: 1 }}>
+    <AutoSizer className="flex-1">
       {({ width, height }) => (
-        <List
+        <FixedSizeList
           width={width}
           height={height}
-          overscanRowCount={8}
-          rowCount={commits.length}
-          rowHeight={ROW_HEIGHT}
-          rowRenderer={renderRow}
-        />
+          itemCount={commits.length}
+          itemSize={ROW_HEIGHT}
+        >
+          {renderRow}
+        </FixedSizeList>
       )}
     </AutoSizer>
   );
