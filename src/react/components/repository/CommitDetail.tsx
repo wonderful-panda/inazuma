@@ -11,6 +11,7 @@ import { useDispatch } from "@/store";
 import { ADD_TAB } from "@/store/repository";
 import FlexCard from "../FlexCard";
 import { usePersistState } from "@/hooks/usePersistState";
+import { getFileName, shortHash } from "@/util";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -19,20 +20,6 @@ export interface CommitDetailProps {
 }
 
 const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => {
-  const dispatch = useDispatch();
-  const addTestTab = useCallback(() => {
-    const id = Date.now().toString();
-    dispatch(
-      ADD_TAB({
-        type: "file",
-        id,
-        title: `TAB-${id}`,
-        payload: { path: "XXX", sha: "XXXX" },
-        closable: true
-      })
-    );
-  }, []);
-
   if (!commit) {
     return <FlexCard />;
   }
@@ -87,7 +74,6 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
       content={content}
       actions={
         <>
-          <Button onClick={addTestTab}>Test</Button>
           <Button disabled={!commit}>Browse source</Button>
         </>
       }
@@ -96,11 +82,33 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
 });
 
 const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
+  const dispatch = useDispatch();
   const [splitterRatio, setSplitterRatio] = usePersistState(
     "repository/CommitDetail/splitter.ratio",
     0.5
   );
   const commit = props.commit;
+  const addBlameTab = useCallback(
+    (_1: React.UIEvent, _2: number, file: FileEntry) => {
+      if (!commit) {
+        return;
+      }
+      if (file.statusCode === "D") {
+        return;
+      }
+      dispatch(
+        ADD_TAB({
+          type: "file",
+          id: `blame:${commit.id}/${file.path}`,
+          title: `${getFileName(file.path)} @ ${shortHash(commit.id)}`,
+          payload: { path: file.path, sha: commit.id },
+          closable: true
+        })
+      );
+    },
+    [commit]
+  );
+
   return (
     <SplitterPanel
       ratio={splitterRatio}
@@ -108,7 +116,13 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
       allowDirectionChange={false}
       direction={props.orientation === "portrait" ? "vert" : "horiz"}
       first={<CommitMetadata {...props} />}
-      second={<FileListCard title={commit && "Changes"} files={commit && commit.files} />}
+      second={
+        <FileListCard
+          title={commit && "Changes"}
+          files={commit && commit.files}
+          onRowDoubleClick={addBlameTab}
+        />
+      }
       firstPanelMinSize="20%"
       secondPanelMinSize="20%"
     />

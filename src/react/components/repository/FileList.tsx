@@ -1,24 +1,50 @@
 import { AutoSizer, List } from "react-virtualized";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import FileListRow, { ROW_HEIGHT } from "./FileListRow";
 
 export interface FileListProps {
   files: FileEntry[];
-  onRowclick?: (event: React.MouseEvent, index: number, file: FileEntry) => void;
+  onRowClick?: (event: React.MouseEvent, index: number, file: FileEntry) => void;
+  onRowDoubleClick?: (event: React.MouseEvent, index: number, file: FileEntry) => void;
 }
 
-const FileList: React.VFC<FileListProps> = ({ files, onRowclick }) => {
+function createRowEventHandler(
+  files: readonly FileEntry[],
+  handler?: (event: React.MouseEvent, index: number, file: FileEntry) => void
+) {
+  return useMemo(() => {
+    if (!handler) {
+      return undefined;
+    }
+    return (event: React.MouseEvent) => {
+      const index = parseInt((event.currentTarget as HTMLElement).dataset.index || "-1");
+      if (0 <= index) {
+        const file = files[index];
+        handler(event, index, file);
+      }
+    };
+  }, [files, handler]);
+}
+
+const FileList: React.VFC<FileListProps> = ({ files, onRowClick, onRowDoubleClick }) => {
+  const handleRowClick = createRowEventHandler(files, onRowClick);
+  const handleRowDoubleClick = createRowEventHandler(files, onRowDoubleClick);
   const renderRow = useCallback(
     ({ index, key, style }: { index: number; key: string; style: object }) => {
       const file = files[index];
-      const handleClick = onRowclick && ((e: React.MouseEvent) => onRowclick(e, index, file));
       return (
-        <div key={key} style={style}>
-          <FileListRow file={file} selected={false} onClick={handleClick} />
+        <div
+          data-index={index}
+          key={key}
+          style={style}
+          onClick={handleRowClick}
+          onDoubleClick={handleRowDoubleClick}
+        >
+          <FileListRow file={file} selected={false} />
         </div>
       );
     },
-    [files, onRowclick]
+    [files]
   );
   return (
     <AutoSizer style={{ flex: 1 }}>

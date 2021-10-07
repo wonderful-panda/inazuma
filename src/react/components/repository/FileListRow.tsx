@@ -9,7 +9,6 @@ const ROW_HEIGHT_CLASS = "h-[48px]";
 export interface FileListRowProps {
   file: FileEntry;
   selected: boolean;
-  onClick?: (event: React.MouseEvent) => void;
 }
 
 const getFileType = (item: FileEntry) => {
@@ -66,7 +65,7 @@ const FileListRow: React.VFC<FileListRowProps> = ({ file, selected }) => {
       <div className="mx-2 my-auto">
         <FileStatusIcon statusCode={file.statusCode} />
       </div>
-      <div className="flex flex-1 flex-col flex-nowrap pl-1 overflow-hidden font-mono">
+      <div className="flex-1 flex-col-nowrap pl-1 overflow-hidden font-mono">
         <Typography
           variant="subtitle1"
           component="div"

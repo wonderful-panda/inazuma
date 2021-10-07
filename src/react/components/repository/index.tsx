@@ -4,18 +4,19 @@ import { assertNever } from "@/util";
 import { useCallback } from "react";
 import { MainWindow } from "../MainWindow";
 import TabContainer, { TabContainerProps } from "../TabContainer";
+import BlameTab from "./BlameTab";
 import CommitLog from "./CommitLog";
-import Test from "./Test";
 
 const RepositoryPage: React.VFC<{ path: string }> = (props) => {
   const repos = useSelector((state) => state.repository);
+  const refs = useSelector((state) => state.repository.refs);
   const dispatch = useDispatch();
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>((tab) => {
     switch (tab.type) {
       case "commits":
         return <CommitLog />;
       case "file":
-        return <Test tab={tab} />;
+        return <BlameTab {...tab.payload} refs={refs} />;
       case "tree":
         return <div>TEST</div>;
       default:

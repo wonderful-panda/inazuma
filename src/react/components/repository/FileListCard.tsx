@@ -6,8 +6,10 @@ import FileList from "./FileList";
 export interface FileListCardProps {
   title?: string;
   files?: FileEntry[];
+  onRowClick?: (event: React.MouseEvent, index: number, file: FileEntry) => void;
+  onRowDoubleClick?: (event: React.MouseEvent, index: number, file: FileEntry) => void;
 }
-const FileListCard: React.VFC<FileListCardProps> = ({ title, files }) => {
+const FileListCard: React.VFC<FileListCardProps> = ({ title, files, ...rest }) => {
   const content = (
     <>
       {title && (
@@ -20,7 +22,9 @@ const FileListCard: React.VFC<FileListCardProps> = ({ title, files }) => {
           {title}
         </Typography>
       )}
-      <div className="flex flex-1 overflow-hidden">{files && <FileList files={files} />}</div>
+      <div className="flex flex-1 overflow-hidden">
+        {files && <FileList files={files} {...rest} />}
+      </div>
     </>
   );
   return <FlexCard content={content} />;
