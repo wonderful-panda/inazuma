@@ -23,8 +23,8 @@ const RotateButton: React.VFC<{
       "bg-splitter shadow-lg",
       "transform group-hover:visible",
       "transition-transform duration-200 ease-linear",
-      { "hover:rotate-90": horiz, "hover:-rotate-90": !horiz },
-      { visible: dragging, invisible: !dragging }
+      horiz ? "hover:rotate-90" : "hover:-rotate-90",
+      dragging ? "visible" : "invisible"
     )}
     onClick={onClick}
   >
