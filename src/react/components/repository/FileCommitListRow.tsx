@@ -20,7 +20,7 @@ export interface FileCommitListRowProps {
 const FilePaths: React.VFC<{ file: FileEntry }> = ({ file }) =>
   file.oldPath ? (
     <div className="text-[0.9rem] font-mono flex-row-nowrap text-greytext whitespace-nowrap">
-      <div className="mr-1 my-auto leading-5 font-bold px-0.5 py-0 text-background bg-greytext">
+      <div className="mr-1 my-auto leading-4 font-bold px-0.5 py-0 text-background bg-greytext">
         {file.statusCode.startsWith("R") ? "Rename" : "Copy"}
       </div>
       <div className="flex-1 leading-5 overflow-hidden whitespace-nowrap overflow-ellipsis text-greytext">

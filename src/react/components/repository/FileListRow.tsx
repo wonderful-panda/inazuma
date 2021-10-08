@@ -41,7 +41,7 @@ const NumStat: React.VFC<{ file: FileEntry }> = ({ file }) => (
 const OldPath: React.VFC<{ file: FileEntry }> = ({ file }) =>
   file.oldPath ? (
     <>
-      <div className="font-bold mx-1 my-auto px-0.5 py-0 text-background bg-greytext">
+      <div className="font-bold leading-4 mx-1 my-auto px-0.5 py-0 text-background bg-greytext">
         {file.statusCode.startsWith("R") ? "Rename from" : "Copy from"}
       </div>
       <div className="flex-1 font-bold overflow-hidden whitespace-nowrap overflow-ellipsis text-greytext">
