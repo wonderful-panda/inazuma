@@ -1,74 +1,33 @@
 import Home from "./components/home";
 import ReactDOM from "react-dom";
 import { createTheme, ThemeProvider } from "@material-ui/core";
-import { Provider } from "react-redux";
-import store, { useSelector, watch } from "./store";
-import useBrowserProcess from "./hooks/useBrowserProcess";
-import { UPDATE_CONFIG } from "./store/config";
 import RepositoryPage from "./components/repository";
-import { getCssVariable, setCssVariable } from "./cssvar";
 import { AlertProvider } from "./context/AlertContext";
-import { SET_RECENT_OPENED_ENTRIES } from "./store/repository";
 import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
 import { setup as setupMonaco } from "./monaco";
+import { RecoilRoot, useRecoilValue } from "recoil";
+import { config$, recentOpenedRepositories$ } from "./state/persist";
+import { Suspense, useEffect, useLayoutEffect } from "react";
+import browserApi from "./browserApi";
+import { repositoryPath$ } from "./state/repository";
+import { loadStateToSessionStorage, saveStateToEnvFile, STORAGE_PREFIX } from "./persistData";
+import { getCssVariable, setCssVariable } from "./cssvar";
 
 setupMonaco();
 
 const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
 const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");
+const updateFont = (standard: string | undefined, monospace: string | undefined) => {
+  setCssVariable("--inazuma-standard-fontfamily", standard || defaultFontfamily);
+  setCssVariable("--inazuma-monospace-fontfamily", monospace || monospaceFontfamily);
+};
 
 const init = async () => {
-  const updateFont = (config: Config) => {
-    setCssVariable(
-      "--inazuma-standard-fontfamily",
-      config.fontFamily.standard || defaultFontfamily
-    );
-    setCssVariable(
-      "--inazuma-monospace-fontfamily",
-      config.fontFamily.monospace || monospaceFontfamily
-    );
-  };
-  const browserProcess = useBrowserProcess();
-  const {
-    config,
-    environment: { recentOpened, state }
-  } = await browserProcess.loadPersistentData();
-  store.dispatch(UPDATE_CONFIG(config));
-  updateFont(config);
-  if (recentOpened) {
-    store.dispatch(SET_RECENT_OPENED_ENTRIES(recentOpened));
-  }
-  if (state) {
-    // restore sessionStorage from envorinment.json
-    // The reason why we don't use localStorege is
-    // localStorage prevents multiple instance run at same time.
-    Object.getOwnPropertyNames(state).forEach((key) => {
-      sessionStorage.setItem(key, state[key]);
-    });
-  }
+  await loadStateToSessionStorage();
   window.addEventListener("beforeunload", () => {
-    // save sessionStorage to envorinment.json
-    const state: Record<string, string> = {};
-    for (let i = 0; i < sessionStorage.length; ++i) {
-      const key = sessionStorage.key(i);
-      if (key && key.startsWith("inazuma:")) {
-        state[key] = sessionStorage.getItem(key)!;
-      }
-    }
-    browserProcess.saveEnvironment("state", state);
+    saveStateToEnvFile();
   });
-  watch(
-    (state) => state.config,
-    (config) => {
-      browserProcess.resetConfig(config);
-      updateFont(config);
-    }
-  );
-  watch(
-    (state) => state.repository.recentOpened,
-    (recentOpened) => browserProcess.saveEnvironment("recentOpened", recentOpened)
-  );
   // TODO: unify with talwind.config.js
   const muiTheme = createTheme({
     palette: {
@@ -108,22 +67,39 @@ const init = async () => {
     }
   });
   const App = () => {
-    const repoPath = useSelector((state) => state.repository.repoPath);
+    const repoPath = useRecoilValue(repositoryPath$);
     return (
       <ThemeProvider theme={muiTheme}>
         <AlertProvider>
-          <PersistStateProvider storage={sessionStorage} prefix="inazuma:">
+          <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
             {repoPath ? <RepositoryPage path={repoPath} /> : <Home />}
           </PersistStateProvider>
         </AlertProvider>
       </ThemeProvider>
     );
   };
+  const Watch = () => {
+    const config = useRecoilValue(config$);
+    const recentOpened = useRecoilValue(recentOpenedRepositories$);
+    useLayoutEffect(() => {
+      updateFont(config.fontFamily.standard, config.fontFamily.monospace);
+    }, [config.fontFamily.standard, config.fontFamily.monospace]);
+    useEffect(() => {
+      browserApi.resetConfig(config);
+    }, [config]);
+    useEffect(() => {
+      browserApi.saveEnvironment("recentOpened", recentOpened);
+    }, [recentOpened]);
+    return <></>;
+  };
 
   ReactDOM.render(
-    <Provider store={store}>
-      <App />
-    </Provider>,
+    <RecoilRoot>
+      <Suspense fallback={<></>}>
+        <Watch />
+        <App />
+      </Suspense>
+    </RecoilRoot>,
     document.getElementById("app")
   );
 };

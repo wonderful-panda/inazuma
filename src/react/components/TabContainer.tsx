@@ -61,8 +61,7 @@ export type TabProps<Type, Payload> = {
   id: string;
   title: string;
   closable: boolean;
-  payload: Payload;
-};
+} & (Payload extends null ? {} : { payload: Payload });
 
 export type TabDefinition<T> = {
   [K in keyof T]: TabProps<K, T[K]>;

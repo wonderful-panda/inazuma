@@ -1,8 +1,9 @@
-import useBrowserProcess from "@/hooks/useBrowserProcess";
+import browserApi from "@/browserApi";
 import { usePersistState } from "@/hooks/usePersistState";
 import { getLangIdFromPath } from "@/monaco";
-import { useSelector } from "@/store";
+import { repositoryPath$ } from "@/state/repository";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRecoilValue } from "recoil";
 import Loading from "../Loading";
 import SplitterPanel from "../SplitterPanel";
 import BlameFooter from "./BlameFooter";
@@ -59,8 +60,7 @@ export interface BlameTabProps {
 const BlameTab: React.VFC<BlameTabProps> = ({ path, sha, refs }) => {
   const [selectedCommitId, setSelectedCommitId] = useState<string | undefined>(undefined);
   const [blame, setBlame] = useState<Blame | undefined>(undefined);
-  const repoPath = useSelector((state) => state.repository.repoPath);
-  const browserProcess = useBrowserProcess();
+  const repoPath = useRecoilValue(repositoryPath$);
   const onListRowClick = useCallback((_e, _index, commit: FileCommit) => {
     setSelectedCommitId(commit.id);
   }, []);
@@ -79,7 +79,7 @@ const BlameTab: React.VFC<BlameTabProps> = ({ path, sha, refs }) => {
       return;
     }
     setBlame(undefined);
-    browserProcess.getBlame({ repoPath, relPath: path, sha: sha }).then((blame) => {
+    browserApi.getBlame({ repoPath, relPath: path, sha: sha }).then((blame) => {
       setBlame(blame);
     });
   }, [path, sha]);

@@ -3,40 +3,44 @@ import SearchIcon from "@material-ui/icons/Search";
 import HistoryIcon from "@material-ui/icons/History";
 import CloseIcon from "@material-ui/icons/Close";
 import { RepositoryListItem } from "./RepositoryListItem";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback } from "react";
 import { MainWindow } from "@/components/MainWindow";
-import { useDispatch, useSelector } from "@/store";
-import useBrowserProcess from "@/hooks/useBrowserProcess";
-import { openRepository, REMOVE_RECENT_OPENED_ENTRIES } from "@/store/repository";
 import { useErrorReporter } from "@/hooks/useAlert";
-import Loading from "../Loading";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { recentOpenedRepositories$, useRecentOpenedRepositoriesAction } from "@/state/persist";
+import { useRepositoryAction } from "@/state/repository";
+import browserApi from "@/browserApi";
+import { loading$ } from "@/state/misc";
 
 export default () => {
-  const [loading, setLoading] = useState(false);
   const errorReporter = useErrorReporter();
-  const dispatch = useDispatch();
-  const _recentOpened = useSelector((state) => state.repository.recentOpened);
-  const recentListCount = useSelector((state) => state.config.recentListCount);
-  const recentOpened = useMemo(() => {
-    return _recentOpened.slice(0, recentListCount);
-  }, [_recentOpened, recentListCount]);
+  const setLoading = useSetRecoilState(loading$);
+  const recentOpened = useRecoilValue(recentOpenedRepositories$);
+  const recentOpenedAction = useRecentOpenedRepositoriesAction();
+  const repositoryAction = useRepositoryAction();
   const handleOpen = useCallback(
-    (repoPath: string) => dispatch(openRepository({ repoPath, errorReporter, setLoading })),
-    [errorReporter, setLoading]
+    async (repoPath: string) => {
+      try {
+        setLoading(true);
+        await repositoryAction.open(repoPath);
+        recentOpenedAction.add(repoPath);
+      } catch (e) {
+        errorReporter(e);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [errorReporter]
   );
   const handleBrowseClick = useCallback(async () => {
     const options: Electron.OpenDialogOptions = {
       properties: ["openDirectory"]
     };
-    const browserProcess = useBrowserProcess();
-    const ret = await browserProcess.showOpenDialog(options);
+    const ret = await browserApi.showOpenDialog(options);
     if (!ret.canceled) {
       handleOpen(ret.filePaths[0]);
     }
   }, [handleOpen]);
-  const handleRemove = useCallback((path: string) => {
-    dispatch(REMOVE_RECENT_OPENED_ENTRIES(path));
-  }, []);
 
   return (
     <MainWindow title="Inazuma">
@@ -67,7 +71,7 @@ export default () => {
                 icon={<HistoryIcon />}
                 action={handleOpen}
                 secondaryAction={{
-                  action: handleRemove,
+                  action: recentOpenedAction.remove,
                   icon: <CloseIcon />
                 }}
               />
@@ -75,7 +79,6 @@ export default () => {
           </List>
         </div>
       </div>
-      <Loading open={loading} />
     </MainWindow>
   );
 };

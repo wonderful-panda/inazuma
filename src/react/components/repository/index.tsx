@@ -1,16 +1,16 @@
-import { useDispatch, useSelector } from "@/store";
-import { REMOVE_TAB, SELECT_TAB, TabType } from "@/store/repository";
+import { refs$, tab$, TabType, useTabAction } from "@/state/repository";
 import { assertNever } from "@/util";
 import { useCallback } from "react";
+import { useRecoilValue } from "recoil";
 import { MainWindow } from "../MainWindow";
 import TabContainer, { TabContainerProps } from "../TabContainer";
 import BlameTab from "./BlameTab";
 import CommitLog from "./CommitLog";
 
 const RepositoryPage: React.VFC<{ path: string }> = (props) => {
-  const repos = useSelector((state) => state.repository);
-  const refs = useSelector((state) => state.repository.refs);
-  const dispatch = useDispatch();
+  const refs = useRecoilValue(refs$);
+  const tab = useRecoilValue(tab$);
+  const tabAction = useTabAction();
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>((tab) => {
     switch (tab.type) {
       case "commits":
@@ -27,11 +27,11 @@ const RepositoryPage: React.VFC<{ path: string }> = (props) => {
   return (
     <MainWindow title={props.path}>
       <TabContainer
-        tabs={repos.tabs}
-        currentTabIndex={repos.currentTabIndex}
+        tabs={tab.tabs}
+        currentTabIndex={tab.currentIndex}
         renderTabContent={renderTabContent}
-        selectTab={(index) => dispatch(SELECT_TAB(index))}
-        closeTab={(index) => dispatch(REMOVE_TAB(index))}
+        selectTab={tabAction.select}
+        closeTab={tabAction.remove}
       />
     </MainWindow>
   );

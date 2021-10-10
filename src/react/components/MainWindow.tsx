@@ -6,9 +6,10 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { PreferenceDialog } from "./PreferenceDialog";
 import { AboutDialog } from "./AboutDialog";
-import { useSelector } from "@/store";
-import { useDispatch } from "@/store";
-import { UPDATE_CONFIG } from "@/store/config";
+import { config$, useConfigAction } from "@/state/persist";
+import { useRecoilValue } from "recoil";
+import { loading$ } from "@/state/misc";
+import Loading from "./Loading";
 
 export interface DrawerItem {
   key: string;
@@ -36,8 +37,8 @@ const ApplicationDrawer = memo<{
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} disableTypography />
             </ListItem>
-          ))}
-        </div>
+          ))}{" "}
+        </div>{" "}
       </Typography>
     </Drawer>
   );
@@ -51,11 +52,14 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
   const closeDrawer = useCallback(() => {
     setDrawerOpened(false);
   }, []);
-  const dispatch = useDispatch();
-  const config = useSelector((state) => state.config);
-  const onConfigChange = useCallback((config: Config) => dispatch(UPDATE_CONFIG(config)), []);
+  const configAction = useConfigAction();
+  const config = useRecoilValue(config$);
+  const onConfigChange = useCallback((newConfig: Config) => {
+    configAction.update(newConfig);
+  }, []);
   const preferenceDialogRef = useRef({} as ComponentRef<typeof PreferenceDialog>);
   const aboutDialogRef = useRef({} as ComponentRef<typeof AboutDialog>);
+  const loading = useRecoilValue(loading$);
 
   const drawerItems = useMemo<readonly DrawerItem[]>(
     () => [
@@ -93,6 +97,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
       </div>
       <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={onConfigChange} />
       <AboutDialog ref={aboutDialogRef} />
+      <Loading open={loading} />
     </div>
   );
 };
