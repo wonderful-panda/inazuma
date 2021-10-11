@@ -1,66 +1,41 @@
-import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList } from "react-window";
-import { useCallback, useMemo } from "react";
+import { Dispatch, SetStateAction, useCallback } from "react";
 import FileListRow, { ROW_HEIGHT } from "./FileListRow";
+import VirtualList from "../VirtualList";
 
 export interface FileListProps {
   files: FileEntry[];
+  selectedIndex: number;
+  onUpdateSelectedIndex: Dispatch<SetStateAction<number>>;
   onRowClick?: (event: React.MouseEvent, index: number, file: FileEntry) => void;
   onRowDoubleClick?: (event: React.MouseEvent, index: number, file: FileEntry) => void;
 }
 
-function createRowEventHandler(
-  files: readonly FileEntry[],
-  handler?: (event: React.MouseEvent, index: number, file: FileEntry) => void
-) {
-  return useMemo(() => {
-    if (!handler) {
-      return undefined;
-    }
-    return (event: React.MouseEvent) => {
-      const index = parseInt((event.currentTarget as HTMLElement).dataset.index || "-1");
-      if (0 <= index) {
-        const file = files[index];
-        handler(event, index, file);
-      }
-    };
-  }, [files, handler]);
-}
-
-const FileList: React.VFC<FileListProps> = ({ files, onRowClick, onRowDoubleClick }) => {
-  const handleRowClick = createRowEventHandler(files, onRowClick);
-  const handleRowDoubleClick = createRowEventHandler(files, onRowDoubleClick);
+const FileList: React.VFC<FileListProps> = ({
+  files,
+  selectedIndex,
+  onUpdateSelectedIndex,
+  onRowClick,
+  onRowDoubleClick
+}) => {
+  const getItemKey = useCallback((item: FileEntry) => `${item.path}:${item.statusCode}`, []);
   const renderRow = useCallback(
-    ({ index, style }: { index: number; style: object }) => {
-      const file = files[index];
-      return (
-        <div
-          data-index={index}
-          key={`${file.path}:${file.statusCode}`}
-          style={style}
-          onClick={handleRowClick}
-          onDoubleClick={handleRowDoubleClick}
-        >
-          <FileListRow file={file} selected={false} />
-        </div>
-      );
+    ({ index, selectedIndex, item }: { index: number; selectedIndex: number; item: FileEntry }) => {
+      return <FileListRow file={item} selected={index === selectedIndex} />;
     },
-    [files]
+    []
   );
   return (
-    <AutoSizer style={{ flex: 1 }}>
-      {({ width, height }) => (
-        <FixedSizeList
-          width={width}
-          height={height}
-          overscanCount={8}
-          itemCount={files.length}
-          itemSize={ROW_HEIGHT}
-        >
-          {renderRow}
-        </FixedSizeList>
-      )}
-    </AutoSizer>
+    <VirtualList<FileEntry>
+      items={files}
+      itemSize={ROW_HEIGHT}
+      getItemKey={getItemKey}
+      selectedIndex={selectedIndex}
+      onUpdateSelectedIndex={onUpdateSelectedIndex}
+      onRowClick={onRowClick}
+      onRowDoubleClick={onRowDoubleClick}
+    >
+      {renderRow}
+    </VirtualList>
   );
 };
 

@@ -60,7 +60,7 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
         <Typography
           variant="body1"
           component="pre"
-          className="flex-initial m-4 p-2 overflow-hidden"
+          className="flex-initial m-4 p-2 overflow-auto"
           gutterBottom
         >
           {commit.body}

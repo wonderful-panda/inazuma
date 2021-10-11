@@ -1,61 +1,51 @@
-import AutoSizer from "react-virtualized-auto-sizer";
-import { VariableSizeList } from "react-window";
-import { useCallback } from "react";
+import { Dispatch, SetStateAction, useCallback } from "react";
 import FileCommitListRow, { getRowHeight } from "./FileCommitListRow";
+import VirtualList from "../VirtualList";
 
 export interface FileCommitListProps {
   commits: readonly FileCommit[];
   refs: Refs;
   selectedIndex: number;
-  onRowclick?: (event: React.MouseEvent, index: number, commit: FileCommit) => void;
+  onUpdateSelectedIndex: Dispatch<SetStateAction<number>>;
+  onRowClick?: (event: React.MouseEvent, index: number, commit: FileCommit) => void;
 }
 
 const FileCommitList: React.VFC<FileCommitListProps> = ({
   commits,
   refs,
   selectedIndex,
-  onRowclick
+  onUpdateSelectedIndex,
+  onRowClick
 }) => {
   const renderRow = useCallback(
-    ({ index, style }: { index: number; style: object }) => {
-      const commit = commits[index];
-      const handleClick = onRowclick && ((e: React.MouseEvent) => onRowclick(e, index, commit));
-      return (
-        <div key={commit.id} style={style}>
-          <FileCommitListRow
-            commit={commit}
-            selected={index === selectedIndex}
-            head={commit.id === refs.head}
-            refs={refs.refsById[commit.id]}
-            onClick={handleClick}
-          />
-        </div>
-      );
-    },
-    [commits, refs, selectedIndex, onRowclick]
+    (p: { index: number; selectedIndex: number; item: FileCommit }) => (
+      <FileCommitListRow
+        commit={p.item}
+        selected={p.index === p.selectedIndex}
+        head={p.item.id === refs.head}
+        refs={refs.refsById[p.item.id]}
+      />
+    ),
+    [commits, refs, selectedIndex]
   );
+  const getItemKey = useCallback((item: FileCommit) => item.id, []);
   const rowHeight = useCallback(
     (index: number) => {
       return getRowHeight(commits[index]);
     },
     [commits]
   );
-
   return (
-    <AutoSizer className="flex flex-1">
-      {({ width, height }) => (
-        <VariableSizeList
-          className="flex-1"
-          width={width}
-          height={height}
-          overscanCount={8}
-          itemCount={commits.length}
-          itemSize={rowHeight}
-        >
-          {renderRow}
-        </VariableSizeList>
-      )}
-    </AutoSizer>
+    <VirtualList<FileCommit>
+      items={commits}
+      itemSize={rowHeight}
+      getItemKey={getItemKey}
+      selectedIndex={selectedIndex}
+      onUpdateSelectedIndex={onUpdateSelectedIndex}
+      onRowClick={onRowClick}
+    >
+      {renderRow}
+    </VirtualList>
   );
 };
 

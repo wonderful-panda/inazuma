@@ -58,21 +58,26 @@ export interface BlameTabProps {
 }
 
 const BlameTab: React.VFC<BlameTabProps> = ({ path, sha, refs }) => {
-  const [selectedCommitId, setSelectedCommitId] = useState<string | undefined>(undefined);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const [blame, setBlame] = useState<Blame | undefined>(undefined);
   const repoPath = useRecoilValue(repositoryPath$);
-  const onListRowClick = useCallback((_e, _index, commit: FileCommit) => {
-    setSelectedCommitId(commit.id);
-  }, []);
+  const selectedCommitId = useMemo(() => {
+    if (!blame) {
+      return undefined;
+    }
+    return blame.commits[selectedIndex]?.id;
+  }, [blame, selectedIndex]);
+
   const onUpdateSelectedCommitId = useCallback(
     (value: string | undefined) => {
-      setSelectedCommitId(value);
+      if (!blame || value === undefined) {
+        setSelectedIndex(-1);
+      } else {
+        const index = blame.commits.findIndex((c) => c.id === value);
+        setSelectedIndex(index);
+      }
     },
     [blame]
-  );
-  const selectedIndex = useMemo(
-    () => (blame ? blame.commits.findIndex((c) => c.id === selectedCommitId) : -1),
-    [blame, selectedCommitId]
   );
   useEffect(() => {
     if (!repoPath) {
@@ -88,33 +93,25 @@ const BlameTab: React.VFC<BlameTabProps> = ({ path, sha, refs }) => {
     "reository/BlameTab/splitter.dir",
     "horiz" as Direction
   );
-  return (
+  return !blame ? (
+    <Loading open />
+  ) : (
     <SplitterPanel
       first={
-        blame ? (
-          <div className="flex flex-1 m-2 box-border">
-            <FileCommitList
-              commits={blame.commits}
-              refs={refs}
-              selectedIndex={selectedIndex}
-              onRowclick={onListRowClick}
-            />
-          </div>
-        ) : (
-          <Loading open />
-        )
+        <FileCommitList
+          commits={blame.commits}
+          refs={refs}
+          selectedIndex={selectedIndex}
+          onUpdateSelectedIndex={setSelectedIndex}
+        />
       }
       second={
-        blame ? (
-          <BlamePanel
-            blame={blame}
-            path={path}
-            selectedCommitId={selectedCommitId}
-            onUpdateSelectedCommitId={onUpdateSelectedCommitId}
-          />
-        ) : (
-          <></>
-        )
+        <BlamePanel
+          blame={blame}
+          path={path}
+          selectedCommitId={selectedCommitId}
+          onUpdateSelectedCommitId={onUpdateSelectedCommitId}
+        />
       }
       ratio={ratio}
       onUpdateRatio={setRatio}

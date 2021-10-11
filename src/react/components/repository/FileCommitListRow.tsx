@@ -45,9 +45,8 @@ const FileCommitListRow: React.VFC<FileCommitListRowProps> = ({
       className={classNames(
         "flex box-border cursor-pointer py-1",
         "border-b border-solid border-paper",
-        "hover:bg-highlight",
         getRowHeightClass(commit),
-        { "bg-highlight": selected }
+        selected ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
       {...{ onClick, onContextMenu }}
     >

@@ -33,8 +33,7 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
       className={classNames(
         "flex box-border cursor-pointer",
         "pl-4 border-b border-solid border-paper",
-        "hover:bg-highlight",
-        { "bg-highlight": selected }
+        selected ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
       onClick={onClick}
     >

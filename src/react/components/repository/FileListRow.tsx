@@ -58,8 +58,8 @@ const FileListRow: React.VFC<FileListRowProps> = ({ file, selected }) => {
       className={classNames(
         "flex overflow-hidden box-border cursor-pointer py-1",
         ROW_HEIGHT_CLASS,
-        "border-b border-solid border-highlight hover:bg-highlight",
-        { "bg-highlight": selected }
+        "border-b border-solid border-highlight",
+        selected ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
     >
       <div className="mx-2 my-auto">

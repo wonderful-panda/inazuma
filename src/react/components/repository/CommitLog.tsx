@@ -1,37 +1,42 @@
 import { useErrorReporter } from "@/hooks/useAlert";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SplitterPanel from "../SplitterPanel";
 import CommitDetail from "./CommitDetail";
 import CommitList from "./CommitList";
 import WorkingTree from "./WorkingTree";
 import { usePersistState } from "@/hooks/usePersistState";
 import { useRecoilValue } from "recoil";
-import {
-  commits$,
-  currentLogIndex$,
-  currentRefs$,
-  graph$,
-  logDetail$,
-  refs$,
-  useLogAction
-} from "@/state/repository";
+import { commits$, graph$, refs$, repositoryPath$ } from "@/state/repository";
+import browserApi from "@/browserApi";
+import { debounce } from "lodash";
 
 const CommitLog: React.VFC = () => {
+  const repoPath = useRecoilValue(repositoryPath$);
   const commits = useRecoilValue(commits$);
   const graph = useRecoilValue(graph$);
-  const selectedIndex = useRecoilValue(currentLogIndex$);
   const refs = useRecoilValue(refs$);
-  const currentEntry = useRecoilValue(logDetail$);
-  const currentRefs = useRecoilValue(currentRefs$);
-  const logAction = useLogAction();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [logDetail, setLogDetail] = useState<LogDetail | undefined>(undefined);
+  const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
   const errorReporter = useErrorReporter();
-  const handleRowclick = useCallback((_: React.MouseEvent, index: number) => {
-    try {
-      logAction.selectLog(index);
-    } catch (e) {
-      errorReporter(e);
-    }
-  }, []);
+  const selectLog = useCallback(
+    debounce(async (index: number) => {
+      if (!repoPath) {
+        return;
+      }
+      const sha = commits[index].id;
+      try {
+        setLogDetail(await browserApi.getLogDetail({ repoPath, sha }));
+        setCurrentRefs(refs.refsById[sha] || []);
+      } catch (e) {
+        errorReporter(e);
+      }
+    }, 200),
+    [repoPath, commits, refs]
+  );
+  useEffect(() => {
+    selectLog(selectedIndex);
+  }, [selectedIndex]);
   const [ratio, setRatio] = usePersistState("repository/CommitLog/splitter.ratio", 0.6);
   const [direction, setDirection] = usePersistState<Direction>(
     "repository/ComitLog/splitter.dir",
@@ -50,22 +55,21 @@ const CommitLog: React.VFC = () => {
       firstPanelMinSize="20%"
       secondPanelMinSize="20%"
       first={
-        <div className="flex flex-1 overflow-hidden p-2">
-          <CommitList
-            commits={commits}
-            graph={graph}
-            refs={refs}
-            selectedIndex={selectedIndex}
-            onRowclick={handleRowclick}
-          />
-        </div>
+        <CommitList
+          className="flex flex-1 overflow-hidden p-2"
+          commits={commits}
+          graph={graph}
+          refs={refs}
+          selectedIndex={selectedIndex}
+          onUpdateSelectedIndex={setSelectedIndex}
+        />
       }
       second={
         <div className="flex flex-1 overflow-hidden p-2">
-          {currentEntry === undefined || currentEntry.type === "commit" ? (
-            <CommitDetail commit={currentEntry} refs={currentRefs} orientation={orientation} />
+          {logDetail === undefined || logDetail.type === "commit" ? (
+            <CommitDetail commit={logDetail} refs={currentRefs} orientation={orientation} />
           ) : (
-            <WorkingTree stat={currentEntry} orientation={orientation} />
+            <WorkingTree stat={logDetail} orientation={orientation} />
           )}
         </div>
       }
