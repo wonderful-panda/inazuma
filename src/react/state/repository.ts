@@ -1,9 +1,8 @@
 import browserApi from "@/browserApi";
 import { TabDefinition } from "@/components/TabContainer";
 import { Grapher, GraphFragment } from "@/grapher";
-import { throttle } from "lodash";
-import { Dispatch, SetStateAction, useMemo } from "react";
-import { atom, selector, useRecoilValue, useSetRecoilState } from "recoil";
+import { useMemo } from "react";
+import { atom, useSetRecoilState } from "recoil";
 
 export type TabType = {
   commits: null;
@@ -50,25 +49,6 @@ export const currentTabIndex$ = atom<number>({
   key: "repository/currentTabIndex",
   default: -1
 });
-export const logDetail$ = atom<LogDetail | undefined>({
-  key: "repository/logDetail",
-  default: undefined
-});
-export const currentLogIndex$ = atom({
-  key: "repository/currentLogIndex",
-  default: -1
-});
-
-export const currentRefs$ = selector({
-  key: "repository/currentRefs",
-  get: ({ get }) => {
-    const commit = get(commits$)[get(currentLogIndex$)];
-    if (!commit) {
-      return [];
-    }
-    return get(refs$).refsById[commit.id] || [];
-  }
-});
 
 export const useRepositoryAction = () => {
   const setRepositoryPath = useSetRecoilState(repositoryPath$);
@@ -103,38 +83,6 @@ export const useRepositoryAction = () => {
       }
     }),
     []
-  );
-};
-
-const selectLogDebounce = throttle(
-  async (
-    repoPath: string,
-    sha: string,
-    setLogDetail: Dispatch<SetStateAction<LogDetail | undefined>>
-  ) => {
-    const logDetail = await browserApi.getLogDetail({ repoPath, sha });
-    setLogDetail(logDetail);
-  },
-  300
-);
-
-export const useLogAction = () => {
-  const repoPath = useRecoilValue(repositoryPath$);
-  const commits = useRecoilValue(commits$);
-  const setCurrentLogIndex = useSetRecoilState(currentLogIndex$);
-  const setLogDetail = useSetRecoilState(logDetail$);
-  return useMemo(
-    () => ({
-      selectLog: (index: number) => {
-        if (!repoPath) {
-          return;
-        }
-        setCurrentLogIndex(index);
-        setLogDetail(undefined);
-        selectLogDebounce(repoPath, commits[index].id, setLogDetail);
-      }
-    }),
-    [repoPath, commits]
   );
 };
 
