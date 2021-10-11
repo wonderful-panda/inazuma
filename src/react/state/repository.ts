@@ -102,6 +102,9 @@ export const useTabAction = () => {
       remove: (index: number) => {
         setTab((cur) => {
           const tabs = [...cur.tabs];
+          if (!tabs[index].closable) {
+            return cur;
+          }
           tabs.splice(index, 1);
           let currentIndex = cur.currentIndex;
           if (tabs.length <= currentIndex) {
