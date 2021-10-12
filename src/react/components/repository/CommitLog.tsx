@@ -5,16 +5,16 @@ import CommitDetail from "./CommitDetail";
 import CommitList from "./CommitList";
 import WorkingTree from "./WorkingTree";
 import { usePersistState } from "@/hooks/usePersistState";
-import { useRecoilValue } from "recoil";
-import { commits$, graph$, refs$, repositoryPath$ } from "@/state/repository";
 import browserApi from "@/browserApi";
 import { debounce } from "lodash";
+import { useSelector } from "@/store";
 
 const CommitLog: React.VFC = () => {
-  const repoPath = useRecoilValue(repositoryPath$);
-  const commits = useRecoilValue(commits$);
-  const graph = useRecoilValue(graph$);
-  const refs = useRecoilValue(refs$);
+  const repoPath = useSelector((state) => state.repository.path);
+  const log = useSelector((state) => state.repository.log);
+  if (!repoPath || !log) {
+    return <></>;
+  }
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [logDetail, setLogDetail] = useState<LogDetail | undefined>(undefined);
   const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
@@ -24,15 +24,15 @@ const CommitLog: React.VFC = () => {
       if (!repoPath) {
         return;
       }
-      const sha = commits[index].id;
+      const sha = log.commits[index].id;
       try {
         setLogDetail(await browserApi.getLogDetail({ repoPath, sha }));
-        setCurrentRefs(refs.refsById[sha] || []);
+        setCurrentRefs(log.refs.refsById[sha] || []);
       } catch (e) {
         errorReporter(e);
       }
     }, 200),
-    [repoPath, commits, refs]
+    [repoPath, log.commits, log.refs]
   );
   useEffect(() => {
     selectLog(selectedIndex);
@@ -57,9 +57,7 @@ const CommitLog: React.VFC = () => {
       first={
         <CommitList
           className="flex flex-1 overflow-hidden p-2"
-          commits={commits}
-          graph={graph}
-          refs={refs}
+          {...log}
           selectedIndex={selectedIndex}
           onUpdateSelectedIndex={setSelectedIndex}
         />

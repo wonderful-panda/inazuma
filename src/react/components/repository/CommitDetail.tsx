@@ -10,7 +10,8 @@ import FileListCard from "./FileListCard";
 import FlexCard from "../FlexCard";
 import { usePersistState } from "@/hooks/usePersistState";
 import { getFileName, shortHash } from "@/util";
-import { useTabAction } from "@/state/repository";
+import { useDispatch } from "@/store";
+import { ADD_TAB } from "@/store/repository";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -81,7 +82,7 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
 });
 
 const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
-  const tabAction = useTabAction();
+  const dispatch = useDispatch();
   const [splitterRatio, setSplitterRatio] = usePersistState(
     "repository/CommitDetail/splitter.ratio",
     0.5
@@ -95,13 +96,15 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
       if (file.statusCode === "D") {
         return;
       }
-      tabAction.add({
-        type: "file",
-        id: `blame:${commit.id}/${file.path}`,
-        title: `${getFileName(file.path)} @ ${shortHash(commit.id)}`,
-        payload: { path: file.path, sha: commit.id },
-        closable: true
-      });
+      dispatch(
+        ADD_TAB({
+          type: "file",
+          id: `blame:${commit.id}/${file.path}`,
+          title: `${getFileName(file.path)} @ ${shortHash(commit.id)}`,
+          payload: { path: file.path, sha: commit.id },
+          closable: true
+        })
+      );
     },
     [commit]
   );

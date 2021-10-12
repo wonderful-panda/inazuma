@@ -4,7 +4,7 @@ import VirtualList from "../VirtualList";
 
 export interface FileCommitListProps {
   commits: readonly FileCommit[];
-  refs: Refs;
+  refs: Refs | undefined;
   selectedIndex: number;
   onUpdateSelectedIndex: Dispatch<SetStateAction<number>>;
   onRowClick?: (event: React.MouseEvent, index: number, commit: FileCommit) => void;
@@ -22,8 +22,8 @@ const FileCommitList: React.VFC<FileCommitListProps> = ({
       <FileCommitListRow
         commit={p.item}
         selected={p.index === p.selectedIndex}
-        head={p.item.id === refs.head}
-        refs={refs.refsById[p.item.id]}
+        head={p.item.id === refs?.head}
+        refs={refs?.refsById[p.item.id] || []}
       />
     ),
     [commits, refs, selectedIndex]

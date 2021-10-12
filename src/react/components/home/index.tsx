@@ -6,28 +6,26 @@ import { RepositoryListItem } from "./RepositoryListItem";
 import { useCallback } from "react";
 import { MainWindow } from "@/components/MainWindow";
 import { useErrorReporter } from "@/hooks/useAlert";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { recentOpenedRepositories$, useRecentOpenedRepositoriesAction } from "@/state/persist";
-import { useRepositoryAction } from "@/state/repository";
 import browserApi from "@/browserApi";
-import { loading$ } from "@/state/misc";
+import { useDispatch, useSelector } from "@/store";
+import { ADD_RECENT_OPENED_REPOSITORY, REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
+import { OPEN_REPOSITORY } from "@/store/repository";
+import { HIDE_LOADING, SHOW_LOADING } from "@/store/misc";
 
 export default () => {
+  const dispatch = useDispatch();
   const errorReporter = useErrorReporter();
-  const setLoading = useSetRecoilState(loading$);
-  const recentOpened = useRecoilValue(recentOpenedRepositories$);
-  const recentOpenedAction = useRecentOpenedRepositoriesAction();
-  const repositoryAction = useRepositoryAction();
+  const recentOpened = useSelector((state) => state.persist.env.recentOpenedRepositories);
   const handleOpen = useCallback(
     async (repoPath: string) => {
       try {
-        setLoading(true);
-        await repositoryAction.open(repoPath);
-        recentOpenedAction.add(repoPath);
+        dispatch(SHOW_LOADING());
+        await dispatch(OPEN_REPOSITORY({ path: repoPath }));
+        dispatch(ADD_RECENT_OPENED_REPOSITORY(repoPath));
       } catch (e) {
         errorReporter(e);
       } finally {
-        setLoading(false);
+        dispatch(HIDE_LOADING());
       }
     },
     [errorReporter]
@@ -41,6 +39,11 @@ export default () => {
       handleOpen(ret.filePaths[0]);
     }
   }, [handleOpen]);
+
+  const removeRecentOpenedRepository = useCallback(
+    (path) => dispatch(REMOVE_RECENT_OPENED_REPOSITORY(path)),
+    []
+  );
 
   return (
     <MainWindow title="Inazuma">
@@ -71,7 +74,7 @@ export default () => {
                 icon={<HistoryIcon />}
                 action={handleOpen}
                 secondaryAction={{
-                  action: recentOpenedAction.remove,
+                  action: removeRecentOpenedRepository,
                   icon: <CloseIcon />
                 }}
               />

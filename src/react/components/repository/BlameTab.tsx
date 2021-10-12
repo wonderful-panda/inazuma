@@ -1,9 +1,7 @@
 import browserApi from "@/browserApi";
 import { usePersistState } from "@/hooks/usePersistState";
 import { getLangIdFromPath } from "@/monaco";
-import { repositoryPath$ } from "@/state/repository";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRecoilValue } from "recoil";
 import Loading from "../Loading";
 import SplitterPanel from "../SplitterPanel";
 import BlameFooter from "./BlameFooter";
@@ -52,15 +50,15 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({
 };
 
 export interface BlameTabProps {
+  repoPath: string;
   path: string;
   sha: string;
-  refs: Refs;
+  refs: Refs | undefined;
 }
 
-const BlameTab: React.VFC<BlameTabProps> = ({ path, sha, refs }) => {
+const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [blame, setBlame] = useState<Blame | undefined>(undefined);
-  const repoPath = useRecoilValue(repositoryPath$);
   const selectedCommitId = useMemo(() => {
     if (!blame) {
       return undefined;
