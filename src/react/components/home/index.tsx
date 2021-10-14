@@ -3,7 +3,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import HistoryIcon from "@material-ui/icons/History";
 import CloseIcon from "@material-ui/icons/Close";
 import { RepositoryListItem } from "./RepositoryListItem";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { MainWindow } from "@/components/MainWindow";
 import { useErrorReporter } from "@/hooks/useAlert";
 import browserApi from "@/browserApi";
@@ -11,8 +11,11 @@ import { useDispatch, useSelector } from "@/store";
 import { ADD_RECENT_OPENED_REPOSITORY, REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
 import { OPEN_REPOSITORY } from "@/store/repository";
 import { HIDE_LOADING, SHOW_LOADING } from "@/store/misc";
+import { useCommandGroup } from "@/hooks/useCommandGroup";
+import { HotKey } from "@/context/CommandGroupContext";
 
 export default () => {
+  const commandGroup = useCommandGroup();
   const dispatch = useDispatch();
   const errorReporter = useErrorReporter();
   const recentOpened = useSelector((state) => state.persist.env.recentOpenedRepositories);
@@ -44,6 +47,28 @@ export default () => {
     (path) => dispatch(REMOVE_RECENT_OPENED_REPOSITORY(path)),
     []
   );
+  useEffect(() => {
+    const groupName = "Home";
+    commandGroup.register({
+      groupName,
+      commands: [
+        { name: "OpenFolderBrowser", hotkey: "Ctrl+O", handler: handleBrowseClick },
+        ...[1, 2, 3, 4, 5].map((i) => ({
+          name: `OpenRecent-${i}`,
+          hotkey: `Ctrl+Alt+${i}` as HotKey,
+          handler: () => {
+            const repoPath = recentOpened[i - 1];
+            if (repoPath) {
+              handleOpen(repoPath);
+            }
+          }
+        }))
+      ]
+    });
+    return () => {
+      commandGroup.unregister(groupName);
+    };
+  }, [recentOpened, handleOpen]);
 
   return (
     <MainWindow title="Inazuma">

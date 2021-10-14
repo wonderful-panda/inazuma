@@ -1,6 +1,6 @@
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Drawer, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import SettingsIcon from "@material-ui/icons/Settings";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
@@ -9,6 +9,7 @@ import { AboutDialog } from "./AboutDialog";
 import Loading from "./Loading";
 import { useDispatch, useSelector } from "@/store";
 import { UPDATE_CONFIG } from "@/store/persist";
+import { useCommandGroup } from "@/hooks/useCommandGroup";
 
 export interface DrawerItem {
   key: string;
@@ -47,6 +48,28 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.misc.loading);
   const [drawerOpened, setDrawerOpened] = useState(false);
+  const commandGroup = useCommandGroup();
+  useEffect(() => {
+    const groupName = "main";
+    commandGroup.register({
+      groupName,
+      commands: [
+        {
+          name: "Preference",
+          hotkey: "Ctrl+Shift+P",
+          handler: preferenceDialogRef.current.open
+        },
+        {
+          name: "About",
+          hotkey: "Ctrl+Shift+V",
+          handler: aboutDialogRef.current.open
+        }
+      ]
+    });
+    return () => {
+      commandGroup.unregister(groupName);
+    };
+  }, []);
   const openDrawer = useCallback(() => {
     setDrawerOpened(true);
   }, []);

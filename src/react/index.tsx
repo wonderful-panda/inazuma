@@ -18,6 +18,7 @@ import { getCssVariable, setCssVariable } from "./cssvar";
 import store, { useSelector, watch } from "./store";
 import { Provider } from "react-redux";
 import { RESET_RECENT_OPENED_REPOSITORIES, UPDATE_CONFIG } from "./store/persist";
+import { CommandGroupProvider } from "./context/CommandGroupContext";
 
 setupMonaco();
 
@@ -92,9 +93,11 @@ const init = async () => {
     return (
       <ThemeProvider theme={muiTheme}>
         <AlertProvider>
-          <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
-            {repoPath ? <RepositoryPage /> : <Home />}
-          </PersistStateProvider>
+          <CommandGroupProvider>
+            <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+              {repoPath ? <RepositoryPage /> : <Home />}
+            </PersistStateProvider>
+          </CommandGroupProvider>
         </AlertProvider>
       </ThemeProvider>
     );

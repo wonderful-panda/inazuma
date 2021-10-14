@@ -8,8 +8,9 @@ import { usePersistState } from "@/hooks/usePersistState";
 import browserApi from "@/browserApi";
 import { debounce } from "lodash";
 import { useSelector } from "@/store";
+import { useCommandGroup } from "@/hooks/useCommandGroup";
 
-const CommitLog: React.VFC = () => {
+const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
   const repoPath = useSelector((state) => state.repository.path);
   const log = useSelector((state) => state.repository.log);
   if (!repoPath || !log) {
@@ -18,7 +19,37 @@ const CommitLog: React.VFC = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [logDetail, setLogDetail] = useState<LogDetail | undefined>(undefined);
   const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
+  const commandGroup = useCommandGroup();
   const errorReporter = useErrorReporter();
+  useEffect(() => {
+    if (!active) {
+      return;
+    }
+    const groupName = "CommitLog";
+    commandGroup.register({
+      groupName,
+      commands: [
+        {
+          name: "NextCommit",
+          hotkey: "Ctrl+N",
+          handler: () => {
+            setSelectedIndex((cur) => Math.min(cur + 1, log.commits.length - 1));
+          }
+        },
+        {
+          name: "PrevCommit",
+          hotkey: "Ctrl+P",
+          handler: () => {
+            setSelectedIndex((cur) => Math.max(cur - 1, 0));
+          }
+        }
+      ]
+    });
+    return () => {
+      commandGroup.unregister(groupName);
+    };
+  }, [active, log.commits.length]);
+
   const selectLog = useCallback(
     debounce(async (index: number) => {
       if (!repoPath) {

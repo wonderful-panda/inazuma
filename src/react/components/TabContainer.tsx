@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { Button, IconButton, makeStyles } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const CURRENT_TABBUTTON_CLASS = "__current_tabbutton__";
 
@@ -34,7 +34,6 @@ const TabButton: React.VFC<{
       )}
     >
       <Button
-        tabIndex={-1}
         classes={{
           root: classNames("normal-case m-0 p-0 h-7 leading-7", {
             "font-bold text-primary": p.current
@@ -72,7 +71,7 @@ export type TabDefinition<T> = {
 export interface TabContainerProps<T> {
   tabs: readonly TabDefinition<T>[];
   currentTabIndex: number;
-  renderTabContent: (tab: TabDefinition<T>) => React.ReactNode;
+  renderTabContent: (tab: TabDefinition<T>, active: boolean) => React.ReactNode;
   selectTab: (index: number) => void;
   closeTab: (index: number) => void;
 }
@@ -80,7 +79,7 @@ export interface TabContainerProps<T> {
 const TabPage = <T extends unknown>(p: {
   active: boolean;
   tab: TabDefinition<T>;
-  renderContent: (tab: TabDefinition<T>) => React.ReactNode;
+  renderContent: (tab: TabDefinition<T>, active: boolean) => React.ReactNode;
 }) => {
   const [activated, setActivated] = useState(false);
   useLayoutEffect(() => {
@@ -89,7 +88,7 @@ const TabPage = <T extends unknown>(p: {
     }
   }, [p.active || activated]);
   if (activated) {
-    return <>{p.renderContent(p.tab)}</>;
+    return <>{p.renderContent(p.tab, p.active)}</>;
   } else {
     return <></>;
   }
@@ -104,38 +103,8 @@ const TabContainer = <T extends unknown = Record<string, any>>(p: TabContainerPr
   }, [p.currentTabIndex]);
 
   const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    ref.current?.focus();
-  }, [p.currentTabIndex]);
-
-  const onKeyDown = useCallback(
-    (ev: React.KeyboardEvent) => {
-      if (ev.ctrlKey && ev.key === "F4") {
-        p.closeTab(p.currentTabIndex);
-        ev.stopPropagation();
-      } else if (ev.ctrlKey && ev.key === "Tab") {
-        if (ev.shiftKey) {
-          // select previous tab
-          console.log("Ctrl+Shift+Tab");
-          p.selectTab(0 < p.currentTabIndex ? p.currentTabIndex - 1 : p.tabs.length - 1);
-        } else {
-          // select next tab
-          console.log("Ctrl+Tab");
-          p.selectTab(p.currentTabIndex < p.tabs.length - 1 ? p.currentTabIndex + 1 : 0);
-        }
-        ev.stopPropagation();
-      }
-    },
-    [p.currentTabIndex]
-  );
-
   return (
-    <div
-      ref={ref}
-      className="flex-col-nowrap flex-1 items-stretch overflow-hidden p-0"
-      tabIndex={0}
-      onKeyDown={onKeyDown}
-    >
+    <div ref={ref} className="flex-col-nowrap flex-1 items-stretch overflow-hidden p-0">
       <div
         className={classNames(
           "flex-row-nowrap overflow-x-auto overflow-y-hidden h-7 m-0 min-w-full",

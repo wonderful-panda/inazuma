@@ -72,17 +72,18 @@ const addTab = ({ tab }: State, { payload }: PayloadAction<RepositoryTab>) => {
   }
 };
 
-const removeTab = ({ tab }: State, { payload: index }: PayloadAction<number>) => {
+const removeTab = ({ tab }: State, { payload: index }: PayloadAction<number | undefined>) => {
   if (!tab) {
     return;
   }
-  if (!tab.tabs[index].closable) {
+  const realIndex = index === undefined ? tab.currentIndex : index;
+  if (!tab.tabs[realIndex].closable) {
     return;
   }
-  tab.tabs.splice(index, 1);
+  tab.tabs.splice(realIndex, 1);
   if (tab.tabs.length <= tab.currentIndex) {
     tab.currentIndex = tab.tabs.length - 1;
-  } else if (index < tab.currentIndex) {
+  } else if (realIndex < tab.currentIndex) {
     tab.currentIndex -= 1;
   }
 };
@@ -94,6 +95,20 @@ const selectTab = ({ tab }: State, { payload: index }: PayloadAction<number>) =>
   tab.currentIndex = index;
 };
 
+const selectNextTab = ({ tab }: State) => {
+  if (!tab || tab.tabs.length === 0) {
+    return;
+  }
+  tab.currentIndex = tab.currentIndex < tab.tabs.length - 1 ? tab.currentIndex + 1 : 0;
+};
+
+const selectPreviousTab = ({ tab }: State) => {
+  if (!tab || tab.tabs.length === 0) {
+    return;
+  }
+  tab.currentIndex = 1 <= tab.currentIndex ? tab.currentIndex - 1 : tab.tabs.length - 1;
+};
+
 const slice = createSlice({
   name: "repository",
   initialState,
@@ -101,7 +116,9 @@ const slice = createSlice({
     closeRepository,
     addTab,
     removeTab,
-    selectTab
+    selectTab,
+    selectNextTab,
+    selectPreviousTab
   },
   extraReducers: (builder) => {
     builder.addCase(openRepository.fulfilled, (state, action) => {
@@ -119,7 +136,9 @@ export const {
   closeRepository: CLOSE_REPOSITORY,
   addTab: ADD_TAB,
   removeTab: REMOVE_TAB,
-  selectTab: SELECT_TAB
+  selectTab: SELECT_TAB,
+  selectNextTab: SELECT_NEXT_TAB,
+  selectPreviousTab: SELECT_PREVIOUS_TAB
 } = slice.actions;
 
 export const OPEN_REPOSITORY = openRepository;
