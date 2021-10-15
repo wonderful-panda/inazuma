@@ -136,6 +136,16 @@ declare global {
     __openPty(options: OpenPtyOptions & { token: number }): Promise<void>;
   }
 
+  type BrowserCommandResult =
+    | {
+        status: "succeeded";
+        result: any;
+      }
+    | {
+        status: "failed";
+        error: unknown;
+      };
+
   interface RendererGlobals {
     browserApi: BrowserCommand;
     browserEvents: {

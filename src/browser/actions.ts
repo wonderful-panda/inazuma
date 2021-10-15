@@ -101,7 +101,13 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
   // register each methods as Electron ipc handlers
   Object.keys(bc).forEach((key) => {
     const handler = bc[key as keyof BrowserCommandHandlers] as (...args: any[]) => Promise<any>;
-    ipcMain.handle(key, handler);
+    ipcMain.handle(
+      key,
+      (...args): Promise<BrowserCommandResult> =>
+        handler(...args)
+          .then((result): BrowserCommandResult => ({ status: "succeeded", result }))
+          .catch((error): BrowserCommandResult => ({ status: "failed", error }))
+    );
   });
   return bc;
 }

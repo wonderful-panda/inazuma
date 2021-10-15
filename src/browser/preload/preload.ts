@@ -20,7 +20,16 @@ const keys: Record<keyof BrowserCommand, null> = {
 
 const bridge = {} as BrowserCommand;
 Object.keys(keys).forEach((key) => {
-  (bridge as any)[key] = (...args: any[]) => ipcRenderer.invoke(key, ...args);
+  (bridge as any)[key] = async (...args: any[]) => {
+    const ret: BrowserCommandResult = await ipcRenderer.invoke(key, ...args);
+    console.log(key, ret);
+    if (ret.status === "succeeded") {
+      return ret.result;
+    } else {
+      console.error(ret.error);
+      throw ret.error;
+    }
+  };
 });
 
 const expose = <K extends keyof RendererGlobals>(name: K, value: RendererGlobals[K]) => {
