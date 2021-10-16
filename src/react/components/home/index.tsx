@@ -5,34 +5,18 @@ import CloseIcon from "@material-ui/icons/Close";
 import { RepositoryListItem } from "./RepositoryListItem";
 import { useCallback, useEffect } from "react";
 import { MainWindow } from "@/components/MainWindow";
-import { useErrorReporter } from "@/hooks/useAlert";
 import browserApi from "@/browserApi";
 import { useDispatch, useSelector } from "@/store";
-import { ADD_RECENT_OPENED_REPOSITORY, REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
-import { OPEN_REPOSITORY } from "@/store/repository";
-import { HIDE_LOADING, SHOW_LOADING } from "@/store/misc";
+import { REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { HotKey } from "@/context/CommandGroupContext";
+import openRepository from "@/store/thunk/openRepository";
 
 export default () => {
   const commandGroup = useCommandGroup();
   const dispatch = useDispatch();
-  const errorReporter = useErrorReporter();
   const recentOpened = useSelector((state) => state.persist.env.recentOpenedRepositories);
-  const handleOpen = useCallback(
-    async (repoPath: string) => {
-      try {
-        dispatch(SHOW_LOADING());
-        await dispatch(OPEN_REPOSITORY({ path: repoPath }));
-        dispatch(ADD_RECENT_OPENED_REPOSITORY(repoPath));
-      } catch (e) {
-        errorReporter(e);
-      } finally {
-        dispatch(HIDE_LOADING());
-      }
-    },
-    [errorReporter]
-  );
+  const handleOpen = useCallback((repoPath: string) => dispatch(openRepository(repoPath)), []);
   const handleBrowseClick = useCallback(async () => {
     const options: Electron.OpenDialogOptions = {
       properties: ["openDirectory"]

@@ -10,6 +10,8 @@ import Loading from "./Loading";
 import { useDispatch, useSelector } from "@/store";
 import { UPDATE_CONFIG } from "@/store/persist";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
+import Alert_ from "./Alert";
+import { HIDE_ALERT } from "@/store/misc";
 
 export interface DrawerItem {
   key: string;
@@ -43,6 +45,27 @@ const ApplicationDrawer = memo<{
     </Drawer>
   );
 });
+
+const Alert: React.VFC = () => {
+  const dispatch = useDispatch();
+  const alert = useSelector((state) => state.misc.alert);
+  const [open, setOpen] = useState(false);
+  const [type, setType] = useState<AlertType>("info");
+  const [message, setMessage] = useState("");
+  const handleClose = useCallback(() => dispatch(HIDE_ALERT()), []);
+  useEffect(() => {
+    setOpen(false);
+    if (!alert) {
+      return;
+    }
+    setTimeout(() => {
+      setType(alert.type);
+      setMessage(alert.message);
+      setOpen(true);
+    }, 200);
+  }, [alert]);
+  return <Alert_ open={open} type={type} message={message} onClose={handleClose} />;
+};
 
 export const MainWindow: React.FC<MainWindowProps> = (props) => {
   const dispatch = useDispatch();
@@ -120,6 +143,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
       <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={onConfigChange} />
       <AboutDialog ref={aboutDialogRef} />
       <Loading open={loading} />
+      <Alert />
     </div>
   );
 };

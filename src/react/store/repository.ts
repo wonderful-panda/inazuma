@@ -1,7 +1,6 @@
-import browserApi from "@/browserApi";
 import { TabDefinition } from "@/components/TabContainer";
-import { Grapher, GraphFragment } from "@/grapher";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { GraphFragment } from "@/grapher";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type TabType = {
   commits: null;
@@ -39,18 +38,24 @@ const initialState: State = {
   tab: undefined
 };
 
-const openRepository = createAsyncThunk<{ path: string; log: State["log"] }, { path: string }>(
-  "repository/open",
-  async ({ path }) => {
-    const { commits, refs } = await browserApi.openRepository(path);
-    const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
-    const graph: Record<string, GraphFragment> = {};
-    commits.forEach((c) => {
-      graph[c.id] = grapher.proceed(c);
-    });
-    return { path, log: { commits, refs, graph } };
-  }
-);
+const setLog = (
+  state: State,
+  {
+    payload: { path, ...log }
+  }: PayloadAction<{
+    path: string;
+    commits: Commit[];
+    refs: Refs;
+    graph: Record<string, GraphFragment>;
+  }>
+) => {
+  state.path = path;
+  state.log = log;
+  state.tab = {
+    tabs: [{ type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false }],
+    currentIndex: 0
+  };
+};
 
 const closeRepository = (state: State) => {
   state.path = undefined;
@@ -113,26 +118,18 @@ const slice = createSlice({
   name: "repository",
   initialState,
   reducers: {
+    setLog,
     closeRepository,
     addTab,
     removeTab,
     selectTab,
     selectNextTab,
     selectPreviousTab
-  },
-  extraReducers: (builder) => {
-    builder.addCase(openRepository.fulfilled, (state, action) => {
-      state.path = action.payload.path;
-      state.log = action.payload.log;
-      state.tab = {
-        tabs: [{ type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false }],
-        currentIndex: 0
-      };
-    });
   }
 });
 
 export const {
+  setLog: _SET_LOG,
   closeRepository: CLOSE_REPOSITORY,
   addTab: ADD_TAB,
   removeTab: REMOVE_TAB,
@@ -140,7 +137,5 @@ export const {
   selectNextTab: SELECT_NEXT_TAB,
   selectPreviousTab: SELECT_PREVIOUS_TAB
 } = slice.actions;
-
-export const OPEN_REPOSITORY = openRepository;
 
 export default slice.reducer;

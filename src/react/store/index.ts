@@ -17,8 +17,9 @@ const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+export type Dispatch = typeof store.dispatch;
 export const useSelector: TypedUseSelectorHook<RootState> = useSelector_;
-export const useDispatch: () => typeof store.dispatch = useDispatch_;
+export const useDispatch: () => Dispatch = useDispatch_;
 
 export interface Watcher<T> {
   selector: (state: RootState) => T;

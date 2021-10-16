@@ -7,7 +7,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import { memo, useEffect, useState } from "react";
 import { assertNever } from "@/util";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
-import { AlertType } from "@/context/AlertContext";
 
 const Transition = (props: TransitionProps) => <Slide {...props} direction="up" />;
 

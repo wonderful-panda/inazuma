@@ -1,4 +1,3 @@
-import { useErrorReporter } from "@/hooks/useAlert";
 import { useCallback, useEffect, useState } from "react";
 import SplitterPanel from "../SplitterPanel";
 import CommitDetail from "./CommitDetail";
@@ -7,11 +6,13 @@ import WorkingTree from "./WorkingTree";
 import { usePersistState } from "@/hooks/usePersistState";
 import browserApi from "@/browserApi";
 import { debounce } from "lodash";
-import { useSelector } from "@/store";
+import { useDispatch, useSelector } from "@/store";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
+import { SHOW_ERROR } from "@/store/misc";
 
 const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
   const repoPath = useSelector((state) => state.repository.path);
+  const dispatch = useDispatch();
   const log = useSelector((state) => state.repository.log);
   if (!repoPath || !log) {
     return <></>;
@@ -20,7 +21,6 @@ const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
   const [logDetail, setLogDetail] = useState<LogDetail | undefined>(undefined);
   const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
   const commandGroup = useCommandGroup();
-  const errorReporter = useErrorReporter();
   useEffect(() => {
     if (!active) {
       return;
@@ -59,8 +59,8 @@ const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
       try {
         setLogDetail(await browserApi.getLogDetail({ repoPath, sha }));
         setCurrentRefs(log.refs.refsById[sha] || []);
-      } catch (e) {
-        errorReporter(e);
+      } catch (error) {
+        dispatch(SHOW_ERROR({ error }));
       }
     }, 200),
     [repoPath, log.commits, log.refs]

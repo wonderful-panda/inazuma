@@ -8,3 +8,5 @@ type ComponentRef<C> = C extends React.ForwardRefExoticComponent<infer P>
 
 type Orientation = "landscape" | "portrait";
 type Direction = "horiz" | "vert";
+
+type AlertType = "info" | "success" | "warning" | "error";

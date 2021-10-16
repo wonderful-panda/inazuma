@@ -2,7 +2,6 @@ import Home from "./components/home";
 import ReactDOM from "react-dom";
 import { createTheme, ThemeProvider } from "@material-ui/core";
 import RepositoryPage from "./components/repository";
-import { AlertProvider } from "./context/AlertContext";
 import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
 import { setup as setupMonaco } from "./monaco";
@@ -92,13 +91,11 @@ const init = async () => {
     const repoPath = useSelector((state) => state.repository.path);
     return (
       <ThemeProvider theme={muiTheme}>
-        <AlertProvider>
-          <CommandGroupProvider>
-            <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
-              {repoPath ? <RepositoryPage /> : <Home />}
-            </PersistStateProvider>
-          </CommandGroupProvider>
-        </AlertProvider>
+        <CommandGroupProvider>
+          <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+            {repoPath ? <RepositoryPage /> : <Home />}
+          </PersistStateProvider>
+        </CommandGroupProvider>
       </ThemeProvider>
     );
   };
