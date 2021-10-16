@@ -136,6 +136,12 @@ declare global {
     __openPty(options: OpenPtyOptions & { token: number }): Promise<void>;
   }
 
+  interface ErrorLike {
+    name: string;
+    message: string;
+    stack?: string;
+  }
+
   type BrowserCommandResult =
     | {
         status: "succeeded";
@@ -143,7 +149,7 @@ declare global {
       }
     | {
         status: "failed";
-        error: unknown;
+        error: ErrorLike;
       };
 
   interface RendererGlobals {

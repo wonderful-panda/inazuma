@@ -27,10 +27,10 @@ const slice = createSlice({
     showAlert: (state, { payload }: PayloadAction<{ type: AlertType; message: string }>) => {
       state.alert = payload;
     },
-    showError: (state, { payload: { error } }: PayloadAction<{ error: unknown }>) => {
+    showError: (state, { payload: { error } }: PayloadAction<{ error: ErrorLike | Error }>) => {
       state.alert = {
         type: "error",
-        message: error instanceof Error ? `[${error.name}] ${error.message}` : `${error}`
+        message: `[${error.name}] ${error.message}`
       };
     },
     hideAlert: (state) => {

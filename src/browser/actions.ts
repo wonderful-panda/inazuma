@@ -99,6 +99,11 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
     }
   };
   // register each methods as Electron ipc handlers
+  const toSerializedError = (error: any): ErrorLike => ({
+    name: error.name || "Unknown",
+    message: error.message || `${error}`,
+    stack: error.stack
+  });
   Object.keys(bc).forEach((key) => {
     const handler = bc[key as keyof BrowserCommandHandlers] as (...args: any[]) => Promise<any>;
     ipcMain.handle(
@@ -106,7 +111,7 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
       (...args): Promise<BrowserCommandResult> =>
         handler(...args)
           .then((result): BrowserCommandResult => ({ status: "succeeded", result }))
-          .catch((error): BrowserCommandResult => ({ status: "failed", error }))
+          .catch((e): BrowserCommandResult => ({ status: "failed", error: toSerializedError(e) }))
     );
   });
   return bc;
