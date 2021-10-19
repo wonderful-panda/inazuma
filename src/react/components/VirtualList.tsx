@@ -1,20 +1,27 @@
 import classNames from "classnames";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, VariableSizeList } from "react-window";
-import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import KeyboardSelection from "./KeyboardSelection";
+import { useSelectedIndex, useSelectedIndexHandler } from "@/hooks/useSelectedIndex";
+
+const MemoizedFixedSizeList = memo(FixedSizeList);
+const MemoizedVariableSizeList = memo(VariableSizeList);
 
 export interface VirtualListProps<T> {
   itemSize: number | ((index: number) => number);
   items: readonly T[];
   getItemKey: (item: T) => string;
-  selectedIndex: number;
   tabIndex?: number;
-  onUpdateSelectedIndex: Dispatch<SetStateAction<number>>;
   className?: string;
-  children: (props: { index: number; selectedIndex: number; item: T }) => React.ReactNode;
+  children: (props: { index: number; item: T }) => React.ReactNode;
   onRowClick?: (event: React.MouseEvent, index: number, item: T) => void;
   onRowDoubleClick?: (event: React.MouseEvent, index: number, item: T) => void;
+}
+
+export interface VirtualListHandler {
+  focus: () => void;
+  scrollToItem: (index: number) => void;
 }
 
 const createRowEventHandler = <T extends unknown>(
@@ -38,37 +45,29 @@ const VirtualList = <T extends unknown>({
   itemSize,
   items,
   getItemKey,
-  selectedIndex,
-  onUpdateSelectedIndex,
   className,
   tabIndex = 0,
   children,
   onRowClick: onRowClick_,
   onRowDoubleClick
 }: VirtualListProps<T>) => {
-  const ref = useRef<FixedSizeList & VariableSizeList>(null);
+  const selectedIndex = useSelectedIndex();
+  const selectedIndexHandler = useSelectedIndexHandler();
+  const listRef = useRef<FixedSizeList & VariableSizeList>(null);
   useEffect(() => {
-    if (selectedIndex >= 0) {
-      ref.current?.scrollToItem(selectedIndex);
-    }
+    listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
-
   const onRowClick = useCallback(
     (event: React.MouseEvent, index: number, item: T) => {
       if (event.button === 0) {
-        onUpdateSelectedIndex(index);
+        selectedIndexHandler.set(index);
       }
       onRowClick_?.(event, index, item);
     },
-    [onRowClick_, onUpdateSelectedIndex]
+    [onRowClick_, selectedIndexHandler]
   );
   const handleRowClick = createRowEventHandler(items, onRowClick);
   const handleRowDoubleClick = createRowEventHandler(items, onRowDoubleClick);
-  useEffect(() => {
-    if (selectedIndex >= 0) {
-      ref.current?.scrollToItem(selectedIndex);
-    }
-  }, [selectedIndex]);
   const renderRow = useCallback(
     ({ index, style }: { index: number; style: object }) => {
       const item = items[index];
@@ -80,32 +79,27 @@ const VirtualList = <T extends unknown>({
           onClick={handleRowClick}
           onDoubleClick={handleRowDoubleClick}
         >
-          {children({ index, selectedIndex, item })}
+          {children({ index, item })}
         </div>
       );
     },
-    [items, getItemKey, selectedIndex, handleRowClick, handleRowDoubleClick, children]
+    [items, getItemKey, handleRowClick, handleRowDoubleClick, children]
   );
 
   const props = {
-    ref,
+    ref: listRef,
     itemCount: items.length,
     children: renderRow,
     overscanCount: 8
   };
   return (
-    <KeyboardSelection
-      className={classNames("flex flex-1", className)}
-      itemsCount={items.length}
-      tabIndex={tabIndex}
-      setIndex={onUpdateSelectedIndex}
-    >
+    <KeyboardSelection className={classNames("flex flex-1", className)} tabIndex={tabIndex}>
       <AutoSizer className="flex-1">
-        {({ width, height }) =>
+        {(size) =>
           typeof itemSize === "number" ? (
-            <FixedSizeList {...props} itemSize={itemSize} width={width} height={height} />
+            <MemoizedFixedSizeList itemSize={itemSize} {...props} {...size} />
           ) : (
-            <VariableSizeList {...props} itemSize={itemSize} width={width} height={height} />
+            <MemoizedVariableSizeList itemSize={itemSize} {...props} {...size} />
           )
         }
       </AutoSizer>

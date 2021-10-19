@@ -1,32 +1,24 @@
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { useCallback } from "react";
 import FileCommitListRow, { getRowHeight } from "./FileCommitListRow";
 import VirtualList from "../VirtualList";
 
 export interface FileCommitListProps {
   commits: readonly FileCommit[];
   refs: Refs | undefined;
-  selectedIndex: number;
-  onUpdateSelectedIndex: Dispatch<SetStateAction<number>>;
   onRowClick?: (event: React.MouseEvent, index: number, commit: FileCommit) => void;
 }
 
-const FileCommitList: React.VFC<FileCommitListProps> = ({
-  commits,
-  refs,
-  selectedIndex,
-  onUpdateSelectedIndex,
-  onRowClick
-}) => {
+const FileCommitList: React.VFC<FileCommitListProps> = ({ commits, refs, onRowClick }) => {
   const renderRow = useCallback(
-    (p: { index: number; selectedIndex: number; item: FileCommit }) => (
+    ({ index, item }: { index: number; item: FileCommit }) => (
       <FileCommitListRow
-        commit={p.item}
-        selected={p.index === p.selectedIndex}
-        head={p.item.id === refs?.head}
-        refs={refs?.refsById[p.item.id] || []}
+        commit={item}
+        index={index}
+        head={item.id === refs?.head}
+        refs={refs?.refsById[item.id] || []}
       />
     ),
-    [commits, refs, selectedIndex]
+    [commits, refs]
   );
   const getItemKey = useCallback((item: FileCommit) => item.id, []);
   const rowHeight = useCallback(
@@ -40,8 +32,6 @@ const FileCommitList: React.VFC<FileCommitListProps> = ({
       items={commits}
       itemSize={rowHeight}
       getItemKey={getItemKey}
-      selectedIndex={selectedIndex}
-      onUpdateSelectedIndex={onUpdateSelectedIndex}
       onRowClick={onRowClick}
     >
       {renderRow}

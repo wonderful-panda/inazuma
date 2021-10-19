@@ -2,13 +2,14 @@ import classNames from "classnames";
 import { Typography } from "@material-ui/core";
 import { memo } from "react";
 import FileStatusIcon from "./FileStatusIcon";
+import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 
 export const ROW_HEIGHT = 48;
 const ROW_HEIGHT_CLASS = "h-[48px]";
 
 export interface FileListRowProps {
   file: FileEntry;
-  selected: boolean;
+  index: number;
 }
 
 const getFileType = (item: FileEntry) => {
@@ -52,14 +53,15 @@ const OldPath: React.VFC<{ file: FileEntry }> = ({ file }) =>
     <></>
   );
 
-const FileListRow: React.VFC<FileListRowProps> = ({ file, selected }) => {
+const FileListRow: React.VFC<FileListRowProps> = ({ file, index }) => {
+  const selectedIndex = useSelectedIndex();
   return (
     <div
       className={classNames(
         "flex overflow-hidden box-border cursor-pointer py-1",
         ROW_HEIGHT_CLASS,
         "border-b border-solid border-highlight",
-        selected ? "bg-highlight" : "hover:bg-hoverHighlight"
+        index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
     >
       <div className="mx-2 my-auto">

@@ -4,6 +4,7 @@ import RefBadge from "./RefBadge";
 import { formatDateLLL } from "@/date";
 import FileStatusIcon from "./FileStatusIcon";
 import GitHash from "../GitHash";
+import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 
 export const getRowHeight = (commit: FileCommit) => (commit.oldPath ? 76 : 52);
 export const getRowHeightClass = (commit: FileCommit) => (commit.oldPath ? "h-[76px]" : "h-[52px]");
@@ -12,7 +13,7 @@ export interface FileCommitListRowProps {
   commit: FileCommit;
   refs: Ref[];
   head: boolean;
-  selected: boolean;
+  index: number;
   onClick?: (event: React.MouseEvent) => void;
   onContextMenu?: (event: React.MouseEvent) => void;
 }
@@ -36,17 +37,18 @@ const FilePaths: React.VFC<{ file: FileEntry }> = ({ file }) =>
 const FileCommitListRow: React.VFC<FileCommitListRowProps> = ({
   commit,
   refs,
-  selected,
+  index,
   onClick,
   onContextMenu
 }) => {
+  const selectedIndex = useSelectedIndex();
   return (
     <div
       className={classNames(
         "flex box-border cursor-pointer py-1",
         "border-b border-solid border-paper",
         getRowHeightClass(commit),
-        selected ? "bg-highlight" : "hover:bg-hoverHighlight"
+        index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
       {...{ onClick, onContextMenu }}
     >

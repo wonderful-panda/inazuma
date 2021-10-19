@@ -9,18 +9,21 @@ import { debounce } from "lodash";
 import { useDispatch, useSelector } from "@/store";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { SHOW_ERROR } from "@/store/misc";
+import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
+import { CommitLogItems } from "@/store/repository";
+import { useSelectedIndex, useSelectedIndexHandler } from "@/hooks/useSelectedIndex";
 
-const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
-  const repoPath = useSelector((state) => state.repository.path);
+const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: CommitLogItems }> = ({
+  active,
+  repoPath,
+  log
+}) => {
   const dispatch = useDispatch();
-  const log = useSelector((state) => state.repository.log);
-  if (!repoPath || !log) {
-    return <></>;
-  }
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const [logDetail, setLogDetail] = useState<LogDetail | undefined>(undefined);
   const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
   const commandGroup = useCommandGroup();
+  const selectedIndex = useSelectedIndex();
+  const selectedIndexHandler = useSelectedIndexHandler();
   useEffect(() => {
     if (!active) {
       return;
@@ -33,14 +36,14 @@ const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
           name: "NextCommit",
           hotkey: "Ctrl+N",
           handler: () => {
-            setSelectedIndex((cur) => Math.min(cur + 1, log.commits.length - 1));
+            selectedIndexHandler.moveNext();
           }
         },
         {
           name: "PrevCommit",
           hotkey: "Ctrl+P",
           handler: () => {
-            setSelectedIndex((cur) => Math.max(cur - 1, 0));
+            selectedIndexHandler.movePrevious();
           }
         }
       ]
@@ -48,11 +51,11 @@ const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
     return () => {
       commandGroup.unregister(groupName);
     };
-  }, [active, log.commits.length]);
+  }, [active, selectedIndexHandler]);
 
   const selectLog = useCallback(
     debounce(async (index: number) => {
-      if (!repoPath) {
+      if (!repoPath && index < 0) {
         return;
       }
       const sha = log.commits[index].id;
@@ -85,14 +88,7 @@ const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
       onUpdateDirection={setDirection}
       firstPanelMinSize="20%"
       secondPanelMinSize="20%"
-      first={
-        <CommitList
-          className="flex flex-1 overflow-hidden p-2"
-          {...log}
-          selectedIndex={selectedIndex}
-          onUpdateSelectedIndex={setSelectedIndex}
-        />
-      }
+      first={<CommitList className="flex flex-1 overflow-hidden p-2" {...log} />}
       second={
         <div className="flex flex-1 overflow-hidden p-2">
           {logDetail === undefined || logDetail.type === "commit" ? (
@@ -103,6 +99,19 @@ const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
         </div>
       }
     />
+  );
+};
+
+const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
+  const repoPath = useSelector((state) => state.repository.path);
+  const log = useSelector((state) => state.repository.log);
+  if (!repoPath || !log) {
+    return <></>;
+  }
+  return (
+    <SelectedIndexProvider itemsCount={log.commits.length} initialValue={0}>
+      <CommitLogInner active={active} repoPath={repoPath} log={log} />
+    </SelectedIndexProvider>
   );
 };
 

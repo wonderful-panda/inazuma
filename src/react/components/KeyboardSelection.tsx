@@ -1,37 +1,42 @@
+import { useSelectedIndexHandler } from "@/hooks/useSelectedIndex";
 import { throttle } from "lodash";
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 const KeyboardSelection: React.FC<{
-  itemsCount: number;
-  setIndex: Dispatch<SetStateAction<number>>;
   tabIndex?: number;
   className?: string;
-}> = ({ itemsCount, setIndex, className, tabIndex = 0, children }) => {
-  const setIndexThrottled = useCallback(throttle(setIndex, 150), [setIndex]);
+}> = ({ className, tabIndex = 0, children }) => {
+  const selectedIndexHandler = useSelectedIndexHandler();
+  const moveSelectedIndex = useMemo(
+    () =>
+      throttle((key: string) => {
+        switch (key) {
+          case "ArrowDown":
+            selectedIndexHandler.moveNext();
+            break;
+          case "ArrowUp":
+            selectedIndexHandler.movePrevious();
+            break;
+          case "Home":
+            selectedIndexHandler.moveFirst();
+            break;
+          case "End":
+            selectedIndexHandler.moveLast();
+            break;
+          default:
+            break;
+        }
+      }, 150),
+    [selectedIndexHandler]
+  );
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      switch (e.key) {
-        case "ArrowDown":
-          setIndexThrottled((prev) => Math.min(prev + 1, itemsCount - 1));
-          e.stopPropagation();
-          break;
-        case "ArrowUp":
-          setIndexThrottled((prev) => Math.max(prev - 1, 0));
-          e.stopPropagation();
-          break;
-        case "Home":
-          setIndexThrottled(0);
-          e.stopPropagation();
-          break;
-        case "End":
-          setIndexThrottled(itemsCount - 1);
-          e.stopPropagation();
-          break;
-        default:
-          break;
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Home" || e.key === "End") {
+        e.stopPropagation();
+        moveSelectedIndex(e.key);
       }
     },
-    [itemsCount, setIndex]
+    [moveSelectedIndex]
   );
   return (
     <div className={className} tabIndex={tabIndex} onKeyDown={onKeyDown}>

@@ -14,16 +14,15 @@ export type TabType = {
 };
 
 export type RepositoryTab = TabDefinition<TabType>;
+export interface CommitLogItems {
+  commits: Commit[];
+  refs: Refs;
+  graph: Record<string, GraphFragment>;
+}
 
 interface State {
   path: string | undefined;
-  log:
-    | {
-        commits: Commit[];
-        refs: Refs;
-        graph: Record<string, GraphFragment>;
-      }
-    | undefined;
+  log: CommitLogItems | undefined;
   tab:
     | {
         tabs: RepositoryTab[];

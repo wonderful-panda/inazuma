@@ -5,6 +5,7 @@ import GraphCell from "./GraphCell";
 import RefBadge from "./RefBadge";
 import { formatDateLLL } from "@/date";
 import GitHash from "../GitHash";
+import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 
 export interface CommitListRowProps {
   height: number;
@@ -12,7 +13,7 @@ export interface CommitListRowProps {
   refs: Ref[];
   graph: GraphFragment;
   head: boolean;
-  selected: boolean;
+  index: number;
   parentId: string;
   onClick?: (event: React.MouseEvent) => void;
 }
@@ -23,17 +24,18 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
   graph,
   refs,
   head,
-  selected,
+  index,
   parentId,
   onClick
 }) => {
+  const selectedIndex = useSelectedIndex();
   const workingTree = commit.id === "--";
   return (
     <div
       className={classNames(
         "flex box-border cursor-pointer",
         "pl-4 border-b border-solid border-paper",
-        selected ? "bg-highlight" : "hover:bg-hoverHighlight"
+        index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
       onClick={onClick}
     >

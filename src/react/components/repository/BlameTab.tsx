@@ -1,4 +1,5 @@
 import browserApi from "@/browserApi";
+import { CustomSelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { usePersistState } from "@/hooks/usePersistState";
 import { getLangIdFromPath } from "@/monaco";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -96,12 +97,13 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
   ) : (
     <SplitterPanel
       first={
-        <FileCommitList
-          commits={blame.commits}
-          refs={refs}
-          selectedIndex={selectedIndex}
-          onUpdateSelectedIndex={setSelectedIndex}
-        />
+        <CustomSelectedIndexProvider
+          itemsCount={blame.commits.length}
+          value={selectedIndex}
+          setValue={setSelectedIndex}
+        >
+          <FileCommitList commits={blame.commits} refs={refs} />
+        </CustomSelectedIndexProvider>
       }
       second={
         <BlamePanel

@@ -1,5 +1,6 @@
+import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { Typography } from "@material-ui/core";
-import { memo, useState } from "react";
+import { memo } from "react";
 import FlexCard from "../FlexCard";
 import FileList from "./FileList";
 
@@ -10,9 +11,8 @@ export interface FileListCardProps {
   onRowDoubleClick?: (event: React.MouseEvent, index: number, item: FileEntry) => void;
 }
 const FileListCard: React.VFC<FileListCardProps> = ({ title, files, ...rest }) => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const content = (
-    <>
+    <SelectedIndexProvider itemsCount={files?.length || 0}>
       {title && (
         <Typography
           variant="h5"
@@ -24,16 +24,9 @@ const FileListCard: React.VFC<FileListCardProps> = ({ title, files, ...rest }) =
         </Typography>
       )}
       <div className="flex flex-1 overflow-hidden">
-        {files && (
-          <FileList
-            files={files}
-            selectedIndex={selectedIndex}
-            onUpdateSelectedIndex={setSelectedIndex}
-            {...rest}
-          />
-        )}
+        {files && <FileList files={files} {...rest} />}
       </div>
-    </>
+    </SelectedIndexProvider>
   );
   return <FlexCard content={content} />;
 };

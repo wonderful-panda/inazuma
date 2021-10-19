@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { GraphFragment } from "@/grapher";
 import CommitListRow from "./CommitListRow";
 import VirtualList from "../VirtualList";
@@ -9,8 +9,6 @@ export interface CommitListProps {
   commits: Commit[];
   refs: Refs;
   graph: Record<string, GraphFragment>;
-  selectedIndex: number;
-  onUpdateSelectedIndex: Dispatch<SetStateAction<number>>;
   className?: string;
   onRowClick?: (event: React.MouseEvent, index: number, item: Commit) => void;
 }
@@ -21,19 +19,17 @@ const CommitList: React.VFC<CommitListProps> = ({
   commits,
   graph,
   refs,
-  selectedIndex,
-  onUpdateSelectedIndex,
   className,
   onRowClick
 }) => {
   const instanceId = useMemo(() => (nextId++).toString(), []);
   const getItemKey = useCallback((item: Commit) => item.id, []);
   const renderRow = useCallback(
-    ({ index, selectedIndex, item }: { index: number; selectedIndex: number; item: Commit }) => {
+    ({ index, item }: { index: number; item: Commit }) => {
       return (
         <CommitListRow
           commit={item}
-          selected={index === selectedIndex}
+          index={index}
           head={item.id === refs.head}
           graph={graph[item.id]}
           refs={refs.refsById[item.id]}
@@ -47,8 +43,6 @@ const CommitList: React.VFC<CommitListProps> = ({
   return (
     <VirtualList<Commit>
       items={commits}
-      selectedIndex={selectedIndex}
-      onUpdateSelectedIndex={onUpdateSelectedIndex}
       className={className}
       itemSize={ROW_HEIGHT}
       getItemKey={getItemKey}
