@@ -112,15 +112,20 @@ const VirtualListInner = <T extends unknown>(
   return (
     <KeyboardSelection
       ref={wrapperRef}
-      className={classNames("flex flex-1", className)}
+      className={classNames("flex flex-1 p-1", className)}
       tabIndex={tabIndex}
     >
       <AutoSizer className="flex-1">
-        {(size) =>
+        {({ width, height }) =>
           typeof itemSize === "number" ? (
-            <MemoizedFixedSizeList itemSize={itemSize} {...props} {...size} />
+            <MemoizedFixedSizeList itemSize={itemSize} {...props} width={width} height={height} />
           ) : (
-            <MemoizedVariableSizeList itemSize={itemSize} {...props} {...size} />
+            <MemoizedVariableSizeList
+              itemSize={itemSize}
+              {...props}
+              width={width}
+              height={height}
+            />
           )
         }
       </AutoSizer>

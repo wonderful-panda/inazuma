@@ -9,19 +9,12 @@ export interface CommitListProps {
   commits: Commit[];
   refs: Refs;
   graph: Record<string, GraphFragment>;
-  className?: string;
   onRowClick?: (event: React.MouseEvent, index: number, item: Commit) => void;
 }
 
 let nextId = 0;
 
-const CommitList: React.VFC<CommitListProps> = ({
-  commits,
-  graph,
-  refs,
-  className,
-  onRowClick
-}) => {
+const CommitList: React.VFC<CommitListProps> = ({ commits, graph, refs, onRowClick }) => {
   const instanceId = useMemo(() => (nextId++).toString(), []);
   const getItemKey = useCallback((item: Commit) => item.id, []);
   const renderRow = useCallback(
@@ -43,7 +36,6 @@ const CommitList: React.VFC<CommitListProps> = ({
   return (
     <VirtualList<Commit>
       items={commits}
-      className={className}
       itemSize={ROW_HEIGHT}
       getItemKey={getItemKey}
       onRowClick={onRowClick}

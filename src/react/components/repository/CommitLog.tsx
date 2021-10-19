@@ -88,9 +88,13 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
       onUpdateDirection={setDirection}
       firstPanelMinSize="20%"
       secondPanelMinSize="20%"
-      first={<CommitList className="flex flex-1 overflow-hidden p-2" {...log} />}
+      first={
+        <div className="flex flex-1 overflow-hidden m-2">
+          <CommitList {...log} />
+        </div>
+      }
       second={
-        <div className="flex flex-1 overflow-hidden p-2">
+        <div className="flex flex-1 overflow-hidden m-2">
           {logDetail === undefined || logDetail.type === "commit" ? (
             <CommitDetail commit={logDetail} refs={currentRefs} orientation={orientation} />
           ) : (

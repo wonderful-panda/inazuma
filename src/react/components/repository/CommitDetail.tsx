@@ -6,12 +6,13 @@ import GitHash from "../GitHash";
 import SplitterPanel from "../SplitterPanel";
 import { formatDateLLL } from "@/date";
 import RefBadge from "./RefBadge";
-import FileListCard from "./FileListCard";
 import FlexCard from "../FlexCard";
 import { usePersistState } from "@/hooks/usePersistState";
 import { getFileName, shortHash } from "@/util";
 import { useDispatch } from "@/store";
 import { ADD_TAB } from "@/store/repository";
+import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
+import FileList from "./FileList";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -117,10 +118,15 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
       direction={props.orientation === "portrait" ? "vert" : "horiz"}
       first={<CommitMetadata {...props} />}
       second={
-        <FileListCard
+        <FlexCard
           title={commit && "Changes"}
-          files={commit && commit.files}
-          onRowDoubleClick={addBlameTab}
+          content={
+            commit && (
+              <SelectedIndexProvider itemsCount={commit.files.length || 0}>
+                <FileList files={commit.files} onRowDoubleClick={addBlameTab} />
+              </SelectedIndexProvider>
+            )
+          }
         />
       }
       firstPanelMinSize="20%"
