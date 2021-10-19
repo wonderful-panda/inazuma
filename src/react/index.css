@@ -24,6 +24,10 @@ body {
   color: var(--inazuma-text-default);
 }
 
+:focus {
+  outline: #ffd600 auto 1px;
+}
+
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
