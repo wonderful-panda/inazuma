@@ -6,13 +6,15 @@ export interface KeyboardSelectionProps {
   tabIndex?: number;
   className?: string;
   children: React.ReactNode;
+  onFocus?: (e: React.FocusEvent) => void;
+  onBlur?: (e: React.FocusEvent) => void;
 }
 export interface KeyboardSelectionMethods {
   focus: () => void;
 }
 
 const KeyboardSelection = forwardRef<KeyboardSelectionMethods, KeyboardSelectionProps>(
-  ({ className, tabIndex = 0, children }, ref) => {
+  ({ className, tabIndex = 0, children, ...rest }, ref) => {
     const divRef = useRef<HTMLDivElement>(null);
     useImperativeHandle(ref, () => ({
       focus: () => divRef.current?.focus()
@@ -50,7 +52,7 @@ const KeyboardSelection = forwardRef<KeyboardSelectionMethods, KeyboardSelection
       [moveSelectedIndex]
     );
     return (
-      <div ref={divRef} className={className} tabIndex={tabIndex} onKeyDown={onKeyDown}>
+      <div ref={divRef} className={className} tabIndex={tabIndex} onKeyDown={onKeyDown} {...rest}>
         {children}
       </div>
     );

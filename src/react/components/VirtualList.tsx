@@ -17,15 +17,19 @@ import { useSelectedIndex, useSelectedIndexMethods } from "@/hooks/useSelectedIn
 const MemoizedFixedSizeList = memo(FixedSizeList);
 const MemoizedVariableSizeList = memo(VariableSizeList);
 
-export interface VirtualListProps<T> {
+export interface VirtualListEvents<T> {
+  onFocus?: (event: React.FocusEvent) => void;
+  onBlur?: (event: React.FocusEvent) => void;
+  onRowClick?: (event: React.MouseEvent, index: number, item: T) => void;
+  onRowDoubleClick?: (event: React.MouseEvent, index: number, item: T) => void;
+}
+export interface VirtualListProps<T> extends VirtualListEvents<T> {
   itemSize: number | ((index: number) => number);
   items: readonly T[];
   getItemKey: (item: T) => string;
   tabIndex?: number;
   className?: string;
   children: (props: { index: number; item: T }) => React.ReactNode;
-  onRowClick?: (event: React.MouseEvent, index: number, item: T) => void;
-  onRowDoubleClick?: (event: React.MouseEvent, index: number, item: T) => void;
 }
 
 export interface VirtualListMethods {
@@ -59,7 +63,9 @@ const VirtualListInner = <T extends unknown>(
     tabIndex = 0,
     children,
     onRowClick: onRowClick_,
-    onRowDoubleClick
+    onRowDoubleClick,
+    onFocus,
+    onBlur
   }: VirtualListProps<T>,
   ref: React.ForwardedRef<VirtualListMethods>
 ) => {
@@ -114,18 +120,15 @@ const VirtualListInner = <T extends unknown>(
       ref={wrapperRef}
       className={classNames("flex flex-1 p-1", className)}
       tabIndex={tabIndex}
+      onFocus={onFocus}
+      onBlur={onBlur}
     >
       <AutoSizer className="flex-1">
-        {({ width, height }) =>
+        {(size) =>
           typeof itemSize === "number" ? (
-            <MemoizedFixedSizeList itemSize={itemSize} {...props} width={width} height={height} />
+            <MemoizedFixedSizeList itemSize={itemSize} {...props} {...size} />
           ) : (
-            <MemoizedVariableSizeList
-              itemSize={itemSize}
-              {...props}
-              width={width}
-              height={height}
-            />
+            <MemoizedVariableSizeList itemSize={itemSize} {...props} {...size} />
           )
         }
       </AutoSizer>
