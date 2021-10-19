@@ -1,8 +1,17 @@
 import classNames from "classnames";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, VariableSizeList } from "react-window";
-import { memo, useCallback, useEffect, useMemo, useRef } from "react";
-import KeyboardSelection from "./KeyboardSelection";
+import {
+  ForwardedRef,
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef
+} from "react";
+import KeyboardSelection, { KeyboardSelectionHandler } from "./KeyboardSelection";
 import { useSelectedIndex, useSelectedIndexHandler } from "@/hooks/useSelectedIndex";
 
 const MemoizedFixedSizeList = memo(FixedSizeList);
@@ -41,19 +50,27 @@ const createRowEventHandler = <T extends unknown>(
   }, [items, handler]);
 };
 
-const VirtualList = <T extends unknown>({
-  itemSize,
-  items,
-  getItemKey,
-  className,
-  tabIndex = 0,
-  children,
-  onRowClick: onRowClick_,
-  onRowDoubleClick
-}: VirtualListProps<T>) => {
+const VirtualListInner = <T extends unknown>(
+  {
+    itemSize,
+    items,
+    getItemKey,
+    className,
+    tabIndex = 0,
+    children,
+    onRowClick: onRowClick_,
+    onRowDoubleClick
+  }: VirtualListProps<T>,
+  ref: React.ForwardedRef<VirtualListHandler>
+) => {
   const selectedIndex = useSelectedIndex();
   const selectedIndexHandler = useSelectedIndexHandler();
+  const wrapperRef = useRef<KeyboardSelectionHandler>(null);
   const listRef = useRef<FixedSizeList & VariableSizeList>(null);
+  useImperativeHandle(ref, () => ({
+    focus: () => wrapperRef.current?.focus(),
+    scrollToItem: (index) => listRef.current?.scrollToItem(index)
+  }));
   useEffect(() => {
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
@@ -93,7 +110,11 @@ const VirtualList = <T extends unknown>({
     overscanCount: 8
   };
   return (
-    <KeyboardSelection className={classNames("flex flex-1", className)} tabIndex={tabIndex}>
+    <KeyboardSelection
+      ref={wrapperRef}
+      className={classNames("flex flex-1", className)}
+      tabIndex={tabIndex}
+    >
       <AutoSizer className="flex-1">
         {(size) =>
           typeof itemSize === "number" ? (
@@ -107,4 +128,7 @@ const VirtualList = <T extends unknown>({
   );
 };
 
+const VirtualList = forwardRef(VirtualListInner) as <T>(
+  props: VirtualListProps<T> & { ref?: ForwardedRef<VirtualListHandler> }
+) => ReturnType<typeof VirtualListInner>;
 export default VirtualList;
