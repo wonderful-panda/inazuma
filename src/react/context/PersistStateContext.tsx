@@ -5,11 +5,11 @@ export interface PartialStorage {
   setItem: (key: string, value: string) => void;
 }
 
-export interface PersistStateHandler {
+export interface PersistStateMethods {
   useState<T>(key: string, initialValue: T): [T, (newValue: T) => void];
 }
 
-export const PersistStateContext = createContext<PersistStateHandler>({
+export const PersistStateContext = createContext<PersistStateMethods>({
   useState: (_, initialValue) => useState(initialValue)
 });
 
@@ -18,7 +18,7 @@ export const PersistStateProvider: React.FC<{ storage: PartialStorage; prefix?: 
   prefix,
   children
 }) => {
-  const handler: PersistStateHandler = useMemo(
+  const handler: PersistStateMethods = useMemo(
     () => ({
       useState<T>(key: string, initialValue: T) {
         const realKey = prefix ? prefix + key : key;

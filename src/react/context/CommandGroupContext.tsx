@@ -80,7 +80,7 @@ const initialState: State = {
   groups: []
 };
 
-export interface CommandGroupHandler {
+export interface CommandGroupMethods {
   register: (group: CommandGroup) => void;
   unregister: (groupName: string) => void;
 }
@@ -88,11 +88,11 @@ export interface CommandGroupHandler {
 export const CommandGroupContext = createContext({
   register: () => {},
   unregister: () => {}
-} as CommandGroupHandler);
+} as CommandGroupMethods);
 
 export const CommandGroupProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const handler = useMemo<CommandGroupHandler>(
+  const methods = useMemo<CommandGroupMethods>(
     () => ({
       register: (group) => {
         dispatch({ type: "register", payload: group });
@@ -135,5 +135,5 @@ export const CommandGroupProvider: React.FC = ({ children }) => {
     };
   }, [hotkeyMap]);
 
-  return <CommandGroupContext.Provider value={handler}>{children}</CommandGroupContext.Provider>;
+  return <CommandGroupContext.Provider value={methods}>{children}</CommandGroupContext.Provider>;
 };

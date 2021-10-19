@@ -1,6 +1,6 @@
-import { CommandGroupContext, CommandGroupHandler } from "@/context/CommandGroupContext";
+import { CommandGroupContext, CommandGroupMethods } from "@/context/CommandGroupContext";
 import { useContext } from "react";
 
-export const useCommandGroup = (): CommandGroupHandler => {
+export const useCommandGroup = (): CommandGroupMethods => {
   return useContext(CommandGroupContext);
 };

@@ -11,7 +11,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import { ComponentProps, forwardRef, useCallback } from "react";
 
-export interface DialogHandler {
+export interface DialogMethods {
   open: () => void;
   close: () => void;
 }

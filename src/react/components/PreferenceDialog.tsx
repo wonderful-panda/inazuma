@@ -1,7 +1,7 @@
 import { assertNever } from "@/util";
 import { TextField, Typography } from "@material-ui/core";
 import { forwardRef, useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
-import { DialogHandler, FullscreenDialog } from "./FullscreenDialog";
+import { DialogMethods, FullscreenDialog } from "./FullscreenDialog";
 
 const SectionContent: React.FC = ({ children }) => (
   <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>
@@ -119,7 +119,7 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
   }
 );
 
-export const PreferenceDialog = forwardRef<DialogHandler, PreferenceDialogProps>((props, ref) => {
+export const PreferenceDialog = forwardRef<DialogMethods, PreferenceDialogProps>((props, ref) => {
   const [isOpened, setOpened] = useState(false);
   useImperativeHandle(ref, () => ({
     open: () => setOpened(true),

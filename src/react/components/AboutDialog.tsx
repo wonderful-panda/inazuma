@@ -1,8 +1,8 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { DialogHandler, FullscreenDialog } from "./FullscreenDialog";
+import { DialogMethods, FullscreenDialog } from "./FullscreenDialog";
 import { version } from "../../../package.json";
 
-export const AboutDialog = forwardRef<DialogHandler>((_, ref) => {
+export const AboutDialog = forwardRef<DialogMethods>((_, ref) => {
   const [isOpened, setOpened] = useState(false);
   useImperativeHandle(ref, () => ({
     open: () => setOpened(true),

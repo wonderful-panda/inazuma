@@ -11,7 +11,7 @@ import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { SHOW_ERROR } from "@/store/misc";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { CommitLogItems } from "@/store/repository";
-import { useSelectedIndex, useSelectedIndexHandler } from "@/hooks/useSelectedIndex";
+import { useSelectedIndex, useSelectedIndexMethods } from "@/hooks/useSelectedIndex";
 
 const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: CommitLogItems }> = ({
   active,
@@ -23,7 +23,7 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
   const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
   const commandGroup = useCommandGroup();
   const selectedIndex = useSelectedIndex();
-  const selectedIndexHandler = useSelectedIndexHandler();
+  const selectedIndexMethods = useSelectedIndexMethods();
   useEffect(() => {
     if (!active) {
       return;
@@ -36,14 +36,14 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
           name: "NextCommit",
           hotkey: "Ctrl+N",
           handler: () => {
-            selectedIndexHandler.moveNext();
+            selectedIndexMethods.moveNext();
           }
         },
         {
           name: "PrevCommit",
           hotkey: "Ctrl+P",
           handler: () => {
-            selectedIndexHandler.movePrevious();
+            selectedIndexMethods.movePrevious();
           }
         }
       ]
@@ -51,7 +51,7 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
     return () => {
       commandGroup.unregister(groupName);
     };
-  }, [active, selectedIndexHandler]);
+  }, [active, selectedIndexMethods]);
 
   const selectLog = useCallback(
     debounce(async (index: number) => {

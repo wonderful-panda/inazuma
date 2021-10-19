@@ -2,7 +2,7 @@ import { createContext, useMemo, useState } from "react";
 
 export const SelectedIndexContext = createContext<number>(-1);
 
-export interface SelectedIndexHandler {
+export interface SelectedIndexMethods {
   set: React.Dispatch<React.SetStateAction<number>>;
   moveNext: () => void;
   movePrevious: () => void;
@@ -10,7 +10,7 @@ export interface SelectedIndexHandler {
   moveLast: () => void;
 }
 
-export const SetSelectedIndexContext = createContext<SelectedIndexHandler>({
+export const SelectedIndexMethodsContext = createContext<SelectedIndexMethods>({
   set: () => {},
   moveNext: () => {},
   movePrevious: () => {},
@@ -18,10 +18,10 @@ export const SetSelectedIndexContext = createContext<SelectedIndexHandler>({
   moveLast: () => {}
 });
 
-const createHandler = (
+const createMethods = (
   itemsCount: number,
   setter: React.Dispatch<React.SetStateAction<number>>
-): SelectedIndexHandler => {
+): SelectedIndexMethods => {
   return useMemo(
     () => ({
       set: setter,
@@ -56,12 +56,12 @@ export const SelectedIndexProvider: React.FC<{ itemsCount: number; initialValue?
   children
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(initialValue);
-  const handler = createHandler(itemsCount, setSelectedIndex);
+  const methods = createMethods(itemsCount, setSelectedIndex);
   return (
     <SelectedIndexContext.Provider value={selectedIndex}>
-      <SetSelectedIndexContext.Provider value={handler}>
+      <SelectedIndexMethodsContext.Provider value={methods}>
         {children}
-      </SetSelectedIndexContext.Provider>
+      </SelectedIndexMethodsContext.Provider>
     </SelectedIndexContext.Provider>
   );
 };
@@ -71,12 +71,12 @@ export const CustomSelectedIndexProvider: React.FC<{
   value: number;
   setValue: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ itemsCount, value, setValue, children }) => {
-  const handler = createHandler(itemsCount, setValue);
+  const handler = createMethods(itemsCount, setValue);
   return (
     <SelectedIndexContext.Provider value={value}>
-      <SetSelectedIndexContext.Provider value={handler}>
+      <SelectedIndexMethodsContext.Provider value={handler}>
         {children}
-      </SetSelectedIndexContext.Provider>
+      </SelectedIndexMethodsContext.Provider>
     </SelectedIndexContext.Provider>
   );
 };

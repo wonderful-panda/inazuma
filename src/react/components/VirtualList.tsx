@@ -11,8 +11,8 @@ import {
   useMemo,
   useRef
 } from "react";
-import KeyboardSelection, { KeyboardSelectionHandler } from "./KeyboardSelection";
-import { useSelectedIndex, useSelectedIndexHandler } from "@/hooks/useSelectedIndex";
+import KeyboardSelection, { KeyboardSelectionMethods } from "./KeyboardSelection";
+import { useSelectedIndex, useSelectedIndexMethods } from "@/hooks/useSelectedIndex";
 
 const MemoizedFixedSizeList = memo(FixedSizeList);
 const MemoizedVariableSizeList = memo(VariableSizeList);
@@ -28,7 +28,7 @@ export interface VirtualListProps<T> {
   onRowDoubleClick?: (event: React.MouseEvent, index: number, item: T) => void;
 }
 
-export interface VirtualListHandler {
+export interface VirtualListMethods {
   focus: () => void;
   scrollToItem: (index: number) => void;
 }
@@ -61,11 +61,11 @@ const VirtualListInner = <T extends unknown>(
     onRowClick: onRowClick_,
     onRowDoubleClick
   }: VirtualListProps<T>,
-  ref: React.ForwardedRef<VirtualListHandler>
+  ref: React.ForwardedRef<VirtualListMethods>
 ) => {
   const selectedIndex = useSelectedIndex();
-  const selectedIndexHandler = useSelectedIndexHandler();
-  const wrapperRef = useRef<KeyboardSelectionHandler>(null);
+  const selectedIndexMethods = useSelectedIndexMethods();
+  const wrapperRef = useRef<KeyboardSelectionMethods>(null);
   const listRef = useRef<FixedSizeList & VariableSizeList>(null);
   useImperativeHandle(ref, () => ({
     focus: () => wrapperRef.current?.focus(),
@@ -77,11 +77,11 @@ const VirtualListInner = <T extends unknown>(
   const onRowClick = useCallback(
     (event: React.MouseEvent, index: number, item: T) => {
       if (event.button === 0) {
-        selectedIndexHandler.set(index);
+        selectedIndexMethods.set(index);
       }
       onRowClick_?.(event, index, item);
     },
-    [onRowClick_, selectedIndexHandler]
+    [onRowClick_, selectedIndexMethods]
   );
   const handleRowClick = createRowEventHandler(items, onRowClick);
   const handleRowDoubleClick = createRowEventHandler(items, onRowDoubleClick);
@@ -129,6 +129,6 @@ const VirtualListInner = <T extends unknown>(
 };
 
 const VirtualList = forwardRef(VirtualListInner) as <T>(
-  props: VirtualListProps<T> & { ref?: ForwardedRef<VirtualListHandler> }
+  props: VirtualListProps<T> & { ref?: ForwardedRef<VirtualListMethods> }
 ) => ReturnType<typeof VirtualListInner>;
 export default VirtualList;

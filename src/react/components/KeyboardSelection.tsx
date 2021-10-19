@@ -1,4 +1,4 @@
-import { useSelectedIndexHandler } from "@/hooks/useSelectedIndex";
+import { useSelectedIndexMethods } from "@/hooks/useSelectedIndex";
 import { throttle } from "lodash";
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from "react";
 
@@ -7,38 +7,38 @@ export interface KeyboardSelectionProps {
   className?: string;
   children: React.ReactNode;
 }
-export interface KeyboardSelectionHandler {
+export interface KeyboardSelectionMethods {
   focus: () => void;
 }
 
-const KeyboardSelection = forwardRef<KeyboardSelectionHandler, KeyboardSelectionProps>(
+const KeyboardSelection = forwardRef<KeyboardSelectionMethods, KeyboardSelectionProps>(
   ({ className, tabIndex = 0, children }, ref) => {
     const divRef = useRef<HTMLDivElement>(null);
     useImperativeHandle(ref, () => ({
       focus: () => divRef.current?.focus()
     }));
-    const selectedIndexHandler = useSelectedIndexHandler();
+    const selectedIndexMethods = useSelectedIndexMethods();
     const moveSelectedIndex = useMemo(
       () =>
         throttle((key: string) => {
           switch (key) {
             case "ArrowDown":
-              selectedIndexHandler.moveNext();
+              selectedIndexMethods.moveNext();
               break;
             case "ArrowUp":
-              selectedIndexHandler.movePrevious();
+              selectedIndexMethods.movePrevious();
               break;
             case "Home":
-              selectedIndexHandler.moveFirst();
+              selectedIndexMethods.moveFirst();
               break;
             case "End":
-              selectedIndexHandler.moveLast();
+              selectedIndexMethods.moveLast();
               break;
             default:
               break;
           }
         }, 150),
-      [selectedIndexHandler]
+      [selectedIndexMethods]
     );
     const onKeyDown = useCallback(
       (e: React.KeyboardEvent) => {
