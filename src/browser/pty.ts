@@ -19,7 +19,7 @@ const installHandler = <K extends keyof PtyCommands>(
 };
 
 const uninstallHandler = <K extends keyof PtyCommands>(type: K, token: number) => {
-  ipcMain.removeAllListeners(`${type}:${token}`);
+  ipcMain.removeHandler(`${type}:${token}`);
 };
 
 export const openPty = (sender: WebContents, options: OpenPtyOptions & { token: number }) => {
