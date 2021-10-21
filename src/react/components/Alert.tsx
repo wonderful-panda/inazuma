@@ -1,27 +1,23 @@
 import { IconButton, Slide, Snackbar, SnackbarContent, Typography } from "@material-ui/core";
-import SuccessIcon from "@material-ui/icons/CheckCircleOutlineOutlined";
-import WarningIcon from "@material-ui/icons/ReportProblemOutlined";
-import ErrorIcon from "@material-ui/icons/ErrorOutlineOutlined";
-import InfoIcon from "@material-ui/icons/InfoOutlined";
-import CloseIcon from "@material-ui/icons/Close";
+import { Icon } from "@iconify/react";
 import { memo, useEffect, useState } from "react";
 import { assertNever } from "@/util";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 
 const Transition = (props: TransitionProps) => <Slide {...props} direction="up" />;
 
-const Icon: React.VFC<{ type: AlertType }> = (props) => {
-  switch (props.type) {
+const iconName = (type: AlertType) => {
+  switch (type) {
     case "success":
-      return <SuccessIcon />;
+      return "mdi:check-circle-outline";
     case "warning":
-      return <WarningIcon />;
+      return "mdi:alert-outline";
     case "error":
-      return <ErrorIcon />;
+      return "mdi:alert-circle-outline";
     case "info":
-      return <InfoIcon />;
+      return "mdi:information-outline";
     default:
-      return assertNever(props.type);
+      return assertNever(type);
   }
 };
 
@@ -63,7 +59,9 @@ const Alert: React.VFC<{
         classes={{ root: bg[type], message: "flex text-white" }}
         message={
           <>
-            <Icon type={type} />
+            <div className="m-auto text-2xl">
+              <Icon icon={iconName(type)} />
+            </div>
             <Typography className="ml-4" variant="body1">
               {message}
             </Typography>
@@ -71,7 +69,7 @@ const Alert: React.VFC<{
         }
         action={
           <IconButton size="small" onClick={props.onClose}>
-            <CloseIcon fontSize="small" />
+            <Icon icon="mdi:close" />
           </IconButton>
         }
       />

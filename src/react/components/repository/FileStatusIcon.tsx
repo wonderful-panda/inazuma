@@ -1,32 +1,25 @@
-import {
-  DiffAddedIcon,
-  DiffModifiedIcon,
-  DiffRemovedIcon,
-  DiffRenamedIcon,
-  DiffIgnoredIcon,
-  OcticonProps
-} from "@primer/octicons-react";
+import { Icon } from "@iconify/react";
 
 type Attr = {
-  icon: React.VFC<OcticonProps>;
+  icon: string;
   color: string;
   title: string;
 };
 
 const attrs: Record<string, Attr> = {
-  M: { icon: DiffModifiedIcon, color: "orange", title: "modified" },
-  T: { icon: DiffModifiedIcon, color: "orange", title: "type changed" },
-  R: { icon: DiffRenamedIcon, color: "cyan", title: "renamed" },
-  A: { icon: DiffAddedIcon, color: "lightgreen", title: "added" },
-  "?": { icon: DiffAddedIcon, color: "gray", title: "unknown" },
-  C: { icon: DiffAddedIcon, color: "lightgreen", title: "copied" },
-  D: { icon: DiffRemovedIcon, color: "hotpink", title: "removed" },
-  U: { icon: DiffModifiedIcon, color: "red", title: "conflicted" }
+  M: { icon: "octicon:diff-modified-16", color: "orange", title: "modified" },
+  T: { icon: "octicon:diff-modified-16", color: "orange", title: "type changed" },
+  R: { icon: "octicon:diff-renamed-16", color: "cyan", title: "renamed" },
+  A: { icon: "octicon:diff-added-16", color: "lightgreen", title: "added" },
+  "?": { icon: "octicon:diff-added-16", color: "gray", title: "unknown" },
+  C: { icon: "octicon:diff-added-16", color: "lightgreen", title: "copied" },
+  D: { icon: "octicon:diff-removed-16", color: "hotpink", title: "removed" },
+  U: { icon: "octicon:diff-modified-16", color: "red", title: "conflicted" }
 };
 
 const getAttr = (statusCode: string): Attr =>
   attrs[statusCode.substr(0, 1)] || {
-    icon: DiffIgnoredIcon,
+    icon: "octicon:diff-ignored-16",
     color: "red",
     title: `UNKNOWN STATUS CODE: ${statusCode}`
   };
@@ -36,10 +29,9 @@ export interface FileStatusIconProps {
 }
 const FileStatusIcon: React.VFC<FileStatusIconProps> = ({ statusCode }) => {
   const attr = getAttr(statusCode);
-  const Icon = attr.icon;
   return (
     <span style={{ color: attr.color }} title={attr.title}>
-      <Icon size="small" verticalAlign="unset" />
+      <Icon icon={attr.icon} />
     </span>
   );
 };

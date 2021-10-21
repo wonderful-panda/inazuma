@@ -1,7 +1,4 @@
 import { Divider, List, Typography } from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
-import HistoryIcon from "@material-ui/icons/History";
-import CloseIcon from "@material-ui/icons/Close";
 import { RepositoryListItem } from "./RepositoryListItem";
 import { useCallback, useEffect } from "react";
 import { MainWindow } from "@/components/MainWindow";
@@ -65,7 +62,7 @@ export default () => {
               key="__browse__"
               primary="BROWSE..."
               secondary="Select repository by folder browser"
-              icon={<SearchIcon />}
+              icon="mdi:folder-search-outline"
               action={handleBrowseClick}
             />
           </List>
@@ -80,11 +77,11 @@ export default () => {
                 itemId={path}
                 primary={path.split(/[\\\/]/).pop() || path}
                 secondary={<span className="font-mono">{path}</span>}
-                icon={<HistoryIcon />}
+                icon="mdi:history"
                 action={handleOpen}
                 secondaryAction={{
                   action: removeRecentOpenedRepository,
-                  icon: <CloseIcon />
+                  icon: "mdi:close"
                 }}
               />
             ))}

@@ -1,9 +1,7 @@
 import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
+import { Icon } from "@iconify/react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Drawer, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
-import SettingsIcon from "@material-ui/icons/Settings";
-import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { PreferenceDialog } from "./PreferenceDialog";
 import { AboutDialog } from "./AboutDialog";
 import Loading from "./Loading";
@@ -16,7 +14,7 @@ import { HIDE_ALERT } from "@/store/misc";
 export interface ActionItem {
   key: string;
   text: string;
-  icon: React.ReactNode;
+  icon: string;
   disabled?: boolean;
   onClick: () => void;
 }
@@ -38,7 +36,9 @@ const ApplicationDrawer = memo<{
         <div className="w-52 pt-5" onClick={close}>
           {items.map((item) => (
             <ListItem dense button disabled={item.disabled} key={item.key} onClick={item.onClick}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemIcon>
+                <Icon className="text-2xl" icon={item.icon} />
+              </ListItemIcon>
               <ListItemText primary={item.text} disableTypography />
             </ListItem>
           ))}{" "}
@@ -114,13 +114,13 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
       {
         key: "preference",
         text: "Preference",
-        icon: <SettingsIcon />,
+        icon: "mdi:cog",
         onClick: () => preferenceDialogRef.current.open()
       },
       {
         key: "about",
         text: "About",
-        icon: <InfoIcon />,
+        icon: "mdi:information-outline",
         onClick: () => aboutDialogRef.current.open()
       }
     ],
@@ -130,7 +130,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
     <div className="absolute left-0 right-0 top-0 bottom-0 flex box-border m-0">
       <div className="absolute left-0 right-0 top-0 h-9 leading-9 pr-2 flex-row-nowrap bg-titlebar text-xl">
         <IconButton className="p-0 w-9" onClick={openDrawer}>
-          <MenuIcon />
+          <Icon icon="mdi:menu" />
         </IconButton>
         <span className="flex-1">{props.title}</span>
         {props.titleBarActions &&
@@ -142,7 +142,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
               className="p-0 w-9"
               onClick={a.onClick}
             >
-              {a.icon}
+              <Icon className="text-2xl text-inherit" icon={a.icon} />
             </IconButton>
           ))}
       </div>

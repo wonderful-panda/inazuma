@@ -7,7 +7,7 @@ import {
   IconButton,
   Slide
 } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import { Icon } from "@iconify/react";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import { ComponentProps, forwardRef, useCallback } from "react";
 
@@ -46,7 +46,7 @@ export const FullscreenDialog: React.FC<FullscreenDialogProps> = (props) => {
       <DialogTitle>
         {props.title}
         <IconButton className="absolute top-2 right-2" onClick={handleClose}>
-          <CloseIcon />
+          <Icon icon="mdi:close" />
         </IconButton>
       </DialogTitle>
       <DialogContent dividers>{props.children}</DialogContent>

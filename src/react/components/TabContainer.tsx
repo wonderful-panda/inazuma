@@ -1,6 +1,6 @@
+import { Icon } from "@iconify/react";
 import classNames from "classnames";
 import { Button, IconButton, makeStyles } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const CURRENT_TABBUTTON_CLASS = "__current_tabbutton__";
@@ -50,7 +50,7 @@ const TabButton: React.VFC<{
           className="absolute top-1 bottom-0 right-0 h-4 w-5 m-0 p-0 text-xs text-gray-500 hover:text-white"
           onClick={p.close}
         >
-          <CloseIcon fontSize="inherit" />
+          <Icon className="text-xs" icon="mdi:close" />
         </IconButton>
       )}
     </div>

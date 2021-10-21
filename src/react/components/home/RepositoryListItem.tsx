@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react";
 import {
   IconButton,
   ListItem,
@@ -9,12 +10,12 @@ import { useCallback } from "react";
 
 export interface RepositoryListItemProps {
   itemId: string;
-  icon: React.ReactNode;
+  icon: string;
   primary: string;
   secondary: string | React.ReactNode;
   action: (itemId: string) => void;
   secondaryAction?: {
-    icon: React.ReactNode;
+    icon: string;
     action: (itemId: string) => void;
   };
 }
@@ -34,7 +35,9 @@ export const RepositoryListItem: React.VFC<RepositoryListItemProps> = ({
   return (
     <div className="group">
       <ListItem className="p-0" button dense onClick={onClick}>
-        <ListItemIcon className="ml-2">{icon}</ListItemIcon>
+        <ListItemIcon className="ml-2 text-2xl">
+          <Icon icon={icon} />
+        </ListItemIcon>
         <ListItemText
           primaryTypographyProps={{ className: "text-xl" }}
           secondaryTypographyProps={{ className: "text-greytext" }}
@@ -43,10 +46,12 @@ export const RepositoryListItem: React.VFC<RepositoryListItemProps> = ({
         />
         {secondaryAction && (
           <ListItemSecondaryAction
-            className="opacity-0 group-hover:opacity-100 duration-75"
+            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75"
             onClick={onSecondaryActionClick}
           >
-            <IconButton edge="end">{secondaryAction.icon}</IconButton>
+            <IconButton className="text-2xl" edge="end">
+              <Icon icon={secondaryAction.icon} />
+            </IconButton>
           </ListItemSecondaryAction>
         )}
       </ListItem>

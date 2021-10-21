@@ -1,4 +1,3 @@
-import { Icon } from "@iconify/react";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { useDispatch, useSelector } from "@/store";
 import { HIDE_INTERACTIVE_SHELL, TOGGLE_INTERACTIVE_SHELL } from "@/store/misc";
@@ -92,7 +91,7 @@ const RepositoryPage: React.VFC = () => {
       {
         key: "toggleInterative shell",
         text: "Show / hide interactive shell",
-        icon: <Icon icon="mdi:console" />,
+        icon: "mdi:console",
         disabled: !interactiveShell,
         onClick: () => dispatch(TOGGLE_INTERACTIVE_SHELL())
       }

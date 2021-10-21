@@ -1,8 +1,7 @@
 import classNames from "classnames";
 import { IconButton } from "@material-ui/core";
 import { useCallback, useState } from "react";
-import SwapVertIcon from "@material-ui/icons/SwapVert";
-import SwapHorizIcon from "@material-ui/icons/SwapHoriz";
+import { Icon } from "@iconify/react";
 
 interface SplitterProps {
   horiz: boolean;
@@ -26,9 +25,10 @@ const RotateButton: React.VFC<{
       horiz ? "hover:rotate-90" : "hover:-rotate-90",
       dragging ? "visible" : "invisible"
     )}
+    title="Switch direction"
     onClick={onClick}
   >
-    {horiz ? <SwapHorizIcon /> : <SwapVertIcon />}
+    <Icon icon={`carbon:drag-${horiz ? "horizontal" : "vertical"}`} />
   </IconButton>
 );
 

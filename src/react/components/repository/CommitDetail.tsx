@@ -1,7 +1,6 @@
 import { Button, Typography } from "@material-ui/core";
 import { memo, useCallback } from "react";
-import PersonIcon from "@material-ui/icons/Person";
-import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import { Icon } from "@iconify/react";
 import GitHash from "../GitHash";
 import SplitterPanel from "../SplitterPanel";
 import { formatDateLLL } from "@/date";
@@ -38,18 +37,18 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
       <Typography
         variant="body1"
         component="div"
-        className="flex-row-wrap text-greytext"
+        className="flex-row-wrap text-greytext text-lg"
         gutterBottom
       >
         <div className="flex-row-nowrap mr-4">
           <GitHash hash={commit.id} />
         </div>
         <div className="flex-row-nowrap mr-4">
-          <PersonIcon />
+          <Icon className="mr-0.5 my-auto" icon="mdi:account" />
           {commit.author}
         </div>
         <div className="flex-row-nowrap mr-4">
-          <AccessTimeIcon />
+          <Icon className="mr-0.5 my-auto" icon="mdi:clock-outline" />
           {formatDateLLL(commit.date)}
         </div>
       </Typography>
