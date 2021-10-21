@@ -2,6 +2,7 @@ import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { useDispatch, useSelector } from "@/store";
 import { HIDE_INTERACTIVE_SHELL, TOGGLE_INTERACTIVE_SHELL } from "@/store/misc";
 import {
+  CLOSE_REPOSITORY,
   REMOVE_TAB,
   SELECT_NEXT_TAB,
   SELECT_PREVIOUS_TAB,
@@ -86,10 +87,21 @@ const RepositoryPage: React.VFC = () => {
     "repository/splitter.direction",
     "horiz"
   );
+  const drawerItems: ActionItem[] = useMemo(
+    () => [
+      {
+        key: "backToHome",
+        text: "Home",
+        icon: "mdi:home",
+        onClick: () => dispatch(CLOSE_REPOSITORY())
+      }
+    ],
+    []
+  );
   const titleBarActions: ActionItem[] = useMemo(
     () => [
       {
-        key: "toggleInterative shell",
+        key: "toggleInterativeShell",
         text: "Show / hide interactive shell",
         icon: "mdi:console",
         disabled: !interactiveShell,
@@ -99,7 +111,7 @@ const RepositoryPage: React.VFC = () => {
     [!interactiveShell]
   );
   return (
-    <MainWindow title={repoPath} titleBarActions={titleBarActions}>
+    <MainWindow title={repoPath} drawerItems={drawerItems} titleBarActions={titleBarActions}>
       <SplitterPanel
         direction={splitterDirection}
         ratio={splitterRatio}
