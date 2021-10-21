@@ -1,4 +1,4 @@
-import { Button, Typography } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { memo, useCallback } from "react";
 import { Icon } from "@iconify/react";
 import GitHash from "../GitHash";
@@ -26,20 +26,8 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
 
   const content = (
     <>
-      <Typography
-        variant="h5"
-        component="div"
-        className="border-b border-solid border-current"
-        gutterBottom
-      >
-        {commit.summary}
-      </Typography>
-      <Typography
-        variant="body1"
-        component="div"
-        className="flex-row-wrap text-greytext text-lg"
-        gutterBottom
-      >
+      <div className="border-b mb-1 border-solid border-current text-2xl">{commit.summary}</div>
+      <div className="flex-row-wrap mb-1 text-greytext text-lg">
         <div className="flex-row-nowrap mr-4">
           <GitHash hash={commit.id} />
         </div>
@@ -51,21 +39,16 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
           <Icon className="mr-0.5 my-auto" icon="mdi:clock-outline" />
           {formatDateLLL(commit.date)}
         </div>
-      </Typography>
-      <Typography variant="body1" className="flex-row-wrap" gutterBottom>
+      </div>
+      <div className="flex-row-wrap my-1">
         {refs.map((r) => (
           <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
         ))}
-      </Typography>
+      </div>
       {commit.body && (
-        <Typography
-          variant="body1"
-          component="pre"
-          className="flex-initial m-4 p-2 overflow-auto"
-          gutterBottom
-        >
+        <pre className="flex-initial m-1 p-2 overflow-auto text-lg whitespace-pre-wrap font-normal">
           {commit.body}
-        </Typography>
+        </pre>
       )}
     </>
   );
