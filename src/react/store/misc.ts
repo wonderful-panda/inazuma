@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface State {
   loading: boolean;
+  showInteractiveShell: boolean;
   alert:
     | {
         type: AlertType;
@@ -11,6 +12,7 @@ interface State {
 
 const initialState: State = {
   loading: false,
+  showInteractiveShell: false,
   alert: undefined
 };
 
@@ -35,6 +37,15 @@ const slice = createSlice({
     },
     hideAlert: (state) => {
       state.alert = undefined;
+    },
+    showInteractiveShell: (state) => {
+      state.showInteractiveShell = true;
+    },
+    hideInteractiveShell: (state) => {
+      state.showInteractiveShell = false;
+    },
+    toggleInteractiveShell: (state) => {
+      state.showInteractiveShell = !state.showInteractiveShell;
     }
   }
 });
@@ -44,7 +55,10 @@ export const {
   hideLoading: HIDE_LOADING,
   showAlert: SHOW_ALERT,
   showError: SHOW_ERROR,
-  hideAlert: HIDE_ALERT
+  hideAlert: HIDE_ALERT,
+  showInteractiveShell: SHOW_INTERACTIVE_SHELL,
+  hideInteractiveShell: HIDE_INTERACTIVE_SHELL,
+  toggleInteractiveShell: TOGGLE_INTERACTIVE_SHELL
 } = slice.actions;
 
 export default slice.reducer;

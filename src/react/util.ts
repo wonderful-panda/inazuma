@@ -14,3 +14,9 @@ export const getExtension = (pathOrFileName: string): string => {
   const p = fileName.lastIndexOf(".");
   return 0 <= p ? fileName.slice(p) : "";
 };
+
+export const serializeError = (error: any): ErrorLike => ({
+  name: error.name || "Unknown",
+  message: error.message || `${error}`,
+  stack: error.stack
+});

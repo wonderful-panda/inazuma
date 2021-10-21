@@ -1,3 +1,4 @@
+import "xterm/css/xterm.css";
 import Home from "./components/home";
 import ReactDOM from "react-dom";
 import { createTheme, ThemeProvider } from "@material-ui/core";

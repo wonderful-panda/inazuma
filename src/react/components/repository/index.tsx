@@ -1,5 +1,7 @@
+import { Icon } from "@iconify/react";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { useDispatch, useSelector } from "@/store";
+import { HIDE_INTERACTIVE_SHELL, TOGGLE_INTERACTIVE_SHELL } from "@/store/misc";
 import {
   REMOVE_TAB,
   SELECT_NEXT_TAB,
@@ -8,17 +10,23 @@ import {
   TabType
 } from "@/store/repository";
 import { assertNever } from "@/util";
-import { useCallback, useEffect } from "react";
-import { MainWindow } from "../MainWindow";
+import { useCallback, useEffect, useMemo } from "react";
+import InteractiveShell from "../InteractiveShell";
+import { ActionItem, MainWindow } from "../MainWindow";
+import SplitterPanel from "../SplitterPanel";
 import TabContainer, { TabContainerProps } from "../TabContainer";
 import BlameTab from "./BlameTab";
 import CommitLog from "./CommitLog";
+import { usePersistState } from "@/hooks/usePersistState";
 
 const RepositoryPage: React.VFC = () => {
   const dispatch = useDispatch();
   const repoPath = useSelector((state) => state.repository.path);
   const refs = useSelector((state) => state.repository.log?.refs);
   const tab = useSelector((state) => state.repository.tab);
+  const showInteractiveShell = useSelector((state) => state.misc.showInteractiveShell);
+  const monospace = useSelector((state) => state.persist.config.fontFamily.monospace);
+  const interactiveShell = useSelector((state) => state.persist.config.interactiveShell);
   if (!repoPath || !tab) {
     return <></>;
   }
@@ -61,6 +69,11 @@ const RepositoryPage: React.VFC = () => {
           name: "CloseTab",
           hotkey: "Ctrl+F4",
           handler: closeTab
+        },
+        {
+          name: "ToggleInteractiveShell",
+          hotkey: "Ctrl+T",
+          handler: () => dispatch(TOGGLE_INTERACTIVE_SHELL())
         }
       ]
     });
@@ -68,14 +81,52 @@ const RepositoryPage: React.VFC = () => {
       commandGroup.unregister(groupName);
     };
   }, []);
+  const hideInteractiveShell = useCallback(() => dispatch(HIDE_INTERACTIVE_SHELL()), []);
+  const [splitterRatio, setSplitterRatio] = usePersistState("repository/splitter.ratio", 0.7);
+  const [splitterDirection, setSplitterDirection] = usePersistState<Direction>(
+    "repository/splitter.direction",
+    "horiz"
+  );
+  const titleBarActions: ActionItem[] = useMemo(
+    () => [
+      {
+        key: "toggleInterative shell",
+        text: "Show / hide interactive shell",
+        icon: <Icon icon="mdi:console" />,
+        disabled: !interactiveShell,
+        onClick: () => dispatch(TOGGLE_INTERACTIVE_SHELL())
+      }
+    ],
+    [!interactiveShell]
+  );
   return (
-    <MainWindow title={repoPath}>
-      <TabContainer
-        tabs={tab.tabs}
-        currentTabIndex={tab.currentIndex}
-        renderTabContent={renderTabContent}
-        selectTab={selectTab}
-        closeTab={closeTab}
+    <MainWindow title={repoPath} titleBarActions={titleBarActions}>
+      <SplitterPanel
+        direction={splitterDirection}
+        ratio={splitterRatio}
+        onUpdateDirection={setSplitterDirection}
+        onUpdateRatio={setSplitterRatio}
+        showSecondPanel={showInteractiveShell && !!interactiveShell}
+        allowDirectionChange
+        firstPanelMinSize="20%"
+        secondPanelMinSize="20%"
+        first={
+          <TabContainer
+            tabs={tab.tabs}
+            currentTabIndex={tab.currentIndex}
+            renderTabContent={renderTabContent}
+            selectTab={selectTab}
+            closeTab={closeTab}
+          />
+        }
+        second={
+          <InteractiveShell
+            open={showInteractiveShell && !!interactiveShell}
+            cmd={interactiveShell!}
+            hide={hideInteractiveShell}
+            fontFamily={monospace}
+          />
+        }
       />
     </MainWindow>
   );
