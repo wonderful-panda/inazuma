@@ -13,29 +13,31 @@ import { useCommandGroup } from "@/hooks/useCommandGroup";
 import Alert_ from "./Alert";
 import { HIDE_ALERT } from "@/store/misc";
 
-export interface DrawerItem {
+export interface ActionItem {
   key: string;
   text: string;
   icon: React.ReactNode;
+  disabled?: boolean;
   onClick: () => void;
 }
 
 export interface MainWindowProps {
   title: string;
-  drawerItems?: readonly DrawerItem[];
+  drawerItems?: readonly ActionItem[];
+  titleBarActions?: readonly ActionItem[];
 }
 
 const ApplicationDrawer = memo<{
   opened: boolean;
   close: () => void;
-  items: readonly DrawerItem[];
+  items: readonly ActionItem[];
 }>(({ opened, close, items }) => {
   return (
     <Drawer anchor="left" open={opened} onClose={close}>
       <Typography variant="h6" component="div">
         <div className="w-52 pt-5" onClick={close}>
           {items.map((item) => (
-            <ListItem dense button key={item.key} onClick={item.onClick}>
+            <ListItem dense button disabled={item.disabled} key={item.key} onClick={item.onClick}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} disableTypography />
             </ListItem>
@@ -106,35 +108,43 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
   const preferenceDialogRef = useRef({} as ComponentRef<typeof PreferenceDialog>);
   const aboutDialogRef = useRef({} as ComponentRef<typeof AboutDialog>);
 
-  const drawerItems = useMemo<readonly DrawerItem[]>(
+  const drawerItems = useMemo<readonly ActionItem[]>(
     () => [
       ...(props.drawerItems || []),
       {
         key: "preference",
         text: "Preference",
         icon: <SettingsIcon />,
-        onClick: () => {
-          preferenceDialogRef.current.open();
-        }
+        onClick: () => preferenceDialogRef.current.open()
       },
       {
         key: "about",
         text: "About",
         icon: <InfoIcon />,
-        onClick: () => {
-          aboutDialogRef.current.open();
-        }
+        onClick: () => aboutDialogRef.current.open()
       }
     ],
     [props.drawerItems]
   );
   return (
     <div className="absolute left-0 right-0 top-0 bottom-0 flex box-border m-0">
-      <div className="absolute left-0 right-0 top-0 h-9 leading-9 flex-row-nowrap bg-titlebar text-xl">
+      <div className="absolute left-0 right-0 top-0 h-9 leading-9 pr-2 flex-row-nowrap bg-titlebar text-xl">
         <IconButton className="p-0 w-9" onClick={openDrawer}>
           <MenuIcon />
         </IconButton>
-        {props.title}
+        <span className="flex-1">{props.title}</span>
+        {props.titleBarActions &&
+          props.titleBarActions.map((a) => (
+            <IconButton
+              key={a.key}
+              title={a.text}
+              disabled={a.disabled}
+              className="p-0 w-9"
+              onClick={a.onClick}
+            >
+              {a.icon}
+            </IconButton>
+          ))}
       </div>
       <ApplicationDrawer opened={drawerOpened} close={closeDrawer} items={drawerItems} />
       <div className="absolute left-0 right-0 top-9 bottom-0 flex box-border p-1">
