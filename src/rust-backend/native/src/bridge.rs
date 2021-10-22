@@ -8,21 +8,9 @@ pub mod status;
 
 use neon::handle::Managed;
 use neon::prelude::*;
-use neon::result::Throw;
 use std::collections::HashMap;
-use std::error::Error;
 
 use crate::git::types::*;
-
-pub fn or_throw<'a, T, E: Error, C: Context<'a>>(
-    cx: &mut C,
-    result: Result<T, E>,
-) -> Result<T, Throw> {
-    match result {
-        Ok(value) => Ok(value),
-        Err(err) => cx.throw_error(err.to_string()),
-    }
-}
 
 macro_rules! set_props {
     ($cx:ident, $obj:ident, {
