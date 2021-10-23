@@ -12,16 +12,10 @@ const options = parseCommandLine();
 const repoSessions = setupRepositorySessions();
 setupBrowserCommands(repoSessions);
 
-Electron.app.allowRendererProcessReuse = false;
-
 Electron.app.on("window-all-closed", () => {
   config.save();
   environment.save();
   repoSessions.dispose();
-  const devtools = Electron.BrowserWindow.getDevToolsExtensions() as {
-    [name: string]: any;
-  };
-  Object.keys(devtools).map(Electron.BrowserWindow.removeDevToolsExtension);
   if (process.platform !== "darwin") {
     Electron.app.quit();
   }
