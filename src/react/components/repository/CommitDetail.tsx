@@ -2,11 +2,10 @@ import { Button } from "@material-ui/core";
 import { memo, useCallback } from "react";
 import { Icon } from "@iconify/react";
 import GitHash from "../GitHash";
-import SplitterPanel from "../SplitterPanel";
+import SplitterPanel from "../PersistSplitterPanel";
 import { formatDateLLL } from "@/date";
 import RefBadge from "./RefBadge";
 import FlexCard from "../FlexCard";
-import { usePersistState } from "@/hooks/usePersistState";
 import { getFileName, shortHash } from "@/util";
 import { useDispatch } from "@/store";
 import { ADD_TAB } from "@/store/repository";
@@ -66,10 +65,6 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
 
 const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
   const dispatch = useDispatch();
-  const [splitterRatio, setSplitterRatio] = usePersistState(
-    "repository/CommitDetail/splitter.ratio",
-    0.5
-  );
   const commit = props.commit;
   const addBlameTab = useCallback(
     (_1: React.UIEvent, _2: number, file: FileEntry) => {
@@ -94,10 +89,10 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
 
   return (
     <SplitterPanel
-      ratio={splitterRatio}
-      onUpdateRatio={setSplitterRatio}
+      persistKey="repository/CommitDetail"
+      initialRatio={0.5}
       allowDirectionChange={false}
-      direction={props.orientation === "portrait" ? "vert" : "horiz"}
+      initialDirection={props.orientation === "portrait" ? "vert" : "horiz"}
       first={<CommitMetadata {...props} />}
       second={
         <FlexCard

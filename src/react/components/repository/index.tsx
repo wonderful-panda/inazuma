@@ -13,11 +13,10 @@ import { assertNever } from "@/util";
 import { useCallback, useEffect, useMemo } from "react";
 import InteractiveShell from "../InteractiveShell";
 import { ActionItem, MainWindow } from "../MainWindow";
-import SplitterPanel from "../SplitterPanel";
+import SplitterPanel from "../PersistSplitterPanel";
 import TabContainer, { TabContainerProps } from "../TabContainer";
 import BlameTab from "./BlameTab";
 import CommitLog from "./CommitLog";
-import { usePersistState } from "@/hooks/usePersistState";
 
 const RepositoryPage: React.VFC = () => {
   const dispatch = useDispatch();
@@ -82,11 +81,6 @@ const RepositoryPage: React.VFC = () => {
     };
   }, []);
   const hideInteractiveShell = useCallback(() => dispatch(HIDE_INTERACTIVE_SHELL()), []);
-  const [splitterRatio, setSplitterRatio] = usePersistState("repository/splitter.ratio", 0.7);
-  const [splitterDirection, setSplitterDirection] = usePersistState<Direction>(
-    "repository/splitter.direction",
-    "horiz"
-  );
   const drawerItems: ActionItem[] = useMemo(
     () => [
       {
@@ -113,10 +107,9 @@ const RepositoryPage: React.VFC = () => {
   return (
     <MainWindow title={repoPath} drawerItems={drawerItems} titleBarActions={titleBarActions}>
       <SplitterPanel
-        direction={splitterDirection}
-        ratio={splitterRatio}
-        onUpdateDirection={setSplitterDirection}
-        onUpdateRatio={setSplitterRatio}
+        persistKey="repository"
+        initialDirection="horiz"
+        initialRatio={0.7}
         showSecondPanel={showInteractiveShell && !!interactiveShell}
         allowDirectionChange
         firstPanelMinSize="20%"

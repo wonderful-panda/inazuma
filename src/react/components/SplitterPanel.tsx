@@ -5,8 +5,8 @@ import Splitter from "./Splitter";
 const FLEX_SUM = 1000;
 
 export interface SplitterPanelProps {
-  first: React.ReactNode;
-  second: React.ReactNode;
+  first: React.ReactNode | ((direction: Direction, show: boolean) => React.ReactNode);
+  second: React.ReactNode | ((direction: Direction, show: boolean) => React.ReactNode);
   direction?: Direction;
   splitterThickness?: number;
   ratio: number;
@@ -107,7 +107,7 @@ const SplitterPanel: React.VFC<SplitterPanelProps> = ({
         minSize={firstPanelMinSize}
         flex={flexFirst}
       >
-        {first}
+        {typeof first === "function" ? first(direction, showFirstPanel) : first}
       </Panel>
       {showFirstPanel && showSecondPanel && (
         <Splitter
@@ -125,7 +125,7 @@ const SplitterPanel: React.VFC<SplitterPanelProps> = ({
         minSize={secondPanelMinSize}
         flex={flexSecond}
       >
-        {second}
+        {typeof second === "function" ? second(direction, showSecondPanel) : second}
       </Panel>
     </div>
   );

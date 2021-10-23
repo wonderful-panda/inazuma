@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import SplitterPanel from "../SplitterPanel";
+import SplitterPanel from "../PersistSplitterPanel";
 import CommitDetail from "./CommitDetail";
 import CommitList from "./CommitList";
 import WorkingTree from "./WorkingTree";
-import { usePersistState } from "@/hooks/usePersistState";
 import browserApi from "@/browserApi";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "@/store";
@@ -72,29 +71,11 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
   useEffect(() => {
     selectLog(selectedIndex);
   }, [selectedIndex]);
-  const [ratio, setRatio] = usePersistState("repository/CommitLog/splitter.ratio", 0.6);
-  const [direction, setDirection] = usePersistState<Direction>(
-    "repository/ComitLog/splitter.dir",
-    "horiz"
-  );
-  const orientation = direction === "horiz" ? "portrait" : "landscape";
 
-  return (
-    <SplitterPanel
-      direction={direction}
-      splitterThickness={5}
-      ratio={ratio}
-      allowDirectionChange
-      onUpdateRatio={setRatio}
-      onUpdateDirection={setDirection}
-      firstPanelMinSize="20%"
-      secondPanelMinSize="20%"
-      first={
-        <div className="flex flex-1 overflow-hidden m-2">
-          <CommitList {...log} />
-        </div>
-      }
-      second={
+  const detail = useCallback(
+    (direction: Direction) => {
+      const orientation = direction === "horiz" ? "portrait" : "landscape";
+      return (
         <div className="flex flex-1 overflow-hidden m-2">
           {logDetail === undefined || logDetail.type === "commit" ? (
             <CommitDetail commit={logDetail} refs={currentRefs} orientation={orientation} />
@@ -102,7 +83,26 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
             <WorkingTree stat={logDetail} orientation={orientation} />
           )}
         </div>
+      );
+    },
+    [currentRefs, logDetail]
+  );
+
+  return (
+    <SplitterPanel
+      persistKey="repository/CommitLog"
+      initialDirection="horiz"
+      initialRatio={0.7}
+      splitterThickness={5}
+      allowDirectionChange
+      firstPanelMinSize="20%"
+      secondPanelMinSize="20%"
+      first={
+        <div className="flex flex-1 overflow-hidden m-2">
+          <CommitList {...log} />
+        </div>
       }
+      second={detail}
     />
   );
 };

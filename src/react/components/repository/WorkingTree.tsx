@@ -1,8 +1,7 @@
 import { CustomSelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { usePersistState } from "@/hooks/usePersistState";
 import { memo, useCallback, useMemo, useState } from "react";
 import FlexCard from "../FlexCard";
-import SplitterPanel from "../SplitterPanel";
+import SplitterPanel from "../PersistSplitterPanel";
 import FileList from "./FileList";
 
 export interface WorkingTreeProps {
@@ -41,10 +40,6 @@ const getActive = (
 };
 
 const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
-  const [splitterRatio, setSplitterRatio] = usePersistState(
-    "repository/WorkingTree/splitter.ratio",
-    0.5
-  );
   const [selection, setSelection] = useState<Selection>({
     unstagedIndex: 0,
     stagedIndex: 0,
@@ -98,10 +93,10 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
   }, []);
   return (
     <SplitterPanel
-      ratio={splitterRatio}
-      onUpdateRatio={setSplitterRatio}
+      persistKey="repository/WorkingTree"
+      initialRatio={0.5}
+      initialDirection={orientation === "portrait" ? "vert" : "horiz"}
       allowDirectionChange={false}
-      direction={orientation === "portrait" ? "vert" : "horiz"}
       first={
         <CustomSelectedIndexProvider
           itemsCount={unstagedFiles.length}

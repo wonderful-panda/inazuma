@@ -1,10 +1,9 @@
 import browserApi from "@/browserApi";
 import { CustomSelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { usePersistState } from "@/hooks/usePersistState";
 import { getLangIdFromPath } from "@/monaco";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Loading from "../Loading";
-import SplitterPanel from "../SplitterPanel";
+import SplitterPanel from "../PersistSplitterPanel";
 import BlameFooter from "./BlameFooter";
 import BlameViewer from "./BlameViewer";
 import FileCommitList from "./FileCommitList";
@@ -87,15 +86,13 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
       setBlame(blame);
     });
   }, [path, sha]);
-  const [ratio, setRatio] = usePersistState("repository/BlameTab/splitter.ratio", 0.3);
-  const [direction, setDirection] = usePersistState(
-    "reository/BlameTab/splitter.dir",
-    "horiz" as Direction
-  );
   return !blame ? (
     <Loading open />
   ) : (
     <SplitterPanel
+      persistKey="repository/BlameTab"
+      initialRatio={0.3}
+      initialDirection="horiz"
       first={
         <CustomSelectedIndexProvider
           itemsCount={blame.commits.length}
@@ -113,11 +110,7 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
           onUpdateSelectedCommitId={onUpdateSelectedCommitId}
         />
       }
-      ratio={ratio}
-      onUpdateRatio={setRatio}
       allowDirectionChange
-      direction={direction}
-      onUpdateDirection={setDirection}
     />
   );
 };
