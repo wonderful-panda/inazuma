@@ -4,7 +4,10 @@ import wm from "./windowManager";
 import { setupRepositorySessions } from "./repositorySession";
 import { setupBrowserCommands } from "./actions";
 import { parseCommandLine } from "./options";
-import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+  REDUX_DEVTOOLS
+} from "electron-devtools-installer";
 import path from "path";
 
 const options = parseCommandLine();
@@ -92,8 +95,10 @@ function showMainWindow() {
 Electron.app.on("ready", async () => {
   if (options.enableDevtools) {
     try {
-      const name = await installExtension(VUEJS_DEVTOOLS);
-      console.log("load devtools extension:", name);
+      const reactDevTools = await installExtension(REACT_DEVELOPER_TOOLS);
+      console.log("load devtools extension:", reactDevTools);
+      const reduxDevTools = await installExtension(REDUX_DEVTOOLS);
+      console.log("load devtools extension:", reduxDevTools);
     } catch (e) {
       console.log("failed to load devtools extension:", e);
     }
