@@ -23,7 +23,10 @@
     "dev": "run-s prebuild watch",
     "tailwind": "tailwindcss -i ./src/react/index.css -o ./src/react/tailwind.css",
     "watch:tailwind": "tailwindcss -i ./src/react/index.css -o ./src/react/tailwind.css -w",
-    "react:serve": "vite",
+    "react:typecheck": "tsc -p src/react/tsconfig.json --noEmit",
+    "watch:react:typecheck": "tsc -p src/react/tsconfig.json --noEmit -w",
+    "vite": "vite",
+    "react:serve": "run-p watch:tailwind watch:react:typecheck vite",
     "react:dev": "run-s prebuild build:neon build:browser react:serve",
     "all": "run-s clean format lint build package",
     "start": "electron ."
