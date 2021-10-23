@@ -12,6 +12,7 @@ import { SHOW_ERROR } from "@/store/misc";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { CommitLogItems } from "@/store/repository";
 import { useSelectedIndex, useSelectedIndexMethods } from "@/hooks/useSelectedIndex";
+import { serializeError } from "@/util";
 
 const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: CommitLogItems }> = ({
   active,
@@ -63,7 +64,7 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
         setLogDetail(await browserApi.getLogDetail({ repoPath, sha }));
         setCurrentRefs(log.refs.refsById[sha] || []);
       } catch (error) {
-        dispatch(SHOW_ERROR({ error }));
+        dispatch(SHOW_ERROR({ error: serializeError(error) }));
       }
     }, 200),
     [repoPath, log.commits, log.refs]

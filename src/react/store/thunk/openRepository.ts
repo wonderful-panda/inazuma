@@ -1,5 +1,6 @@
 import browserApi from "@/browserApi";
 import { Grapher, GraphFragment } from "@/grapher";
+import { serializeError } from "@/util";
 import { Dispatch } from "..";
 import { HIDE_LOADING, SHOW_ERROR, SHOW_LOADING } from "../misc";
 import { ADD_RECENT_OPENED_REPOSITORY } from "../persist";
@@ -18,7 +19,7 @@ const openRepository = (path: string) => {
       dispatch(ADD_RECENT_OPENED_REPOSITORY(path));
       dispatch(_SET_LOG({ path, commits, refs, graph }));
     } catch (error) {
-      dispatch(SHOW_ERROR({ error }));
+      dispatch(SHOW_ERROR({ error: serializeError(error) }));
     } finally {
       dispatch(HIDE_LOADING());
     }
