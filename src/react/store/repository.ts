@@ -69,7 +69,6 @@ const addTab = ({ tab }: State, { payload }: PayloadAction<RepositoryTab>) => {
   const index = tab.tabs.findIndex((t) => t.id === payload.id);
   if (0 <= index) {
     tab.currentIndex = index;
-    return;
   } else {
     tab.tabs.push(payload);
     tab.currentIndex = tab.tabs.length - 1;

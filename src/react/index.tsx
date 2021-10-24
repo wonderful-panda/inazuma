@@ -1,11 +1,10 @@
 import "xterm/css/xterm.css";
-import { lazy } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import Home from "./components/home";
 import { createTheme, ThemeProvider } from "@material-ui/core";
 import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
-import { Suspense, useEffect, useMemo, useState } from "react";
 import browserApi from "./browserApi";
 import {
   loadStateToSessionStorage,

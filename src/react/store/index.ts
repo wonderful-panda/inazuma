@@ -34,7 +34,7 @@ export const watch = <T extends unknown>(
 ): (() => void) => {
   let value = selector(store.getState());
   const watcher = (state: RootState) => {
-    let oldValue = value;
+    const oldValue = value;
     try {
       value = selector(state);
       if (value !== oldValue) {

@@ -19,10 +19,17 @@ export interface SplitterPanelProps {
   onUpdateDirection?: (value: Direction) => void;
 }
 
-const Panel = forwardRef<
-  HTMLDivElement,
-  { show: boolean; horiz: boolean; flex: number; minSize: string; children: React.ReactNode }
->(({ show, horiz, flex, minSize, children }, ref) => (
+interface PanelProps {
+  show: boolean;
+  horiz: boolean;
+  flex: number;
+  minSize: string;
+  children: React.ReactNode | ((direction: Direction, show: boolean) => React.ReactNode);
+}
+const PanelInner = (
+  { show, horiz, flex, minSize, children }: PanelProps,
+  ref: React.ForwardedRef<HTMLDivElement>
+) => (
   <div
     ref={ref}
     className={classNames(
@@ -36,9 +43,10 @@ const Panel = forwardRef<
       flex
     }}
   >
-    {children}
+    {typeof children === "function" ? children(horiz ? "horiz" : "vert", show) : children}
   </div>
-));
+);
+const Panel = forwardRef(PanelInner);
 
 const SplitterPanel: React.VFC<SplitterPanelProps> = ({
   first,
@@ -107,7 +115,7 @@ const SplitterPanel: React.VFC<SplitterPanelProps> = ({
         minSize={firstPanelMinSize}
         flex={flexFirst}
       >
-        {typeof first === "function" ? first(direction, showFirstPanel) : first}
+        {first}
       </Panel>
       {showFirstPanel && showSecondPanel && (
         <Splitter
@@ -125,7 +133,7 @@ const SplitterPanel: React.VFC<SplitterPanelProps> = ({
         minSize={secondPanelMinSize}
         flex={flexSecond}
       >
-        {typeof second === "function" ? second(direction, showSecondPanel) : second}
+        {second}
       </Panel>
     </div>
   );

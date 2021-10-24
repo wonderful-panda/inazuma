@@ -1,8 +1,8 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, ForwardRefRenderFunction, useImperativeHandle, useState } from "react";
 import { DialogMethods, FullscreenDialog } from "./FullscreenDialog";
 import { version } from "../../../package.json";
 
-export const AboutDialog = forwardRef<DialogMethods>((_, ref) => {
+const AboutDialogInner: ForwardRefRenderFunction<DialogMethods> = (_, ref) => {
   const [isOpened, setOpened] = useState(false);
   useImperativeHandle(ref, () => ({
     open: () => setOpened(true),
@@ -13,4 +13,5 @@ export const AboutDialog = forwardRef<DialogMethods>((_, ref) => {
       <div>Inazuma {version}</div>
     </FullscreenDialog>
   );
-});
+};
+export const AboutDialog = forwardRef(AboutDialogInner);

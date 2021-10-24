@@ -9,7 +9,7 @@ import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { HotKey } from "@/context/CommandGroupContext";
 import openRepository from "@/store/thunk/openRepository";
 
-export default () => {
+const Home = () => {
   const commandGroup = useCommandGroup();
   const dispatch = useDispatch();
   const recentOpened = useSelector((state) => state.persist.env.recentOpenedRepositories);
@@ -75,7 +75,7 @@ export default () => {
               <RepositoryListItem
                 key={path}
                 itemId={path}
-                primary={path.split(/[\\\/]/).pop() || path}
+                primary={path.split(/[\\/]/).pop() || path}
                 secondary={<span className="font-mono">{path}</span>}
                 icon="mdi:history"
                 action={handleOpen}
@@ -91,3 +91,5 @@ export default () => {
     </MainWindow>
   );
 };
+
+export default Home;

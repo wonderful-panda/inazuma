@@ -1,4 +1,4 @@
-import { forwardRef, useCallback } from "react";
+import { forwardRef, ForwardRefRenderFunction, useCallback } from "react";
 import FileListRow, { ROW_HEIGHT } from "./FileListRow";
 import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
 
@@ -6,7 +6,10 @@ export interface FileListProps extends VirtualListEvents<FileEntry> {
   files: FileEntry[];
 }
 
-const FileList = forwardRef<VirtualListMethods, FileListProps>(({ files, ...rest }, ref) => {
+const FileList: ForwardRefRenderFunction<VirtualListMethods, FileListProps> = (
+  { files, ...rest },
+  ref
+) => {
   const getItemKey = useCallback((item: FileEntry) => `${item.path}:${item.statusCode}`, []);
   const renderRow = useCallback(({ index, item }: { index: number; item: FileEntry }) => {
     return <FileListRow file={item} index={index} />;
@@ -22,6 +25,6 @@ const FileList = forwardRef<VirtualListMethods, FileListProps>(({ files, ...rest
       {renderRow}
     </VirtualList>
   );
-});
+};
 
-export default FileList;
+export default forwardRef(FileList);

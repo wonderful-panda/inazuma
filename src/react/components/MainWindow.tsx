@@ -8,7 +8,7 @@ import Loading from "./Loading";
 import { useDispatch, useSelector } from "@/store";
 import { UPDATE_CONFIG } from "@/store/persist";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
-import Alert_ from "./Alert";
+import RawAlert from "./Alert";
 import { HIDE_ALERT } from "@/store/misc";
 
 export interface ActionItem {
@@ -25,11 +25,13 @@ export interface MainWindowProps {
   titleBarActions?: readonly ActionItem[];
 }
 
-const ApplicationDrawer = memo<{
+interface ApplicationDrawerProps {
   opened: boolean;
   close: () => void;
   items: readonly ActionItem[];
-}>(({ opened, close, items }) => {
+}
+
+const ApplicationDrawerInner: React.VFC<ApplicationDrawerProps> = ({ opened, close, items }) => {
   return (
     <Drawer anchor="left" open={opened} onClose={close}>
       <Typography variant="h6" component="div">
@@ -46,7 +48,8 @@ const ApplicationDrawer = memo<{
       </Typography>
     </Drawer>
   );
-});
+};
+const ApplicationDrawer = memo(ApplicationDrawerInner);
 
 const Alert: React.VFC = () => {
   const dispatch = useDispatch();
@@ -66,7 +69,7 @@ const Alert: React.VFC = () => {
       setOpen(true);
     }, 200);
   }, [alert]);
-  return <Alert_ open={open} type={type} message={message} onClose={handleClose} />;
+  return <RawAlert open={open} type={type} message={message} onClose={handleClose} />;
 };
 
 export const MainWindow: React.FC<MainWindowProps> = (props) => {

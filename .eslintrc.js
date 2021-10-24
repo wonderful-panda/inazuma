@@ -5,10 +5,10 @@ module.exports = {
     node: true,
     es6: true
   },
-  extends: ["standard", "standard-jsx", "plugin:vue/recommended"],
+  extends: ["standard", "standard-jsx", "plugin:react/recommended"],
   plugins: ["@typescript-eslint/eslint-plugin"],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
-    parser: "@typescript-eslint/parser",
     ecmaVersion: 2017,
     sourceType: "module",
     ecmaFeatures: {
@@ -25,6 +25,7 @@ module.exports = {
     "no-redeclare": "off",
     "import/export": "off",
     "func-call-spacing": "off",
+    "no-use-before-define": "off",
 
     // disable rules which conflict with Prettier
     indent: "off",
@@ -39,13 +40,13 @@ module.exports = {
     // other code style
     yoda: "off",
     "linebreak-style": ["error", "unix"],
-    "react/jsx-handler-names": "off",
 
     // jsx
     "jsx-quotes": ["error", "prefer-double"],
 
-    // vue
-    "vue/require-default-prop": "off",
-    "vue/one-component-per-file": "off"
+    // react
+    "react/jsx-handler-names": "off",
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off"
   }
 };

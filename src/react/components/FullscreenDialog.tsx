@@ -29,9 +29,10 @@ export interface FullscreenDialogProps {
   setOpened: (value: boolean) => void;
 }
 
-const Transition = forwardRef((props: TransitionProps, ref) => (
+const TransitionInner = (props: TransitionProps, ref: any) => (
   <Slide direction="right" ref={ref} {...props} mountOnEnter unmountOnExit />
-));
+);
+const Transition = forwardRef(TransitionInner);
 
 export const FullscreenDialog: React.FC<FullscreenDialogProps> = (props) => {
   const handleClose = useCallback(() => props.setOpened(false), []);

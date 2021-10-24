@@ -18,7 +18,7 @@ export interface CommitDetailProps {
   orientation: Orientation;
 }
 
-const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => {
+const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => {
   if (!commit) {
     return <FlexCard />;
   }
@@ -61,7 +61,8 @@ const CommitMetadata: React.VFC<CommitDetailProps> = memo(({ commit, refs }) => 
       }
     />
   );
-});
+};
+const CommitMetadata = memo(CommitMetadataInner);
 
 const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
   const dispatch = useDispatch();

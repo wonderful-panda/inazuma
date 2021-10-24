@@ -1,6 +1,14 @@
 import { assertNever } from "@/util";
 import { TextField, Typography } from "@material-ui/core";
-import { forwardRef, useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
+import {
+  forwardRef,
+  ForwardRefRenderFunction,
+  useCallback,
+  useImperativeHandle,
+  useReducer,
+  useRef,
+  useState
+} from "react";
 import { DialogMethods, FullscreenDialog } from "./FullscreenDialog";
 
 const SectionContent: React.FC = ({ children }) => (
@@ -42,9 +50,11 @@ const reducer = (state: Config, action: Action) => {
         newState.interactiveShell = value;
         break;
       case "recentListCount":
-        let intValue = parseInt(value);
-        if (!isNaN(intValue) && intValue > 0) {
-          newState.recentListCount = intValue;
+        {
+          const intValue = parseInt(value);
+          if (!isNaN(intValue) && intValue > 0) {
+            newState.recentListCount = intValue;
+          }
         }
         break;
       default:
@@ -60,7 +70,7 @@ export interface PreferenceDialogProps {
 }
 
 const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialogProps>(
-  (props, ref) => {
+  function PreferenceDialogContent(props, ref) {
     const [state, dispatch] = useReducer(reducer, props.config);
     useImperativeHandle(ref, () => ({
       save: () => props.onConfigChange(state)
@@ -119,7 +129,10 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
   }
 );
 
-export const PreferenceDialog = forwardRef<DialogMethods, PreferenceDialogProps>((props, ref) => {
+const PreferenceDialogInner: ForwardRefRenderFunction<DialogMethods, PreferenceDialogProps> = (
+  props,
+  ref
+) => {
   const [isOpened, setOpened] = useState(false);
   useImperativeHandle(ref, () => ({
     open: () => setOpened(true),
@@ -146,4 +159,6 @@ export const PreferenceDialog = forwardRef<DialogMethods, PreferenceDialogProps>
       {isOpened && <PreferenceDialogContent ref={contentRef} {...props} />}
     </FullscreenDialog>
   );
-});
+};
+
+export const PreferenceDialog = forwardRef(PreferenceDialogInner);
