@@ -89,9 +89,12 @@ function showMainWindow(initialRepository: string | undefined) {
     environment.setWindowSize(width, height, maximized);
   });
   mainWindow.setMenu(Electron.Menu.buildFromTemplate(template));
-  const url =
-    "http://localhost:3000" + (initialRepository ? `#${encodeURI(initialRepository)}` : "");
-  mainWindow.loadURL(url);
+  const baseUrl =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : `file://${__dirname.replace("\\", "/")}/../renderer/index.html`;
+  const hash = initialRepository ? `#${encodeURI(initialRepository)}` : "";
+  mainWindow.loadURL(baseUrl + hash);
   mainWindow.show();
 }
 
