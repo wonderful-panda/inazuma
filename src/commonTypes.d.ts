@@ -133,7 +133,7 @@ declare global {
     getTextFileContent(params: { repoPath: string; file: FileSpec }): Promise<TextFile>;
     yankText(text: string): Promise<void>;
     showOpenDialog(options: Electron.OpenDialogOptions): Promise<Electron.OpenDialogReturnValue>;
-    __openPty(options: OpenPtyOptions & { token: number }): Promise<void>;
+    __openPty(options: OpenPtyOptions): Promise<number>;
   }
 
   interface ErrorLike {
@@ -164,11 +164,9 @@ declare global {
       open: (
         options: OpenPtyOptions,
         listeners: PtyListeners
-      ) => Promise<
-        {
-          [K in keyof PtyCommands]: (payload: PtyCommands[K]) => Promise<void>;
-        }
-      >;
+      ) => Promise<{
+        [K in keyof PtyCommands]: (payload: PtyCommands[K]) => Promise<void>;
+      }>;
     };
   }
 }

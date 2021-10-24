@@ -95,7 +95,7 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
       environment.updatePartial(key, value);
     },
     async __openPty(event, options) {
-      openPty(event.sender, options);
+      return openPty(event.sender, options);
     }
   };
   // register each methods as Electron ipc handlers

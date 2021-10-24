@@ -60,15 +60,11 @@ const invokePtyCommand = <K extends keyof PtyCommands>(
   return ipcRenderer.invoke(`${type}:${token}`, payload);
 };
 
-let currentToken = 0;
-
 const openPty = async (
   options: OpenPtyOptions,
   listeners: PtyListeners
 ): Promise<{ [K in keyof PtyCommands]: (payload: PtyCommands[K]) => Promise<void> }> => {
-  currentToken += 1;
-  const token = currentToken;
-  await bridge.__openPty({ token, ...options });
+  const token = await bridge.__openPty(options);
   listenPtyEvent("data", token, listeners.onData);
   listenPtyEvent("exit", token, listeners.onExit);
   return {

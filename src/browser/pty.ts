@@ -22,17 +22,21 @@ const uninstallHandler = <K extends keyof PtyCommands>(type: K, token: number) =
   ipcMain.removeHandler(`${type}:${token}`);
 };
 
-export const openPty = (sender: WebContents, options: OpenPtyOptions & { token: number }) => {
-  const { file, args, cwd, token } = options;
+let currentToken = 1;
+export const openPty = (sender: WebContents, options: OpenPtyOptions): number => {
+  const token = currentToken;
+  currentToken += 1;
+  const { file, args, cwd } = options;
   const pty = spawn(file, args as string[], { cwd });
   installHandler("data", token, (data) => pty.write(data));
   installHandler("resize", token, (p) => pty.resize(p.cols, p.rows));
   installHandler("kill", token, (p) => pty.kill(p.signal));
-  pty.onData((data) => sendToRenderer(sender, "data", options.token, data));
+  pty.onData((data) => sendToRenderer(sender, "data", token, data));
   pty.onExit((p) => {
     uninstallHandler("data", token);
     uninstallHandler("resize", token);
     uninstallHandler("kill", token);
-    sendToRenderer(sender, "exit", options.token, p);
+    sendToRenderer(sender, "exit", token, p);
   });
+  return token;
 };

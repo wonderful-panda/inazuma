@@ -127,6 +127,7 @@ const RepositoryPage: React.VFC = () => {
           <InteractiveShell
             open={showInteractiveShell && !!interactiveShell}
             cmd={interactiveShell!}
+            cwd={repoPath}
             hide={hideInteractiveShell}
             fontFamily={monospace}
           />
