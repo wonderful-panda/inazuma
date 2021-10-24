@@ -6,7 +6,7 @@ import RepositoryPage from "./components/repository";
 import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
 import { setup as setupMonaco } from "./monaco";
-import { Suspense } from "react";
+import { useEffect, useMemo, useState } from "react";
 import browserApi from "./browserApi";
 import {
   loadStateToSessionStorage,
@@ -15,10 +15,14 @@ import {
   STORAGE_PREFIX
 } from "./persistData";
 import { getCssVariable, setCssVariable } from "./cssvar";
-import store, { useSelector, watch } from "./store";
-import { Provider } from "react-redux";
+import store, { Dispatch, useSelector, watch } from "./store";
+import { Provider, useDispatch } from "react-redux";
 import { RESET_RECENT_OPENED_REPOSITORIES, UPDATE_CONFIG } from "./store/persist";
 import { CommandGroupProvider } from "./context/CommandGroupContext";
+import openRepository from "./store/thunk/openRepository";
+import Loading from "./components/Loading";
+import { SHOW_ERROR } from "./store/misc";
+import { serializeError } from "./util";
 
 setupMonaco();
 
@@ -29,54 +33,58 @@ const updateFont = (fontFamily: { standard?: string; monospace?: string }) => {
   setCssVariable("--inazuma-monospace-fontfamily", fontFamily.monospace || monospaceFontfamily);
 };
 
-const init = async () => {
+// TODO: unify with talwind.config.js
+const muiTheme = createTheme({
+  palette: {
+    primary: {
+      main: lime.A700
+    },
+    secondary: {
+      main: yellow.A700
+    },
+    error: {
+      main: red[700]
+    },
+    warning: {
+      main: orange[700]
+    },
+    success: {
+      main: green[700]
+    },
+    info: {
+      main: blue[700]
+    },
+    background: {
+      default: "#222",
+      paper: "#333"
+    },
+    type: "dark"
+  },
+  typography: {
+    fontFamily: "inherit"
+  },
+  overrides: {
+    MuiListItemIcon: {
+      root: {
+        minWidth: "40px"
+      }
+    }
+  }
+});
+
+const init = async (dispatch: Dispatch) => {
   await loadStateToSessionStorage();
   window.addEventListener("beforeunload", () => {
     saveStateToEnvFile();
   });
   const { config, environment } = await persistDataPromise;
-  store.dispatch(UPDATE_CONFIG(config));
+  dispatch(UPDATE_CONFIG(config));
   updateFont(config.fontFamily);
-  store.dispatch(RESET_RECENT_OPENED_REPOSITORIES(environment.recentOpened || []));
-
-  // TODO: unify with talwind.config.js
-  const muiTheme = createTheme({
-    palette: {
-      primary: {
-        main: lime.A700
-      },
-      secondary: {
-        main: yellow.A700
-      },
-      error: {
-        main: red[700]
-      },
-      warning: {
-        main: orange[700]
-      },
-      success: {
-        main: green[700]
-      },
-      info: {
-        main: blue[700]
-      },
-      background: {
-        default: "#222",
-        paper: "#333"
-      },
-      type: "dark"
-    },
-    typography: {
-      fontFamily: "inherit"
-    },
-    overrides: {
-      MuiListItemIcon: {
-        root: {
-          minWidth: "40px"
-        }
-      }
-    }
-  });
+  dispatch(RESET_RECENT_OPENED_REPOSITORIES(environment.recentOpened || []));
+  const initialRepository = window.location.hash
+    ? decodeURI(window.location.hash.slice(1))
+    : undefined;
+  window.location.hash = "";
   watch(
     (state) => state.persist.config,
     (newValue) => {
@@ -88,27 +96,61 @@ const init = async () => {
     (state) => state.persist.env.recentOpenedRepositories,
     (newValue) => browserApi.saveEnvironment("recentOpened", newValue)
   );
-  const App = () => {
-    const repoPath = useSelector((state) => state.repository.path);
-    return (
-      <ThemeProvider theme={muiTheme}>
-        <CommandGroupProvider>
-          <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
-            {repoPath ? <RepositoryPage /> : <Home />}
-          </PersistStateProvider>
-        </CommandGroupProvider>
-      </ThemeProvider>
-    );
-  };
+  watch(
+    (state) => state.repository.path,
+    (newValue) => {
+      setTimeout(() => {
+        if (newValue) {
+          document.title = `Inazuma (${newValue})`;
+          window.location.hash = `#${encodeURI(newValue)}`;
+        } else {
+          document.title = "Inazuma";
+          window.location.hash = "";
+        }
+      }, 0);
+    }
+  );
+  if (initialRepository) {
+    await dispatch(openRepository(initialRepository));
+  }
+};
 
-  ReactDOM.render(
-    <Provider store={store}>
-      <Suspense fallback={<></>}>
-        <App />
-      </Suspense>
-    </Provider>,
-    document.getElementById("app")
+const App = () => {
+  const dispatch = useDispatch();
+  const repoPath = useSelector((state) => state.repository.path);
+  const [initializing, setInitializing] = useState(true);
+  useEffect(() => {
+    init(dispatch)
+      .catch((e) => {
+        dispatch(SHOW_ERROR({ error: serializeError(e) }));
+      })
+      .finally(() => {
+        setInitializing(false);
+      });
+  }, []);
+  const content = useMemo(() => {
+    if (initializing) {
+      return <Loading open />;
+    } else if (repoPath) {
+      return <RepositoryPage />;
+    } else {
+      return <Home />;
+    }
+  }, [initializing, repoPath]);
+  return (
+    <ThemeProvider theme={muiTheme}>
+      <CommandGroupProvider>
+        <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+          {content}
+        </PersistStateProvider>
+      </CommandGroupProvider>
+    </ThemeProvider>
   );
 };
 
-init();
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById("app")
+);

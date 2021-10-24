@@ -1,15 +1,16 @@
 import browserApi from "@/browserApi";
 import { Grapher, GraphFragment } from "@/grapher";
-import { serializeError } from "@/util";
+import { serializeError, toSlashedPath } from "@/util";
 import { Dispatch } from "..";
 import { HIDE_LOADING, SHOW_ERROR, SHOW_LOADING } from "../misc";
 import { ADD_RECENT_OPENED_REPOSITORY } from "../persist";
 import { _SET_LOG } from "../repository";
 
-const openRepository = (path: string) => {
+const openRepository = (realPath: string) => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(SHOW_LOADING());
+      const path = toSlashedPath(realPath);
       const { commits, refs } = await browserApi.openRepository(path);
       const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
       const graph: Record<string, GraphFragment> = {};

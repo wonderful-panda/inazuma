@@ -20,3 +20,5 @@ export const serializeError = (error: any): ErrorLike => ({
   message: error.message || `${error}`,
   stack: error.stack
 });
+
+export const toSlashedPath = (path: string) => path.replace("\\", "/");

@@ -9,6 +9,7 @@ import installExtension, {
   REDUX_DEVTOOLS
 } from "electron-devtools-installer";
 import path from "path";
+import { findRepositoryRootAsync } from "inazuma-rust-backend";
 
 const options = parseCommandLine();
 
@@ -31,7 +32,7 @@ const template: Electron.MenuItemConstructorOptions[] = [
       {
         label: "New window",
         accelerator: process.platform === "darwin" ? "Alt+Command+N" : "Ctrl+Shift+N",
-        click: showMainWindow
+        click: () => showMainWindow(undefined)
       },
       {
         label: "E&xit",
@@ -61,7 +62,7 @@ const template: Electron.MenuItemConstructorOptions[] = [
   }
 ];
 
-function showMainWindow() {
+function showMainWindow(initialRepository: string | undefined) {
   const mainWindow = wm.create({
     autoHideMenuBar: true,
     show: false,
@@ -88,7 +89,9 @@ function showMainWindow() {
     environment.setWindowSize(width, height, maximized);
   });
   mainWindow.setMenu(Electron.Menu.buildFromTemplate(template));
-  mainWindow.loadURL("http://localhost:3000");
+  const url =
+    "http://localhost:3000" + (initialRepository ? `#${encodeURI(initialRepository)}` : "");
+  mainWindow.loadURL(url);
   mainWindow.show();
 }
 
@@ -103,5 +106,12 @@ Electron.app.on("ready", async () => {
       console.log("failed to load devtools extension:", e);
     }
   }
-  showMainWindow();
+  let initialRepository;
+  try {
+    initialRepository = await findRepositoryRootAsync();
+  } catch (e) {
+    console.log("failed to find containing repository:", e);
+    initialRepository = undefined;
+  }
+  showMainWindow(initialRepository);
 });
