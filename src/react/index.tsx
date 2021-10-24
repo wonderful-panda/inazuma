@@ -137,20 +137,20 @@ const App = () => {
   }, [initializing, repoPath]);
   return (
     <ThemeProvider theme={muiTheme}>
-      <CommandGroupProvider>
-        <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
-          {content}
-        </PersistStateProvider>
-      </CommandGroupProvider>
+      <Suspense fallback={<Loading open />}>
+        <CommandGroupProvider>
+          <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+            {content}
+          </PersistStateProvider>
+        </CommandGroupProvider>
+      </Suspense>
     </ThemeProvider>
   );
 };
 
 ReactDOM.render(
   <Provider store={store}>
-    <Suspense fallback={<></>}>
-      <App />
-    </Suspense>
+    <App />
   </Provider>,
   document.getElementById("app")
 );
