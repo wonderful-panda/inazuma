@@ -10,13 +10,14 @@ import {
   TabType
 } from "@/store/repository";
 import { assertNever } from "@/util";
-import { useCallback, useEffect, useMemo } from "react";
+import { lazy, useCallback, useEffect, useMemo } from "react";
 import InteractiveShell from "../InteractiveShell";
 import { ActionItem, MainWindow } from "../MainWindow";
 import SplitterPanel from "../PersistSplitterPanel";
 import TabContainer, { TabContainerProps } from "../TabContainer";
-import BlameTab from "./BlameTab";
 import CommitLog from "./CommitLog";
+
+const BlameTab = lazy(() => import("./BlameTab"));
 
 const RepositoryPage: React.VFC = () => {
   const dispatch = useDispatch();

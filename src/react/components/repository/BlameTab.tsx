@@ -1,12 +1,14 @@
 import browserApi from "@/browserApi";
 import { CustomSelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { getLangIdFromPath } from "@/monaco";
+import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Loading from "../Loading";
 import SplitterPanel from "../PersistSplitterPanel";
 import BlameFooter from "./BlameFooter";
 import BlameViewer from "./BlameViewer";
 import FileCommitList from "./FileCommitList";
+
+setupMonaco();
 
 export interface BlamePanelProps {
   blame: Blame;

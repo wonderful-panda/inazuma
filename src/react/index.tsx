@@ -1,12 +1,11 @@
 import "xterm/css/xterm.css";
-import Home from "./components/home";
+import { lazy } from "react";
 import ReactDOM from "react-dom";
+import Home from "./components/home";
 import { createTheme, ThemeProvider } from "@material-ui/core";
-import RepositoryPage from "./components/repository";
 import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
-import { setup as setupMonaco } from "./monaco";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import browserApi from "./browserApi";
 import {
   loadStateToSessionStorage,
@@ -24,7 +23,7 @@ import Loading from "./components/Loading";
 import { SHOW_ERROR } from "./store/misc";
 import { serializeError } from "./util";
 
-setupMonaco();
+const RepositoryPage = lazy(() => import("./components/repository"));
 
 const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
 const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");
@@ -150,7 +149,9 @@ const App = () => {
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <Suspense fallback={<></>}>
+      <App />
+    </Suspense>
   </Provider>,
   document.getElementById("app")
 );
