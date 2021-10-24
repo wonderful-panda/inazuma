@@ -28,5 +28,9 @@ register_module!(mut cx, {
     cx.export_function("blameAsync", blame::blame_async)?;
     cx.export_function("getContentAsync", file::get_content_async)?;
     cx.export_function("saveToAsync", file::save_to_async)?;
+    cx.export_function(
+        "findRepositoryRootAsync",
+        find_repository_root::find_repository_root_async,
+    )?;
     Ok(())
 });

@@ -27,8 +27,8 @@ declare interface FileLogEntry extends Commit {
 
 declare type LstreeEntry = {
   data: {
-    type: "blob" | "tree",
-    path: string
+    type: "blob" | "tree";
+    path: string;
   };
   children?: LstreeEntry[];
 };
@@ -77,9 +77,15 @@ export declare function filelogAsync(
   heads: readonly string[]
 ): Promise<FileLogEntry[]>;
 
-export declare function getCommitDetailAsync(repoPath: string, revspec: string): Promise<CommitDetail>;
+export declare function getCommitDetailAsync(
+  repoPath: string,
+  revspec: string
+): Promise<CommitDetail>;
 
-export declare function getWorkingTreeStatAsync(repoPath: string, cached: boolean): Promise<FileEntry[]>;
+export declare function getWorkingTreeStatAsync(
+  repoPath: string,
+  cached: boolean
+): Promise<FileEntry[]>;
 
 export declare function getUntrackedFilesAsync(repoPath: string): Promise<string[]>;
 
@@ -107,3 +113,5 @@ export declare function saveToAsync(
   sha: string,
   destPath: string
 ): Promise<void>;
+
+export declare function findRepositoryRootAsync(): Promise<string | undefined>;
