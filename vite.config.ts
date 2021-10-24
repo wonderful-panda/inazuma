@@ -10,7 +10,7 @@ export default defineConfig({
     jsxInject: "import React from 'react';"
   },
   build: {
-    sourcemap: true,
+    sourcemap: "inline",
     outDir: "../../dist/renderer"
   },
   resolve: {
