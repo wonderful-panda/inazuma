@@ -2,7 +2,6 @@ import classNames from "classnames";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, VariableSizeList } from "react-window";
 import {
-  ForwardedRef,
   forwardRef,
   memo,
   useCallback,
@@ -141,6 +140,6 @@ const VirtualListInner = <T extends unknown>(
 };
 
 const VirtualList = forwardRef(VirtualListInner) as <T>(
-  props: VirtualListProps<T> & { ref?: ForwardedRef<VirtualListMethods> }
+  props: VirtualListProps<T> & { ref?: React.ForwardedRef<VirtualListMethods> }
 ) => ReturnType<typeof VirtualListInner>;
 export default VirtualList;

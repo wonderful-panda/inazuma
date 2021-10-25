@@ -1,4 +1,4 @@
-import { forwardRef, ForwardRefRenderFunction, useCallback } from "react";
+import { forwardRef, useCallback } from "react";
 import FileCommitListRow, { getRowHeight } from "./FileCommitListRow";
 import VirtualList, { VirtualListMethods } from "../VirtualList";
 
@@ -8,7 +8,7 @@ export interface FileCommitListProps {
   onRowClick?: (event: React.MouseEvent, index: number, commit: FileCommit) => void;
 }
 
-const FileCommitList: ForwardRefRenderFunction<VirtualListMethods, FileCommitListProps> = (
+const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCommitListProps> = (
   { commits, refs, onRowClick },
   ref
 ) => {

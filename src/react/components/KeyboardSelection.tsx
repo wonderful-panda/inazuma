@@ -1,13 +1,6 @@
 import { useSelectedIndexMethods } from "@/hooks/useSelectedIndex";
 import { throttle } from "lodash";
-import {
-  forwardRef,
-  ForwardRefRenderFunction,
-  useCallback,
-  useImperativeHandle,
-  useMemo,
-  useRef
-} from "react";
+import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from "react";
 
 export interface KeyboardSelectionProps {
   tabIndex?: number;
@@ -20,7 +13,7 @@ export interface KeyboardSelectionMethods {
   focus: () => void;
 }
 
-const KeyboardSelectionInner: ForwardRefRenderFunction<
+const KeyboardSelectionInner: React.ForwardRefRenderFunction<
   KeyboardSelectionMethods,
   KeyboardSelectionProps
 > = ({ className, tabIndex = 0, children, ...rest }, ref) => {

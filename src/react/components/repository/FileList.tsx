@@ -1,4 +1,4 @@
-import { forwardRef, ForwardRefRenderFunction, useCallback } from "react";
+import { forwardRef, useCallback } from "react";
 import FileListRow, { ROW_HEIGHT } from "./FileListRow";
 import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
 import { FileCommand } from "@/commands/types";
@@ -22,7 +22,7 @@ export const useFileListRowEventHandler = (command: FileCommand, commit: DagNode
   );
 };
 
-const FileList: ForwardRefRenderFunction<VirtualListMethods, FileListProps> = (
+const FileList: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps> = (
   { files, ...rest },
   ref
 ) => {

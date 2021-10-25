@@ -1,4 +1,4 @@
-import { forwardRef, ForwardRefRenderFunction, useCallback, useMemo } from "react";
+import { forwardRef, useCallback, useMemo } from "react";
 import { GraphFragment } from "@/grapher";
 import CommitListRow from "./CommitListRow";
 import VirtualList, { VirtualListMethods } from "../VirtualList";
@@ -14,7 +14,7 @@ export interface CommitListProps {
 
 let nextId = 0;
 
-const CommitList: ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
+const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
   { commits, graph, refs, onRowClick },
   ref
 ) => {

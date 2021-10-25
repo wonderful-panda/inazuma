@@ -1,14 +1,6 @@
 import { assertNever } from "@/util";
 import { TextField, Typography } from "@material-ui/core";
-import {
-  forwardRef,
-  ForwardRefRenderFunction,
-  useCallback,
-  useImperativeHandle,
-  useReducer,
-  useRef,
-  useState
-} from "react";
+import { forwardRef, useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
 import { DialogMethods, FullscreenDialog } from "./FullscreenDialog";
 
 const SectionContent: React.FC = ({ children }) => (
@@ -129,36 +121,34 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
   }
 );
 
-const PreferenceDialogInner: ForwardRefRenderFunction<DialogMethods, PreferenceDialogProps> = (
-  props,
-  ref
-) => {
-  const [isOpened, setOpened] = useState(false);
-  useImperativeHandle(ref, () => ({
-    open: () => setOpened(true),
-    close: () => setOpened(false)
-  }));
-  const contentRef = useRef({} as ComponentRef<typeof PreferenceDialogContent>);
-  const handleSave = useCallback(() => {
-    contentRef.current.save();
-    setOpened(false);
-  }, []);
-  return (
-    <FullscreenDialog
-      title="PREFERENCE"
-      isOpened={isOpened}
-      setOpened={setOpened}
-      actions={[
-        {
-          text: "Save",
-          color: "primary",
-          onClick: handleSave
-        }
-      ]}
-    >
-      {isOpened && <PreferenceDialogContent ref={contentRef} {...props} />}
-    </FullscreenDialog>
-  );
-};
+const PreferenceDialogInner: React.ForwardRefRenderFunction<DialogMethods, PreferenceDialogProps> =
+  (props, ref) => {
+    const [isOpened, setOpened] = useState(false);
+    useImperativeHandle(ref, () => ({
+      open: () => setOpened(true),
+      close: () => setOpened(false)
+    }));
+    const contentRef = useRef({} as ComponentRef<typeof PreferenceDialogContent>);
+    const handleSave = useCallback(() => {
+      contentRef.current.save();
+      setOpened(false);
+    }, []);
+    return (
+      <FullscreenDialog
+        title="PREFERENCE"
+        isOpened={isOpened}
+        setOpened={setOpened}
+        actions={[
+          {
+            text: "Save",
+            color: "primary",
+            onClick: handleSave
+          }
+        ]}
+      >
+        {isOpened && <PreferenceDialogContent ref={contentRef} {...props} />}
+      </FullscreenDialog>
+    );
+  };
 
 export const PreferenceDialog = forwardRef(PreferenceDialogInner);
