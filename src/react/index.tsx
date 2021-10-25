@@ -21,6 +21,7 @@ import openRepository from "./store/thunk/openRepository";
 import Loading from "./components/Loading";
 import { SHOW_ERROR } from "./store/misc";
 import { serializeError } from "./util";
+import { ContextMenuProvider } from "./context/ContextMenuContext";
 
 const RepositoryPage = lazy(() => import("./components/repository"));
 
@@ -139,9 +140,11 @@ const App = () => {
     <ThemeProvider theme={muiTheme}>
       <Suspense fallback={<Loading open />}>
         <CommandGroupProvider>
-          <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
-            {content}
-          </PersistStateProvider>
+          <ContextMenuProvider>
+            <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+              {content}
+            </PersistStateProvider>
+          </ContextMenuProvider>
         </CommandGroupProvider>
       </Suspense>
     </ThemeProvider>
