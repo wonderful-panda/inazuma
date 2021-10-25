@@ -22,6 +22,7 @@ export interface VirtualListEvents<T> {
   onBlur?: (event: React.FocusEvent) => void;
   onRowClick?: (event: React.MouseEvent, index: number, item: T) => void;
   onRowDoubleClick?: (event: React.MouseEvent, index: number, item: T) => void;
+  onRowContextMenu?: (event: React.MouseEvent, index: number, item: T) => void;
 }
 export interface VirtualListProps<T> extends VirtualListEvents<T> {
   itemSize: number | ((index: number) => number);
@@ -64,6 +65,7 @@ const VirtualListInner = <T extends unknown>(
     children,
     onRowClick: onRowClick_,
     onRowDoubleClick,
+    onRowContextMenu,
     onFocus,
     onBlur
   }: VirtualListProps<T>,
@@ -91,6 +93,7 @@ const VirtualListInner = <T extends unknown>(
   );
   const handleRowClick = createRowEventHandler(items, onRowClick);
   const handleRowDoubleClick = createRowEventHandler(items, onRowDoubleClick);
+  const handleRowContextMenu = createRowEventHandler(items, onRowContextMenu);
   const renderRow = useCallback(
     ({ index, style }: { index: number; style: object }) => {
       const item = items[index];
@@ -101,6 +104,7 @@ const VirtualListInner = <T extends unknown>(
           style={style}
           onClick={handleRowClick}
           onDoubleClick={handleRowDoubleClick}
+          onContextMenu={handleRowContextMenu}
         >
           {children({ index, item })}
         </div>

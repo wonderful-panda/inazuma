@@ -1,16 +1,15 @@
 import { Button } from "@material-ui/core";
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import { Icon } from "@iconify/react";
 import GitHash from "../GitHash";
 import SplitterPanel from "../PersistSplitterPanel";
 import { formatDateLLL } from "@/date";
 import RefBadge from "./RefBadge";
 import FlexCard from "../FlexCard";
-import { getFileName, shortHash } from "@/util";
-import { useDispatch } from "@/store";
-import { ADD_TAB } from "@/store/repository";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import FileList from "./FileList";
+import FileList, { useFileListRowEventHandler } from "./FileList";
+import { useFileContextMenu } from "@/hooks/useContextMenu";
+import { diffWithParent } from "@/commands/diff";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -65,29 +64,9 @@ const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => 
 const CommitMetadata = memo(CommitMetadataInner);
 
 const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
-  const dispatch = useDispatch();
   const commit = props.commit;
-  const addBlameTab = useCallback(
-    (_1: React.UIEvent, _2: number, file: FileEntry) => {
-      if (!commit) {
-        return;
-      }
-      if (file.statusCode === "D") {
-        return;
-      }
-      dispatch(
-        ADD_TAB({
-          type: "file",
-          id: `blame:${commit.id}/${file.path}`,
-          title: `${getFileName(file.path)} @ ${shortHash(commit.id)}`,
-          payload: { path: file.path, sha: commit.id },
-          closable: true
-        })
-      );
-    },
-    [commit]
-  );
-
+  const onRowDoubleClick = useFileListRowEventHandler(diffWithParent, commit);
+  const onRowContextMenu = useFileContextMenu(commit);
   return (
     <SplitterPanel
       persistKey="repository/CommitDetail"
@@ -101,7 +80,11 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
           content={
             commit && (
               <SelectedIndexProvider itemsCount={commit.files.length || 0}>
-                <FileList files={commit.files} onRowDoubleClick={addBlameTab} />
+                <FileList
+                  files={commit.files}
+                  onRowDoubleClick={onRowDoubleClick}
+                  onRowContextMenu={onRowContextMenu}
+                />
               </SelectedIndexProvider>
             )
           }
