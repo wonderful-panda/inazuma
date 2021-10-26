@@ -72,7 +72,7 @@ const Splitter: React.VFC<SplitterProps> = ({
   return (
     <div
       className={classNames(
-        "relative box-border z-9999 flex-grow-0 flex-shrink-0 group hover:bg-splitter",
+        "relative box-border z-999 flex-grow-0 flex-shrink-0 group hover:bg-splitter",
         {
           "cursor-col-resize mx-px my-0": horiz,
           "cursor-row-resize mx-0 my-px": !horiz,

@@ -6,7 +6,6 @@ import FileStatusIcon from "./FileStatusIcon";
 import GitHash from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 
-export const getRowHeight = (commit: FileCommit) => (commit.oldPath ? 76 : 52);
 export const getRowHeightClass = (commit: FileCommit) => (commit.oldPath ? "h-[76px]" : "h-[52px]");
 
 export interface FileCommitListRowProps {
@@ -14,6 +13,7 @@ export interface FileCommitListRowProps {
   refs: Ref[];
   head: boolean;
   index: number;
+  height: number;
   onClick?: (event: React.MouseEvent) => void;
   onContextMenu?: (event: React.MouseEvent) => void;
 }
@@ -39,6 +39,7 @@ const FileCommitListRow: React.VFC<FileCommitListRowProps> = ({
   refs,
   index,
   onClick,
+  height,
   onContextMenu
 }) => {
   const selectedIndex = useSelectedIndex();
@@ -47,9 +48,9 @@ const FileCommitListRow: React.VFC<FileCommitListRowProps> = ({
       className={classNames(
         "flex box-border cursor-pointer py-1",
         "border-b border-solid border-paper",
-        getRowHeightClass(commit),
         index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
+      style={{ height }}
       {...{ onClick, onContextMenu }}
     >
       <div className="mx-2 my-auto h-4 leading-4">

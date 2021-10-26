@@ -3,21 +3,21 @@ import { GraphFragment } from "@/grapher";
 import CommitListRow from "./CommitListRow";
 import VirtualList, { VirtualListMethods } from "../VirtualList";
 
-const ROW_HEIGHT = 52;
-
 export interface CommitListProps {
   commits: Commit[];
   refs: Refs;
   graph: Record<string, GraphFragment>;
+  fontSize: FontSize;
   onRowClick?: (event: React.MouseEvent, index: number, item: Commit) => void;
 }
 
 let nextId = 0;
 
 const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
-  { commits, graph, refs, onRowClick },
+  { commits, graph, refs, fontSize, onRowClick },
   ref
 ) => {
+  const rowHeight = fontSize === "medium" ? 52 : 46;
   const instanceId = useMemo(() => (nextId++).toString(), []);
   const getItemKey = useCallback((item: Commit) => item.id, []);
   const renderRow = useCallback(
@@ -29,18 +29,18 @@ const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListP
           head={item.id === refs.head}
           graph={graph[item.id]}
           refs={refs.refsById[item.id]}
-          height={ROW_HEIGHT}
+          height={rowHeight}
           parentId={instanceId}
         />
       );
     },
-    [commits, graph, refs]
+    [commits, graph, refs, rowHeight]
   );
   return (
     <VirtualList<Commit>
       ref={ref}
       items={commits}
-      itemSize={ROW_HEIGHT}
+      itemSize={rowHeight}
       getItemKey={getItemKey}
       onRowClick={onRowClick}
     >

@@ -15,6 +15,7 @@ export interface CommitDetailProps {
   commit: CommitDetail | undefined;
   refs: Ref[];
   orientation: Orientation;
+  fontSize: FontSize;
 }
 
 const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => {
@@ -82,6 +83,7 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
               <SelectedIndexProvider itemsCount={commit.files.length || 0}>
                 <FileList
                   files={commit.files}
+                  fontSize={props.fontSize}
                   onRowDoubleClick={onRowDoubleClick}
                   onRowContextMenu={onRowContextMenu}
                 />

@@ -21,6 +21,8 @@ declare global {
   type Consumer<T> = (value: T) => void;
   type Func<P, R> = (arg: P) => R;
 
+  type FontSize = "small" | "medium";
+
   /**
    * Auto updated parsistent data written to .environment.json
    */
@@ -42,6 +44,7 @@ declare global {
       standard?: string;
       monospace?: string;
     };
+    fontSize: FontSize;
     recentListCount: number;
     externalDiffTool?: string;
     interactiveShell?: string;

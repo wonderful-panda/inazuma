@@ -1,11 +1,12 @@
 import { forwardRef, useCallback } from "react";
-import FileListRow, { ROW_HEIGHT } from "./FileListRow";
+import FileListRow from "./FileListRow";
 import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
 import { FileCommand } from "@/commands/types";
 import { useDispatch } from "@/store";
 import { executeFileCommand } from "@/commands";
 
 export interface FileListProps extends VirtualListEvents<FileEntry> {
+  fontSize: FontSize;
   files: FileEntry[];
 }
 
@@ -23,18 +24,22 @@ export const useFileListRowEventHandler = (command: FileCommand, commit: DagNode
 };
 
 const FileList: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps> = (
-  { files, ...rest },
+  { files, fontSize, ...rest },
   ref
 ) => {
   const getItemKey = useCallback((item: FileEntry) => `${item.path}:${item.statusCode}`, []);
-  const renderRow = useCallback(({ index, item }: { index: number; item: FileEntry }) => {
-    return <FileListRow file={item} index={index} />;
-  }, []);
+  const rowHeight = fontSize === "medium" ? 48 : 40;
+  const renderRow = useCallback(
+    ({ index, item }: { index: number; item: FileEntry }) => {
+      return <FileListRow file={item} index={index} height={rowHeight} />;
+    },
+    [rowHeight]
+  );
   return (
     <VirtualList<FileEntry>
       ref={ref}
       items={files}
-      itemSize={ROW_HEIGHT}
+      itemSize={rowHeight}
       getItemKey={getItemKey}
       {...rest}
     >

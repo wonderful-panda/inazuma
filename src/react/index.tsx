@@ -31,6 +31,9 @@ const updateFont = (fontFamily: { standard?: string; monospace?: string }) => {
   setCssVariable("--inazuma-standard-fontfamily", fontFamily.standard || defaultFontfamily);
   setCssVariable("--inazuma-monospace-fontfamily", fontFamily.monospace || monospaceFontfamily);
 };
+const updateFontSize = (fontSize: string) => {
+  setCssVariable("--inazuma-font-size", fontSize);
+};
 
 // TODO: unify with talwind.config.js
 const muiTheme = createTheme({
@@ -79,6 +82,7 @@ const init = async (dispatch: Dispatch) => {
   const { config, environment } = await persistDataPromise;
   dispatch(UPDATE_CONFIG(config));
   updateFont(config.fontFamily);
+  updateFontSize(config.fontSize);
   dispatch(RESET_RECENT_OPENED_REPOSITORIES(environment.recentOpened || []));
   const initialRepository = window.location.hash
     ? decodeURI(window.location.hash.slice(1))
@@ -89,6 +93,7 @@ const init = async (dispatch: Dispatch) => {
     (newValue) => {
       browserApi.resetConfig(newValue);
       updateFont(newValue.fontFamily);
+      updateFontSize(newValue.fontSize);
     }
   );
   watch(

@@ -26,6 +26,7 @@ const RepositoryPage: React.VFC = () => {
   const tab = useSelector((state) => state.repository.tab);
   const showInteractiveShell = useSelector((state) => state.misc.showInteractiveShell);
   const monospace = useSelector((state) => state.persist.config.fontFamily.monospace);
+  const fontSize = useSelector((state) => state.persist.config.fontSize);
   const interactiveShell = useSelector((state) => state.persist.config.interactiveShell);
   if (!repoPath || !tab) {
     return <></>;
@@ -36,7 +37,7 @@ const RepositoryPage: React.VFC = () => {
         case "commits":
           return <CommitLog active={active} />;
         case "file":
-          return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} />;
+          return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} fontSize={fontSize} />;
         case "tree":
           return <div>TEST</div>;
         default:
@@ -44,7 +45,7 @@ const RepositoryPage: React.VFC = () => {
           break;
       }
     },
-    []
+    [repoPath, refs, fontSize]
   );
 
   const commandGroup = useCommandGroup();

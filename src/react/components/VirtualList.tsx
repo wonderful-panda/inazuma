@@ -81,6 +81,9 @@ const VirtualListInner = <T extends unknown>(
   useEffect(() => {
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
+  useEffect(() => {
+    listRef.current?.resetAfterIndex?.(0);
+  }, [itemSize]);
   const onRowClick = useCallback(
     (event: React.MouseEvent, index: number, item: T) => {
       if (event.button === 0) {

@@ -9,6 +9,7 @@ interface State {
 const initialState: State = {
   config: {
     fontFamily: {},
+    fontSize: "medium",
     recentListCount: 10
   },
   env: {

@@ -57,6 +57,10 @@ export const configSchema: Schema = {
         monospace: { type: "string" }
       }
     },
+    fontSize: {
+      type: "string",
+      pattern: "^(small|medium)$"
+    },
     recentListCount: {
       type: "integer",
       minimum: 0
@@ -72,6 +76,7 @@ export const configSchema: Schema = {
 
 const defaultConfigData: Config = {
   fontFamily: {},
+  fontSize: "medium",
   recentListCount: 5,
   externalDiffTool: "",
   interactiveShell: ""

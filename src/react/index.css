@@ -2,9 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
+:root {
+  --inazuma-font-size: medium;
+  --inazuma-standard-fontfamily: Roboto, Hervetica, "Yu Gothic", sans-serif;
+  --inazuma-monospace-fontfamily: monospace;
+  --inazuma-background-default: #222;
+  --inazuma-text-default: #ddd;
+}
+
+html {
+  font-size: var(--inazuma-font-size);
+  width: 100%;
+  height: 100%;
+}
+
 body {
-  font-size: medium;
   width: 100%;
   height: 100%;
 }
@@ -13,11 +25,6 @@ body {
   display: flex;
   margin: 0;
   box-sizing: border-box;
-
-  --inazuma-standard-fontfamily: Roboto, Hervetica, "Yu Gothic", sans-serif;
-  --inazuma-monospace-fontfamily: monospace;
-  --inazuma-background-default: #222;
-  --inazuma-text-default: #ddd;
 
   font-family: var(--inazuma-standard-fontfamily);
   background-color: var(--inazuma-background-default);

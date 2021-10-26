@@ -1,5 +1,12 @@
 import { assertNever } from "@/util";
-import { TextField, Typography } from "@material-ui/core";
+import {
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+  Typography
+} from "@material-ui/core";
 import { forwardRef, useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
 import { DialogMethods, FullscreenDialog } from "./FullscreenDialog";
 
@@ -12,6 +19,7 @@ type Action =
       type:
         | "fontFamilyStandard"
         | "fontFamilyMonospace"
+        | "fontSize"
         | "externalDiff"
         | "interactiveShell"
         | "recentListCount";
@@ -34,6 +42,9 @@ const reducer = (state: Config, action: Action) => {
         break;
       case "fontFamilyMonospace":
         newState.fontFamily = { ...state.fontFamily, monospace: value };
+        break;
+      case "fontSize":
+        newState.fontSize = value === "small" ? "small" : "medium";
         break;
       case "externalDiff":
         newState.externalDiffTool = value;
@@ -85,6 +96,17 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
             value={state.fontFamily.monospace}
             onChange={(payload) => dispatch({ type: "fontFamilyMonospace", payload })}
           />
+          <div className="flex-col-nowrap mt-4">
+            <FormLabel>Font size</FormLabel>
+            <RadioGroup
+              row
+              value={state.fontSize}
+              onChange={(payload) => dispatch({ type: "fontSize", payload })}
+            >
+              <FormControlLabel value="small" control={<Radio color="primary" />} label="small" />
+              <FormControlLabel value="medium" control={<Radio color="primary" />} label="medium" />
+            </RadioGroup>
+          </div>
         </SectionContent>
         <Typography variant="h6" component="div" color="primary">
           External tools

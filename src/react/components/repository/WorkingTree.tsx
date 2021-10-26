@@ -7,6 +7,7 @@ import FileList from "./FileList";
 export interface WorkingTreeProps {
   stat: WorkingTreeStat;
   orientation: Orientation;
+  fontSize: FontSize;
 }
 
 type Active = "unstaged" | "staged" | "none";
@@ -39,7 +40,7 @@ const getActive = (
   }
 };
 
-const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
+const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize }) => {
   const [selection, setSelection] = useState<Selection>({
     unstagedIndex: 0,
     stagedIndex: 0,
@@ -105,7 +106,9 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
         >
           <FlexCard
             title="Unstaged changes"
-            content={<FileList files={unstagedFiles} onFocus={unstagedListFocused} />}
+            content={
+              <FileList files={unstagedFiles} onFocus={unstagedListFocused} fontSize={fontSize} />
+            }
           />
         </CustomSelectedIndexProvider>
       }
@@ -117,7 +120,9 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
         >
           <FlexCard
             title="Staged changes"
-            content={<FileList files={stat.stagedFiles} onFocus={stagedListFocused} />}
+            content={
+              <FileList files={stat.stagedFiles} onFocus={stagedListFocused} fontSize={fontSize} />
+            }
           />
         </CustomSelectedIndexProvider>
       }

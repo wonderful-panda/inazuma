@@ -13,11 +13,12 @@ import { CommitLogItems } from "@/store/repository";
 import { useSelectedIndex, useSelectedIndexMethods } from "@/hooks/useSelectedIndex";
 import { serializeError } from "@/util";
 
-const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: CommitLogItems }> = ({
-  active,
-  repoPath,
-  log
-}) => {
+const CommitLogInner: React.VFC<{
+  active: boolean;
+  repoPath: string;
+  log: CommitLogItems;
+  fontSize: FontSize;
+}> = ({ active, repoPath, log, fontSize }) => {
   const dispatch = useDispatch();
   const [logDetail, setLogDetail] = useState<LogDetail | undefined>(undefined);
   const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
@@ -78,14 +79,19 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
       return (
         <div className="flex flex-1 overflow-hidden m-2">
           {logDetail === undefined || logDetail.type === "commit" ? (
-            <CommitDetail commit={logDetail} refs={currentRefs} orientation={orientation} />
+            <CommitDetail
+              commit={logDetail}
+              refs={currentRefs}
+              orientation={orientation}
+              fontSize={fontSize}
+            />
           ) : (
-            <WorkingTree stat={logDetail} orientation={orientation} />
+            <WorkingTree stat={logDetail} orientation={orientation} fontSize={fontSize} />
           )}
         </div>
       );
     },
-    [currentRefs, logDetail]
+    [currentRefs, logDetail, fontSize]
   );
 
   return (
@@ -99,7 +105,7 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
       secondPanelMinSize="20%"
       first={
         <div className="flex flex-1 overflow-hidden m-2">
-          <CommitList {...log} />
+          <CommitList {...log} fontSize={fontSize} />
         </div>
       }
       second={detail}
@@ -110,12 +116,13 @@ const CommitLogInner: React.VFC<{ active: boolean; repoPath: string; log: Commit
 const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
   const repoPath = useSelector((state) => state.repository.path);
   const log = useSelector((state) => state.repository.log);
+  const fontSize = useSelector((state) => state.persist.config.fontSize);
   if (!repoPath || !log) {
     return <></>;
   }
   return (
     <SelectedIndexProvider itemsCount={log.commits.length} initialValue={0}>
-      <CommitLogInner active={active} repoPath={repoPath} log={log} />
+      <CommitLogInner active={active} repoPath={repoPath} log={log} fontSize={fontSize} />
     </SelectedIndexProvider>
   );
 };

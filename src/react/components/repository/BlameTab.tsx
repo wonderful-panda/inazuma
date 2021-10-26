@@ -13,6 +13,7 @@ setupMonaco();
 export interface BlamePanelProps {
   blame: Blame;
   path: string;
+  fontSize: number;
   selectedCommitId: string | undefined;
   onUpdateSelectedCommitId: (value: string | undefined) => void;
 }
@@ -20,6 +21,7 @@ export interface BlamePanelProps {
 const BlamePanel: React.VFC<BlamePanelProps> = ({
   blame,
   path,
+  fontSize,
   selectedCommitId,
   onUpdateSelectedCommitId
 }) => {
@@ -42,6 +44,7 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({
       <BlameViewer
         blame={blame}
         language={language}
+        fontSize={fontSize}
         selectedCommitId={selectedCommitId}
         onUpdateSelectedcommitId={onUpdateSelectedCommitId}
         onHoveredCommitIdChanged={onHoveredCommitIdChanged}
@@ -56,9 +59,10 @@ export interface BlameTabProps {
   path: string;
   sha: string;
   refs: Refs | undefined;
+  fontSize: FontSize;
 }
 
-const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
+const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs, fontSize }) => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [blame, setBlame] = useState<Blame | undefined>(undefined);
   const selectedCommitId = useMemo(() => {
@@ -67,6 +71,8 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
     }
     return blame.commits[selectedIndex]?.id;
   }, [blame, selectedIndex]);
+
+  console.log("BlameTab", fontSize);
 
   const onUpdateSelectedCommitId = useCallback(
     (value: string | undefined) => {
@@ -101,13 +107,14 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
           value={selectedIndex}
           setValue={setSelectedIndex}
         >
-          <FileCommitList commits={blame.commits} refs={refs} />
+          <FileCommitList commits={blame.commits} refs={refs} fontSize={fontSize} />
         </CustomSelectedIndexProvider>
       }
       second={
         <BlamePanel
           blame={blame}
           path={path}
+          fontSize={fontSize === "medium" ? 15 : 12}
           selectedCommitId={selectedCommitId}
           onUpdateSelectedCommitId={onUpdateSelectedCommitId}
         />

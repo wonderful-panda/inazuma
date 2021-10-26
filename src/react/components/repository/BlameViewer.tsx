@@ -55,6 +55,7 @@ const useStyles = makeStyles({
 
 export interface BlameViewerProps {
   language: string;
+  fontSize: number;
   blame: Blame;
   selectedCommitId: string | undefined;
   onUpdateSelectedcommitId: (value: string | undefined) => void;
@@ -93,7 +94,7 @@ const selectedCommitDecorationOptions: IModelDecorationOptions = {
   }
 };
 
-const createEditorOptions = (blame: Blame): IEditorConstructionOptions => {
+const createEditorOptions = (blame: Blame, fontSize: number): IEditorConstructionOptions => {
   const dateMap: Record<string, string> = blame.commits.reduce((prev, cur) => {
     prev[cur.id] = formatDateL(cur.date);
     return prev;
@@ -105,7 +106,7 @@ const createEditorOptions = (blame: Blame): IEditorConstructionOptions => {
     minimap: { enabled: false },
     selectOnLineNumbers: false,
     contextmenu: false,
-    fontSize: 15,
+    fontSize,
     lineNumbersMinChars: blame.commitIds.length.toString().length + 22,
     lineNumbers: (lineno: number) => {
       const id = blame.commitIds[lineno - 1];
@@ -128,6 +129,7 @@ const getHunkBorderLineNumbers = (blame: Blame) => {
 const BlameViewer: React.VFC<BlameViewerProps> = ({
   language,
   blame,
+  fontSize,
   selectedCommitId,
   onUpdateSelectedcommitId,
   onHoveredCommitIdChanged
@@ -138,7 +140,10 @@ const BlameViewer: React.VFC<BlameViewerProps> = ({
   const onEditorMounted = useCallback((editor: IStandaloneCodeEditor) => {
     setEditor(editor);
   }, []);
-  const options = useMemo<IEditorConstructionOptions>(() => createEditorOptions(blame), [blame]);
+  const options = useMemo<IEditorConstructionOptions>(
+    () => createEditorOptions(blame, fontSize),
+    [blame, fontSize]
+  );
 
   useEffect(() => {
     onHoveredCommitIdChanged?.(hoveredCommitId);

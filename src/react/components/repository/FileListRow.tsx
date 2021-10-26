@@ -4,12 +4,10 @@ import { memo } from "react";
 import FileStatusIcon from "./FileStatusIcon";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 
-export const ROW_HEIGHT = 48;
-const ROW_HEIGHT_CLASS = "h-[48px]";
-
 export interface FileListRowProps {
   file: FileEntry;
   index: number;
+  height: number;
 }
 
 const getFileType = (item: FileEntry) => {
@@ -53,16 +51,16 @@ const OldPath: React.VFC<{ file: FileEntry }> = ({ file }) =>
     <></>
   );
 
-const FileListRow: React.VFC<FileListRowProps> = ({ file, index }) => {
+const FileListRow: React.VFC<FileListRowProps> = ({ file, index, height }) => {
   const selectedIndex = useSelectedIndex();
   return (
     <div
       className={classNames(
         "flex overflow-hidden box-border cursor-pointer py-1",
-        ROW_HEIGHT_CLASS,
         "border-b border-solid border-highlight",
         index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
+      style={{ height }}
     >
       <div className="mx-2 my-auto">
         <FileStatusIcon statusCode={file.statusCode} />
