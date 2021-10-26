@@ -5,7 +5,7 @@
   "author": "Iwata Hidetaka",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf dist out node_modules/.cache src/react/tailwind.css",
+    "clean": "rimraf dist out node_modules/.cache src/react/tailwind.css src/rust-backend/native/target",
     "format": "prettier --write \"src/{react,browser}/**/*.{ts,tsx,js}\"",
     "lint": "eslint src/{react,browser}/**/*.{ts,tsx}",
     "typecheck:react": "tsc -p src/react/tsconfig.json --noEmit",
