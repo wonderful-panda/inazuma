@@ -164,6 +164,7 @@ const PreferenceDialogInner: React.ForwardRefRenderFunction<DialogMethods, Prefe
           {
             text: "Save",
             color: "primary",
+            default: true,
             onClick: handleSave
           }
         ]}

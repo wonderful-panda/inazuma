@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import { Icon } from "@iconify/react";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
-import { ComponentProps, forwardRef, useCallback } from "react";
+import { ComponentProps, forwardRef, KeyboardEvent, useCallback, useMemo } from "react";
 
 export interface DialogMethods {
   open: () => void;
@@ -20,6 +20,7 @@ export interface DialogActionHandler {
   text: string;
   color?: ComponentProps<typeof Button>["color"];
   onClick: () => void;
+  default?: boolean;
 }
 
 export interface FullscreenDialogProps {
@@ -36,11 +37,23 @@ const Transition = forwardRef(TransitionInner);
 
 export const FullscreenDialog: React.FC<FullscreenDialogProps> = (props) => {
   const handleClose = useCallback(() => props.setOpened(false), []);
+  const handleEnter = useMemo(() => {
+    const defaultAction = props.actions?.find((a) => a.default);
+    if (!defaultAction) {
+      return undefined;
+    }
+    return (e: KeyboardEvent) => {
+      if (e.code === "Enter") {
+        defaultAction.onClick();
+      }
+    };
+  }, [props.actions]);
   return (
     <Dialog
       fullScreen
       open={props.isOpened}
       onClose={handleClose}
+      onKeyPress={handleEnter}
       TransitionComponent={Transition}
       transitionDuration={200}
     >
