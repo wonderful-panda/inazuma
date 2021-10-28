@@ -114,10 +114,18 @@ const VirtualListInner = <T extends unknown>(
     },
     [items, getItemKey, handleRowClick, handleRowDoubleClick, children]
   );
+  const itemKey = useCallback(
+    (index: number, data: unknown) => {
+      return getItemKey((data as T[])[index]);
+    },
+    [getItemKey]
+  );
 
   const props = {
     ref: listRef,
     itemCount: items.length,
+    itemData: items,
+    itemKey,
     children: renderRow,
     overscanCount: 8
   };
