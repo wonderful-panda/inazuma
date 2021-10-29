@@ -29,6 +29,7 @@ export interface VirtualListProps<T> extends VirtualListEvents<T> {
   getItemKey: (item: T) => string;
   tabIndex?: number;
   className?: string;
+  extraKeyboardHandler?: Record<string, (event: React.KeyboardEvent) => void>;
   children: (props: { index: number; item: T }) => React.ReactNode;
 }
 
@@ -61,6 +62,7 @@ const VirtualListInner = <T extends unknown>(
     getItemKey,
     className,
     tabIndex = 0,
+    extraKeyboardHandler,
     children,
     onRowClick: onRowClick_,
     onRowDoubleClick,
@@ -134,6 +136,7 @@ const VirtualListInner = <T extends unknown>(
       ref={wrapperRef}
       className={classNames("flex flex-1 p-1", className)}
       tabIndex={tabIndex}
+      extraHandlers={extraKeyboardHandler}
       onFocus={onFocus}
       onBlur={onBlur}
     >
