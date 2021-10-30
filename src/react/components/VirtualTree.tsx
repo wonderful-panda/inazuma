@@ -123,7 +123,7 @@ const VirtualTreeInner = <T extends unknown>(
         toggleExpand={toggleExpand}
       />
     ),
-    [renderRow]
+    [renderRow, itemSize, toggleExpand]
   );
   const extraKeyboardHandlers = useMemo(() => {
     return {
