@@ -11,6 +11,8 @@ export interface CommitListProps {
   onRowClick?: (event: React.MouseEvent, index: number, item: Commit) => void;
 }
 
+const getCommitListKey = (item: Commit) => item.id;
+
 let nextId = 0;
 
 const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
@@ -19,7 +21,6 @@ const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListP
 ) => {
   const rowHeight = fontSize === "medium" ? 52 : 46;
   const instanceId = useMemo(() => (nextId++).toString(), []);
-  const getItemKey = useCallback((item: Commit) => item.id, []);
   const renderRow = useCallback(
     ({ index, item }: { index: number; item: Commit }) => {
       return (
@@ -41,7 +42,7 @@ const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListP
       ref={ref}
       items={commits}
       itemSize={rowHeight}
-      getItemKey={getItemKey}
+      getItemKey={getCommitListKey}
       onRowClick={onRowClick}
     >
       {renderRow}

@@ -10,6 +10,8 @@ export interface FileListProps extends VirtualListEvents<FileEntry> {
   files: FileEntry[];
 }
 
+const getFileListKey = (item: FileEntry) => `${item.path}:${item.statusCode}`;
+
 export const useFileListRowEventHandler = (command: FileCommand, commit: DagNode | undefined) => {
   const dispatch = useDispatch();
   return useCallback(
@@ -27,7 +29,6 @@ const FileList: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps
   { files, fontSize, ...rest },
   ref
 ) => {
-  const getItemKey = useCallback((item: FileEntry) => `${item.path}:${item.statusCode}`, []);
   const rowHeight = fontSize === "medium" ? 48 : 40;
   const renderRow = useCallback(
     ({ index, item }: { index: number; item: FileEntry }) => {
@@ -40,7 +41,7 @@ const FileList: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps
       ref={ref}
       items={files}
       itemSize={rowHeight}
-      getItemKey={getItemKey}
+      getItemKey={getFileListKey}
       {...rest}
     >
       {renderRow}

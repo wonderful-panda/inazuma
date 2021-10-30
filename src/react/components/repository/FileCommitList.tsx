@@ -17,6 +17,8 @@ export const getRowHeight = (commit: FileCommit, fileSize: FontSize) => {
   }
 };
 
+export const getFileCommitListKey = (item: FileCommit) => item.id;
+
 const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCommitListProps> = (
   { commits, refs, fontSize, onRowClick },
   ref
@@ -34,7 +36,6 @@ const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCom
     ),
     [refs, fontSize]
   );
-  const getItemKey = useCallback((item: FileCommit) => item.id, []);
   const rowHeight = useCallback(
     (index: number) => {
       return getRowHeight(commits[index], fontSize);
@@ -46,7 +47,7 @@ const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCom
       ref={ref}
       items={commits}
       itemSize={rowHeight}
-      getItemKey={getItemKey}
+      getItemKey={getFileCommitListKey}
       onRowClick={onRowClick}
     >
       {renderRow}
