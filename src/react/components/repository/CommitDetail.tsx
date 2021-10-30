@@ -1,5 +1,5 @@
 import { Button } from "@material-ui/core";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { Icon } from "@iconify/react";
 import GitHash from "../GitHash";
 import SplitterPanel from "../PersistSplitterPanel";
@@ -10,6 +10,8 @@ import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import FileList, { useFileListRowEventHandler } from "./FileList";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
 import { diffWithParent } from "@/commands/diff";
+import { useDispatch } from "@/store";
+import showLsTree from "@/store/thunk/showLsTree";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -22,6 +24,7 @@ const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => 
   if (!commit) {
     return <FlexCard />;
   }
+  const dispatch = useDispatch();
 
   const content = (
     <>
@@ -51,12 +54,17 @@ const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => 
       )}
     </>
   );
+  const showSourceTree_ = useCallback(() => {
+    dispatch(showLsTree(commit));
+  }, [commit]);
   return (
     <FlexCard
       content={content}
       actions={
         <>
-          <Button disabled={!commit}>Browse source</Button>
+          <Button disabled={!commit} onClick={showSourceTree_}>
+            Browse source
+          </Button>
         </>
       }
     />
