@@ -1,26 +1,17 @@
 import path from "path";
 import reactRefresh from "@vitejs/plugin-react-refresh";
+import reactJsx from "vite-react-jsx";
 import { defineConfig } from "vite";
 
 export default defineConfig({
   root: "./src/react",
   base: "./",
-  plugins: [reactRefresh()],
-  esbuild: {
-    jsxInject: "import React from 'react';"
-  },
+  plugins: [reactJsx(), reactRefresh()],
   build: {
     sourcemap: "inline",
     outDir: "../../dist/renderer"
   },
   resolve: {
     alias: [{ find: "@", replacement: path.resolve(__dirname, "./src/react") }]
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      plugins: [
-        /* resolveFixup */
-      ]
-    }
   }
 });
