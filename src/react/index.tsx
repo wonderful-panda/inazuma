@@ -1,5 +1,5 @@
 import "xterm/css/xterm.css";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import Home from "./components/home";
 import { createTheme, ThemeProvider } from "@material-ui/core";
@@ -22,8 +22,9 @@ import Loading from "./components/Loading";
 import { SHOW_ERROR } from "./store/misc";
 import { serializeError } from "./util";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
+import lazyWithPreload from "./components/lazyWithPreload";
 
-const RepositoryPage = lazy(() => import("./components/repository"));
+const RepositoryPage = lazyWithPreload(() => import("./components/repository"));
 
 const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
 const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");
