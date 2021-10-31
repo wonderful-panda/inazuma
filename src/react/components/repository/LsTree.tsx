@@ -1,25 +1,21 @@
-import browserApi from "@/browserApi";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import { useDispatch } from "@/store";
-import { SHOW_ERROR } from "@/store/misc";
-import { sortTreeInplace } from "@/tree";
-import { getFileName, serializeError } from "@/util";
+import { getFileName } from "@/util";
 import classNames from "classnames";
-import { useCallback, useEffect, useState } from "react";
-import Loading from "../Loading";
-import VirtualTree from "../VirtualTree";
+import { forwardRef, useCallback } from "react";
+import VirtualTree, { VirtualTreeMethods } from "../VirtualTree";
 
-export interface SourceTreeProps {
-  repoPath: string;
-  sha: string;
+export interface LsTreeProps {
+  entries: readonly LstreeEntry[];
   fontSize: FontSize;
 }
 
 type Data = LstreeEntry["data"];
 
+export type LsTreeMethods = VirtualTreeMethods<Data>;
+
 const getItemKey = (item: Data) => item.path;
 
-const SourceTreeRow: React.VFC<{ item: LstreeEntry; index: number }> = ({ item, index }) => {
+const LsTreeRow: React.VFC<{ item: LstreeEntry; index: number }> = ({ item, index }) => {
   const selectedIndex = useSelectedIndex();
   return (
     <div
@@ -33,41 +29,24 @@ const SourceTreeRow: React.VFC<{ item: LstreeEntry; index: number }> = ({ item, 
   );
 };
 
-const SourceTree: React.VFC<SourceTreeProps> = ({ repoPath, sha, fontSize }) => {
-  const [entries, setEntries] = useState<LstreeEntry[]>([]);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    browserApi
-      .getTree({ repoPath, sha })
-      .then((entries) => {
-        sortTreeInplace(entries, (a, b) => {
-          if (a.data.type !== b.data.type) {
-            return a.data.type === "tree" ? -1 : 1;
-          } else {
-            return a.data.path.localeCompare(b.data.path);
-          }
-        });
-        setEntries(entries);
-      })
-      .catch((e) => {
-        dispatch(SHOW_ERROR({ error: serializeError(e) }));
-      });
-  }, [repoPath, sha, dispatch]);
+const LsTree: React.ForwardRefRenderFunction<LsTreeMethods, LsTreeProps> = (
+  { entries, fontSize },
+  ref
+) => {
   const renderRow = useCallback(
-    (item: LstreeEntry, index: number) => <SourceTreeRow item={item} index={index} />,
+    (item: LstreeEntry, index: number) => <LsTreeRow item={item} index={index} />,
     []
   );
-  return entries ? (
+  return (
     <VirtualTree<Data>
+      ref={ref}
       className="flex-1"
       rootItems={entries}
       getItemKey={getItemKey}
       itemSize={fontSize === "medium" ? 32 : 24}
       renderRow={renderRow}
     />
-  ) : (
-    <Loading open />
   );
 };
 
-export default SourceTree;
+export default forwardRef(LsTree);

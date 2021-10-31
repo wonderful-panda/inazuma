@@ -10,7 +10,7 @@ import {
 } from "react";
 import { CustomSelectedIndexProvider } from "@/context/SelectedIndexContext";
 import VirtualList, { VirtualListEvents } from "./VirtualList";
-import useVirtualTreeRecucer from "./VirtualTreeReducer";
+import useVirtualTreeReducer from "./VirtualTreeReducer";
 
 export interface VirtualTreeMethods<T> {
   expand: (item: TreeItem<T>) => void;
@@ -20,7 +20,7 @@ export interface VirtualTreeMethods<T> {
 }
 
 export interface VirtualTreeProps<T> extends VirtualListEvents<VisibleItem<T>> {
-  rootItems: TreeItem<T>[];
+  rootItems: readonly TreeItem<T>[];
   itemSize: number;
   getItemKey: (data: T) => string;
   renderRow: (item: TreeItem<T>, index: number, expanded: boolean) => React.ReactNode;
@@ -85,7 +85,7 @@ const VirtualTreeInner = <T extends unknown>(
   { rootItems, itemSize, getItemKey, renderRow, ...rest }: VirtualTreeProps<T>,
   ref: React.ForwardedRef<VirtualTreeMethods<T>>
 ) => {
-  const [state, dispatch] = useVirtualTreeRecucer<T>();
+  const [state, dispatch] = useVirtualTreeReducer<T>();
   useLayoutEffect(() => {
     dispatch({ type: "reset", payload: { items: rootItems, getItemKey } });
   }, [rootItems, getItemKey, dispatch]);
@@ -150,7 +150,9 @@ const VirtualTreeInner = <T extends unknown>(
         if (vitem.item.children) {
           if (vitem.expanded) {
             // select first child
-            dispatch({ type: "setSelectedIndex", payload: (v) => v + 1 });
+            if (vitem.item.children.length > 0) {
+              dispatch({ type: "setSelectedIndex", payload: (v) => v + 1 });
+            }
           } else {
             // expand
             dispatch({ type: "expandItem", payload: vitem.item });

@@ -19,7 +19,7 @@ import TabContainer, { TabContainerProps } from "../TabContainer";
 import CommitLog from "./CommitLog";
 
 const BlameTab = lazyWithPreload(() => import("./BlameTab"));
-const SourceTree = lazyWithPreload(() => import("./LsTree"));
+const LsTreeTab = lazyWithPreload(() => import("./LsTreeTab"));
 
 const RepositoryPage: React.VFC = () => {
   const dispatch = useDispatch();
@@ -41,7 +41,7 @@ const RepositoryPage: React.VFC = () => {
         case "file":
           return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} fontSize={fontSize} />;
         case "tree":
-          return <SourceTree repoPath={repoPath} sha={tab.payload.sha} fontSize={fontSize} />;
+          return <LsTreeTab repoPath={repoPath} sha={tab.payload.sha} fontSize={fontSize} />;
         default:
           assertNever(tab);
           break;
