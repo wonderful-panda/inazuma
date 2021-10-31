@@ -15,7 +15,7 @@ const showLsTree = (commit: DagNode) => {
         ADD_TAB({
           type: "tree",
           id: `tree:${commit.id}`,
-          title: `$TREE @ ${shortHash(commit.id)}`,
+          title: `TREE @ ${shortHash(commit.id)}`,
           payload: { sha: commit.id },
           closable: true
         })

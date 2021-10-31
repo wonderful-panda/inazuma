@@ -20,7 +20,7 @@ const LsTreeRow: React.VFC<{ item: LstreeEntry; index: number }> = ({ item, inde
   return (
     <div
       className={classNames(
-        "flex-1 min-h-full flex items-center px-2",
+        "flex-1 min-h-full flex items-center px-2 cursor-default",
         index === selectedIndex && "bg-highlight"
       )}
     >
