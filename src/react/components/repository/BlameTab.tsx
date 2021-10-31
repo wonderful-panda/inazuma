@@ -93,7 +93,7 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs, fontSiz
     browserApi.getBlame({ repoPath, relPath: path, sha: sha }).then((blame) => {
       setBlame(blame);
     });
-  }, [path, sha]);
+  }, [repoPath, path, sha]);
   return !blame ? (
     <Loading open />
   ) : (

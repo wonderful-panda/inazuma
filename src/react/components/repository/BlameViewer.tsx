@@ -77,7 +77,7 @@ const useDecorationEffect = (
     return () => {
       editor.deltaDecorations(decorationIds, []);
     };
-  }, [!!editor, lineNumbers, options]);
+  }, [editor, lineNumbers, options]);
 };
 
 const hunkBorderDecorationOptions: IModelDecorationOptions = {
@@ -145,6 +145,10 @@ const BlameViewer: React.VFC<BlameViewerProps> = ({
     [blame, fontSize]
   );
 
+  const onResize = useCallback(() => {
+    editor?.layout();
+  }, [editor]);
+
   useEffect(() => {
     onHoveredCommitIdChanged?.(hoveredCommitId);
   }, [onHoveredCommitIdChanged, hoveredCommitId]);
@@ -159,10 +163,6 @@ const BlameViewer: React.VFC<BlameViewerProps> = ({
   const onMouseLeave = useCallback(() => {
     setHoveredCommitId(undefined);
   }, []);
-
-  const onResize = useCallback(() => {
-    editor?.layout();
-  }, [!!editor]);
 
   const onMouseDown = useCallback(
     (e: IEditorMouseEvent) => {
@@ -184,19 +184,19 @@ const BlameViewer: React.VFC<BlameViewerProps> = ({
   );
 
   useEffect(() => {
-    if (!editor) {
-      return;
-    }
-    const cleanup: monaco.IDisposable[] = [];
-    cleanup.push(editor.onMouseDown(onMouseDown));
-    cleanup.push(editor.onMouseMove(onMouseMove));
-    cleanup.push(editor.onMouseLeave(onMouseLeave));
-    return () => {
-      while (cleanup.length > 0) {
-        cleanup.pop()?.dispose();
-      }
-    };
-  }, [!!editor]);
+    const disposable = editor?.onMouseDown(onMouseDown);
+    return () => disposable?.dispose();
+  }, [editor, onMouseDown]);
+
+  useEffect(() => {
+    const disposable = editor?.onMouseMove(onMouseMove);
+    return () => disposable?.dispose();
+  }, [editor, onMouseMove]);
+
+  useEffect(() => {
+    const disposable = editor?.onMouseLeave(onMouseLeave);
+    return () => disposable?.dispose();
+  }, [editor, onMouseLeave]);
 
   const hunkBorderLineNumbers = useMemo(() => getHunkBorderLineNumbers(blame), [blame]);
   useDecorationEffect(editor, hunkBorderLineNumbers, hunkBorderDecorationOptions);

@@ -83,10 +83,10 @@ const TabPage = <T extends unknown>(p: {
 }) => {
   const [activated, setActivated] = useState(false);
   useLayoutEffect(() => {
-    if (p.active) {
+    if (p.active && !activated) {
       setActivated(true);
     }
-  }, [p.active || activated]);
+  }, [p.active, activated]);
   if (activated) {
     return <>{p.renderContent(p.tab, p.active)}</>;
   } else {

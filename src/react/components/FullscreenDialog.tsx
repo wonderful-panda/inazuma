@@ -35,10 +35,16 @@ const TransitionInner = (props: TransitionProps, ref: any) => (
 );
 const Transition = forwardRef(TransitionInner);
 
-export const FullscreenDialog: React.FC<FullscreenDialogProps> = (props) => {
-  const handleClose = useCallback(() => props.setOpened(false), []);
+export const FullscreenDialog: React.FC<FullscreenDialogProps> = ({
+  title,
+  actions,
+  isOpened,
+  setOpened,
+  children
+}) => {
+  const handleClose = useCallback(() => setOpened(false), [setOpened]);
   const handleEnter = useMemo(() => {
-    const defaultAction = props.actions?.find((a) => a.default);
+    const defaultAction = actions?.find((a) => a.default);
     if (!defaultAction) {
       return undefined;
     }
@@ -47,25 +53,25 @@ export const FullscreenDialog: React.FC<FullscreenDialogProps> = (props) => {
         defaultAction.onClick();
       }
     };
-  }, [props.actions]);
+  }, [actions]);
   return (
     <Dialog
       fullScreen
-      open={props.isOpened}
+      open={isOpened}
       onClose={handleClose}
       onKeyPress={handleEnter}
       TransitionComponent={Transition}
       transitionDuration={200}
     >
       <DialogTitle>
-        {props.title}
+        {title}
         <IconButton className="absolute top-2 right-2" onClick={handleClose}>
           <Icon icon="mdi:close" />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers>{props.children}</DialogContent>
+      <DialogContent dividers>{children}</DialogContent>
       <DialogActions className="pr-4">
-        {props.actions?.map((a, i) => (
+        {actions?.map((a, i) => (
           <Button key={i} className="text-xl" size="large" onClick={a.onClick} color={a.color}>
             {a.text}
           </Button>

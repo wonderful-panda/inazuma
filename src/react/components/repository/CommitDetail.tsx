@@ -21,11 +21,15 @@ export interface CommitDetailProps {
 }
 
 const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => {
+  const dispatch = useDispatch();
+  const showSourceTree_ = useCallback(() => {
+    if (commit) {
+      dispatch(showLsTree(commit));
+    }
+  }, [commit, dispatch]);
   if (!commit) {
     return <FlexCard />;
   }
-  const dispatch = useDispatch();
-
   const content = (
     <>
       <div className="border-b mb-1 border-solid border-current text-2xl">{commit.summary}</div>
@@ -54,9 +58,6 @@ const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => 
       )}
     </>
   );
-  const showSourceTree_ = useCallback(() => {
-    dispatch(showLsTree(commit));
-  }, [commit]);
   return (
     <FlexCard
       content={content}

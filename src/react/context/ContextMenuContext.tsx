@@ -45,10 +45,7 @@ export const ContextMenuProvider: React.FC = ({ children }) => {
   );
   const handleClose = useCallback(() => setState(undefined), []);
   const menuItems = useMemo(() => {
-    if (!state) {
-      return [];
-    }
-    return state.menus.map((m) => {
+    return (state?.menus || []).map((m) => {
       const onClick = () => {
         if (m.disabled) {
           return;
@@ -63,7 +60,7 @@ export const ContextMenuProvider: React.FC = ({ children }) => {
         </MenuItem>
       );
     });
-  }, [state?.menus]);
+  }, [state?.menus, handleClose]);
   return (
     <ContextMenuContext.Provider value={methods}>
       {children}

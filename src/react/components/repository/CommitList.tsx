@@ -35,7 +35,7 @@ const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListP
         />
       );
     },
-    [commits, graph, refs, rowHeight]
+    [graph, refs, rowHeight, instanceId]
   );
   return (
     <VirtualList<Commit>

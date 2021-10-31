@@ -57,7 +57,7 @@ const Alert: React.VFC = () => {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<AlertType>("info");
   const [message, setMessage] = useState("");
-  const handleClose = useCallback(() => dispatch(HIDE_ALERT()), []);
+  const handleClose = useCallback(() => dispatch(HIDE_ALERT()), [dispatch]);
   useEffect(() => {
     setOpen(false);
     if (!alert) {
@@ -97,7 +97,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
     return () => {
       commandGroup.unregister(groupName);
     };
-  }, []);
+  }, [commandGroup]);
   const openDrawer = useCallback(() => {
     setDrawerOpened(true);
   }, []);
@@ -105,9 +105,12 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
     setDrawerOpened(false);
   }, []);
   const config = useSelector((state) => state.persist.config);
-  const onConfigChange = useCallback((newConfig: Config) => {
-    dispatch(UPDATE_CONFIG(newConfig));
-  }, []);
+  const onConfigChange = useCallback(
+    (newConfig: Config) => {
+      dispatch(UPDATE_CONFIG(newConfig));
+    },
+    [dispatch]
+  );
   const preferenceDialogRef = useRef({} as ComponentRef<typeof PreferenceDialog>);
   const aboutDialogRef = useRef({} as ComponentRef<typeof AboutDialog>);
 

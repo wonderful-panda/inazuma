@@ -5,7 +5,12 @@ module.exports = {
     node: true,
     es6: true
   },
-  extends: ["standard", "standard-jsx", "plugin:react/recommended"],
+  extends: [
+    "standard",
+    "standard-jsx",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
   plugins: ["@typescript-eslint/eslint-plugin"],
   parser: "@typescript-eslint/parser",
   parserOptions: {

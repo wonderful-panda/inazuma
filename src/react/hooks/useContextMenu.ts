@@ -24,7 +24,7 @@ export const useFileContextMenu = (
 
       show(event, menus);
     },
-    [commit]
+    [commit, show, dispatch]
   );
   return onFileContextMenu;
 };

@@ -29,11 +29,11 @@ const RepositoryPage: React.VFC = () => {
   const monospace = useSelector((state) => state.persist.config.fontFamily.monospace);
   const fontSize = useSelector((state) => state.persist.config.fontSize);
   const interactiveShell = useSelector((state) => state.persist.config.interactiveShell);
-  if (!repoPath || !tab) {
-    return <></>;
-  }
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
+      if (!repoPath || !tab) {
+        return <></>;
+      }
       switch (tab.type) {
         case "commits":
           return <CommitLog active={active} />;
@@ -48,10 +48,9 @@ const RepositoryPage: React.VFC = () => {
     },
     [repoPath, refs, fontSize]
   );
-
   const commandGroup = useCommandGroup();
-  const selectTab = useCallback((index: number) => dispatch(SELECT_TAB(index)), []);
-  const closeTab = useCallback((index?: number) => dispatch(REMOVE_TAB(index)), []);
+  const selectTab = useCallback((index: number) => dispatch(SELECT_TAB(index)), [dispatch]);
+  const closeTab = useCallback((index?: number) => dispatch(REMOVE_TAB(index)), [dispatch]);
   useEffect(() => {
     const groupName = "RepositoryPage";
     commandGroup.register({
@@ -82,8 +81,8 @@ const RepositoryPage: React.VFC = () => {
     return () => {
       commandGroup.unregister(groupName);
     };
-  }, []);
-  const hideInteractiveShell = useCallback(() => dispatch(HIDE_INTERACTIVE_SHELL()), []);
+  }, [closeTab, commandGroup, dispatch]);
+  const hideInteractiveShell = useCallback(() => dispatch(HIDE_INTERACTIVE_SHELL()), [dispatch]);
   const drawerItems: ActionItem[] = useMemo(
     () => [
       {
@@ -93,20 +92,24 @@ const RepositoryPage: React.VFC = () => {
         onClick: () => dispatch(CLOSE_REPOSITORY())
       }
     ],
-    []
+    [dispatch]
   );
+  const interactiveShellConfigured = !!interactiveShell;
   const titleBarActions: ActionItem[] = useMemo(
     () => [
       {
         key: "toggleInterativeShell",
         text: "Show / hide interactive shell",
         icon: "mdi:console",
-        disabled: !interactiveShell,
+        disabled: !interactiveShellConfigured,
         onClick: () => dispatch(TOGGLE_INTERACTIVE_SHELL())
       }
     ],
-    [!interactiveShell]
+    [interactiveShellConfigured, dispatch]
   );
+  if (!repoPath || !tab) {
+    return <></>;
+  }
   return (
     <MainWindow title={repoPath} drawerItems={drawerItems} titleBarActions={titleBarActions}>
       <SplitterPanel

@@ -88,7 +88,7 @@ const VirtualTreeInner = <T extends unknown>(
   const [state, dispatch] = useVirtualTreeRecucer<T>();
   useLayoutEffect(() => {
     dispatch({ type: "reset", payload: { items: rootItems, getItemKey } });
-  }, [rootItems, getItemKey]);
+  }, [rootItems, getItemKey, dispatch]);
 
   useImperativeHandle(ref, () => ({
     expand: (item) => dispatch({ type: "expandItem", payload: item }),
@@ -101,7 +101,7 @@ const VirtualTreeInner = <T extends unknown>(
     (item: TreeItem<T>) => {
       dispatch({ type: "toggleItem", payload: item });
     },
-    [getItemKey]
+    [dispatch]
   );
   const getItemKey_ = useCallback(
     (item: VisibleItem<T>) => getItemKey(item.item.data),
@@ -109,7 +109,7 @@ const VirtualTreeInner = <T extends unknown>(
   );
   const setSelectedIndex = useCallback(
     (payload: React.SetStateAction<number>) => dispatch({ type: "setSelectedIndex", payload }),
-    []
+    [dispatch]
   );
   const children = useCallback(
     ({ index, item: { item, expanded, level } }: { index: number; item: VisibleItem<T> }) => (
@@ -158,7 +158,7 @@ const VirtualTreeInner = <T extends unknown>(
         }
       }
     };
-  }, [state.selectedItem]);
+  }, [state.selectedItem, dispatch]);
 
   return (
     <CustomSelectedIndexProvider
@@ -170,10 +170,11 @@ const VirtualTreeInner = <T extends unknown>(
         items={state.visibleItems}
         itemSize={itemSize}
         getItemKey={getItemKey_}
-        children={children}
         extraKeyboardHandler={extraKeyboardHandlers}
         {...rest}
-      />
+      >
+        {children}
+      </VirtualList>
     </CustomSelectedIndexProvider>
   );
 };

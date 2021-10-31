@@ -45,7 +45,7 @@ const Alert: React.VFC<{
     } else {
       // keep type and message while closing.
     }
-  });
+  }, [props.open, props.type, props.message]);
   return (
     <Snackbar
       className="max-w-[95%]"

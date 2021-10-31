@@ -49,16 +49,16 @@ function gatherItemsInPath<T>(vitem: VisibleItem<T>): TreeItem<T>[] {
   return ret;
 }
 
-function* walkTree<T>(rootItems: readonly TreeItem<T>[]): Generator<TreeItem<T>> {
+function * walkTree<T>(rootItems: readonly TreeItem<T>[]): Generator<TreeItem<T>> {
   for (const item of rootItems) {
     yield item;
     if (item.children) {
-      yield* walkTree(item.children);
+      yield * walkTree(item.children);
     }
   }
 }
 
-function* gatherVisibleItems<T>(
+function * gatherVisibleItems<T>(
   getItemKey: (data: T) => string,
   level: number,
   parent: VisibleItem<T> | undefined,
@@ -71,7 +71,7 @@ function* gatherVisibleItems<T>(
       const vitem = { item, parent, level, expanded };
       yield vitem;
       if (expanded) {
-        yield* gatherVisibleItems(getItemKey, level + 1, vitem, item.children, expandedItems);
+        yield * gatherVisibleItems(getItemKey, level + 1, vitem, item.children, expandedItems);
       }
     } else {
       yield { item, parent, level, expanded: false };

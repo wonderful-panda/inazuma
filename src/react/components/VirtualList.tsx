@@ -38,7 +38,7 @@ export interface VirtualListMethods {
   scrollToItem: (index: number) => void;
 }
 
-const createRowEventHandler = <T extends unknown>(
+const useRowEventHandler = <T extends unknown>(
   items: readonly T[],
   handler?: (event: React.MouseEvent, index: number, item: T) => void
 ) => {
@@ -95,9 +95,9 @@ const VirtualListInner = <T extends unknown>(
     },
     [onRowClick_, selectedIndexMethods]
   );
-  const handleRowClick = createRowEventHandler(items, onRowClick);
-  const handleRowDoubleClick = createRowEventHandler(items, onRowDoubleClick);
-  const handleRowContextMenu = createRowEventHandler(items, onRowContextMenu);
+  const handleRowClick = useRowEventHandler(items, onRowClick);
+  const handleRowDoubleClick = useRowEventHandler(items, onRowDoubleClick);
+  const handleRowContextMenu = useRowEventHandler(items, onRowContextMenu);
   const renderRow = useCallback(
     ({ index, style }: { index: number; style: object }) => {
       const item = items[index];
@@ -114,7 +114,7 @@ const VirtualListInner = <T extends unknown>(
         </div>
       );
     },
-    [items, getItemKey, handleRowClick, handleRowDoubleClick, children]
+    [items, getItemKey, handleRowClick, handleRowDoubleClick, handleRowContextMenu, children]
   );
   const itemKey = useCallback(
     (index: number, data: unknown) => {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import SplitterPanel from "../PersistSplitterPanel";
 import CommitDetail from "./CommitDetail";
 import CommitList from "./CommitList";
@@ -52,26 +52,27 @@ const CommitLogInner: React.VFC<{
     return () => {
       commandGroup.unregister(groupName);
     };
-  }, [active, selectedIndexMethods]);
+  }, [active, selectedIndexMethods, commandGroup]);
 
-  const selectLog = useCallback(
-    debounce(async (index: number) => {
-      if (!repoPath && index < 0) {
-        return;
-      }
-      const sha = log.commits[index].id;
-      try {
-        setLogDetail(await browserApi.getLogDetail({ repoPath, sha }));
-        setCurrentRefs(log.refs.refsById[sha] || []);
-      } catch (error) {
-        dispatch(SHOW_ERROR({ error: serializeError(error) }));
-      }
-    }, 200),
-    [repoPath, log.commits, log.refs]
+  const selectLog = useMemo(
+    () =>
+      debounce(async (index: number) => {
+        if (!repoPath && index < 0) {
+          return;
+        }
+        const sha = log.commits[index].id;
+        try {
+          setLogDetail(await browserApi.getLogDetail({ repoPath, sha }));
+          setCurrentRefs(log.refs.refsById[sha] || []);
+        } catch (error) {
+          dispatch(SHOW_ERROR({ error: serializeError(error) }));
+        }
+      }, 200),
+    [repoPath, log.commits, log.refs, dispatch]
   );
   useEffect(() => {
     selectLog(selectedIndex);
-  }, [selectedIndex]);
+  }, [selectedIndex, selectLog]);
 
   const detail = useCallback(
     (direction: Direction) => {

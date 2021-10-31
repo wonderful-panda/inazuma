@@ -59,7 +59,7 @@ const KeyboardSelectionInner: React.ForwardRefRenderFunction<
         moveSelectedIndex(e);
       }
     },
-    [moveSelectedIndex]
+    [moveSelectedIndex, extraHandlers]
   );
   return (
     <div ref={divRef} className={className} tabIndex={tabIndex} onKeyDown={onKeyDown} {...rest}>

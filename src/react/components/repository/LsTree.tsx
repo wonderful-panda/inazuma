@@ -52,7 +52,7 @@ const SourceTree: React.VFC<SourceTreeProps> = ({ repoPath, sha, fontSize }) => 
       .catch((e) => {
         dispatch(SHOW_ERROR({ error: serializeError(e) }));
       });
-  }, [repoPath, sha]);
+  }, [repoPath, sha, dispatch]);
   const renderRow = useCallback(
     (item: LstreeEntry, index: number) => <SourceTreeRow item={item} index={index} />,
     []

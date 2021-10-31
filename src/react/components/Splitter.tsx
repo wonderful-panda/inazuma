@@ -68,7 +68,7 @@ const Splitter: React.VFC<SplitterProps> = ({
   );
   const handleUpdateDirection = useCallback(() => {
     onUpdateDirection?.(horiz ? "vert" : "horiz");
-  }, [horiz]);
+  }, [horiz, onUpdateDirection]);
   return (
     <div
       className={classNames(

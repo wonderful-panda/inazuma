@@ -13,7 +13,10 @@ const Home = () => {
   const commandGroup = useCommandGroup();
   const dispatch = useDispatch();
   const recentOpened = useSelector((state) => state.persist.env.recentOpenedRepositories);
-  const handleOpen = useCallback((repoPath: string) => dispatch(openRepository(repoPath)), []);
+  const handleOpen = useCallback(
+    (repoPath: string) => dispatch(openRepository(repoPath)),
+    [dispatch]
+  );
   const handleBrowseClick = useCallback(async () => {
     const options: Electron.OpenDialogOptions = {
       properties: ["openDirectory"]
@@ -26,7 +29,7 @@ const Home = () => {
 
   const removeRecentOpenedRepository = useCallback(
     (path) => dispatch(REMOVE_RECENT_OPENED_REPOSITORY(path)),
-    []
+    [dispatch]
   );
   useEffect(() => {
     const groupName = "Home";
@@ -49,7 +52,7 @@ const Home = () => {
     return () => {
       commandGroup.unregister(groupName);
     };
-  }, [recentOpened, handleOpen]);
+  }, [recentOpened, handleOpen, handleBrowseClick, commandGroup]);
 
   return (
     <MainWindow title="Inazuma">

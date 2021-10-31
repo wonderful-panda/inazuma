@@ -131,7 +131,7 @@ const App = () => {
       .finally(() => {
         setInitializing(false);
       });
-  }, []);
+  }, [dispatch]);
   const content = useMemo(() => {
     if (initializing) {
       return <Loading open />;

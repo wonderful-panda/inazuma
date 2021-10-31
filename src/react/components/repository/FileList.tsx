@@ -21,7 +21,7 @@ export const useFileListRowEventHandler = (command: FileCommand, commit: DagNode
       }
       executeFileCommand(command, dispatch, commit, item);
     },
-    [commit, command]
+    [commit, command, dispatch]
   );
 };
 

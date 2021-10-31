@@ -18,7 +18,7 @@ export const SelectedIndexMethodsContext = createContext<SelectedIndexMethods>({
   moveLast: () => {}
 });
 
-const createMethods = (
+const useMethods = (
   itemsCount: number,
   setter: React.Dispatch<React.SetStateAction<number>>
 ): SelectedIndexMethods => {
@@ -46,7 +46,7 @@ const createMethods = (
         }
       }
     }),
-    [itemsCount]
+    [itemsCount, setter]
   );
 };
 
@@ -56,7 +56,7 @@ export const SelectedIndexProvider: React.FC<{ itemsCount: number; initialValue?
   children
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(initialValue);
-  const methods = createMethods(itemsCount, setSelectedIndex);
+  const methods = useMethods(itemsCount, setSelectedIndex);
   return (
     <SelectedIndexContext.Provider value={selectedIndex}>
       <SelectedIndexMethodsContext.Provider value={methods}>
@@ -71,7 +71,7 @@ export const CustomSelectedIndexProvider: React.FC<{
   value: number;
   setValue: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ itemsCount, value, setValue, children }) => {
-  const handler = createMethods(itemsCount, setValue);
+  const handler = useMethods(itemsCount, setValue);
   return (
     <SelectedIndexContext.Provider value={value}>
       <SelectedIndexMethodsContext.Provider value={handler}>

@@ -34,7 +34,7 @@ export const PersistStateProvider: React.FC<{ storage: PartialStorage; prefix?: 
         const [value, setValue] = useState(defaultValue);
         useEffect(() => {
           storage.setItem(realKey, JSON.stringify(value));
-        }, [key, value]);
+        }, [realKey, value]);
         return [value, setValue];
       }
     }),

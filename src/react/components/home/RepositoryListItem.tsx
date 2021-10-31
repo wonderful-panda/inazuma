@@ -6,7 +6,7 @@ import {
   ListItemSecondaryAction,
   ListItemText
 } from "@material-ui/core";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 export interface RepositoryListItemProps {
   itemId: string;
@@ -29,9 +29,13 @@ export const RepositoryListItem: React.VFC<RepositoryListItemProps> = ({
   secondaryAction
 }) => {
   const onClick = useCallback(() => action(itemId), [action, itemId]);
-  const onSecondaryActionClick = secondaryAction
-    ? useCallback(() => secondaryAction?.action(itemId), [secondaryAction, itemId])
-    : undefined;
+  const onSecondaryActionClick = useMemo(() => {
+    if (secondaryAction) {
+      return () => secondaryAction?.action(itemId);
+    } else {
+      return undefined;
+    }
+  }, [secondaryAction, itemId]);
   return (
     <div className="group">
       <ListItem className="p-0" button dense onClick={onClick}>

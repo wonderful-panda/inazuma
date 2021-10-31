@@ -52,7 +52,7 @@ const InteractiveShellInner: React.VFC<InteractiveShellProps & { width: number; 
 
     useEffect(() => {
       fit();
-    }, [width, height]);
+    }, [width, height, fit]);
 
     const openShell = useCallback(async () => {
       if (shell.current) {
@@ -90,15 +90,7 @@ const InteractiveShellInner: React.VFC<InteractiveShellProps & { width: number; 
         dispatch(SHOW_ERROR({ error: serializeError(e) }));
         hide();
       }
-    }, [cmd, args, cwd, hide]);
-
-    const terminateShell = useCallback(() => {
-      if (!shell.current) {
-        return;
-      }
-      shell.current.ptyCommands.kill({});
-      shell.current = undefined;
-    }, []);
+    }, [cmd, args, cwd, hide, fontFamily, fontSize, dispatch]);
 
     useEffect(() => {
       if (open) {
@@ -106,10 +98,17 @@ const InteractiveShellInner: React.VFC<InteractiveShellProps & { width: number; 
         // don't terminate on cleanup.
         // keep shell instance during hidden.
       }
-    }, [open]);
+    }, [open, openShell]);
 
     useEffect(() => {
       // terminate shell when unmounted
+      const terminateShell = () => {
+        if (!shell.current) {
+          return;
+        }
+        shell.current.ptyCommands.kill({});
+        shell.current = undefined;
+      };
       return terminateShell;
     }, []);
 
