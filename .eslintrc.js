@@ -41,6 +41,8 @@ module.exports = {
     "react/jsx-indent": "off",
     "react/jsx-indent-props": "off",
     "multiline-ternary": "off",
+    "generator-star-spacing": "off",
+    "yield-star-spacing": "off",
 
     // other code style
     yoda: "off",
