@@ -2,31 +2,21 @@ import { throttled } from "@/util";
 import type React from "react";
 import { useMemo } from "react";
 
-export interface IndexNavigator {
+export interface ListItemSelector {
   set: React.Dispatch<React.SetStateAction<number>>;
   moveNext: () => void;
   movePrevious: () => void;
   moveFirst: () => void;
   moveLast: () => void;
-  handleKeyboardEvent: (event: React.KeyboardEvent) => boolean;
+  handleKeyDown: (event: React.KeyboardEvent) => boolean;
   handleRowClick: (event: React.MouseEvent, index: number) => void;
 }
 
-export const nullIndexNavigator: IndexNavigator = {
-  set: () => {},
-  moveNext: () => {},
-  movePrevious: () => {},
-  moveFirst: () => {},
-  moveLast: () => {},
-  handleKeyboardEvent: () => false,
-  handleRowClick: () => {}
-};
-
-const useIndexNavigator = (
+const useListItemSelector = (
   itemsCount: number,
   setValue: React.Dispatch<React.SetStateAction<number>>,
   extraKeyHandlers?: Record<string, () => void>
-): IndexNavigator => {
+): ListItemSelector => {
   return useMemo(() => {
     const moveNext = () => {
       if (0 < itemsCount) {
@@ -58,7 +48,7 @@ const useIndexNavigator = (
       },
       120
     );
-    const handleKeyboardEvent = (event: React.KeyboardEvent) => {
+    const handleKeyDown = (event: React.KeyboardEvent) => {
       const handler = (throttledHandler as Record<string, () => void>)[event.key];
       if (handler) {
         handler();
@@ -76,10 +66,10 @@ const useIndexNavigator = (
       movePrevious,
       moveFirst,
       moveLast,
-      handleKeyboardEvent,
+      handleKeyDown,
       handleRowClick
     };
   }, [itemsCount, setValue, extraKeyHandlers]);
 };
 
-export default useIndexNavigator;
+export default useListItemSelector;

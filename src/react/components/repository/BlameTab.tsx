@@ -1,6 +1,6 @@
 import browserApi from "@/browserApi";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import useIndexNavigator from "@/hooks/useIndexNavigator";
+import useListItemSelector from "@/hooks/useListItemSelector";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Loading from "../Loading";
@@ -74,7 +74,10 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs, fontSiz
     return blame.commits[selectedIndex]?.id;
   }, [blame, selectedIndex]);
 
-  const navi = useIndexNavigator(blame?.commits.length || 0, setSelectedIndex);
+  const { handleKeyDown, handleRowClick } = useListItemSelector(
+    blame?.commits.length || 0,
+    setSelectedIndex
+  );
   const listRef = useRef<VirtualListMethods>(null);
 
   const onUpdateSelectedCommitId = useCallback(
@@ -109,13 +112,13 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs, fontSiz
       initialDirection="horiz"
       first={
         <SelectedIndexProvider value={selectedIndex}>
-          <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={navi.handleKeyboardEvent}>
+          <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={handleKeyDown}>
             <FileCommitList
               ref={listRef}
               commits={blame.commits}
               refs={refs}
               fontSize={fontSize}
-              onRowClick={navi.handleRowClick}
+              onRowClick={handleRowClick}
             />
           </div>
         </SelectedIndexProvider>

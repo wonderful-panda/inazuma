@@ -1,11 +1,11 @@
 import { useCallback, useMemo } from "react";
-import useIndexNavigator, { IndexNavigator } from "./useIndexNavigator";
+import useListItemSelector, { ListItemSelector } from "./useListItemSelector";
 import { TreeModelDispatch, TreeModelState } from "./useTreeModel";
 
-const useTreeNavigator = <T>(
+const useTreeItemSelector = <T>(
   treeModelState: TreeModelState<T>,
   treeModelDispatch: TreeModelDispatch<T>
-): IndexNavigator => {
+): ListItemSelector => {
   const setSelectedIndex = useCallback(
     (value: React.SetStateAction<number>) => {
       treeModelDispatch({ type: "setSelectedIndex", payload: value });
@@ -19,7 +19,11 @@ const useTreeNavigator = <T>(
     }),
     [treeModelDispatch]
   );
-  return useIndexNavigator(treeModelState.visibleItems.length, setSelectedIndex, extraKeyHandlers);
+  return useListItemSelector(
+    treeModelState.visibleItems.length,
+    setSelectedIndex,
+    extraKeyHandlers
+  );
 };
 
-export default useTreeNavigator;
+export default useTreeItemSelector;

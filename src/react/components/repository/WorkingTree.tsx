@@ -1,5 +1,5 @@
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import useIndexNavigator from "@/hooks/useIndexNavigator";
+import useListItemSelector from "@/hooks/useListItemSelector";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FlexCard from "../FlexCard";
 import SplitterPanel from "../PersistSplitterPanel";
@@ -99,8 +99,8 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
       active: "staged"
     }));
   }, []);
-  const unstagedNavi = useIndexNavigator(unstagedFiles.length, setUnstagedIndex);
-  const stagedNavi = useIndexNavigator(stat.stagedFiles.length, setStagedIndex);
+  const unstagedSelector = useListItemSelector(unstagedFiles.length, setUnstagedIndex);
+  const stagedSelector = useListItemSelector(stat.stagedFiles.length, setStagedIndex);
   return (
     <SplitterPanel
       persistKey="repository/WorkingTree"
@@ -116,13 +116,13 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
                 className="flex flex-1 m-1 p-1"
                 onFocus={unstagedFocused}
                 tabIndex={0}
-                onKeyDown={unstagedNavi.handleKeyboardEvent}
+                onKeyDown={unstagedSelector.handleKeyDown}
               >
                 <FileList
                   ref={unstagedListRef}
                   files={unstagedFiles}
                   fontSize={fontSize}
-                  onRowClick={unstagedNavi.handleRowClick}
+                  onRowClick={unstagedSelector.handleRowClick}
                 />
               </div>
             </SelectedIndexProvider>
@@ -138,13 +138,13 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
                 className="flex flex-1 m-1 p-1"
                 onFocus={stagedFocused}
                 tabIndex={0}
-                onKeyDown={stagedNavi.handleKeyboardEvent}
+                onKeyDown={stagedSelector.handleKeyDown}
               >
                 <FileList
                   ref={stagedListRef}
                   files={stat.stagedFiles}
                   fontSize={fontSize}
-                  onRowClick={stagedNavi.handleRowClick}
+                  onRowClick={stagedSelector.handleRowClick}
                 />
               </div>
             }

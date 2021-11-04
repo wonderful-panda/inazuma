@@ -10,7 +10,7 @@ import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { SHOW_ERROR } from "@/store/misc";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { CommitLogItems } from "@/store/repository";
-import useIndexNavigator from "@/hooks/useIndexNavigator";
+import useListItemSelector from "@/hooks/useListItemSelector";
 import { serializeError } from "@/util";
 import { VirtualListMethods } from "../VirtualList";
 
@@ -25,7 +25,7 @@ const CommitLogInner: React.VFC<{
   const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
   const commandGroup = useCommandGroup();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const navigator = useIndexNavigator(log.commits.length, setSelectedIndex);
+  const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
   const listRef = useRef<VirtualListMethods>(null);
   useEffect(() => {
     if (!active) {
@@ -38,19 +38,19 @@ const CommitLogInner: React.VFC<{
         {
           name: "NextCommit",
           hotkey: "Ctrl+N",
-          handler: navigator.moveNext
+          handler: itemSelector.moveNext
         },
         {
           name: "PrevCommit",
           hotkey: "Ctrl+P",
-          handler: navigator.movePrevious
+          handler: itemSelector.movePrevious
         }
       ]
     });
     return () => {
       commandGroup.unregister(groupName);
     };
-  }, [active, navigator, commandGroup]);
+  }, [active, itemSelector, commandGroup]);
 
   const selectLog = useMemo(
     () =>
@@ -106,12 +106,12 @@ const CommitLogInner: React.VFC<{
       secondPanelMinSize="20%"
       first={
         <SelectedIndexProvider value={selectedIndex}>
-          <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={navigator.handleKeyboardEvent}>
+          <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={itemSelector.handleKeyDown}>
             <CommitList
               ref={listRef}
               {...log}
               fontSize={fontSize}
-              onRowClick={navigator.handleRowClick}
+              onRowClick={itemSelector.handleRowClick}
             />
           </div>
         </SelectedIndexProvider>

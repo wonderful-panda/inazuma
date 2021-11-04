@@ -12,7 +12,7 @@ import { useFileContextMenu } from "@/hooks/useContextMenu";
 import { diffWithParent } from "@/commands/diff";
 import { useDispatch } from "@/store";
 import showLsTree from "@/store/thunk/showLsTree";
-import useIndexNavigator from "@/hooks/useIndexNavigator";
+import useListItemSelector from "@/hooks/useListItemSelector";
 import { VirtualListMethods } from "../VirtualList";
 
 export interface CommitDetailProps {
@@ -79,7 +79,10 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
   const commit = props.commit;
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const listRef = useRef<VirtualListMethods>(null);
-  const navi = useIndexNavigator(commit?.files.length || 0, setSelectedIndex);
+  const { handleKeyDown, handleRowClick } = useListItemSelector(
+    commit?.files.length || 0,
+    setSelectedIndex
+  );
   useEffect(() => listRef.current?.scrollToItem(selectedIndex), [selectedIndex]);
   const onRowDoubleClick = useFileListRowEventHandler(diffWithParent, commit);
   const onRowContextMenu = useFileContextMenu(commit);
@@ -96,16 +99,12 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
           content={
             commit && (
               <SelectedIndexProvider value={selectedIndex}>
-                <div
-                  className="flex flex-1 m-1 p-1"
-                  tabIndex={0}
-                  onKeyDown={navi.handleKeyboardEvent}
-                >
+                <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={handleKeyDown}>
                   <FileList
                     ref={listRef}
                     files={commit.files}
                     fontSize={props.fontSize}
-                    onRowClick={navi.handleRowClick}
+                    onRowClick={handleRowClick}
                     onRowDoubleClick={onRowDoubleClick}
                     onRowContextMenu={onRowContextMenu}
                   />

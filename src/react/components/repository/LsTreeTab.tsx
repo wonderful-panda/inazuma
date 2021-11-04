@@ -11,7 +11,7 @@ import LsTree from "./LsTree";
 import { IconButton, TextField } from "@material-ui/core";
 import { Icon } from "@iconify/react";
 import { debounce } from "lodash";
-import useTreeNavigator from "@/hooks/useTreeNavigator";
+import useTreeItemSelector from "@/hooks/useTreeItemSelector";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 
 export interface LsTreeTabProps {
@@ -40,7 +40,7 @@ const LsTreeWithFilter: React.VFC<{ fontSize: FontSize; entries: readonly Lstree
   }, [entries, filterText]);
 
   const [state, dispatch] = useTreeModel<LstreeEntryData>();
-  const navi = useTreeNavigator(state, dispatch);
+  const { handleKeyDown, handleRowClick } = useTreeItemSelector(state, dispatch);
   useEffect(() => {
     dispatch({ type: "reset", payload: { items: filteredEntries } });
   }, [filteredEntries, dispatch]);
@@ -63,12 +63,12 @@ const LsTreeWithFilter: React.VFC<{ fontSize: FontSize; entries: readonly Lstree
         </IconButton>
       </div>
       <SelectedIndexProvider value={state.selectedIndex}>
-        <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={navi.handleKeyboardEvent}>
+        <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={handleKeyDown}>
           <LsTree
             treeModelState={state}
             treeModelDispatch={dispatch}
             fontSize={fontSize}
-            onRowClick={navi.handleRowClick}
+            onRowClick={handleRowClick}
           />
         </div>
       </SelectedIndexProvider>
