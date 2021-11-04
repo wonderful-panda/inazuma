@@ -1,7 +1,9 @@
-import { CustomSelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { memo, useCallback, useMemo, useState } from "react";
+import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
+import useIndexNavigator from "@/hooks/useIndexNavigator";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FlexCard from "../FlexCard";
 import SplitterPanel from "../PersistSplitterPanel";
+import { VirtualListMethods } from "../VirtualList";
 import FileList from "./FileList";
 
 export interface WorkingTreeProps {
@@ -41,6 +43,8 @@ const getActive = (
 };
 
 const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize }) => {
+  const unstagedListRef = useRef<VirtualListMethods>(null);
+  const stagedListRef = useRef<VirtualListMethods>(null);
   const [selection, setSelection] = useState<Selection>({
     unstagedIndex: 0,
     stagedIndex: 0,
@@ -67,6 +71,8 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
       };
     });
   }, []);
+  useEffect(() => unstagedListRef.current?.scrollToItem(unstagedIndex), [unstagedIndex]);
+  useEffect(() => stagedListRef.current?.scrollToItem(stagedIndex), [stagedIndex]);
 
   const unstagedFiles = useMemo(() => {
     const ret = [
@@ -76,7 +82,8 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
     ret.sort((a, b) => a.path.localeCompare(b.path));
     return ret;
   }, [stat]);
-  const unstagedListFocused = useCallback(() => {
+
+  const unstagedFocused = useCallback(() => {
     if (0 < unstagedFiles.length) {
       setSelection((cur) => ({
         unstagedIndex: Math.max(cur.unstagedIndex, 0),
@@ -85,13 +92,15 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
       }));
     }
   }, [unstagedFiles.length]);
-  const stagedListFocused = useCallback(() => {
+  const stagedFocused = useCallback(() => {
     setSelection((cur) => ({
       unstagedIndex: cur.unstagedIndex,
       stagedIndex: Math.max(cur.stagedIndex, 0),
       active: "staged"
     }));
   }, []);
+  const unstagedNavi = useIndexNavigator(unstagedFiles.length, setUnstagedIndex);
+  const stagedNavi = useIndexNavigator(stat.stagedFiles.length, setStagedIndex);
   return (
     <SplitterPanel
       persistKey="repository/WorkingTree"
@@ -99,32 +108,48 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
       initialDirection={orientation === "portrait" ? "vert" : "horiz"}
       allowDirectionChange={false}
       first={
-        <CustomSelectedIndexProvider
-          itemsCount={unstagedFiles.length}
-          value={unstagedIndex}
-          setValue={setUnstagedIndex}
-        >
-          <FlexCard
-            title="Unstaged changes"
-            content={
-              <FileList files={unstagedFiles} onFocus={unstagedListFocused} fontSize={fontSize} />
-            }
-          />
-        </CustomSelectedIndexProvider>
+        <FlexCard
+          title="Unstaged changes"
+          content={
+            <SelectedIndexProvider value={unstagedIndex}>
+              <div
+                className="flex flex-1 m-1 p-1"
+                onFocus={unstagedFocused}
+                tabIndex={0}
+                onKeyDown={unstagedNavi.handleKeyboardEvent}
+              >
+                <FileList
+                  ref={unstagedListRef}
+                  files={unstagedFiles}
+                  fontSize={fontSize}
+                  onRowClick={unstagedNavi.handleRowClick}
+                />
+              </div>
+            </SelectedIndexProvider>
+          }
+        />
       }
       second={
-        <CustomSelectedIndexProvider
-          itemsCount={stat.stagedFiles.length}
-          value={stagedIndex}
-          setValue={setStagedIndex}
-        >
+        <SelectedIndexProvider value={stagedIndex}>
           <FlexCard
             title="Staged changes"
             content={
-              <FileList files={stat.stagedFiles} onFocus={stagedListFocused} fontSize={fontSize} />
+              <div
+                className="flex flex-1 m-1 p-1"
+                onFocus={stagedFocused}
+                tabIndex={0}
+                onKeyDown={stagedNavi.handleKeyboardEvent}
+              >
+                <FileList
+                  ref={stagedListRef}
+                  files={stat.stagedFiles}
+                  fontSize={fontSize}
+                  onRowClick={stagedNavi.handleRowClick}
+                />
+              </div>
             }
           />
-        </CustomSelectedIndexProvider>
+        </SelectedIndexProvider>
       }
       firstPanelMinSize="20%"
       secondPanelMinSize="20%"

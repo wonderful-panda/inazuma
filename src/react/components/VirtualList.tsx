@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, VariableSizeList } from "react-window";
 import {
@@ -10,15 +9,11 @@ import {
   useMemo,
   useRef
 } from "react";
-import KeyboardSelection, { KeyboardSelectionMethods } from "./KeyboardSelection";
-import { useSelectedIndex, useSelectedIndexMethods } from "@/hooks/useSelectedIndex";
 
 const MemoizedFixedSizeList = memo(FixedSizeList);
 const MemoizedVariableSizeList = memo(VariableSizeList);
 
 export interface VirtualListEvents<T> {
-  onFocus?: (event: React.FocusEvent) => void;
-  onBlur?: (event: React.FocusEvent) => void;
   onRowClick?: (event: React.MouseEvent, index: number, item: T) => void;
   onRowDoubleClick?: (event: React.MouseEvent, index: number, item: T) => void;
   onRowContextMenu?: (event: React.MouseEvent, index: number, item: T) => void;
@@ -27,14 +22,10 @@ export interface VirtualListProps<T> extends VirtualListEvents<T> {
   itemSize: number | ((index: number) => number);
   items: readonly T[];
   getItemKey: (item: T) => string;
-  tabIndex?: number;
-  className?: string;
-  extraKeyboardHandler?: Record<string, (event: React.KeyboardEvent) => void>;
   children: (props: { index: number; item: T }) => React.ReactNode;
 }
 
 export interface VirtualListMethods {
-  focus: () => void;
   scrollToItem: (index: number) => void;
 }
 
@@ -60,41 +51,20 @@ const VirtualListInner = <T extends unknown>(
     itemSize,
     items,
     getItemKey,
-    className,
-    tabIndex = 0,
-    extraKeyboardHandler,
     children,
-    onRowClick: onRowClick_,
+    onRowClick,
     onRowDoubleClick,
-    onRowContextMenu,
-    onFocus,
-    onBlur
+    onRowContextMenu
   }: VirtualListProps<T>,
   ref: React.ForwardedRef<VirtualListMethods>
 ) => {
-  const selectedIndex = useSelectedIndex();
-  const selectedIndexMethods = useSelectedIndexMethods();
-  const wrapperRef = useRef<KeyboardSelectionMethods>(null);
   const listRef = useRef<FixedSizeList & VariableSizeList>(null);
   useImperativeHandle(ref, () => ({
-    focus: () => wrapperRef.current?.focus(),
-    scrollToItem: (index) => listRef.current?.scrollToItem(index)
+    scrollToItem: (index) => 0 <= index && listRef.current?.scrollToItem(index)
   }));
-  useEffect(() => {
-    listRef.current?.scrollToItem(selectedIndex);
-  }, [selectedIndex]);
   useEffect(() => {
     listRef.current?.resetAfterIndex?.(0);
   }, [itemSize]);
-  const onRowClick = useCallback(
-    (event: React.MouseEvent, index: number, item: T) => {
-      if (event.button === 0) {
-        selectedIndexMethods.set(index);
-      }
-      onRowClick_?.(event, index, item);
-    },
-    [onRowClick_, selectedIndexMethods]
-  );
   const handleRowClick = useRowEventHandler(items, onRowClick);
   const handleRowDoubleClick = useRowEventHandler(items, onRowDoubleClick);
   const handleRowContextMenu = useRowEventHandler(items, onRowContextMenu);
@@ -132,24 +102,15 @@ const VirtualListInner = <T extends unknown>(
     overscanCount: 8
   };
   return (
-    <KeyboardSelection
-      ref={wrapperRef}
-      className={classNames("flex flex-1 p-1", className)}
-      tabIndex={tabIndex}
-      extraHandlers={extraKeyboardHandler}
-      onFocus={onFocus}
-      onBlur={onBlur}
-    >
-      <AutoSizer className="flex-1">
-        {(size) =>
-          typeof itemSize === "number" ? (
-            <MemoizedFixedSizeList itemSize={itemSize} {...props} {...size} />
-          ) : (
-            <MemoizedVariableSizeList itemSize={itemSize} {...props} {...size} />
-          )
-        }
-      </AutoSizer>
-    </KeyboardSelection>
+    <AutoSizer className="flex-1">
+      {(size) =>
+        typeof itemSize === "number" ? (
+          <MemoizedFixedSizeList itemSize={itemSize} {...props} {...size} />
+        ) : (
+          <MemoizedVariableSizeList itemSize={itemSize} {...props} {...size} />
+        )
+      }
+    </AutoSizer>
   );
 };
 

@@ -1,5 +1,5 @@
 import { Button } from "@material-ui/core";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 import GitHash from "../GitHash";
 import SplitterPanel from "../PersistSplitterPanel";
@@ -12,6 +12,8 @@ import { useFileContextMenu } from "@/hooks/useContextMenu";
 import { diffWithParent } from "@/commands/diff";
 import { useDispatch } from "@/store";
 import showLsTree from "@/store/thunk/showLsTree";
+import useIndexNavigator from "@/hooks/useIndexNavigator";
+import { VirtualListMethods } from "../VirtualList";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -75,6 +77,10 @@ const CommitMetadata = memo(CommitMetadataInner);
 
 const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
   const commit = props.commit;
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const listRef = useRef<VirtualListMethods>(null);
+  const navi = useIndexNavigator(commit?.files.length || 0, setSelectedIndex);
+  useEffect(() => listRef.current?.scrollToItem(selectedIndex), [selectedIndex]);
   const onRowDoubleClick = useFileListRowEventHandler(diffWithParent, commit);
   const onRowContextMenu = useFileContextMenu(commit);
   return (
@@ -89,13 +95,21 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
           title={commit && "Changes"}
           content={
             commit && (
-              <SelectedIndexProvider itemsCount={commit.files.length || 0}>
-                <FileList
-                  files={commit.files}
-                  fontSize={props.fontSize}
-                  onRowDoubleClick={onRowDoubleClick}
-                  onRowContextMenu={onRowContextMenu}
-                />
+              <SelectedIndexProvider value={selectedIndex}>
+                <div
+                  className="flex flex-1 m-1 p-1"
+                  tabIndex={0}
+                  onKeyDown={navi.handleKeyboardEvent}
+                >
+                  <FileList
+                    ref={listRef}
+                    files={commit.files}
+                    fontSize={props.fontSize}
+                    onRowClick={navi.handleRowClick}
+                    onRowDoubleClick={onRowDoubleClick}
+                    onRowContextMenu={onRowContextMenu}
+                  />
+                </div>
               </SelectedIndexProvider>
             )
           }

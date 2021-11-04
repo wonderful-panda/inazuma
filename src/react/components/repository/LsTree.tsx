@@ -1,19 +1,18 @@
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
+import { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
 import { getFileName } from "@/util";
 import classNames from "classnames";
-import { forwardRef, useCallback } from "react";
-import VirtualTree, { VirtualTreeMethods } from "../VirtualTree";
+import { useCallback } from "react";
+import { VirtualListEvents } from "../VirtualList";
+import VirtualTree from "../VirtualTree";
 
-export interface LsTreeProps {
-  entries: readonly LstreeEntry[];
+export interface LsTreeProps extends VirtualListEvents<TreeItemVM<LstreeEntryData>> {
+  treeModelState: TreeModelState<LstreeEntryData>;
+  treeModelDispatch: TreeModelDispatch<LstreeEntryData>;
   fontSize: FontSize;
 }
 
-type Data = LstreeEntry["data"];
-
-export type LsTreeMethods = VirtualTreeMethods<Data>;
-
-const getItemKey = (item: Data) => item.path;
+const getItemKey = (item: LstreeEntryData) => item.path;
 
 const LsTreeRow: React.VFC<{ item: LstreeEntry; index: number }> = ({ item, index }) => {
   const selectedIndex = useSelectedIndex();
@@ -29,24 +28,26 @@ const LsTreeRow: React.VFC<{ item: LstreeEntry; index: number }> = ({ item, inde
   );
 };
 
-const LsTree: React.ForwardRefRenderFunction<LsTreeMethods, LsTreeProps> = (
-  { entries, fontSize },
-  ref
-) => {
+const LsTree: React.VFC<LsTreeProps> = ({
+  treeModelState,
+  treeModelDispatch,
+  fontSize,
+  ...rest
+}) => {
   const renderRow = useCallback(
     (item: LstreeEntry, index: number) => <LsTreeRow item={item} index={index} />,
     []
   );
   return (
-    <VirtualTree<Data>
-      ref={ref}
-      className="flex-1"
-      rootItems={entries}
+    <VirtualTree<LstreeEntryData>
+      treeModelState={treeModelState}
+      treeModelDispatch={treeModelDispatch}
       getItemKey={getItemKey}
       itemSize={fontSize === "medium" ? 32 : 24}
       renderRow={renderRow}
+      {...rest}
     />
   );
 };
 
-export default forwardRef(LsTree);
+export default LsTree;

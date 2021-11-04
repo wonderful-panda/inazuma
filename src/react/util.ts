@@ -1,3 +1,5 @@
+import { DebouncedFunc, throttle } from "lodash";
+
 export const assertNever = (_: never): never => {
   throw new Error("This function must be unreachable");
 };
@@ -22,3 +24,17 @@ export const serializeError = (error: any): ErrorLike => ({
 });
 
 export const toSlashedPath = (path: string) => path.replace(/\\/g, "/");
+
+type Debounced<T extends Record<string, (...args: any[]) => any>> = {
+  [K in keyof T]: DebouncedFunc<T[K]>;
+};
+export const throttled = <T extends Record<string, (...args: any[]) => any>>(
+  obj: T,
+  ms: number
+): Debounced<T> => {
+  const ret = {} as Debounced<T>;
+  Object.getOwnPropertyNames(obj).forEach((name: keyof T) => {
+    ret[name] = throttle(obj[name], ms);
+  });
+  return ret;
+};

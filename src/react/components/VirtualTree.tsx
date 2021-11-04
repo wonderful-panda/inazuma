@@ -1,37 +1,16 @@
 import { TreeItem } from "@/tree";
 import classNames from "classnames";
-import {
-  forwardRef,
-  memo,
-  useCallback,
-  useImperativeHandle,
-  useLayoutEffect,
-  useMemo
-} from "react";
-import { CustomSelectedIndexProvider } from "@/context/SelectedIndexContext";
-import VirtualList, { VirtualListEvents } from "./VirtualList";
-import useVirtualTreeReducer from "./VirtualTreeReducer";
+import React, { memo, useCallback, useEffect, useRef } from "react";
+import VirtualList, { VirtualListEvents, VirtualListMethods } from "./VirtualList";
+import { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
 
-export interface VirtualTreeMethods<T> {
-  expand: (item: TreeItem<T>) => void;
-  collapse: (item: TreeItem<T>) => void;
-  expandAll: () => void;
-  collapseAll: () => void;
-}
-
-export interface VirtualTreeProps<T> extends VirtualListEvents<VisibleItem<T>> {
-  rootItems: readonly TreeItem<T>[];
+export interface VirtualTreeProps<T> extends VirtualListEvents<TreeItemVM<T>> {
+  treeModelState: TreeModelState<T>;
+  treeModelDispatch: TreeModelDispatch<T>;
   itemSize: number;
   getItemKey: (data: T) => string;
   renderRow: (item: TreeItem<T>, index: number, expanded: boolean) => React.ReactNode;
-  className?: string;
-}
-
-export interface VisibleItem<T> {
-  item: TreeItem<T>;
-  parent: VisibleItem<T> | undefined;
-  level: number;
-  expanded: boolean;
+  onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
 const ExpandButton: React.VFC<{ expanded: boolean; size: number }> = ({ expanded, size }) => (
@@ -81,38 +60,33 @@ const VirtualTreeRowInner = (props: {
 };
 const VirtualTreeRow = memo(VirtualTreeRowInner);
 
-const VirtualTreeInner = <T extends unknown>(
-  { rootItems, itemSize, getItemKey, renderRow, ...rest }: VirtualTreeProps<T>,
-  ref: React.ForwardedRef<VirtualTreeMethods<T>>
-) => {
-  const [state, dispatch] = useVirtualTreeReducer<T>();
-  useLayoutEffect(() => {
-    dispatch({ type: "reset", payload: { items: rootItems, getItemKey } });
-  }, [rootItems, getItemKey, dispatch]);
-
-  useImperativeHandle(ref, () => ({
-    expand: (item) => dispatch({ type: "expandItem", payload: item }),
-    collapse: (item) => dispatch({ type: "collapseItem", payload: item }),
-    expandAll: () => dispatch({ type: "expandAll" }),
-    collapseAll: () => dispatch({ type: "collapseAll" })
-  }));
+const VirtualTree = <T extends unknown>({
+  treeModelState,
+  treeModelDispatch,
+  itemSize,
+  getItemKey,
+  renderRow,
+  onKeyDown,
+  ...rest
+}: VirtualTreeProps<T>) => {
+  const listRef = useRef<VirtualListMethods>(null);
+  useEffect(
+    () => listRef.current?.scrollToItem(treeModelState.selectedIndex),
+    [treeModelState.selectedIndex]
+  );
 
   const toggleExpand = useCallback(
     (item: TreeItem<T>) => {
-      dispatch({ type: "toggleItem", payload: item });
+      treeModelDispatch({ type: "toggleItem", payload: item });
     },
-    [dispatch]
+    [treeModelDispatch]
   );
   const getItemKey_ = useCallback(
-    (item: VisibleItem<T>) => getItemKey(item.item.data),
+    (itemVm: TreeItemVM<T>) => getItemKey(itemVm.item.data),
     [getItemKey]
   );
-  const setSelectedIndex = useCallback(
-    (payload: React.SetStateAction<number>) => dispatch({ type: "setSelectedIndex", payload }),
-    [dispatch]
-  );
   const children = useCallback(
-    ({ index, item: { item, expanded, level } }: { index: number; item: VisibleItem<T> }) => (
+    ({ index, item: { item, expanded, level } }: { index: number; item: TreeItemVM<T> }) => (
       <VirtualTreeRow
         height={itemSize}
         item={item}
@@ -125,64 +99,17 @@ const VirtualTreeInner = <T extends unknown>(
     ),
     [renderRow, itemSize, toggleExpand]
   );
-  const extraKeyboardHandlers = useMemo(() => {
-    return {
-      ArrowLeft: () => {
-        const vitem = state.selectedItem;
-        if (!vitem) {
-          return;
-        }
-        if (vitem.item.children && vitem.expanded) {
-          // collapse
-          dispatch({ type: "collapseItem", payload: vitem.item });
-        } else {
-          // select parent item
-          if (vitem.parent) {
-            dispatch({ type: "setSelectedItem", payload: vitem.parent });
-          }
-        }
-      },
-      ArrowRight: () => {
-        const vitem = state.selectedItem;
-        if (!vitem) {
-          return;
-        }
-        if (vitem.item.children) {
-          if (vitem.expanded) {
-            // select first child
-            if (vitem.item.children.length > 0) {
-              dispatch({ type: "setSelectedIndex", payload: (v) => v + 1 });
-            }
-          } else {
-            // expand
-            dispatch({ type: "expandItem", payload: vitem.item });
-          }
-        }
-      }
-    };
-  }, [state.selectedItem, dispatch]);
-
   return (
-    <CustomSelectedIndexProvider
-      itemsCount={state.visibleItems.length}
-      value={state.selectedIndex}
-      setValue={setSelectedIndex}
+    <VirtualList<TreeItemVM<T>>
+      ref={listRef}
+      items={treeModelState.visibleItems}
+      itemSize={itemSize}
+      getItemKey={getItemKey_}
+      {...rest}
     >
-      <VirtualList<VisibleItem<T>>
-        items={state.visibleItems}
-        itemSize={itemSize}
-        getItemKey={getItemKey_}
-        extraKeyboardHandler={extraKeyboardHandlers}
-        {...rest}
-      >
-        {children}
-      </VirtualList>
-    </CustomSelectedIndexProvider>
+      {children}
+    </VirtualList>
   );
 };
-
-const VirtualTree = forwardRef(VirtualTreeInner) as <T>(
-  props: VirtualTreeProps<T> & { ref?: React.ForwardedRef<VirtualTreeMethods<T>> }
-) => ReturnType<typeof VirtualTreeInner>;
 
 export default VirtualTree;

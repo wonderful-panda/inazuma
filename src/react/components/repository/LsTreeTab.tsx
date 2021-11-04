@@ -3,13 +3,16 @@ import { useDispatch } from "@/store";
 import { SHOW_ERROR } from "@/store/misc";
 import { filterTreeItems, sortTreeInplace } from "@/tree";
 import { serializeError } from "@/util";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import useTreeModel from "@/hooks/useTreeModel";
 import SplitterPanel from "../PersistSplitterPanel";
 import Loading from "../Loading";
-import LsTree, { LsTreeMethods } from "./LsTree";
+import LsTree from "./LsTree";
 import { IconButton, TextField } from "@material-ui/core";
 import { Icon } from "@iconify/react";
 import { debounce } from "lodash";
+import useTreeNavigator from "@/hooks/useTreeNavigator";
+import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -21,7 +24,6 @@ const LsTreeWithFilter: React.VFC<{ fontSize: FontSize; entries: readonly Lstree
   fontSize,
   entries
 }) => {
-  const ref = useRef<LsTreeMethods>(null);
   const [filterText, setFilterText] = useState("");
   const onFilterTextChange = useMemo(
     () =>
@@ -36,12 +38,18 @@ const LsTreeWithFilter: React.VFC<{ fontSize: FontSize; entries: readonly Lstree
     }
     return filterTreeItems(entries, (data) => data.path.indexOf(filterText) >= 0);
   }, [entries, filterText]);
+
+  const [state, dispatch] = useTreeModel<LstreeEntryData>();
+  const navi = useTreeNavigator(state, dispatch);
+  useEffect(() => {
+    dispatch({ type: "reset", payload: { items: filteredEntries } });
+  }, [filteredEntries, dispatch]);
   const expandAll = useCallback(() => {
-    ref.current?.expandAll();
-  }, []);
+    dispatch({ type: "expandAll" });
+  }, [dispatch]);
   const collapseAll = useCallback(() => {
-    ref.current?.collapseAll();
-  }, []);
+    dispatch({ type: "collapseAll" });
+  }, [dispatch]);
   return (
     <div className="flex-col-nowrap flex-1 m-1">
       <div className="flex-row-nowrap items-end mb-4 mr-2">
@@ -54,7 +62,16 @@ const LsTreeWithFilter: React.VFC<{ fontSize: FontSize; entries: readonly Lstree
           <Icon icon="mdi:chevron-up" className="text-2xl" />
         </IconButton>
       </div>
-      <LsTree ref={ref} entries={filteredEntries} fontSize={fontSize} />
+      <SelectedIndexProvider value={state.selectedIndex}>
+        <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={navi.handleKeyboardEvent}>
+          <LsTree
+            treeModelState={state}
+            treeModelDispatch={dispatch}
+            fontSize={fontSize}
+            onRowClick={navi.handleRowClick}
+          />
+        </div>
+      </SelectedIndexProvider>
     </div>
   );
 };

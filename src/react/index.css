@@ -38,7 +38,7 @@ body {
 }
 
 :focus {
-  outline: #ffd600 auto 1px;
+  outline: #ffd600 solid 1px;
 }
 
 ::-webkit-scrollbar {

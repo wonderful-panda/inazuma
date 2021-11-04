@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SplitterPanel from "../PersistSplitterPanel";
 import CommitDetail from "./CommitDetail";
 import CommitList from "./CommitList";
@@ -10,8 +10,9 @@ import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { SHOW_ERROR } from "@/store/misc";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { CommitLogItems } from "@/store/repository";
-import { useSelectedIndex, useSelectedIndexMethods } from "@/hooks/useSelectedIndex";
+import useIndexNavigator from "@/hooks/useIndexNavigator";
 import { serializeError } from "@/util";
+import { VirtualListMethods } from "../VirtualList";
 
 const CommitLogInner: React.VFC<{
   active: boolean;
@@ -23,8 +24,9 @@ const CommitLogInner: React.VFC<{
   const [logDetail, setLogDetail] = useState<LogDetail | undefined>(undefined);
   const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
   const commandGroup = useCommandGroup();
-  const selectedIndex = useSelectedIndex();
-  const selectedIndexMethods = useSelectedIndexMethods();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const navigator = useIndexNavigator(log.commits.length, setSelectedIndex);
+  const listRef = useRef<VirtualListMethods>(null);
   useEffect(() => {
     if (!active) {
       return;
@@ -36,23 +38,19 @@ const CommitLogInner: React.VFC<{
         {
           name: "NextCommit",
           hotkey: "Ctrl+N",
-          handler: () => {
-            selectedIndexMethods.moveNext();
-          }
+          handler: navigator.moveNext
         },
         {
           name: "PrevCommit",
           hotkey: "Ctrl+P",
-          handler: () => {
-            selectedIndexMethods.movePrevious();
-          }
+          handler: navigator.movePrevious
         }
       ]
     });
     return () => {
       commandGroup.unregister(groupName);
     };
-  }, [active, selectedIndexMethods, commandGroup]);
+  }, [active, navigator, commandGroup]);
 
   const selectLog = useMemo(
     () =>
@@ -73,6 +71,8 @@ const CommitLogInner: React.VFC<{
   useEffect(() => {
     selectLog(selectedIndex);
   }, [selectedIndex, selectLog]);
+
+  useEffect(() => listRef.current?.scrollToItem(selectedIndex), [selectedIndex]);
 
   const detail = useCallback(
     (direction: Direction) => {
@@ -105,9 +105,16 @@ const CommitLogInner: React.VFC<{
       firstPanelMinSize="20%"
       secondPanelMinSize="20%"
       first={
-        <div className="flex flex-1 overflow-hidden m-2">
-          <CommitList {...log} fontSize={fontSize} />
-        </div>
+        <SelectedIndexProvider value={selectedIndex}>
+          <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={navigator.handleKeyboardEvent}>
+            <CommitList
+              ref={listRef}
+              {...log}
+              fontSize={fontSize}
+              onRowClick={navigator.handleRowClick}
+            />
+          </div>
+        </SelectedIndexProvider>
       }
       second={detail}
     />
@@ -121,11 +128,7 @@ const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
   if (!repoPath || !log) {
     return <></>;
   }
-  return (
-    <SelectedIndexProvider itemsCount={log.commits.length} initialValue={0}>
-      <CommitLogInner active={active} repoPath={repoPath} log={log} fontSize={fontSize} />
-    </SelectedIndexProvider>
-  );
+  return <CommitLogInner active={active} repoPath={repoPath} log={log} fontSize={fontSize} />;
 };
 
 export default CommitLog;

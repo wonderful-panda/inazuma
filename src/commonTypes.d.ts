@@ -8,6 +8,7 @@ declare global {
   type Commit = backend.Commit;
   type FileEntry = backend.FileEntry;
   type LstreeEntry = backend.LstreeEntry;
+  type LstreeEntryData = LstreeEntry["data"];
   type CommitDetail = backend.CommitDetail;
   type BranchRef = backend.BranchRef;
   type HeadRef = backend.HeadRef;
