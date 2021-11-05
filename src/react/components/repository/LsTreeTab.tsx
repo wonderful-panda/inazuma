@@ -94,7 +94,11 @@ const LsTreeWithFilter: React.VFC<{
     <div className="flex-col-nowrap flex-1 m-1">
       <div className="flex-row-nowrap items-end mb-4 mr-2">
         <Icon icon="mdi:filter" className="text-2xl m-1" />
-        <TextField label="Filter by path" className="flex-1" onChange={onFilterTextChange} />
+        <TextField
+          label="Filter by path"
+          className="flex-1 whitespace-nowrap overflow-hidden"
+          onChange={onFilterTextChange}
+        />
         <IconButton size="small" onClick={expandAll} title="Expand all">
           <Icon icon="mdi:chevron-down" className="text-2xl" />
         </IconButton>
