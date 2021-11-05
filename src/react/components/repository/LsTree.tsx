@@ -10,17 +10,23 @@ export interface LsTreeProps extends VirtualListEvents<TreeItemVM<LstreeEntryDat
   treeModelState: TreeModelState<LstreeEntryData>;
   treeModelDispatch: TreeModelDispatch<LstreeEntryData>;
   fontSize: FontSize;
+  getRowClass?: (item: LstreeEntryData) => string | undefined;
 }
 
 const getItemKey = (item: LstreeEntryData) => item.path;
 
-const LsTreeRow: React.VFC<{ item: LstreeEntry; index: number }> = ({ item, index }) => {
+const LsTreeRow: React.VFC<{
+  item: LstreeEntry;
+  index: number;
+  getRowClass?: (item: LstreeEntryData) => string | undefined;
+}> = ({ item, index, getRowClass }) => {
   const selectedIndex = useSelectedIndex();
   return (
     <div
       className={classNames(
         "flex-1 min-h-full flex items-center px-2 cursor-default",
-        index === selectedIndex && "bg-highlight"
+        index === selectedIndex && "bg-highlight",
+        getRowClass && getRowClass(item.data)
       )}
     >
       {getFileName(item.data.path)}
@@ -32,11 +38,14 @@ const LsTree: React.VFC<LsTreeProps> = ({
   treeModelState,
   treeModelDispatch,
   fontSize,
+  getRowClass,
   ...rest
 }) => {
   const renderRow = useCallback(
-    (item: LstreeEntry, index: number) => <LsTreeRow item={item} index={index} />,
-    []
+    (item: LstreeEntry, index: number) => (
+      <LsTreeRow item={item} index={index} getRowClass={getRowClass} />
+    ),
+    [getRowClass]
   );
   return (
     <VirtualTree<LstreeEntryData>

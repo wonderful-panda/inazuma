@@ -41,7 +41,9 @@ const RepositoryPage: React.VFC = () => {
         case "file":
           return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} fontSize={fontSize} />;
         case "tree":
-          return <LsTreeTab repoPath={repoPath} sha={tab.payload.sha} fontSize={fontSize} />;
+          return (
+            <LsTreeTab repoPath={repoPath} sha={tab.payload.sha} refs={refs} fontSize={fontSize} />
+          );
         default:
           assertNever(tab);
           break;
