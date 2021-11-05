@@ -1,10 +1,11 @@
+import { diffStaged, diffUnstaged } from "@/commands/diff";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import useListItemSelector from "@/hooks/useListItemSelector";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FlexCard from "../FlexCard";
 import SplitterPanel from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
-import FileList from "./FileList";
+import FileList, { useFileListRowEventHandler } from "./FileList";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat;
@@ -101,6 +102,8 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
   }, []);
   const unstagedSelector = useListItemSelector(unstagedFiles.length, setUnstagedIndex);
   const stagedSelector = useListItemSelector(stat.stagedFiles.length, setStagedIndex);
+  const handleUnstagedRowDoubleClick = useFileListRowEventHandler(diffUnstaged, stat);
+  const handleStagedRowDoubleClick = useFileListRowEventHandler(diffStaged, stat);
   return (
     <SplitterPanel
       persistKey="repository/WorkingTree"
@@ -123,6 +126,7 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
                   files={unstagedFiles}
                   fontSize={fontSize}
                   onRowClick={unstagedSelector.handleRowClick}
+                  onRowDoubleClick={handleUnstagedRowDoubleClick}
                 />
               </div>
             </SelectedIndexProvider>
@@ -145,6 +149,7 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
                   files={stat.stagedFiles}
                   fontSize={fontSize}
                   onRowClick={stagedSelector.handleRowClick}
+                  onRowDoubleClick={handleStagedRowDoubleClick}
                 />
               </div>
             }
