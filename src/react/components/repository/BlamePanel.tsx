@@ -1,4 +1,5 @@
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
+import { useFileCommitContextMenu } from "@/hooks/useContextMenu";
 import useListItemSelector from "@/hooks/useListItemSelector";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -64,6 +65,7 @@ export interface BlamePanelProps {
 }
 
 const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, refs, fontSize }) => {
+  const handleRowContextMenu = useFileCommitContextMenu();
   const [selectedItem, setSelectedItem] = useState({
     index: -1,
     commitId: undefined as string | undefined
@@ -112,6 +114,7 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, refs,
               refs={refs}
               fontSize={fontSize}
               onRowClick={handleRowClick}
+              onRowContextMenu={handleRowContextMenu}
             />
           </div>
         </SelectedIndexProvider>

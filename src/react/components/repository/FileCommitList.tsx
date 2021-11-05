@@ -1,12 +1,11 @@
 import { forwardRef, useCallback } from "react";
 import FileCommitListRow from "./FileCommitListRow";
-import VirtualList, { VirtualListMethods } from "../VirtualList";
+import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
 
-export interface FileCommitListProps {
+export interface FileCommitListProps extends VirtualListEvents<FileCommit> {
   commits: readonly FileCommit[];
   refs: Refs | undefined;
   fontSize: FontSize;
-  onRowClick?: (event: React.MouseEvent, index: number, commit: FileCommit) => void;
 }
 
 export const getRowHeight = (commit: FileCommit, fileSize: FontSize) => {
@@ -20,10 +19,9 @@ export const getRowHeight = (commit: FileCommit, fileSize: FontSize) => {
 export const getFileCommitListKey = (item: FileCommit) => item.id;
 
 const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCommitListProps> = (
-  { commits, refs, fontSize, onRowClick },
+  { commits, refs, fontSize, ...rest },
   ref
 ) => {
-  console.log("FileCommitList", fontSize);
   const renderRow = useCallback(
     ({ index, item }: { index: number; item: FileCommit }) => (
       <FileCommitListRow
@@ -48,7 +46,7 @@ const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCom
       items={commits}
       itemSize={rowHeight}
       getItemKey={getFileCommitListKey}
-      onRowClick={onRowClick}
+      {...rest}
     >
       {renderRow}
     </VirtualList>

@@ -28,3 +28,28 @@ export const useFileContextMenu = (
   );
   return onFileContextMenu;
 };
+
+export const useFileCommitContextMenu = (): ((
+  event: React.MouseEvent,
+  index: number,
+  item: FileCommit
+) => void) => {
+  const dispatch = useDispatch();
+  const { show } = useContext(ContextMenuContext);
+  const onFileContextMenu = useCallback(
+    (event: React.MouseEvent, _index: number, item: FileCommit) => {
+      const menus: ContextMenuItem[] = fileCommands
+        .filter((c) => !c.hidden?.(item, item, item.path))
+        .map((c) => {
+          const { id, label, icon } = c;
+          const disabled = c.disabled?.(item, item, item.path);
+          const handler = () => executeFileCommand(c, dispatch, item, item, item.path);
+          return { id, label, icon, disabled, handler };
+        });
+
+      show(event, menus);
+    },
+    [show, dispatch]
+  );
+  return onFileContextMenu;
+};
