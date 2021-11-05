@@ -1,4 +1,4 @@
-import { Icon } from "@iconify/react";
+import { Icon } from "./Icon";
 import classNames from "classnames";
 import { Button, IconButton, makeStyles } from "@material-ui/core";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";

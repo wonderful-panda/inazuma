@@ -1,4 +1,5 @@
 import { Dispatch } from "@/store";
+import { IconName } from "@/__IconName";
 
 export interface CommitCommand {
   id: string;
@@ -11,7 +12,7 @@ export interface CommitCommand {
 export interface FileCommand {
   id: string;
   label: string;
-  icon?: string;
+  icon?: IconName;
   handler(dispatch: Dispatch, commit: DagNode, file: FileEntry, path: string): void;
   hidden?(commit: DagNode, file: FileEntry, path: string): boolean;
   disabled?(commit: DagNode, file: FileEntry, path: string): boolean;

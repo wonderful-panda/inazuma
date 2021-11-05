@@ -1,5 +1,5 @@
 import IconButton from "@material-ui/core/IconButton";
-import { Icon } from "@iconify/react";
+import { Icon } from "./Icon";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Drawer, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import { PreferenceDialog } from "./PreferenceDialog";
@@ -10,11 +10,12 @@ import { UPDATE_CONFIG } from "@/store/persist";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 import RawAlert from "./Alert";
 import { HIDE_ALERT } from "@/store/misc";
+import { IconName } from "@/__IconName";
 
 export interface ActionItem {
   key: string;
   text: string;
-  icon: string;
+  icon: IconName;
   disabled?: boolean;
   onClick: () => void;
 }

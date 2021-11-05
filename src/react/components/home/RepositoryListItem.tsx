@@ -1,4 +1,4 @@
-import { Icon } from "@iconify/react";
+import { Icon } from "../Icon";
 import {
   IconButton,
   ListItem,
@@ -7,15 +7,16 @@ import {
   ListItemText
 } from "@material-ui/core";
 import { useCallback, useMemo } from "react";
+import { IconName } from "@/__IconName";
 
 export interface RepositoryListItemProps {
   itemId: string;
-  icon: string;
+  icon: IconName;
   primary: string;
   secondary: string | React.ReactNode;
   action: (itemId: string) => void;
   secondaryAction?: {
-    icon: string;
+    icon: IconName;
     action: (itemId: string) => void;
   };
 }

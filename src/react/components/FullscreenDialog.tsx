@@ -7,7 +7,7 @@ import {
   IconButton,
   Slide
 } from "@material-ui/core";
-import { Icon } from "@iconify/react";
+import { Icon } from "./Icon";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
 import { ComponentProps, forwardRef, KeyboardEvent, useCallback, useMemo } from "react";
 

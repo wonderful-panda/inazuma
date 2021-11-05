@@ -9,7 +9,7 @@ import SplitterPanel from "../PersistSplitterPanel";
 import Loading from "../Loading";
 import LsTree from "./LsTree";
 import { IconButton, TextField } from "@material-ui/core";
-import { Icon } from "@iconify/react";
+import { Icon } from "../Icon";
 import { debounce } from "lodash";
 import useTreeItemSelector from "@/hooks/useTreeItemSelector";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";

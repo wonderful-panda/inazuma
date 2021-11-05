@@ -1,12 +1,13 @@
 import { IconButton, Slide, Snackbar, SnackbarContent, Typography } from "@material-ui/core";
-import { Icon } from "@iconify/react";
+import { Icon } from "./Icon";
 import { memo, useEffect, useState } from "react";
 import { assertNever } from "@/util";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
+import { IconName } from "@/__IconName";
 
 const Transition = (props: TransitionProps) => <Slide {...props} direction="up" />;
 
-const iconName = (type: AlertType) => {
+const iconName = (type: AlertType): IconName => {
   switch (type) {
     case "success":
       return "mdi:check-circle-outline";

@@ -1,11 +1,12 @@
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/Icon";
+import { IconName } from "@/__IconName";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { createContext, useCallback, useMemo, useState } from "react";
 
 export interface ContextMenuItem {
   id: string;
   label: string;
-  icon?: string;
+  icon?: IconName;
   disabled?: boolean;
   handler: () => void;
 }

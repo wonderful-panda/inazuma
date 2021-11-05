@@ -1,7 +1,8 @@
-import { Icon } from "@iconify/react";
+import { IconName } from "@/__IconName";
+import { Icon } from "../Icon";
 
 type Attr = {
-  icon: string;
+  icon: IconName;
   color: string;
   title: string;
 };

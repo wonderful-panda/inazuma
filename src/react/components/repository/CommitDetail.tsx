@@ -1,6 +1,6 @@
 import { Button } from "@material-ui/core";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Icon } from "@iconify/react";
+import { Icon } from "../Icon";
 import GitHash from "../GitHash";
 import SplitterPanel from "../PersistSplitterPanel";
 import { formatDateLLL } from "@/date";

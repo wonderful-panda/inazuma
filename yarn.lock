@@ -562,6 +562,16 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz#87de7af9c231826fdd68ac7258f77c429e0e5fcf"
   integrity sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==
 
+"@iconify/json-tools@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@iconify/json-tools/-/json-tools-1.0.10.tgz#d9a7050dbbe8bb29d684d4b3f9446ed2d0bea3cc"
+  integrity sha512-LFelJDOLZ6JHlmlAkgrvmcu4hpNPB91KYcr4f60D/exzU1eNOb4/KCVHIydGHIQFaOacIOD+Xy+B7P1z812cZg==
+
+"@iconify/json@^1.1.424":
+  version "1.1.424"
+  resolved "https://registry.yarnpkg.com/@iconify/json/-/json-1.1.424.tgz#5e19d64d935b83dc39f3fd0a95a6ce13c71a48ba"
+  integrity sha512-cbcSSvrJJ2SEHRpukuq9HlcVUpWQDw1g4vEUC4mQGWmeQbKWu74NewkFoJFmTVj0IohUimetJwDkRTv6xXs0zw==
+
 "@iconify/react@^3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@iconify/react/-/react-3.0.1.tgz#ce2cb3f4a2b6aab5f7af082c833d869b6fb43182"
