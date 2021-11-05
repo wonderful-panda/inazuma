@@ -3,7 +3,7 @@ import { Icon } from "./Icon";
 import { memo, useEffect, useState } from "react";
 import { assertNever } from "@/util";
 import { TransitionProps } from "@material-ui/core/transitions/transition";
-import { IconName } from "@/__IconName";
+import { IconName } from "@/types/IconName";
 
 const Transition = (props: TransitionProps) => <Slide {...props} direction="up" />;
 

@@ -10,7 +10,7 @@ import { UPDATE_CONFIG } from "@/store/persist";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 import RawAlert from "./Alert";
 import { HIDE_ALERT } from "@/store/misc";
-import { IconName } from "@/__IconName";
+import { IconName } from "@/types/IconName";
 
 export interface ActionItem {
   key: string;

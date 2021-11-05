@@ -3,11 +3,9 @@ node_modules
 dist
 out
 *.log
-__generated
-__*.*
+src/react/generated
 src/rust-backend/native/target
 src/rust-backend/native/index.node
 src/rust-backend/native/artifacts.json
-src/react/tailwind.css
 **/*~
 

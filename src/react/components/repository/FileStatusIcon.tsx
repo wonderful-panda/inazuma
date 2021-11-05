@@ -1,4 +1,4 @@
-import { IconName } from "@/__IconName";
+import { IconName } from "@/types/IconName";
 import { Icon } from "../Icon";
 
 type Attr = {

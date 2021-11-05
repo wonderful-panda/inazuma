@@ -7,7 +7,7 @@ import {
   ListItemText
 } from "@material-ui/core";
 import { useCallback, useMemo } from "react";
-import { IconName } from "@/__IconName";
+import { IconName } from "@/types/IconName";
 
 export interface RepositoryListItemProps {
   itemId: string;

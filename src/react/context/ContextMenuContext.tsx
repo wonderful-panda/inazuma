@@ -1,5 +1,5 @@
 import { Icon } from "@/components/Icon";
-import { IconName } from "@/__IconName";
+import { IconName } from "@/types/IconName";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { createContext, useCallback, useMemo, useState } from "react";
 
