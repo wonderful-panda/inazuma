@@ -1,20 +1,19 @@
 import { Divider, List, Typography } from "@material-ui/core";
 import { RepositoryListItem } from "./RepositoryListItem";
-import { useCallback, useEffect } from "react";
+import { useCallback, useMemo } from "react";
 import { MainWindow } from "@/components/MainWindow";
 import browserApi from "@/browserApi";
 import { useDispatch, useSelector } from "@/store";
 import { REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
-import { useCommandGroup } from "@/hooks/useCommandGroup";
-import { HotKey } from "@/context/CommandGroupContext";
 import openRepository from "@/store/thunk/openRepository";
+import { CommandGroup, Cmd } from "../CommandGroup";
+import { Command } from "@/context/CommandGroupContext";
 
 const Home = () => {
-  const commandGroup = useCommandGroup();
   const dispatch = useDispatch();
   const recentOpened = useSelector((state) => state.persist.env.recentOpenedRepositories);
   const handleOpen = useCallback(
-    (repoPath: string) => dispatch(openRepository(repoPath)),
+    (repoPath: string | undefined) => repoPath && dispatch(openRepository(repoPath)),
     [dispatch]
   );
   const handleBrowseClick = useCallback(async () => {
@@ -31,31 +30,23 @@ const Home = () => {
     (path) => dispatch(REMOVE_RECENT_OPENED_REPOSITORY(path)),
     [dispatch]
   );
-  useEffect(() => {
-    const groupName = "Home";
-    commandGroup.register({
-      groupName,
-      commands: [
-        { name: "OpenFolderBrowser", hotkey: "Ctrl+O", handler: handleBrowseClick },
-        ...[1, 2, 3, 4, 5].map((i) => ({
-          name: `OpenRecent-${i}`,
-          hotkey: `Ctrl+Alt+${i}` as HotKey,
-          handler: () => {
-            const repoPath = recentOpened[i - 1];
-            if (repoPath) {
-              handleOpen(repoPath);
-            }
-          }
-        }))
-      ]
-    });
-    return () => {
-      commandGroup.unregister(groupName);
-    };
-  }, [recentOpened, handleOpen, handleBrowseClick, commandGroup]);
-
+  const openRecents = useMemo<Command[]>(
+    () =>
+      ([1, 2, 3, 4, 5] as const).map((i) => ({
+        name: `OpenRecent-${i}`,
+        hotkey: `Ctrl+Alt+${i}`,
+        handler: () => handleOpen(recentOpened[i - 1])
+      })),
+    [recentOpened, handleOpen]
+  );
   return (
     <MainWindow title="Inazuma">
+      <CommandGroup name="home">
+        <Cmd name="OpenFolderSelector" hotkey="Ctrl+O" handler={handleBrowseClick} />
+        {openRecents.map((command) => (
+          <Cmd key={command.name} {...command} />
+        ))}
+      </CommandGroup>
       <div className="flex-col-nowrap flex-1 flex-nowrap max-w-2xl p-4">
         <h2 className="text-2xl my-2 font-bold">SELECT REPOSITORY</h2>
         <div className="flex flex-1 flex-col flex-nowrap pl-4">

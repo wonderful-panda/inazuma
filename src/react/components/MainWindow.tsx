@@ -7,10 +7,10 @@ import { AboutDialog } from "./AboutDialog";
 import Loading from "./Loading";
 import { useDispatch, useSelector } from "@/store";
 import { UPDATE_CONFIG } from "@/store/persist";
-import { useCommandGroup } from "@/hooks/useCommandGroup";
 import RawAlert from "./Alert";
 import { HIDE_ALERT } from "@/store/misc";
 import { IconName } from "@/types/IconName";
+import { CommandGroup, Cmd } from "./CommandGroup";
 
 export interface ActionItem {
   key: string;
@@ -77,28 +77,6 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.misc.loading);
   const [drawerOpened, setDrawerOpened] = useState(false);
-  const commandGroup = useCommandGroup();
-  useEffect(() => {
-    const groupName = "main";
-    commandGroup.register({
-      groupName,
-      commands: [
-        {
-          name: "Preference",
-          hotkey: "Ctrl+Shift+P",
-          handler: preferenceDialogRef.current.open
-        },
-        {
-          name: "About",
-          hotkey: "Ctrl+Shift+V",
-          handler: aboutDialogRef.current.open
-        }
-      ]
-    });
-    return () => {
-      commandGroup.unregister(groupName);
-    };
-  }, [commandGroup]);
   const openDrawer = useCallback(() => {
     setDrawerOpened(true);
   }, []);
@@ -114,6 +92,13 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
   );
   const preferenceDialogRef = useRef({} as ComponentRef<typeof PreferenceDialog>);
   const aboutDialogRef = useRef({} as ComponentRef<typeof AboutDialog>);
+  const callbacks = useMemo(
+    () => ({
+      openPreference: () => preferenceDialogRef.current.open(),
+      openAbout: () => aboutDialogRef.current.open()
+    }),
+    []
+  );
 
   const drawerItems = useMemo<readonly ActionItem[]>(
     () => [
@@ -122,19 +107,23 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
         key: "preference",
         text: "Preference",
         icon: "mdi:cog",
-        onClick: () => preferenceDialogRef.current.open()
+        onClick: callbacks.openPreference
       },
       {
         key: "about",
         text: "About",
         icon: "mdi:information-outline",
-        onClick: () => aboutDialogRef.current.open()
+        onClick: callbacks.openAbout
       }
     ],
-    [props.drawerItems]
+    [props.drawerItems, callbacks]
   );
   return (
     <div className="absolute left-0 right-0 top-0 bottom-0 flex box-border m-0">
+      <CommandGroup name="main">
+        <Cmd name="Preference" hotkey="Ctrl+Shift+P" handler={callbacks.openPreference} />
+        <Cmd name="About" hotkey="Ctrl+Shift+V" handler={callbacks.openAbout} />
+      </CommandGroup>
       <div className="absolute left-0 right-0 top-0 h-9 leading-9 pr-2 flex-row-nowrap bg-titlebar text-xl">
         <IconButton className="p-0 w-9" onClick={openDrawer}>
           <Icon icon="mdi:menu" />

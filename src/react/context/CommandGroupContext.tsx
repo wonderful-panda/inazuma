@@ -37,18 +37,18 @@ type Modifier = `${"Ctrl+" | ""}${"Alt+" | ""}${"Shift+" | ""}`;
 
 export type HotKey = `${Exclude<Modifier, "Shift+" | "">}${Char | OtherKey}` | `${Modifier}${FKey}`;
 
-interface Command {
+export interface Command {
   name: string;
   hotkey?: HotKey;
   handler: () => void;
 }
 interface CommandGroup {
   groupName: string;
-  commands: Command[];
+  commands: readonly Command[];
 }
 
 interface State {
-  groups: CommandGroup[];
+  groups: readonly CommandGroup[];
 }
 
 type Action =

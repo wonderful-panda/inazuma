@@ -1,4 +1,3 @@
-import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { useDispatch, useSelector } from "@/store";
 import { HIDE_INTERACTIVE_SHELL, TOGGLE_INTERACTIVE_SHELL } from "@/store/misc";
 import {
@@ -10,7 +9,8 @@ import {
   TabType
 } from "@/store/repository";
 import { assertNever } from "@/util";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { CommandGroup, Cmd } from "../CommandGroup";
 import InteractiveShell from "../InteractiveShell";
 import lazyWithPreload from "../lazyWithPreload";
 import { ActionItem, MainWindow } from "../MainWindow";
@@ -51,70 +51,54 @@ const RepositoryPage: React.VFC = () => {
     },
     [repoPath, refs, fontSize]
   );
-  const commandGroup = useCommandGroup();
-  const selectTab = useCallback((index: number) => dispatch(SELECT_TAB(index)), [dispatch]);
-  const closeTab = useCallback((index?: number) => dispatch(REMOVE_TAB(index)), [dispatch]);
-  useEffect(() => {
-    const groupName = "RepositoryPage";
-    commandGroup.register({
-      groupName,
-      commands: [
-        {
-          name: "NextTab",
-          hotkey: "Ctrl+Tab",
-          handler: () => dispatch(SELECT_NEXT_TAB())
-        },
-        {
-          name: "PrevTab",
-          hotkey: "Ctrl+Shift+Tab",
-          handler: () => dispatch(SELECT_PREVIOUS_TAB())
-        },
-        {
-          name: "CloseTab",
-          hotkey: "Ctrl+F4",
-          handler: closeTab
-        },
-        {
-          name: "ToggleInteractiveShell",
-          hotkey: "Ctrl+T",
-          handler: () => dispatch(TOGGLE_INTERACTIVE_SHELL())
-        }
-      ]
-    });
-    return () => {
-      commandGroup.unregister(groupName);
-    };
-  }, [closeTab, commandGroup, dispatch]);
-  const hideInteractiveShell = useCallback(() => dispatch(HIDE_INTERACTIVE_SHELL()), [dispatch]);
+  const callbacks = useMemo(
+    () => ({
+      selectTab: (index: number) => dispatch(SELECT_TAB(index)),
+      closeTab: (index?: number) => dispatch(REMOVE_TAB(index)),
+      selectNextTab: () => dispatch(SELECT_NEXT_TAB()),
+      selectPrevTab: () => dispatch(SELECT_PREVIOUS_TAB()),
+      closeRepository: () => dispatch(CLOSE_REPOSITORY()),
+      toggleInteractiveShell: () => dispatch(TOGGLE_INTERACTIVE_SHELL()),
+      hideInteractiveShell: () => dispatch(HIDE_INTERACTIVE_SHELL())
+    }),
+    [dispatch]
+  );
   const drawerItems: ActionItem[] = useMemo(
     () => [
       {
         key: "backToHome",
         text: "Home",
         icon: "mdi:home",
-        onClick: () => dispatch(CLOSE_REPOSITORY())
+        onClick: callbacks.closeRepository
       }
     ],
-    [dispatch]
+    [callbacks]
   );
   const interactiveShellConfigured = !!interactiveShell;
   const titleBarActions: ActionItem[] = useMemo(
     () => [
       {
-        key: "toggleInterativeShell",
+        key: "toggleConsole",
         text: "Show / hide interactive shell",
         icon: "mdi:console",
         disabled: !interactiveShellConfigured,
-        onClick: () => dispatch(TOGGLE_INTERACTIVE_SHELL())
+        onClick: callbacks.toggleInteractiveShell
       }
     ],
-    [interactiveShellConfigured, dispatch]
+    [interactiveShellConfigured, callbacks]
   );
   if (!repoPath || !tab) {
     return <></>;
   }
   return (
     <MainWindow title={repoPath} drawerItems={drawerItems} titleBarActions={titleBarActions}>
+      <CommandGroup name="RepositoryPage">
+        <Cmd name="NextTab" hotkey="Ctrl+Tab" handler={callbacks.selectNextTab} />
+        <Cmd name="PrevTab" hotkey="Ctrl+Shift+Tab" handler={callbacks.selectPrevTab} />
+        <Cmd name="CloseTab" hotkey="Ctrl+F4" handler={callbacks.closeTab} />
+        <Cmd name="ToggleShell" hotkey="Ctrl+T" handler={callbacks.toggleInteractiveShell} />
+        <Cmd name="CloseRepository" hotkey="Ctrl+H" handler={callbacks.closeRepository} />
+      </CommandGroup>
       <SplitterPanel
         persistKey="repository"
         initialDirection="horiz"
@@ -128,8 +112,8 @@ const RepositoryPage: React.VFC = () => {
             tabs={tab.tabs}
             currentTabIndex={tab.currentIndex}
             renderTabContent={renderTabContent}
-            selectTab={selectTab}
-            closeTab={closeTab}
+            selectTab={callbacks.selectTab}
+            closeTab={callbacks.closeTab}
           />
         }
         second={
@@ -137,7 +121,7 @@ const RepositoryPage: React.VFC = () => {
             open={showInteractiveShell && !!interactiveShell}
             cmd={interactiveShell!}
             cwd={repoPath}
-            hide={hideInteractiveShell}
+            hide={callbacks.hideInteractiveShell}
             fontFamily={monospace}
           />
         }

@@ -6,13 +6,14 @@ import WorkingTree from "./WorkingTree";
 import browserApi from "@/browserApi";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "@/store";
-import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { SHOW_ERROR } from "@/store/misc";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { CommitLogItems } from "@/store/repository";
 import useListItemSelector from "@/hooks/useListItemSelector";
 import { serializeError } from "@/util";
 import { VirtualListMethods } from "../VirtualList";
+import { CommandGroup, Cmd } from "../CommandGroup";
+import showLsTree from "@/store/thunk/showLsTree";
 
 const CommitLogInner: React.VFC<{
   active: boolean;
@@ -23,35 +24,9 @@ const CommitLogInner: React.VFC<{
   const dispatch = useDispatch();
   const [logDetail, setLogDetail] = useState<LogDetail | undefined>(undefined);
   const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
-  const commandGroup = useCommandGroup();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
   const listRef = useRef<VirtualListMethods>(null);
-  useEffect(() => {
-    if (!active) {
-      return;
-    }
-    const groupName = "CommitLog";
-    commandGroup.register({
-      groupName,
-      commands: [
-        {
-          name: "NextCommit",
-          hotkey: "Ctrl+N",
-          handler: itemSelector.moveNext
-        },
-        {
-          name: "PrevCommit",
-          hotkey: "Ctrl+P",
-          handler: itemSelector.movePrevious
-        }
-      ]
-    });
-    return () => {
-      commandGroup.unregister(groupName);
-    };
-  }, [active, itemSelector, commandGroup]);
-
   const selectLog = useMemo(
     () =>
       debounce(async (index: number) => {
@@ -94,30 +69,40 @@ const CommitLogInner: React.VFC<{
     },
     [currentRefs, logDetail, fontSize]
   );
-
+  const showLsTreeTab = useCallback(
+    () => logDetail?.type === "commit" && dispatch(showLsTree(logDetail)),
+    [logDetail, dispatch]
+  );
   return (
-    <SplitterPanel
-      persistKey="repository/CommitLog"
-      initialDirection="horiz"
-      initialRatio={0.7}
-      splitterThickness={5}
-      allowDirectionChange
-      firstPanelMinSize="20%"
-      secondPanelMinSize="20%"
-      first={
-        <SelectedIndexProvider value={selectedIndex}>
-          <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={itemSelector.handleKeyDown}>
-            <CommitList
-              ref={listRef}
-              {...log}
-              fontSize={fontSize}
-              onRowClick={itemSelector.handleRowClick}
-            />
-          </div>
-        </SelectedIndexProvider>
-      }
-      second={detail}
-    />
+    <>
+      <CommandGroup name="CommitLog" enabled={active}>
+        <Cmd name="NextCommit" hotkey="Ctrl+N" handler={itemSelector.moveNext} />
+        <Cmd name="PrevCommit" hotkey="Ctrl+P" handler={itemSelector.movePrevious} />
+        <Cmd name="ShowLsTree" hotkey="Ctrl+L" handler={showLsTreeTab} />
+      </CommandGroup>
+      <SplitterPanel
+        persistKey="repository/CommitLog"
+        initialDirection="horiz"
+        initialRatio={0.7}
+        splitterThickness={5}
+        allowDirectionChange
+        firstPanelMinSize="20%"
+        secondPanelMinSize="20%"
+        first={
+          <SelectedIndexProvider value={selectedIndex}>
+            <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={itemSelector.handleKeyDown}>
+              <CommitList
+                ref={listRef}
+                {...log}
+                fontSize={fontSize}
+                onRowClick={itemSelector.handleRowClick}
+              />
+            </div>
+          </SelectedIndexProvider>
+        }
+        second={detail}
+      />
+    </>
   );
 };
 
