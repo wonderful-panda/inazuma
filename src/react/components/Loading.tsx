@@ -1,12 +1,9 @@
 import { Backdrop, CircularProgress } from "@material-ui/core";
-import classNames from "classnames";
 
 const Loading: React.VFC<{ open: boolean }> = ({ open }) => (
-  <div className={classNames("relative w-full h-full min-h-full min-y-full", !open && "hidden")}>
-    <Backdrop className="z-9999 absolute" open={open}>
-      <CircularProgress color="primary" size={64} />
-    </Backdrop>
-  </div>
+  <Backdrop className="z-9999 absolute bg-[#00000060]" open={open}>
+    <CircularProgress color="primary" size={64} />
+  </Backdrop>
 );
 
 export default Loading;

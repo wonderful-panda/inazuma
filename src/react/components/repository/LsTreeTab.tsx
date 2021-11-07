@@ -59,7 +59,7 @@ const LsTreeWithFilter: React.VFC<{
   }, [dispatch]);
 
   const getRowClass = useCallback(
-    (data: LstreeEntryData) => (data.path === blamePath ? "text-primary" : undefined),
+    (data: LstreeEntryData) => (data.path === blamePath ? "text-primary font-bold" : undefined),
     [blamePath]
   );
 
@@ -182,7 +182,7 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs, fontSize })
         />
       }
       second={
-        <>
+        <div className="flex flex-1 relative">
           {blame && (
             <BlamePanel
               persistKey="repository/LsTreeTab/BlamePanel"
@@ -194,7 +194,7 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs, fontSize })
             />
           )}
           {blameLoading && <Loading open />}
-        </>
+        </div>
       }
       allowDirectionChange
     />

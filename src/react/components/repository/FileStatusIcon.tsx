@@ -31,7 +31,7 @@ export interface FileStatusIconProps {
 const FileStatusIcon: React.VFC<FileStatusIconProps> = ({ statusCode }) => {
   const attr = getAttr(statusCode);
   return (
-    <span style={{ color: attr.color }} title={attr.title}>
+    <span style={{ color: attr.color, fontSize: "16px" }} title={attr.title}>
       <Icon icon={attr.icon} />
     </span>
   );
