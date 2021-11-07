@@ -31,7 +31,8 @@ module.exports = {
         gray: colors.grey
       },
       zIndex: {
-        9999: 9999
+        9999: 9999,
+        999: 999
       },
       cursor: {
         "col-resize": "col-resize",
