@@ -2,6 +2,7 @@ pub mod blame;
 pub mod commit_detail;
 pub mod file;
 pub mod find_repository_root;
+pub mod index;
 pub mod log;
 pub mod lstree;
 pub mod refs;

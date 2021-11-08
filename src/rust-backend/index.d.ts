@@ -114,4 +114,8 @@ export declare function saveToAsync(
   destPath: string
 ): Promise<void>;
 
+export declare function addToIndexAsync(repoPath: string, relPath: string): Promise<void>;
+
+export declare function removeFromIndexAsync(repoPath: string, relPath: string): Promise<void>;
+
 export declare function findRepositoryRootAsync(): Promise<string | undefined>;
