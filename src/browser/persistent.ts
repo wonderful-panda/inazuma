@@ -59,7 +59,7 @@ export const configSchema: Schema = {
     },
     fontSize: {
       type: "string",
-      pattern: "^(small|medium)$"
+      pattern: "^(x-small|small|medium)$"
     },
     recentListCount: {
       type: "integer",

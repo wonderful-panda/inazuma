@@ -32,48 +32,57 @@ const updateFont = (fontFamily: { standard?: string; monospace?: string }) => {
   setCssVariable("--inazuma-standard-fontfamily", fontFamily.standard || defaultFontfamily);
   setCssVariable("--inazuma-monospace-fontfamily", fontFamily.monospace || monospaceFontfamily);
 };
-const updateFontSize = (fontSize: string) => {
-  setCssVariable("--inazuma-font-size", fontSize);
+const fontSizeNumber = {
+  "x-small": 10,
+  small: 12,
+  medium: 16
 };
 
-// TODO: unify with talwind.config.js
-const muiTheme = createTheme({
-  palette: {
-    primary: {
-      main: lime.A700
+const updateFontSize = (fontSize: FontSize) => {
+  setCssVariable("--inazuma-font-size", `${fontSizeNumber[fontSize]}px`);
+};
+
+const createMuiTheme = (baseFontSize: FontSize) =>
+  createTheme({
+    palette: {
+      primary: {
+        main: lime.A700
+      },
+      secondary: {
+        main: yellow.A700
+      },
+      error: {
+        main: red[700]
+      },
+      warning: {
+        main: orange[700]
+      },
+      success: {
+        main: green[700]
+      },
+      info: {
+        main: blue[700]
+      },
+      background: {
+        default: "#222",
+        paper: "#333"
+      },
+      type: "dark"
     },
-    secondary: {
-      main: yellow.A700
+    typography: {
+      fontFamily: "inherit"
     },
-    error: {
-      main: red[700]
-    },
-    warning: {
-      main: orange[700]
-    },
-    success: {
-      main: green[700]
-    },
-    info: {
-      main: blue[700]
-    },
-    background: {
-      default: "#222",
-      paper: "#333"
-    },
-    type: "dark"
-  },
-  typography: {
-    fontFamily: "inherit"
-  },
-  overrides: {
-    MuiListItemIcon: {
-      root: {
-        minWidth: "40px"
+    overrides: {
+      MuiListItemIcon: {
+        root: {
+          minWidth: `${fontSizeNumber[baseFontSize] * 2.5}px`
+        }
       }
+    },
+    custom: {
+      baseFontSize: fontSizeNumber[baseFontSize]
     }
-  }
-});
+  });
 
 const init = async (dispatch: Dispatch) => {
   await loadStateToSessionStorage();
@@ -122,7 +131,9 @@ const init = async (dispatch: Dispatch) => {
 
 const App = () => {
   const dispatch = useDispatch();
+  const fontSize = useSelector((state) => state.persist.config.fontSize);
   const repoPath = useSelector((state) => state.repository.path);
+  const theme = useMemo(() => createMuiTheme(fontSize), [fontSize]);
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
     init(dispatch)
@@ -143,7 +154,7 @@ const App = () => {
     }
   }, [initializing, repoPath]);
   return (
-    <ThemeProvider theme={muiTheme}>
+    <ThemeProvider theme={theme}>
       <Suspense fallback={<Loading open />}>
         <CommandGroupProvider>
           <ContextMenuProvider>

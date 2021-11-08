@@ -1,3 +1,4 @@
+import { useTheme } from "@material-ui/core";
 import { forwardRef, useCallback, useMemo } from "react";
 import { GraphFragment } from "@/grapher";
 import CommitListRow from "./CommitListRow";
@@ -7,7 +8,6 @@ export interface CommitListProps {
   commits: Commit[];
   refs: Refs;
   graph: Record<string, GraphFragment>;
-  fontSize: FontSize;
   onRowClick?: (event: React.MouseEvent, index: number, item: Commit) => void;
 }
 
@@ -16,10 +16,11 @@ const getCommitListKey = (item: Commit) => item.id;
 let nextId = 0;
 
 const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
-  { commits, graph, refs, fontSize, onRowClick },
+  { commits, graph, refs, onRowClick },
   ref
 ) => {
-  const rowHeight = fontSize === "medium" ? 52 : 46;
+  const theme = useTheme();
+  const rowHeight = theme.custom.baseFontSize * 3.25;
   const instanceId = useMemo(() => (nextId++).toString(), []);
   const renderRow = useCallback(
     ({ index, item }: { index: number; item: Commit }) => {

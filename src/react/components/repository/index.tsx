@@ -28,7 +28,6 @@ const RepositoryPage: React.VFC = () => {
   const tab = useSelector((state) => state.repository.tab);
   const showInteractiveShell = useSelector((state) => state.misc.showInteractiveShell);
   const monospace = useSelector((state) => state.persist.config.fontFamily.monospace);
-  const fontSize = useSelector((state) => state.persist.config.fontSize);
   const interactiveShell = useSelector((state) => state.persist.config.interactiveShell);
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
@@ -39,17 +38,15 @@ const RepositoryPage: React.VFC = () => {
         case "commits":
           return <CommitLog active={active} />;
         case "file":
-          return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} fontSize={fontSize} />;
+          return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} />;
         case "tree":
-          return (
-            <LsTreeTab repoPath={repoPath} sha={tab.payload.sha} refs={refs} fontSize={fontSize} />
-          );
+          return <LsTreeTab repoPath={repoPath} sha={tab.payload.sha} refs={refs} />;
         default:
           assertNever(tab);
           break;
       }
     },
-    [repoPath, refs, fontSize]
+    [repoPath, refs]
   );
   const callbacks = useMemo(
     () => ({

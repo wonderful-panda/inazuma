@@ -1,27 +1,29 @@
 import { forwardRef, useCallback } from "react";
 import FileCommitListRow from "./FileCommitListRow";
 import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
+import { useTheme } from "@material-ui/core";
 
 export interface FileCommitListProps extends VirtualListEvents<FileCommit> {
   commits: readonly FileCommit[];
   refs: Refs | undefined;
-  fontSize: FontSize;
 }
 
-export const getRowHeight = (commit: FileCommit, fileSize: FontSize) => {
-  if (fileSize === "medium") {
-    return commit.oldPath ? 76 : 52;
+export const getRowHeight = (commit: FileCommit, baseFontSize: number) => {
+  if (commit.oldPath) {
+    return baseFontSize * 4.75;
   } else {
-    return commit.oldPath ? 64 : 44;
+    return baseFontSize * 3.25;
   }
 };
 
 export const getFileCommitListKey = (item: FileCommit) => item.id;
 
 const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCommitListProps> = (
-  { commits, refs, fontSize, ...rest },
+  { commits, refs, ...rest },
   ref
 ) => {
+  const theme = useTheme();
+  const baseFontSize = theme.custom.baseFontSize;
   const renderRow = useCallback(
     ({ index, item }: { index: number; item: FileCommit }) => (
       <FileCommitListRow
@@ -29,16 +31,16 @@ const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCom
         index={index}
         head={item.id === refs?.head}
         refs={refs?.refsById[item.id] || []}
-        height={getRowHeight(item, fontSize)}
+        height={getRowHeight(item, baseFontSize)}
       />
     ),
-    [refs, fontSize]
+    [refs, baseFontSize]
   );
   const rowHeight = useCallback(
     (index: number) => {
-      return getRowHeight(commits[index], fontSize);
+      return getRowHeight(commits[index], baseFontSize);
     },
-    [commits, fontSize]
+    [commits, baseFontSize]
   );
   return (
     <VirtualList<FileCommit>

@@ -1,6 +1,7 @@
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
 import { getFileName } from "@/util";
+import { useTheme } from "@material-ui/core";
 import classNames from "classnames";
 import { useCallback } from "react";
 import { VirtualListEvents } from "../VirtualList";
@@ -9,7 +10,6 @@ import VirtualTree from "../VirtualTree";
 export interface LsTreeProps extends VirtualListEvents<TreeItemVM<LstreeEntryData>> {
   treeModelState: TreeModelState<LstreeEntryData>;
   treeModelDispatch: TreeModelDispatch<LstreeEntryData>;
-  fontSize: FontSize;
   getRowClass?: (item: LstreeEntryData) => string | undefined;
 }
 
@@ -37,10 +37,11 @@ const LsTreeRow: React.VFC<{
 const LsTree: React.VFC<LsTreeProps> = ({
   treeModelState,
   treeModelDispatch,
-  fontSize,
   getRowClass,
   ...rest
 }) => {
+  const theme = useTheme();
+  const itemSize = theme.custom.baseFontSize * 2;
   const renderRow = useCallback(
     (item: LstreeEntry, index: number) => (
       <LsTreeRow item={item} index={index} getRowClass={getRowClass} />
@@ -52,7 +53,7 @@ const LsTree: React.VFC<LsTreeProps> = ({
       treeModelState={treeModelState}
       treeModelDispatch={treeModelDispatch}
       getItemKey={getItemKey}
-      itemSize={fontSize === "medium" ? 32 : 24}
+      itemSize={itemSize}
       renderRow={renderRow}
       {...rest}
     />

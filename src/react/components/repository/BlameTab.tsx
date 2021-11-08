@@ -8,10 +8,9 @@ export interface BlameTabProps {
   path: string;
   sha: string;
   refs: Refs | undefined;
-  fontSize: FontSize;
 }
 
-const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs, fontSize }) => {
+const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
   const [blame, setBlame] = useState<Blame | undefined>(undefined);
   useEffect(() => {
     if (!repoPath) {
@@ -26,14 +25,7 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs, fontSiz
   return !blame ? (
     <Loading open />
   ) : (
-    <BlamePanel
-      persistKey="repository/BlameTab"
-      blame={blame}
-      path={path}
-      sha={sha}
-      refs={refs}
-      fontSize={fontSize}
-    />
+    <BlamePanel persistKey="repository/BlameTab" blame={blame} path={path} sha={sha} refs={refs} />
   );
 };
 

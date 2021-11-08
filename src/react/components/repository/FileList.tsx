@@ -4,9 +4,9 @@ import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualLi
 import { FileCommand } from "@/commands/types";
 import { useDispatch } from "@/store";
 import { executeFileCommand } from "@/commands";
+import { useTheme } from "@material-ui/core";
 
 export interface FileListProps extends VirtualListEvents<FileEntry> {
-  fontSize: FontSize;
   files: FileEntry[];
 }
 
@@ -26,10 +26,11 @@ export const useFileListRowEventHandler = (command: FileCommand, commit: DagNode
 };
 
 const FileList: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps> = (
-  { files, fontSize, ...rest },
+  { files, ...rest },
   ref
 ) => {
-  const rowHeight = fontSize === "medium" ? 48 : 40;
+  const theme = useTheme();
+  const rowHeight = theme.custom.baseFontSize * 3;
   const renderRow = useCallback(
     ({ index, item }: { index: number; item: FileEntry }) => {
       return <FileListRow file={item} index={index} height={rowHeight} />;

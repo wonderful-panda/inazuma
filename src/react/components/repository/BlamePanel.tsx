@@ -14,7 +14,6 @@ setupMonaco();
 export interface SecondPanelProps {
   blame: Blame;
   path: string;
-  fontSize: number;
   selectedCommitId: string | undefined;
   onUpdateSelectedCommitId: (value: string | undefined) => void;
 }
@@ -22,7 +21,6 @@ export interface SecondPanelProps {
 const SecondPanel: React.VFC<SecondPanelProps> = ({
   blame,
   path,
-  fontSize,
   selectedCommitId,
   onUpdateSelectedCommitId
 }) => {
@@ -45,7 +43,6 @@ const SecondPanel: React.VFC<SecondPanelProps> = ({
       <BlameViewer
         blame={blame}
         language={language}
-        fontSize={fontSize}
         selectedCommitId={selectedCommitId}
         onUpdateSelectedcommitId={onUpdateSelectedCommitId}
         onHoveredCommitIdChanged={onHoveredCommitIdChanged}
@@ -61,10 +58,9 @@ export interface BlamePanelProps {
   path: string;
   sha: string;
   refs: Refs | undefined;
-  fontSize: FontSize;
 }
 
-const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, refs, fontSize }) => {
+const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, refs }) => {
   const handleRowContextMenu = useFileCommitContextMenu();
   const [selectedItem, setSelectedItem] = useState({
     index: -1,
@@ -112,7 +108,6 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, refs,
               ref={listRef}
               commits={blame.commits}
               refs={refs}
-              fontSize={fontSize}
               onRowClick={handleRowClick}
               onRowContextMenu={handleRowContextMenu}
             />
@@ -123,7 +118,6 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, refs,
         <SecondPanel
           blame={blame}
           path={path}
-          fontSize={fontSize === "medium" ? 15 : 12}
           selectedCommitId={selectedItem.commitId}
           onUpdateSelectedCommitId={setSelectedCommitId}
         />

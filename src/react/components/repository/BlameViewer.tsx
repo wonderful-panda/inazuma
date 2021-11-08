@@ -1,7 +1,7 @@
 import { formatDateL } from "@/date";
 import { lineNumbersToRanges } from "@/monaco";
 import { shortHash } from "@/util";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core";
 import * as monaco from "monaco-editor";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -55,7 +55,6 @@ const useStyles = makeStyles({
 
 export interface BlameViewerProps {
   language: string;
-  fontSize: number;
   blame: Blame;
   selectedCommitId: string | undefined;
   onUpdateSelectedcommitId: (value: string | undefined) => void;
@@ -129,11 +128,11 @@ const getHunkBorderLineNumbers = (blame: Blame) => {
 const BlameViewer: React.VFC<BlameViewerProps> = ({
   language,
   blame,
-  fontSize,
   selectedCommitId,
   onUpdateSelectedcommitId,
   onHoveredCommitIdChanged
 }) => {
+  const theme = useTheme();
   const styles = useStyles();
   const [editor, setEditor] = useState<IStandaloneCodeEditor | null>(null);
   const [hoveredCommitId, setHoveredCommitId] = useState<string | undefined>(undefined);
@@ -141,8 +140,8 @@ const BlameViewer: React.VFC<BlameViewerProps> = ({
     setEditor(editor);
   }, []);
   const options = useMemo<IEditorConstructionOptions>(
-    () => createEditorOptions(blame, fontSize),
-    [blame, fontSize]
+    () => createEditorOptions(blame, theme.custom.baseFontSize),
+    [blame, theme.custom.baseFontSize]
   );
 
   const onResize = useCallback(() => {

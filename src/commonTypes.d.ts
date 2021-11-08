@@ -22,7 +22,7 @@ declare global {
   type Consumer<T> = (value: T) => void;
   type Func<P, R> = (arg: P) => R;
 
-  type FontSize = "small" | "medium";
+  type FontSize = "x-small" | "small" | "medium";
 
   /**
    * Auto updated parsistent data written to .environment.json

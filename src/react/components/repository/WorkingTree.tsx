@@ -10,7 +10,6 @@ import FileList, { useFileListRowEventHandler } from "./FileList";
 export interface WorkingTreeProps {
   stat: WorkingTreeStat;
   orientation: Orientation;
-  fontSize: FontSize;
 }
 
 type Active = "unstaged" | "staged" | "none";
@@ -43,7 +42,7 @@ const getActive = (
   }
 };
 
-const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize }) => {
+const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
   const unstagedListRef = useRef<VirtualListMethods>(null);
   const stagedListRef = useRef<VirtualListMethods>(null);
   const [selection, setSelection] = useState<Selection>({
@@ -124,7 +123,6 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
                 <FileList
                   ref={unstagedListRef}
                   files={unstagedFiles}
-                  fontSize={fontSize}
                   onRowClick={unstagedSelector.handleRowClick}
                   onRowDoubleClick={handleUnstagedRowDoubleClick}
                 />
@@ -147,7 +145,6 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation, fontSize 
                 <FileList
                   ref={stagedListRef}
                   files={stat.stagedFiles}
-                  fontSize={fontSize}
                   onRowClick={stagedSelector.handleRowClick}
                   onRowDoubleClick={handleStagedRowDoubleClick}
                 />

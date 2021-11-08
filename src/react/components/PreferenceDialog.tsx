@@ -44,7 +44,11 @@ const reducer = (state: Config, action: Action) => {
         newState.fontFamily = { ...state.fontFamily, monospace: value };
         break;
       case "fontSize":
-        newState.fontSize = value === "small" ? "small" : "medium";
+        if (value === "x-small" || value === "small") {
+          newState.fontSize = value;
+        } else {
+          newState.fontSize = "medium";
+        }
         break;
       case "externalDiff":
         newState.externalDiffTool = value;
@@ -103,6 +107,11 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
               value={state.fontSize}
               onChange={(payload) => dispatch({ type: "fontSize", payload })}
             >
+              <FormControlLabel
+                value="x-small"
+                control={<Radio color="primary" />}
+                label="x-small"
+              />
               <FormControlLabel value="small" control={<Radio color="primary" />} label="small" />
               <FormControlLabel value="medium" control={<Radio color="primary" />} label="medium" />
             </RadioGroup>

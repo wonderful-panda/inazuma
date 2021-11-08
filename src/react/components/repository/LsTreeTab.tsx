@@ -19,15 +19,13 @@ export interface LsTreeTabProps {
   repoPath: string;
   sha: string;
   refs: Refs | undefined;
-  fontSize: FontSize;
 }
 
 const LsTreeWithFilter: React.VFC<{
-  fontSize: FontSize;
   entries: readonly LstreeEntry[];
   blamePath: string | undefined;
   onUpdateBlamePath: (value: string | undefined) => void;
-}> = ({ fontSize, entries, blamePath, onUpdateBlamePath }) => {
+}> = ({ entries, blamePath, onUpdateBlamePath }) => {
   const [filterText, setFilterText] = useState("");
   const onFilterTextChange = useMemo(
     () =>
@@ -111,7 +109,6 @@ const LsTreeWithFilter: React.VFC<{
           <LsTree
             treeModelState={state}
             treeModelDispatch={dispatch}
-            fontSize={fontSize}
             onRowClick={handleRowClick}
             onRowDoubleClick={handleRowDoubleClick}
             getRowClass={getRowClass}
@@ -122,7 +119,7 @@ const LsTreeWithFilter: React.VFC<{
   );
 };
 
-const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs, fontSize }) => {
+const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs }) => {
   const [entries, setEntries] = useState<LstreeEntry[]>([]);
   const [blame, setBlame] = useState<{ blame: Blame; path: string } | undefined>(undefined);
   const [blameLoading, setBlameLoading] = useState(false);
@@ -176,7 +173,6 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs, fontSize })
       first={
         <LsTreeWithFilter
           entries={entries}
-          fontSize={fontSize}
           blamePath={blame?.path}
           onUpdateBlamePath={onUpdateBlamePath}
         />
@@ -190,7 +186,6 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs, fontSize })
               path={blame.path}
               sha={sha}
               refs={refs}
-              fontSize={fontSize}
             />
           )}
           {blameLoading && <Loading open />}
