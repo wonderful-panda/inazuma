@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { IconButton } from "@material-ui/core";
 import { useCallback, useState } from "react";
-import { Icon } from "@iconify/react";
+import { Icon } from "./Icon";
 
 interface SplitterProps {
   horiz: boolean;
@@ -28,7 +28,10 @@ const RotateButton: React.VFC<{
     title="Switch direction"
     onClick={onClick}
   >
-    <Icon icon={`carbon:drag-${horiz ? "horizontal" : "vertical"}`} />
+    <Icon
+      icon={`carbon:drag-${horiz ? "horizontal" : "vertical"}`}
+      className="min-w-[16px] min-h-[16px]"
+    />
   </IconButton>
 );
 
