@@ -101,6 +101,7 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
                 <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={handleKeyDown}>
                   <FileList
                     ref={listRef}
+                    commit={commit}
                     files={commit.files}
                     onRowClick={handleRowClick}
                     onRowDoubleClick={onRowDoubleClick}

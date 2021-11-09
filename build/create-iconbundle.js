@@ -19,7 +19,9 @@ const icons = {
     "history",
     "home",
     "information-outline",
-    "menu"
+    "menu",
+    "minus",
+    "plus"
   ],
   octicon: [
     "diff-added-16",

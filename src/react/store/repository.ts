@@ -23,6 +23,7 @@ export interface CommitLogItems {
 interface State {
   path: string | undefined;
   log: CommitLogItems | undefined;
+  selectedLogDetail: LogDetail | undefined;
   tab:
     | {
         tabs: RepositoryTab[];
@@ -34,6 +35,7 @@ interface State {
 const initialState: State = {
   path: undefined,
   log: undefined,
+  selectedLogDetail: undefined,
   tab: undefined
 };
 
@@ -50,6 +52,7 @@ const setLog = (
 ) => {
   state.path = path;
   state.log = log;
+  state.selectedLogDetail = undefined;
   state.tab = {
     tabs: [{ type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false }],
     currentIndex: 0
@@ -59,7 +62,17 @@ const setLog = (
 const closeRepository = (state: State) => {
   state.path = undefined;
   state.log = undefined;
+  state.selectedLogDetail = undefined;
   state.tab = undefined;
+};
+
+const setSelectedLogDetail = (
+  state: State,
+  { payload }: PayloadAction<{ repoPath: string; value: LogDetail | undefined }>
+) => {
+  if (state.path === payload.repoPath) {
+    state.selectedLogDetail = payload.value;
+  }
 };
 
 const addTab = ({ tab }: State, { payload }: PayloadAction<RepositoryTab>) => {
@@ -117,6 +130,7 @@ const slice = createSlice({
   initialState,
   reducers: {
     setLog,
+    setSelectedLogDetail,
     closeRepository,
     addTab,
     removeTab,
@@ -128,6 +142,7 @@ const slice = createSlice({
 
 export const {
   setLog: _SET_LOG,
+  setSelectedLogDetail: _SET_SELECTED_LOG_DETAIL,
   closeRepository: CLOSE_REPOSITORY,
   addTab: ADD_TAB,
   removeTab: REMOVE_TAB,

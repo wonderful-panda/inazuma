@@ -6,7 +6,7 @@ export const diffWithParent: FileCommand = {
   label: "Compare with parent",
   icon: "octicon:git-compare-16",
   hidden: (commit, file) => {
-    if (commit.parentIds.length === 0) {
+    if (commit.id === "--" || commit.parentIds.length === 0) {
       return true;
     }
     if (file.statusCode === "A" || file.statusCode === "D") {
@@ -28,8 +28,8 @@ export const diffWithLocal: FileCommand = {
   id: "DiffWithLocal",
   label: "Compare with local",
   icon: "octicon:git-compare-16",
-  hidden(_commit, file) {
-    if (file.statusCode === "D") {
+  hidden(commit, file) {
+    if (commit.id === "--" || file.statusCode === "D") {
       return true;
     }
     return false;
@@ -46,7 +46,7 @@ export const diffUnstaged: FileCommand = {
   label: "Compare with Staged",
   icon: "octicon:git-compare-16",
   hidden(commit, file) {
-    if (commit.id !== "--") {
+    if (commit.id !== "--" || !file.unstaged) {
       return true;
     }
     if (file.statusCode === "A" || file.statusCode === "D") {
@@ -66,7 +66,7 @@ export const diffStaged: FileCommand = {
   label: "Compare with HEAD",
   icon: "octicon:git-compare-16",
   hidden(commit, file) {
-    if (commit.id !== "--") {
+    if (commit.id !== "--" || !!file.unstaged) {
       return true;
     }
     if (file.statusCode === "A" || file.statusCode === "D") {

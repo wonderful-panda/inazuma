@@ -1,6 +1,8 @@
+import { stage, unstage } from "@/commands/staging";
 import { diffStaged, diffUnstaged } from "@/commands/diff";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import useListItemSelector from "@/hooks/useListItemSelector";
+import { useFileContextMenu } from "@/hooks/useContextMenu";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FlexCard from "../FlexCard";
 import SplitterPanel from "../PersistSplitterPanel";
@@ -42,7 +44,11 @@ const getActive = (
   }
 };
 
+const unstagedActions = [diffUnstaged, stage];
+const stagedActions = [diffStaged, unstage];
+
 const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
+  const handleContextMenu = useFileContextMenu(stat);
   const unstagedListRef = useRef<VirtualListMethods>(null);
   const stagedListRef = useRef<VirtualListMethods>(null);
   const [selection, setSelection] = useState<Selection>({
@@ -74,10 +80,10 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
   useEffect(() => unstagedListRef.current?.scrollToItem(unstagedIndex), [unstagedIndex]);
   useEffect(() => stagedListRef.current?.scrollToItem(stagedIndex), [stagedIndex]);
 
-  const unstagedFiles = useMemo(() => {
+  const unstagedFiles = useMemo<FileEntry[]>(() => {
     const ret = [
-      ...stat.unstagedFiles,
-      ...stat.untrackedFiles.map((f) => ({ path: f, statusCode: "?" }))
+      ...stat.unstagedFiles.map((f) => ({ ...f, unstaged: true })),
+      ...stat.untrackedFiles.map((f) => ({ path: f, statusCode: "?", unstaged: true }))
     ];
     ret.sort((a, b) => a.path.localeCompare(b.path));
     return ret;
@@ -122,9 +128,12 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
               >
                 <FileList
                   ref={unstagedListRef}
+                  commit={stat}
                   files={unstagedFiles}
+                  actions={unstagedActions}
                   onRowClick={unstagedSelector.handleRowClick}
                   onRowDoubleClick={handleUnstagedRowDoubleClick}
+                  onRowContextMenu={handleContextMenu}
                 />
               </div>
             </SelectedIndexProvider>
@@ -144,9 +153,12 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
               >
                 <FileList
                   ref={stagedListRef}
+                  commit={stat}
                   files={stat.stagedFiles}
+                  actions={stagedActions}
                   onRowClick={stagedSelector.handleRowClick}
                   onRowDoubleClick={handleStagedRowDoubleClick}
+                  onRowContextMenu={handleContextMenu}
                 />
               </div>
             }

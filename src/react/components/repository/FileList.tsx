@@ -7,7 +7,9 @@ import { executeFileCommand } from "@/commands";
 import { useTheme } from "@material-ui/core";
 
 export interface FileListProps extends VirtualListEvents<FileEntry> {
+  commit: DagNode;
   files: FileEntry[];
+  actions?: readonly FileCommand[];
 }
 
 const getFileListKey = (item: FileEntry) => `${item.path}:${item.statusCode}`;
@@ -26,16 +28,24 @@ export const useFileListRowEventHandler = (command: FileCommand, commit: DagNode
 };
 
 const FileList: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps> = (
-  { files, ...rest },
+  { commit, files, actions, ...rest },
   ref
 ) => {
   const theme = useTheme();
   const rowHeight = theme.custom.baseFontSize * 3;
   const renderRow = useCallback(
     ({ index, item }: { index: number; item: FileEntry }) => {
-      return <FileListRow file={item} index={index} height={rowHeight} />;
+      return (
+        <FileListRow
+          commit={commit}
+          file={item}
+          index={index}
+          height={rowHeight}
+          actions={actions}
+        />
+      );
     },
-    [rowHeight]
+    [rowHeight, commit, actions]
   );
   return (
     <VirtualList<FileEntry>

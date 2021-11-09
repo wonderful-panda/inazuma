@@ -1,9 +1,12 @@
 import { Dispatch } from "@/store";
 import { diffStaged, diffUnstaged, diffWithLocal, diffWithParent } from "./diff";
 import { showFileContent } from "./showFileContent";
+import { stage, unstage } from "./staging";
 import { FileCommand } from "./types";
 
 export const fileCommands = [
+  stage,
+  unstage,
   diffWithParent,
   diffWithLocal,
   diffStaged,

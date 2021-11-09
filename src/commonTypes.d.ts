@@ -6,7 +6,9 @@ import type * as Electron from "electron";
 
 declare global {
   type Commit = backend.Commit;
-  type FileEntry = backend.FileEntry;
+  type FileEntry = backend.FileEntry & {
+    unstaged?: boolean;
+  };
   type LstreeEntry = backend.LstreeEntry;
   type LstreeEntryData = LstreeEntry["data"];
   type CommitDetail = backend.CommitDetail;
@@ -135,6 +137,8 @@ declare global {
     runInteractiveShell(curdir: string): Promise<void>;
     showExternalDiff(params: { repoPath: string; left: FileSpec; right: FileSpec }): Promise<void>;
     getTextFileContent(params: { repoPath: string; file: FileSpec }): Promise<TextFile>;
+    addToIndex(params: { repoPath: string; relPath: string }): Promise<void>;
+    removeFromIndex(params: { repoPath: string; relPath: string }): Promise<void>;
     yankText(text: string): Promise<void>;
     showOpenDialog(options: Electron.OpenDialogOptions): Promise<Electron.OpenDialogReturnValue>;
     __openPty(options: OpenPtyOptions): Promise<number>;

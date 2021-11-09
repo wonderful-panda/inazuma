@@ -3,45 +3,44 @@ import SplitterPanel from "../PersistSplitterPanel";
 import CommitDetail from "./CommitDetail";
 import CommitList from "./CommitList";
 import WorkingTree from "./WorkingTree";
-import browserApi from "@/browserApi";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "@/store";
-import { SHOW_ERROR } from "@/store/misc";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { CommitLogItems } from "@/store/repository";
 import useListItemSelector from "@/hooks/useListItemSelector";
-import { serializeError } from "@/util";
 import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import showLsTree from "@/store/thunk/showLsTree";
+import showLogDetali from "@/store/thunk/showLogDetail";
 
 const CommitLogInner: React.VFC<{
   active: boolean;
   repoPath: string;
   log: CommitLogItems;
-}> = ({ active, repoPath, log }) => {
+  logDetail: LogDetail | undefined;
+}> = ({ active, repoPath, log, logDetail }) => {
   const dispatch = useDispatch();
-  const [logDetail, setLogDetail] = useState<LogDetail | undefined>(undefined);
-  const [currentRefs, setCurrentRefs] = useState<Ref[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
   const listRef = useRef<VirtualListMethods>(null);
   const selectLog = useMemo(
     () =>
       debounce(async (index: number) => {
-        if (!repoPath && index < 0) {
-          return;
-        }
-        const sha = log.commits[index].id;
-        try {
-          setLogDetail(await browserApi.getLogDetail({ repoPath, sha }));
-          setCurrentRefs(log.refs.refsById[sha] || []);
-        } catch (error) {
-          dispatch(SHOW_ERROR({ error: serializeError(error) }));
+        if (repoPath && 0 <= index) {
+          const sha = log.commits[index].id;
+          dispatch(showLogDetali(sha));
         }
       }, 200),
-    [repoPath, log.commits, log.refs, dispatch]
+    [repoPath, log.commits, dispatch]
   );
+  const currentRefs = useMemo(() => {
+    if (!logDetail) {
+      return [];
+    } else {
+      return log.refs.refsById[logDetail.id] || [];
+    }
+  }, [logDetail, log]);
+
   useEffect(() => {
     selectLog(selectedIndex);
   }, [selectedIndex, selectLog]);
@@ -98,10 +97,11 @@ const CommitLogInner: React.VFC<{
 const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
   const repoPath = useSelector((state) => state.repository.path);
   const log = useSelector((state) => state.repository.log);
+  const logDetail = useSelector((state) => state.repository.selectedLogDetail);
   if (!repoPath || !log) {
     return <></>;
   }
-  return <CommitLogInner active={active} repoPath={repoPath} log={log} />;
+  return <CommitLogInner active={active} repoPath={repoPath} log={log} logDetail={logDetail} />;
 };
 
 export default CommitLog;

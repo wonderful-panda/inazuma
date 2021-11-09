@@ -14,7 +14,9 @@ import {
   filelogAsync,
   refsAsync,
   getCommitDetailAsync,
-  lstreeAsync
+  lstreeAsync,
+  addToIndexAsync,
+  removeFromIndexAsync
 } from "inazuma-rust-backend";
 import { status } from "./status";
 
@@ -72,6 +74,12 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
     },
     getTextFileContent(_, { repoPath, file }) {
       return getTextFileContent(repoPath, file);
+    },
+    addToIndex(_, { repoPath, relPath }) {
+      return addToIndexAsync(repoPath, relPath);
+    },
+    removeFromIndex(_, { repoPath, relPath }) {
+      return removeFromIndexAsync(repoPath, relPath);
     },
     async yankText(_, text) {
       clipboard.writeText(text);

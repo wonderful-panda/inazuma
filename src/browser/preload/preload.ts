@@ -15,6 +15,8 @@ const keys: Record<keyof BrowserCommand, null> = {
   showOpenDialog: null,
   loadPersistentData: null,
   saveEnvironment: null,
+  addToIndex: null,
+  removeFromIndex: null,
   __openPty: null
 };
 
