@@ -105,7 +105,11 @@ const LsTreeWithFilter: React.VFC<{
         </IconButton>
       </div>
       <SelectedIndexProvider value={state.selectedIndex}>
-        <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={handleKeyDownWithEnter}>
+        <div
+          className="flex flex-1 m-1 p-1 border border-paper"
+          tabIndex={0}
+          onKeyDown={handleKeyDownWithEnter}
+        >
           <LsTree
             treeModelState={state}
             treeModelDispatch={dispatch}

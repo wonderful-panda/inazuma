@@ -100,7 +100,7 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, sha, 
   return (
     <div className="flex-col-nowrap flex-1 px-2 pt-1">
       <div className="flex-row-nowrap items-center text-xl p-2 font-mono font-bold">
-        <span className="pr-2 whitespace-nowrap">{path}</span>
+        <span className="pr-2 whitespace-nowrap text-secondary">{path}</span>
         <span className="text-greytext pr-2">@</span>
         <GitHash className="text-greytext" hash={sha} />
       </div>
@@ -110,7 +110,11 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, sha, 
         initialDirection="horiz"
         first={
           <SelectedIndexProvider value={selectedItem.index}>
-            <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={handleKeyDown}>
+            <div
+              className="flex flex-1 m-1 p-1 border border-paper"
+              tabIndex={0}
+              onKeyDown={handleKeyDown}
+            >
               <FileCommitList
                 ref={listRef}
                 commits={blame.commits}
