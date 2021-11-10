@@ -23,4 +23,4 @@ const showExternalDiff = (left: FileSpec, right: FileSpec) => {
   };
 };
 
-export default showExternalDiff;
+export const SHOW_EXTERNAL_DIFF = showExternalDiff;

@@ -17,7 +17,7 @@ import store, { Dispatch, useSelector, watch } from "./store";
 import { Provider, useDispatch } from "react-redux";
 import { RESET_RECENT_OPENED_REPOSITORIES, UPDATE_CONFIG } from "./store/persist";
 import { CommandGroupProvider } from "./context/CommandGroupContext";
-import openRepository from "./store/thunk/openRepository";
+import { OPEN_REPOSITORY } from "./store/thunk/openRepository";
 import Loading from "./components/Loading";
 import { SHOW_ERROR } from "./store/misc";
 import { serializeError } from "./util";
@@ -125,7 +125,7 @@ const init = async (dispatch: Dispatch) => {
     }
   );
   if (initialRepository) {
-    await dispatch(openRepository(initialRepository));
+    await dispatch(OPEN_REPOSITORY(initialRepository));
   }
 };
 

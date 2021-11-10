@@ -1,4 +1,4 @@
-import showFileContent_ from "@/store/thunk/showFileContent";
+import { SHOW_FILE_CONTENT } from "@/store/thunk/showFileContent";
 import { FileCommand } from "./types";
 
 export const showFileContent: FileCommand = {
@@ -12,6 +12,6 @@ export const showFileContent: FileCommand = {
     return false;
   },
   handler(dispatch, commit, file) {
-    dispatch(showFileContent_(commit, file));
+    dispatch(SHOW_FILE_CONTENT(commit, file));
   }
 };

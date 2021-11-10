@@ -29,4 +29,4 @@ const showFileContent = (commit: DagNode, file: FileEntry) => {
   };
 };
 
-export default showFileContent;
+export const SHOW_FILE_CONTENT = showFileContent;

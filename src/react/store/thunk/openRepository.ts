@@ -27,4 +27,4 @@ const openRepository = (realPath: string) => {
   };
 };
 
-export default openRepository;
+export const OPEN_REPOSITORY = openRepository;

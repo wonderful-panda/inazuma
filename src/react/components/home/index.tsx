@@ -5,7 +5,7 @@ import { MainWindow } from "@/components/MainWindow";
 import browserApi from "@/browserApi";
 import { useDispatch, useSelector } from "@/store";
 import { REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
-import openRepository from "@/store/thunk/openRepository";
+import { OPEN_REPOSITORY } from "@/store/thunk/openRepository";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { Command } from "@/context/CommandGroupContext";
 
@@ -13,7 +13,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const recentOpened = useSelector((state) => state.persist.env.recentOpenedRepositories);
   const handleOpen = useCallback(
-    (repoPath: string | undefined) => repoPath && dispatch(openRepository(repoPath)),
+    (repoPath: string | undefined) => repoPath && dispatch(OPEN_REPOSITORY(repoPath)),
     [dispatch]
   );
   const handleBrowseClick = useCallback(async () => {

@@ -1,4 +1,4 @@
-import showExternalDiff from "@/store/thunk/showExternalDiff";
+import { SHOW_EXTERNAL_DIFF } from "@/store/thunk/showExternalDiff";
 import { FileCommand } from "./types";
 
 export const diffWithParent: FileCommand = {
@@ -16,7 +16,7 @@ export const diffWithParent: FileCommand = {
   },
   handler(dispatch, commit, file) {
     dispatch(
-      showExternalDiff(
+      SHOW_EXTERNAL_DIFF(
         { path: file.oldPath || file.path, revspec: commit.id + "~1" },
         { path: file.path, revspec: commit.id }
       )
@@ -36,7 +36,7 @@ export const diffWithLocal: FileCommand = {
   },
   handler(dispatch, commit, file, path) {
     dispatch(
-      showExternalDiff({ path: file.path, revspec: commit.id }, { path, revspec: "UNSTAGED" })
+      SHOW_EXTERNAL_DIFF({ path: file.path, revspec: commit.id }, { path, revspec: "UNSTAGED" })
     );
   }
 };
@@ -56,7 +56,7 @@ export const diffUnstaged: FileCommand = {
   },
   handler(dispatch, _, file, path) {
     dispatch(
-      showExternalDiff({ path: file.path, revspec: "STAGED" }, { path, revspec: "UNSTAGED" })
+      SHOW_EXTERNAL_DIFF({ path: file.path, revspec: "STAGED" }, { path, revspec: "UNSTAGED" })
     );
   }
 };
@@ -75,6 +75,6 @@ export const diffStaged: FileCommand = {
     return false;
   },
   handler(dispatch, _, file, path) {
-    dispatch(showExternalDiff({ path: file.path, revspec: "HEAD" }, { path, revspec: "STAGED" }));
+    dispatch(SHOW_EXTERNAL_DIFF({ path: file.path, revspec: "HEAD" }, { path, revspec: "STAGED" }));
   }
 };
