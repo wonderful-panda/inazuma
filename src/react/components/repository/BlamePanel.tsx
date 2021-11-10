@@ -3,6 +3,7 @@ import { useFileCommitContextMenu } from "@/hooks/useContextMenu";
 import useListItemSelector from "@/hooks/useListItemSelector";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import GitHash from "../GitHash";
 import SplitterPanel from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
 import BlameFooter from "./BlameFooter";
@@ -60,7 +61,7 @@ export interface BlamePanelProps {
   refs: Refs | undefined;
 }
 
-const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, refs }) => {
+const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, sha, refs }) => {
   const handleRowContextMenu = useFileCommitContextMenu();
   const [selectedItem, setSelectedItem] = useState({
     index: -1,
@@ -97,33 +98,40 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, refs 
   useEffect(() => listRef.current?.scrollToItem(selectedItem.index), [selectedItem.index]);
 
   return (
-    <SplitterPanel
-      persistKey={persistKey}
-      initialRatio={0.3}
-      initialDirection="horiz"
-      first={
-        <SelectedIndexProvider value={selectedItem.index}>
-          <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={handleKeyDown}>
-            <FileCommitList
-              ref={listRef}
-              commits={blame.commits}
-              refs={refs}
-              onRowClick={handleRowClick}
-              onRowContextMenu={handleRowContextMenu}
-            />
-          </div>
-        </SelectedIndexProvider>
-      }
-      second={
-        <SecondPanel
-          blame={blame}
-          path={path}
-          selectedCommitId={selectedItem.commitId}
-          onUpdateSelectedCommitId={setSelectedCommitId}
-        />
-      }
-      allowDirectionChange
-    />
+    <div className="flex-col-nowrap flex-1 px-2 pt-1">
+      <div className="flex-row-nowrap items-center text-xl p-2 font-mono font-bold">
+        <span className="pr-2 whitespace-nowrap">{path}</span>
+        <span className="text-greytext pr-2">@</span>
+        <GitHash className="text-greytext" hash={sha} />
+      </div>
+      <SplitterPanel
+        persistKey={persistKey}
+        initialRatio={0.3}
+        initialDirection="horiz"
+        first={
+          <SelectedIndexProvider value={selectedItem.index}>
+            <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={handleKeyDown}>
+              <FileCommitList
+                ref={listRef}
+                commits={blame.commits}
+                refs={refs}
+                onRowClick={handleRowClick}
+                onRowContextMenu={handleRowContextMenu}
+              />
+            </div>
+          </SelectedIndexProvider>
+        }
+        second={
+          <SecondPanel
+            blame={blame}
+            path={path}
+            selectedCommitId={selectedItem.commitId}
+            onUpdateSelectedCommitId={setSelectedCommitId}
+          />
+        }
+        allowDirectionChange
+      />
+    </div>
   );
 };
 
