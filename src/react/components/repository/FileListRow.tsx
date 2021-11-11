@@ -67,9 +67,9 @@ const Actions: React.VFC<{
   const buttons = useMemo(
     () =>
       (actions || [])
-        .filter((a) => a.icon && !a.hidden?.(commit, file, file.path))
+        .filter((a) => a.icon && !a.hidden?.(commit, file))
         .map((a) => {
-          const disabled = !!a.disabled?.(commit, file, file.path);
+          const disabled = !!a.disabled?.(commit, file);
           const handleClick = (e: React.MouseEvent) => {
             e.stopPropagation();
             executeFileCommand(a, dispatch, commit, file);

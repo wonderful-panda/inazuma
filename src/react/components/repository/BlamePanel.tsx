@@ -62,7 +62,7 @@ export interface BlamePanelProps {
 }
 
 const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, sha, refs }) => {
-  const handleRowContextMenu = useFileCommitContextMenu();
+  const handleRowContextMenu = useFileCommitContextMenu(path);
   const [selectedItem, setSelectedItem] = useState({
     index: -1,
     commitId: undefined as string | undefined

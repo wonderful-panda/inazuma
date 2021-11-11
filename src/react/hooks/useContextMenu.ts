@@ -1,7 +1,32 @@
-import { executeFileCommand, fileCommands } from "@/commands";
-import { ContextMenuContext, ContextMenuItem } from "@/context/ContextMenuContext";
+import {
+  commitCommands,
+  commitCommandsToActions,
+  fileCommands,
+  fileCommandsToActions
+} from "@/commands";
+import { ContextMenuContext } from "@/context/ContextMenuContext";
 import { useDispatch } from "@/store";
-import { useCallback, useContext } from "react";
+import React, { useCallback, useContext } from "react";
+
+export const useCommitContextMenu = (): ((
+  event: React.MouseEvent,
+  index: number,
+  item: DagNode
+) => void) => {
+  const dispatch = useDispatch();
+  const { show } = useContext(ContextMenuContext);
+  const onCommitContextMenu = useCallback(
+    (event: React.MouseEvent, _index: number, commit: DagNode) => {
+      if (!commit) {
+        return;
+      }
+      const menus = commitCommandsToActions(dispatch, commitCommands, commit);
+      show(event, menus);
+    },
+    [show, dispatch]
+  );
+  return onCommitContextMenu;
+};
 
 export const useFileContextMenu = (
   commit: DagNode | undefined
@@ -13,15 +38,7 @@ export const useFileContextMenu = (
       if (!commit) {
         return;
       }
-      const menus: ContextMenuItem[] = fileCommands
-        .filter((c) => !c.hidden?.(commit, item, item.path))
-        .map((c) => {
-          const { id, label, icon } = c;
-          const disabled = c.disabled?.(commit, item, item.path);
-          const handler = () => executeFileCommand(c, dispatch, commit, item);
-          return { id, label, icon, disabled, handler };
-        });
-
+      const menus = fileCommandsToActions(dispatch, fileCommands, commit, item);
       show(event, menus);
     },
     [commit, show, dispatch]
@@ -29,27 +46,20 @@ export const useFileContextMenu = (
   return onFileContextMenu;
 };
 
-export const useFileCommitContextMenu = (): ((
-  event: React.MouseEvent,
-  index: number,
-  item: FileCommit
-) => void) => {
+export const useFileCommitContextMenu = (
+  localPath: string
+): ((event: React.MouseEvent, index: number, item: FileCommit) => void) => {
   const dispatch = useDispatch();
   const { show } = useContext(ContextMenuContext);
   const onFileContextMenu = useCallback(
     (event: React.MouseEvent, _index: number, item: FileCommit) => {
-      const menus: ContextMenuItem[] = fileCommands
-        .filter((c) => !c.hidden?.(item, item, item.path))
-        .map((c) => {
-          const { id, label, icon } = c;
-          const disabled = c.disabled?.(item, item, item.path);
-          const handler = () => executeFileCommand(c, dispatch, item, item, item.path);
-          return { id, label, icon, disabled, handler };
-        });
-
+      const menus = [
+        ...commitCommandsToActions(dispatch, commitCommands, item),
+        ...fileCommandsToActions(dispatch, fileCommands, item, item, localPath)
+      ];
       show(event, menus);
     },
-    [show, dispatch]
+    [show, localPath, dispatch]
   );
   return onFileContextMenu;
 };

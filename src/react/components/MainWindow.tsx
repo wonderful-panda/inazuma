@@ -9,27 +9,19 @@ import { useDispatch, useSelector } from "@/store";
 import { UPDATE_CONFIG } from "@/store/persist";
 import RawAlert from "./Alert";
 import { HIDE_ALERT } from "@/store/misc";
-import { IconName } from "@/types/IconName";
 import { CommandGroup, Cmd } from "./CommandGroup";
-
-export interface ActionItem {
-  key: string;
-  text: string;
-  icon: IconName;
-  disabled?: boolean;
-  onClick: () => void;
-}
+import { IconActionItem } from "@/commands/types";
 
 export interface MainWindowProps {
   title: string;
-  drawerItems?: readonly ActionItem[];
-  titleBarActions?: readonly ActionItem[];
+  drawerItems?: readonly IconActionItem[];
+  titleBarActions?: readonly IconActionItem[];
 }
 
 interface ApplicationDrawerProps {
   opened: boolean;
   close: () => void;
-  items: readonly ActionItem[];
+  items: readonly IconActionItem[];
 }
 
 const ApplicationDrawerInner: React.VFC<ApplicationDrawerProps> = ({ opened, close, items }) => {
@@ -38,11 +30,11 @@ const ApplicationDrawerInner: React.VFC<ApplicationDrawerProps> = ({ opened, clo
       <Typography variant="h6" component="div">
         <div className="w-52 pt-5" onClick={close}>
           {items.map((item) => (
-            <ListItem dense button disabled={item.disabled} key={item.key} onClick={item.onClick}>
+            <ListItem dense button disabled={item.disabled} key={item.id} onClick={item.handler}>
               <ListItemIcon>
                 <Icon className="text-2xl" icon={item.icon} />
               </ListItemIcon>
-              <ListItemText primary={item.text} disableTypography />
+              <ListItemText primary={item.label} disableTypography />
             </ListItem>
           ))}{" "}
         </div>{" "}
@@ -100,20 +92,20 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
     []
   );
 
-  const drawerItems = useMemo<readonly ActionItem[]>(
+  const drawerItems = useMemo<readonly IconActionItem[]>(
     () => [
       ...(props.drawerItems || []),
       {
-        key: "preference",
-        text: "Preference",
+        id: "preference",
+        label: "Preference",
         icon: "mdi:cog",
-        onClick: callbacks.openPreference
+        handler: callbacks.openPreference
       },
       {
-        key: "about",
-        text: "About",
+        id: "about",
+        label: "About",
         icon: "mdi:information-outline",
-        onClick: callbacks.openAbout
+        handler: callbacks.openAbout
       }
     ],
     [props.drawerItems, callbacks]
@@ -132,11 +124,11 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
         {props.titleBarActions &&
           props.titleBarActions.map((a) => (
             <IconButton
-              key={a.key}
-              title={a.text}
+              key={a.id}
+              title={a.label}
               disabled={a.disabled}
               className="p-0 w-9"
-              onClick={a.onClick}
+              onClick={a.handler}
             >
               <Icon className="text-2xl text-inherit" icon={a.icon} />
             </IconButton>

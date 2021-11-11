@@ -34,9 +34,12 @@ export const diffWithLocal: FileCommand = {
     }
     return false;
   },
-  handler(dispatch, commit, file, path) {
+  handler(dispatch, commit, file, localPath) {
     dispatch(
-      SHOW_EXTERNAL_DIFF({ path: file.path, revspec: commit.id }, { path, revspec: "UNSTAGED" })
+      SHOW_EXTERNAL_DIFF(
+        { path: file.path, revspec: commit.id },
+        { path: localPath, revspec: "UNSTAGED" }
+      )
     );
   }
 };
@@ -54,9 +57,12 @@ export const diffUnstaged: FileCommand = {
     }
     return false;
   },
-  handler(dispatch, _, file, path) {
+  handler(dispatch, _, file, localPath) {
     dispatch(
-      SHOW_EXTERNAL_DIFF({ path: file.path, revspec: "STAGED" }, { path, revspec: "UNSTAGED" })
+      SHOW_EXTERNAL_DIFF(
+        { path: file.path, revspec: "STAGED" },
+        { path: localPath, revspec: "UNSTAGED" }
+      )
     );
   }
 };
@@ -74,7 +80,12 @@ export const diffStaged: FileCommand = {
     }
     return false;
   },
-  handler(dispatch, _, file, path) {
-    dispatch(SHOW_EXTERNAL_DIFF({ path: file.path, revspec: "HEAD" }, { path, revspec: "STAGED" }));
+  handler(dispatch, _, file, localPath) {
+    dispatch(
+      SHOW_EXTERNAL_DIFF(
+        { path: file.path, revspec: "HEAD" },
+        { path: localPath, revspec: "STAGED" }
+      )
+    );
   }
 };

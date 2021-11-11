@@ -1,3 +1,4 @@
+import { IconActionItem } from "@/commands/types";
 import { useDispatch, useSelector } from "@/store";
 import { HIDE_INTERACTIVE_SHELL, TOGGLE_INTERACTIVE_SHELL } from "@/store/misc";
 import {
@@ -13,7 +14,7 @@ import { useCallback, useMemo } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import InteractiveShell from "../InteractiveShell";
 import lazyWithPreload from "../lazyWithPreload";
-import { ActionItem, MainWindow } from "../MainWindow";
+import { MainWindow } from "../MainWindow";
 import SplitterPanel from "../PersistSplitterPanel";
 import TabContainer, { TabContainerProps } from "../TabContainer";
 import CommitLog from "./CommitLog";
@@ -60,26 +61,26 @@ const RepositoryPage: React.VFC = () => {
     }),
     [dispatch]
   );
-  const drawerItems: ActionItem[] = useMemo(
+  const drawerItems: IconActionItem[] = useMemo(
     () => [
       {
-        key: "backToHome",
-        text: "Home",
+        id: "backToHome",
+        label: "Home",
         icon: "mdi:home",
-        onClick: callbacks.closeRepository
+        handler: callbacks.closeRepository
       }
     ],
     [callbacks]
   );
   const interactiveShellConfigured = !!interactiveShell;
-  const titleBarActions: ActionItem[] = useMemo(
+  const titleBarActions: IconActionItem[] = useMemo(
     () => [
       {
-        key: "toggleConsole",
-        text: "Show / hide interactive shell",
+        id: "toggleConsole",
+        label: "Show / hide interactive shell",
         icon: "mdi:console",
         disabled: !interactiveShellConfigured,
-        onClick: callbacks.toggleInteractiveShell
+        handler: callbacks.toggleInteractiveShell
       }
     ],
     [interactiveShellConfigured, callbacks]

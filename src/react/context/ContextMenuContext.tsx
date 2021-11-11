@@ -1,18 +1,10 @@
+import { ActionItem } from "@/commands/types";
 import { Icon } from "@/components/Icon";
-import { IconName } from "@/types/IconName";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { createContext, useCallback, useMemo, useState } from "react";
 
-export interface ContextMenuItem {
-  id: string;
-  label: string;
-  icon?: IconName;
-  disabled?: boolean;
-  handler: () => void;
-}
-
 export interface ContextMenuMethods {
-  show: (event: React.MouseEvent, menus: ContextMenuItem[]) => void;
+  show: (event: React.MouseEvent, menus: ActionItem[]) => void;
 }
 
 export const ContextMenuContext = createContext<ContextMenuMethods>({
@@ -22,7 +14,7 @@ export const ContextMenuContext = createContext<ContextMenuMethods>({
 interface State {
   top: number;
   left: number;
-  menus: ContextMenuItem[];
+  menus: ActionItem[];
 }
 
 export const ContextMenuProvider: React.FC = ({ children }) => {

@@ -2,13 +2,12 @@ import { useTheme } from "@material-ui/core";
 import { forwardRef, useCallback, useMemo } from "react";
 import { GraphFragment } from "@/grapher";
 import CommitListRow from "./CommitListRow";
-import VirtualList, { VirtualListMethods } from "../VirtualList";
+import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
 
-export interface CommitListProps {
+export interface CommitListProps extends VirtualListEvents<Commit> {
   commits: Commit[];
   refs: Refs;
   graph: Record<string, GraphFragment>;
-  onRowClick?: (event: React.MouseEvent, index: number, item: Commit) => void;
 }
 
 const getCommitListKey = (item: Commit) => item.id;
@@ -16,7 +15,7 @@ const getCommitListKey = (item: Commit) => item.id;
 let nextId = 0;
 
 const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
-  { commits, graph, refs, onRowClick },
+  { commits, graph, refs, ...rest },
   ref
 ) => {
   const theme = useTheme();
@@ -44,7 +43,7 @@ const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListP
       items={commits}
       itemSize={rowHeight}
       getItemKey={getCommitListKey}
-      onRowClick={onRowClick}
+      {...rest}
     >
       {renderRow}
     </VirtualList>

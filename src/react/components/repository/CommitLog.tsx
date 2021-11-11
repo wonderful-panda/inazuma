@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "@/store";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { CommitLogItems } from "@/store/repository";
 import useListItemSelector from "@/hooks/useListItemSelector";
+import { useCommitContextMenu } from "@/hooks/useContextMenu";
 import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
@@ -66,6 +67,7 @@ const CommitLogInner: React.VFC<{
     () => logDetail?.type === "commit" && dispatch(SHOW_LSTREE(logDetail)),
     [logDetail, dispatch]
   );
+  const handleContextMenu = useCommitContextMenu();
   return (
     <>
       <CommandGroup name="CommitLog" enabled={active}>
@@ -84,7 +86,12 @@ const CommitLogInner: React.VFC<{
         first={
           <SelectedIndexProvider value={selectedIndex}>
             <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={itemSelector.handleKeyDown}>
-              <CommitList ref={listRef} {...log} onRowClick={itemSelector.handleRowClick} />
+              <CommitList
+                ref={listRef}
+                {...log}
+                onRowClick={itemSelector.handleRowClick}
+                onRowContextMenu={handleContextMenu}
+              />
             </div>
           </SelectedIndexProvider>
         }

@@ -14,6 +14,7 @@ const icons = {
     "close",
     "cog",
     "console",
+    "file-tree",
     "filter",
     "folder-search-outline",
     "history",
