@@ -26,4 +26,4 @@ const showLsTree = (commit: DagNode) => {
   };
 };
 
-export default showLsTree;
+export const SHOW_LSTREE = showLsTree;

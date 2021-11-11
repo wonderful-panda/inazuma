@@ -24,4 +24,4 @@ const showLogDetail = (sha: string | undefined) => {
   };
 };
 
-export default showLogDetail;
+export const SHOW_LOG_DETAIL = showLogDetail;

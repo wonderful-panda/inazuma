@@ -11,9 +11,9 @@ import FileList, { useFileListRowEventHandler } from "./FileList";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
 import { diffWithParent } from "@/commands/diff";
 import { useDispatch } from "@/store";
-import showLsTree from "@/store/thunk/showLsTree";
 import useListItemSelector from "@/hooks/useListItemSelector";
 import { VirtualListMethods } from "../VirtualList";
+import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -25,7 +25,7 @@ const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => 
   const dispatch = useDispatch();
   const showSourceTree_ = useCallback(() => {
     if (commit) {
-      dispatch(showLsTree(commit));
+      dispatch(SHOW_LSTREE(commit));
     }
   }, [commit, dispatch]);
   if (!commit) {

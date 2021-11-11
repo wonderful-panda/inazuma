@@ -10,8 +10,8 @@ import { CommitLogItems } from "@/store/repository";
 import useListItemSelector from "@/hooks/useListItemSelector";
 import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
-import showLsTree from "@/store/thunk/showLsTree";
-import showLogDetali from "@/store/thunk/showLogDetail";
+import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
+import { SHOW_LOG_DETAIL } from "@/store/thunk/showLogDetail";
 
 const CommitLogInner: React.VFC<{
   active: boolean;
@@ -28,7 +28,7 @@ const CommitLogInner: React.VFC<{
       debounce(async (index: number) => {
         if (repoPath && 0 <= index) {
           const sha = log.commits[index].id;
-          dispatch(showLogDetali(sha));
+          dispatch(SHOW_LOG_DETAIL(sha));
         }
       }, 200),
     [repoPath, log.commits, dispatch]
@@ -63,7 +63,7 @@ const CommitLogInner: React.VFC<{
     [currentRefs, logDetail]
   );
   const showLsTreeTab = useCallback(
-    () => logDetail?.type === "commit" && dispatch(showLsTree(logDetail)),
+    () => logDetail?.type === "commit" && dispatch(SHOW_LSTREE(logDetail)),
     [logDetail, dispatch]
   );
   return (
