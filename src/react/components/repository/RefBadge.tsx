@@ -3,10 +3,10 @@ import { assertNever } from "@/util";
 
 const Badge: React.FC<{ className?: string }> = ({ className, children }) => (
   <span
-    className={
-      "align-middle h-4 leading-4 text-sm ml-2 my-auto px-2 box-content cursor-default bg-background" +
-      (className ? " " + className : "")
-    }
+    className={classNames(
+      "align-middle h-4 leading-4 text-sm mr-1 my-auto px-2 box-content cursor-default bg-background",
+      className
+    )}
   >
     {children}
   </span>
@@ -17,7 +17,7 @@ const Branch: React.VFC<{ r: BranchRef }> = ({ r }) => (
     className={classNames(
       "rounded-xl",
       r.current
-        ? "text-[orange] border-2 border-solid border-current"
+        ? "text-secondary border-2 border-solid border-current"
         : "text-[cyan] border border-solid border-current"
     )}
   >

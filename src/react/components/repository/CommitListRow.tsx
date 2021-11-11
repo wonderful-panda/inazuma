@@ -40,8 +40,9 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
       onClick={onClick}
     >
       <GraphCell graph={graph} height={height} head={head} maskIdPrefix={parentId} />
-      <div className="relative my-auto flex flex-col flex-nowrap flex-1 ml-6 overflow-hidden">
-        <div className="text-lg leading-6 whitespace-nowrap overflow-hidden overflow-ellipsis">
+      <div className="relative my-auto flex-col-nowrap flex-1 ml-6 overflow-hidden">
+        <div className="flex-row-nowrap items-center text-lg leading-6 whitespace-nowrap overflow-hidden overflow-ellipsis">
+          {refs && refs.map((r) => <RefBadge key={`${r.type}:${r.fullname}`} r={r} />)}
           {commit.summary}
         </div>
         <div className="flex-row-nowrap leading-5 pl-1 text-greytext whitespace-nowrap">
@@ -54,13 +55,6 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
           )}
         </div>
       </div>
-      {refs && (
-        <div className="absolute right-0 bottom-0 p-2">
-          {refs.map((r) => (
-            <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
-          ))}
-        </div>
-      )}
     </div>
   );
 };

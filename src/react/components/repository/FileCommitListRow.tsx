@@ -57,7 +57,8 @@ const FileCommitListRow: React.VFC<FileCommitListRowProps> = ({
         <FileStatusIcon statusCode={commit.statusCode} />
       </div>
       <div className="relative flex flex-col flex-nowrap flex-1 ml-1 my-auto overflow-hidden">
-        <div className="text-lg leading-6 whitespace-nowrap overflow-hidden overflow-ellipsis">
+        <div className="flex-row-nowrap items-center text-lg leading-6 whitespace-nowrap overflow-hidden overflow-ellipsis">
+          {refs && refs.map((r) => <RefBadge key={`${r.type}:${r.fullname}`} r={r} />)}
           {commit.summary}
         </div>
         <div className="flex-row-nowrap leading-5 pl-2 text-greytext whitespace-nowrap">
@@ -71,13 +72,6 @@ const FileCommitListRow: React.VFC<FileCommitListRowProps> = ({
           </div>
         )}
       </div>
-      {refs && (
-        <div className="absolute right-0 bottom-0 p-2">
-          {refs.map((r) => (
-            <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
-          ))}
-        </div>
-      )}
     </div>
   );
 };
