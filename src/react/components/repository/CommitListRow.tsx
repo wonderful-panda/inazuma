@@ -3,7 +3,7 @@ import { GraphFragment } from "@/grapher";
 import { memo } from "react";
 import GraphCell from "./GraphCell";
 import RefBadge from "./RefBadge";
-import { formatDateLLL } from "@/date";
+import { formatDateTimeLong } from "@/date";
 import GitHash from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { Icon } from "@iconify/react";
@@ -54,7 +54,7 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
                 <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:account" />
                 {commit.author}
                 <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:clock-outline" />
-                {formatDateLLL(commit.date)}
+                {formatDateTimeLong(commit.date)}
               </span>
             </>
           )}

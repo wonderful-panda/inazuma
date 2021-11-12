@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { memo } from "react";
 import RefBadge from "./RefBadge";
-import { formatDateLLL } from "@/date";
+import { formatDateTimeLong } from "@/date";
 import FileStatusIcon from "./FileStatusIcon";
 import GitHash from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
@@ -64,7 +64,7 @@ const FileCommitListRow: React.VFC<FileCommitListRowProps> = ({
         <div className="flex-row-nowrap leading-5 pl-2 text-greytext whitespace-nowrap">
           <GitHash hash={commit.id} />
           <span className="ml-3 whitespace-nowrap">by {commit.author},</span>
-          <span className="mx-3 whitespace-nowrap">at {formatDateLLL(commit.date)}</span>
+          <span className="mx-3 whitespace-nowrap">at {formatDateTimeLong(commit.date)}</span>
         </div>
         {commit.oldPath && (
           <div className="flex-row-nowrap leading-5 pl-2 text-greytext whitespace-nowrap">

@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "../Icon";
 import GitHash from "../GitHash";
 import SplitterPanel from "../PersistSplitterPanel";
-import { formatDateLLL } from "@/date";
+import { formatDateTimeLong } from "@/date";
 import RefBadge from "./RefBadge";
 import FlexCard from "../FlexCard";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
@@ -47,7 +47,7 @@ const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => 
         </div>
         <div className="flex-row-nowrap mr-4">
           <Icon className="mr-0.5 my-auto" icon="mdi:clock-outline" />
-          {formatDateLLL(commit.date)}
+          {formatDateTimeLong(commit.date)}
         </div>
       </div>
       <div className="flex-row-wrap my-1">

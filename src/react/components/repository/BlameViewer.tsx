@@ -1,4 +1,4 @@
-import { formatDateL } from "@/date";
+import { formatDate } from "@/date";
 import { lineNumbersToRanges } from "@/monaco";
 import { shortHash } from "@/util";
 import { makeStyles, useTheme } from "@material-ui/core";
@@ -95,7 +95,7 @@ const selectedCommitDecorationOptions: IModelDecorationOptions = {
 
 const createEditorOptions = (blame: Blame, fontSize: number): IEditorConstructionOptions => {
   const dateMap: Record<string, string> = blame.commits.reduce((prev, cur) => {
-    prev[cur.id] = formatDateL(cur.date);
+    prev[cur.id] = formatDate(cur.date);
     return prev;
   }, {} as Record<string, string>);
   return {
