@@ -6,6 +6,7 @@ import RefBadge from "./RefBadge";
 import { formatDateLLL } from "@/date";
 import GitHash from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
+import { Icon } from "@iconify/react";
 
 export interface CommitListRowProps {
   height: number;
@@ -49,8 +50,12 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
           <GitHash hash={commit.id} />
           {!workingTree && (
             <>
-              <span className="ml-3 whitespace-nowrap">by {commit.author},</span>
-              <span className="ml-3 whitespace-nowrap">at {formatDateLLL(commit.date)}</span>
+              <span className="flex-row-nowrap whitespace-nowrap">
+                <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:account" />
+                {commit.author}
+                <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:clock-outline" />
+                {formatDateLLL(commit.date)}
+              </span>
             </>
           )}
         </div>
