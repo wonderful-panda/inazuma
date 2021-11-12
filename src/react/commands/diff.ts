@@ -5,14 +5,14 @@ export const diffWithParent: FileCommand = {
   id: "DiffWithParent",
   label: "Compare with parent",
   icon: "octicon:git-compare-16",
-  hidden: (commit, file) => {
+  hidden: (commit) => {
     if (commit.id === "--" || commit.parentIds.length === 0) {
       return true;
     }
-    if (file.statusCode === "A" || file.statusCode === "D") {
-      return true;
-    }
     return false;
+  },
+  disabled(_, file) {
+    return file.statusCode === "A" || file.statusCode === "D";
   },
   handler(dispatch, commit, file) {
     dispatch(
@@ -28,11 +28,14 @@ export const diffWithLocal: FileCommand = {
   id: "DiffWithLocal",
   label: "Compare with local",
   icon: "octicon:git-compare-16",
-  hidden(commit, file) {
-    if (commit.id === "--" || file.statusCode === "D") {
+  hidden(commit) {
+    if (commit.id === "--") {
       return true;
     }
     return false;
+  },
+  disabled(_, file) {
+    return file.statusCode === "D";
   },
   handler(dispatch, commit, file, localPath) {
     dispatch(
@@ -52,10 +55,10 @@ export const diffUnstaged: FileCommand = {
     if (commit.id !== "--" || !file.unstaged) {
       return true;
     }
-    if (file.statusCode === "A" || file.statusCode === "D") {
-      return true;
-    }
     return false;
+  },
+  disabled(_, file) {
+    return file.statusCode === "A" || file.statusCode === "D" || file.statusCode === "?";
   },
   handler(dispatch, _, file, localPath) {
     dispatch(
@@ -75,10 +78,10 @@ export const diffStaged: FileCommand = {
     if (commit.id !== "--" || !!file.unstaged) {
       return true;
     }
-    if (file.statusCode === "A" || file.statusCode === "D") {
-      return true;
-    }
     return false;
+  },
+  disabled(_, file) {
+    return file.statusCode === "A" || file.statusCode === "D";
   },
   handler(dispatch, _, file, localPath) {
     dispatch(
