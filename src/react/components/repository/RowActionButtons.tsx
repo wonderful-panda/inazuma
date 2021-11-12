@@ -19,7 +19,7 @@ const RowActionButtons: React.VFC<{
         return (
           <IconButton
             key={a.id}
-            className="p-1 my-auto hover:bg-highlight"
+            className="p-1 my-auto opacity-75 hover:opacity-100 hover:bg-highlight"
             style={{ maxWidth: size, maxHeight: size }}
             disabled={a.disabled}
             title={a.label}
@@ -35,7 +35,7 @@ const RowActionButtons: React.VFC<{
     return <></>;
   }
   return (
-    <div className="mx-1 flex-row-nowrap items-center invisible max-w-0 group-hover:visible group-hover:max-w-none">
+    <div className="ml-1 mr-2 flex-row-nowrap items-center invisible max-w-0 group-hover:visible group-hover:max-w-none">
       {buttons}
     </div>
   );
