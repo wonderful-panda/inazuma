@@ -22,7 +22,8 @@ const icons = {
     "information-outline",
     "menu",
     "minus",
-    "plus"
+    "plus",
+    "reload"
   ],
   octicon: [
     "diff-added-16",

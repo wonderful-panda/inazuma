@@ -9,6 +9,7 @@ import {
   SELECT_TAB,
   TabType
 } from "@/store/repository";
+import { RELOAD_REPOSITORY } from "@/store/thunk/reloadRepository";
 import { assertNever } from "@/util";
 import { useCallback, useMemo } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
@@ -57,7 +58,8 @@ const RepositoryPage: React.VFC = () => {
       selectPrevTab: () => dispatch(SELECT_PREVIOUS_TAB()),
       closeRepository: () => dispatch(CLOSE_REPOSITORY()),
       toggleInteractiveShell: () => dispatch(TOGGLE_INTERACTIVE_SHELL()),
-      hideInteractiveShell: () => dispatch(HIDE_INTERACTIVE_SHELL())
+      hideInteractiveShell: () => dispatch(HIDE_INTERACTIVE_SHELL()),
+      reloadRepository: () => dispatch(RELOAD_REPOSITORY())
     }),
     [dispatch]
   );
@@ -81,6 +83,12 @@ const RepositoryPage: React.VFC = () => {
         icon: "mdi:console",
         disabled: !interactiveShellConfigured,
         handler: callbacks.toggleInteractiveShell
+      },
+      {
+        id: "reload",
+        label: "Reload repository",
+        icon: "mdi:reload",
+        handler: callbacks.reloadRepository
       }
     ],
     [interactiveShellConfigured, callbacks]
@@ -96,6 +104,7 @@ const RepositoryPage: React.VFC = () => {
         <Cmd name="CloseTab" hotkey="Ctrl+F4" handler={callbacks.closeTab} />
         <Cmd name="ToggleShell" hotkey="Ctrl+T" handler={callbacks.toggleInteractiveShell} />
         <Cmd name="CloseRepository" hotkey="Ctrl+H" handler={callbacks.closeRepository} />
+        <Cmd name="ReloadRepository" hotkey="Ctrl+R" handler={callbacks.reloadRepository} />
       </CommandGroup>
       <SplitterPanel
         persistKey="repository"

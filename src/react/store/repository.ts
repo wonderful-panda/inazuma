@@ -42,9 +42,10 @@ const initialState: State = {
 const setLog = (
   state: State,
   {
-    payload: { path, ...log }
+    payload: { path, keepTabs, ...log }
   }: PayloadAction<{
     path: string;
+    keepTabs: boolean;
     commits: Commit[];
     refs: Refs;
     graph: Record<string, GraphFragment>;
@@ -53,10 +54,12 @@ const setLog = (
   state.path = path;
   state.log = log;
   state.selectedLogDetail = undefined;
-  state.tab = {
-    tabs: [{ type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false }],
-    currentIndex: 0
-  };
+  if (!keepTabs) {
+    state.tab = {
+      tabs: [{ type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false }],
+      currentIndex: 0
+    };
+  }
 };
 
 const closeRepository = (state: State) => {
