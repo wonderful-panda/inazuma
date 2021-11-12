@@ -44,8 +44,8 @@ const getActive = (
   }
 };
 
-const unstagedActions = [diffUnstaged, stage];
-const stagedActions = [diffStaged, unstage];
+const unstagedActionCommands = [diffUnstaged, stage];
+const stagedActionCommands = [diffStaged, unstage];
 
 const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
   const handleContextMenu = useFileContextMenu(stat);
@@ -130,7 +130,7 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
                   ref={unstagedListRef}
                   commit={stat}
                   files={unstagedFiles}
-                  actions={unstagedActions}
+                  actionCommands={unstagedActionCommands}
                   onRowClick={unstagedSelector.handleRowClick}
                   onRowDoubleClick={handleUnstagedRowDoubleClick}
                   onRowContextMenu={handleContextMenu}
@@ -155,7 +155,7 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
                   ref={stagedListRef}
                   commit={stat}
                   files={stat.stagedFiles}
-                  actions={stagedActions}
+                  actionCommands={stagedActionCommands}
                   onRowClick={stagedSelector.handleRowClick}
                   onRowDoubleClick={handleStagedRowDoubleClick}
                   onRowContextMenu={handleContextMenu}

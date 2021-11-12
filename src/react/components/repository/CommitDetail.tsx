@@ -14,12 +14,15 @@ import { useDispatch } from "@/store";
 import useListItemSelector from "@/hooks/useListItemSelector";
 import { VirtualListMethods } from "../VirtualList";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
+import { showFileContent } from "@/commands/showFileContent";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
   refs: Ref[];
   orientation: Orientation;
 }
+
+const actionCommands = [diffWithParent, showFileContent];
 
 const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => {
   const dispatch = useDispatch();
@@ -103,6 +106,7 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
                     ref={listRef}
                     commit={commit}
                     files={commit.files}
+                    actionCommands={actionCommands}
                     onRowClick={handleRowClick}
                     onRowDoubleClick={onRowDoubleClick}
                     onRowContextMenu={onRowContextMenu}
