@@ -1,12 +1,16 @@
 import classNames from "classnames";
 import { GraphFragment } from "@/grapher";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import GraphCell from "./GraphCell";
 import RefBadge from "./RefBadge";
 import { formatDateTimeLong } from "@/date";
 import GitHash from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { Icon } from "@iconify/react";
+import { CommitCommand, IconActionItem } from "@/commands/types";
+import RowActionButtons from "./RowActionButtons";
+import { commitCommandsToActions } from "@/commands";
+import { useDispatch } from "@/store";
 
 export interface CommitListRowProps {
   height: number;
@@ -16,7 +20,7 @@ export interface CommitListRowProps {
   head: boolean;
   index: number;
   parentId: string;
-  onClick?: (event: React.MouseEvent) => void;
+  actionCommands?: readonly CommitCommand[];
 }
 
 const CommitListRow: React.VFC<CommitListRowProps> = ({
@@ -27,18 +31,25 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
   head,
   index,
   parentId,
-  onClick
+  actionCommands
 }) => {
   const selectedIndex = useSelectedIndex();
   const workingTree = commit.id === "--";
+  const dispatch = useDispatch();
+  const actions = useMemo(
+    () =>
+      commitCommandsToActions(dispatch, actionCommands, commit).filter(
+        (a) => a.icon
+      ) as IconActionItem[],
+    [dispatch, actionCommands, commit]
+  );
   return (
     <div
       className={classNames(
-        "flex box-border cursor-pointer",
+        "flex box-border cursor-pointer group",
         "pl-4 border-b border-solid border-paper",
         index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
-      onClick={onClick}
     >
       <GraphCell graph={graph} height={height} head={head} maskIdPrefix={parentId} />
       <div className="relative my-auto flex-col-nowrap flex-1 ml-6 overflow-hidden">
@@ -60,6 +71,7 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
           )}
         </div>
       </div>
+      <RowActionButtons actions={actions} size={height * 0.6} />
     </div>
   );
 };

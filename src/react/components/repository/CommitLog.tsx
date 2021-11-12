@@ -13,6 +13,9 @@ import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { SHOW_LOG_DETAIL } from "@/store/thunk/showLogDetail";
+import { browseSourceTree } from "@/commands/browseSourceTree";
+
+const actionCommands = [browseSourceTree];
 
 const CommitLogInner: React.VFC<{
   active: boolean;
@@ -89,6 +92,7 @@ const CommitLogInner: React.VFC<{
               <CommitList
                 ref={listRef}
                 {...log}
+                actionCommands={actionCommands}
                 onRowClick={itemSelector.handleRowClick}
                 onRowContextMenu={handleContextMenu}
               />

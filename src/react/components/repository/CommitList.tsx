@@ -3,11 +3,13 @@ import { forwardRef, useCallback, useMemo } from "react";
 import { GraphFragment } from "@/grapher";
 import CommitListRow from "./CommitListRow";
 import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
+import { CommitCommand } from "@/commands/types";
 
 export interface CommitListProps extends VirtualListEvents<Commit> {
   commits: Commit[];
   refs: Refs;
   graph: Record<string, GraphFragment>;
+  actionCommands?: readonly CommitCommand[];
 }
 
 const getCommitListKey = (item: Commit) => item.id;
@@ -15,7 +17,7 @@ const getCommitListKey = (item: Commit) => item.id;
 let nextId = 0;
 
 const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
-  { commits, graph, refs, ...rest },
+  { commits, graph, refs, actionCommands, ...rest },
   ref
 ) => {
   const theme = useTheme();
@@ -32,10 +34,11 @@ const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListP
           refs={refs.refsById[item.id]}
           height={rowHeight}
           parentId={instanceId}
+          actionCommands={actionCommands}
         />
       );
     },
-    [graph, refs, rowHeight, instanceId]
+    [graph, refs, rowHeight, instanceId, actionCommands]
   );
   return (
     <VirtualList<Commit>
