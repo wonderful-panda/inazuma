@@ -1,4 +1,5 @@
 pub mod blame;
+pub mod commit;
 pub mod commit_detail;
 pub mod file;
 pub mod find_repository_root;
@@ -11,8 +12,30 @@ pub mod status;
 use neon::handle::Managed;
 use neon::prelude::*;
 use std::collections::HashMap;
+use std::marker::Send;
 
 use crate::git::types::*;
+use crate::git::GitError;
+
+fn invoke_callback<R: ToJsValue + Send + 'static>(
+    channel: &Channel,
+    callback: Root<JsFunction>,
+    result: Result<R, GitError>,
+) {
+    channel.send(move |mut cx| {
+        let callback = callback.into_inner(&mut cx);
+        let this = cx.undefined();
+        let args = match result {
+            Ok(value) => vec![
+                cx.null().upcast::<JsValue>(),
+                value.to_js_value(&mut cx)?.upcast(),
+            ],
+            Err(e) => vec![cx.error(e.to_string())?.upcast()],
+        };
+        callback.call(&mut cx, this, args)?;
+        Ok(())
+    });
+}
 
 macro_rules! set_props {
     ($cx:ident, $obj:ident, {
@@ -46,6 +69,13 @@ macro_rules! new_obj {
 pub trait ToJsValue {
     type ValueType: Managed + Value;
     fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType>;
+}
+
+impl ToJsValue for () {
+    type ValueType = JsUndefined;
+    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
+        Ok(cx.undefined())
+    }
 }
 
 impl ToJsValue for &str {

@@ -71,14 +71,14 @@ fn exec(
     return cmd.output();
 }
 
-pub fn find_repository_root() -> std::io::Result<Option<String>> {
+pub fn find_repository_root() -> Result<Option<String>, GitError> {
     let mut cmd = Command::new("git");
     cmd.arg("rev-parse");
     cmd.arg("--show-toplevel");
     if cfg!(target_os = "windows") {
         cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
     }
-    let ret = cmd.output()?;
+    let ret = cmd.output().or_else(|e| Err(GitError::ExecFailed(e)))?;
     if ret.status.success() {
         let path = std::str::from_utf8(&ret.stdout)
             .unwrap()

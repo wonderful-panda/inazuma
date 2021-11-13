@@ -1,6 +1,7 @@
 use neon::prelude::*;
 use std::path::Path;
 
+use super::invoke_callback;
 use crate::git;
 
 // (repoPath: string, relPath: string, callback: (error) => void);
@@ -12,16 +13,7 @@ pub fn add_to_index_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     std::thread::spawn(move || {
         let repo_path = Path::new(&repo_path);
         let result = git::index::add_to_index(&repo_path, &rel_path);
-        channel.send(move |mut cx| {
-            let callback = callback.into_inner(&mut cx);
-            let this = cx.undefined();
-            let args = match result {
-                Ok(_) => vec![cx.null().upcast::<JsValue>()],
-                Err(e) => vec![cx.error(e.to_string())?.upcast()],
-            };
-            callback.call(&mut cx, this, args)?;
-            Ok(())
-        });
+        invoke_callback(&channel, callback, result)
     });
 
     Ok(cx.undefined())
@@ -36,16 +28,7 @@ pub fn remove_from_index_async(mut cx: FunctionContext) -> JsResult<JsUndefined>
     std::thread::spawn(move || {
         let repo_path = Path::new(&repo_path);
         let result = git::index::remove_from_index(&repo_path, &rel_path);
-        channel.send(move |mut cx| {
-            let callback = callback.into_inner(&mut cx);
-            let this = cx.undefined();
-            let args = match result {
-                Ok(_) => vec![cx.null().upcast::<JsValue>()],
-                Err(e) => vec![cx.error(e.to_string())?.upcast()],
-            };
-            callback.call(&mut cx, this, args)?;
-            Ok(())
-        });
+        invoke_callback(&channel, callback, result)
     });
 
     Ok(cx.undefined())

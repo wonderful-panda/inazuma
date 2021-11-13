@@ -13,19 +13,7 @@ pub fn log_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     std::thread::spawn(move || {
         let repo_path = Path::new(&repo_path);
         let result = git::log::log(repo_path, max_count, &[]);
-        channel.send(move |mut cx| {
-            let callback = callback.into_inner(&mut cx);
-            let this = cx.undefined();
-            let args = match result {
-                Ok(commits) => vec![
-                    cx.null().upcast::<JsValue>(),
-                    commits.to_js_value(&mut cx)?.upcast(),
-                ],
-                Err(e) => vec![cx.error(e.to_string())?.upcast()],
-            };
-            callback.call(&mut cx, this, args)?;
-            Ok(())
-        });
+        invoke_callback(&channel, callback, result)
     });
 
     Ok(cx.undefined())
@@ -53,19 +41,7 @@ pub fn filelog_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         let repo_path = Path::new(&repo_path);
         let heads: Vec<&str> = heads.iter().map(AsRef::as_ref).collect();
         let result = git::log::filelog(repo_path, rel_path.as_str(), max_count, &heads[..]);
-        channel.send(move |mut cx| {
-            let callback = callback.into_inner(&mut cx);
-            let this = cx.undefined();
-            let args = match result {
-                Ok(entries) => vec![
-                    cx.null().upcast::<JsValue>(),
-                    entries.to_js_value(&mut cx)?.upcast(),
-                ],
-                Err(e) => vec![cx.error(e.to_string())?.upcast()],
-            };
-            callback.call(&mut cx, this, args)?;
-            Ok(())
-        });
+        invoke_callback(&channel, callback, result)
     });
 
     Ok(cx.undefined())
