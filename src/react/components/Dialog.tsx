@@ -7,7 +7,7 @@ import {
   IconButton
 } from "@material-ui/core";
 import { Icon } from "./Icon";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 
 export interface DialogMethods {
@@ -25,8 +25,8 @@ export interface DialogActionHandler {
 export interface DialogProps {
   title: string;
   fullScreen?: boolean;
-  isOpened: boolean;
-  setOpened: (value: boolean) => void;
+  opened: boolean;
+  close: () => void;
   TransitionComponent?: React.ComponentProps<typeof RawDialog>["TransitionComponent"];
   className?: string;
   actions?: readonly DialogActionHandler[];
@@ -34,8 +34,8 @@ export interface DialogProps {
 
 export const Dialog: React.FC<DialogProps> = ({
   title,
-  isOpened,
-  setOpened,
+  opened,
+  close,
   fullScreen = false,
   TransitionComponent,
   className,
@@ -44,12 +44,11 @@ export const Dialog: React.FC<DialogProps> = ({
 }) => {
   const commandGroup = useCommandGroup();
   useEffect(() => {
-    if (isOpened) {
+    if (opened) {
       commandGroup.suspend();
       return () => commandGroup.resume();
     }
-  }, [isOpened, commandGroup]);
-  const handleClose = useCallback(() => setOpened(false), [setOpened]);
+  }, [opened, commandGroup]);
   const handleEnter = useMemo(() => {
     const defaultAction = actions?.find((a) => a.default);
     if (!defaultAction) {
@@ -65,15 +64,15 @@ export const Dialog: React.FC<DialogProps> = ({
     <RawDialog
       fullScreen={fullScreen}
       classes={{ paper: className }}
-      open={isOpened}
-      onClose={handleClose}
+      open={opened}
+      onClose={close}
       onKeyPress={handleEnter}
       TransitionComponent={TransitionComponent}
       transitionDuration={200}
     >
       <DialogTitle>
         {title}
-        <IconButton className="absolute top-2 right-2" onClick={handleClose}>
+        <IconButton className="absolute top-2 right-2" onClick={close}>
           <Icon icon="mdi:close" />
         </IconButton>
       </DialogTitle>
@@ -84,7 +83,7 @@ export const Dialog: React.FC<DialogProps> = ({
             {a.text}
           </Button>
         ))}
-        <Button key="__cancel__" className="text-xl mr-2" size="large" onClick={handleClose}>
+        <Button key="__cancel__" className="text-xl mr-2" size="large" onClick={close}>
           Cancel
         </Button>
       </DialogActions>

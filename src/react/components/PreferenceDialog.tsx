@@ -155,12 +155,13 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
 
 const PreferenceDialogInner: React.ForwardRefRenderFunction<DialogMethods, PreferenceDialogProps> =
   (props, ref) => {
-    const [isOpened, setOpened] = useState(false);
+    const [opened, setOpened] = useState(false);
     useImperativeHandle(ref, () => ({
       open: () => setOpened(true),
       close: () => setOpened(false)
     }));
     const contentRef = useRef({} as ComponentRef<typeof PreferenceDialogContent>);
+    const close = useCallback(() => setOpened(false), []);
     const handleSave = useCallback(() => {
       contentRef.current.save();
       setOpened(false);
@@ -168,8 +169,8 @@ const PreferenceDialogInner: React.ForwardRefRenderFunction<DialogMethods, Prefe
     return (
       <FullscreenDialog
         title="PREFERENCE"
-        isOpened={isOpened}
-        setOpened={setOpened}
+        opened={opened}
+        close={close}
         actions={[
           {
             text: "Save",
@@ -179,7 +180,7 @@ const PreferenceDialogInner: React.ForwardRefRenderFunction<DialogMethods, Prefe
           }
         ]}
       >
-        {isOpened && <PreferenceDialogContent ref={contentRef} {...props} />}
+        {opened && <PreferenceDialogContent ref={contentRef} {...props} />}
       </FullscreenDialog>
     );
   };

@@ -5,8 +5,8 @@ import { Dialog, DialogActionHandler } from "./Dialog";
 
 export interface FullscreenDialogProps {
   title: string;
-  isOpened: boolean;
-  setOpened: (value: boolean) => void;
+  opened: boolean;
+  close: () => void;
   actions?: readonly DialogActionHandler[];
 }
 

@@ -1,16 +1,23 @@
-import { forwardRef, ForwardRefRenderFunction, useImperativeHandle, useState } from "react";
+import {
+  forwardRef,
+  ForwardRefRenderFunction,
+  useCallback,
+  useImperativeHandle,
+  useState
+} from "react";
 import { DialogMethods } from "./Dialog";
 import { FullscreenDialog } from "./FullscreenDialog";
 import { version } from "../../../package.json";
 
 const AboutDialogInner: ForwardRefRenderFunction<DialogMethods> = (_, ref) => {
-  const [isOpened, setOpened] = useState(false);
+  const [opened, setOpened] = useState(false);
+  const close = useCallback(() => setOpened(false), []);
   useImperativeHandle(ref, () => ({
     open: () => setOpened(true),
     close: () => setOpened(false)
   }));
   return (
-    <FullscreenDialog title="ABOUT" isOpened={isOpened} setOpened={setOpened}>
+    <FullscreenDialog title="ABOUT" opened={opened} close={close}>
       <div>Inazuma {version}</div>
     </FullscreenDialog>
   );
