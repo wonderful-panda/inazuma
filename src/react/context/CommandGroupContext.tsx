@@ -49,6 +49,7 @@ interface CommandGroup {
 
 interface State {
   groups: readonly CommandGroup[];
+  suspend: number;
 }
 
 type Action =
@@ -59,35 +60,47 @@ type Action =
   | {
       type: "unregister";
       payload: string;
+    }
+  | {
+      type: "suspend" | "resume";
     };
 
-const reducer = (state: State, action: Action) => {
+const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "register":
       if (state.groups.find((g) => g.groupName === action.payload.groupName)) {
         console.error(`CommandGroup[${action.payload.groupName}] is already registered`);
         return state;
       }
-      return { groups: [...state.groups, action.payload] };
+      return { ...state, groups: [...state.groups, action.payload] };
     case "unregister":
-      return { groups: state.groups.filter((g) => g.groupName !== action.payload) };
+      return { ...state, groups: state.groups.filter((g) => g.groupName !== action.payload) };
+    case "suspend":
+      return { ...state, suspend: state.suspend + 1 };
+    case "resume":
+      return { ...state, suspend: state.suspend - 1 };
     default:
       return assertNever(action);
   }
 };
 
 const initialState: State = {
-  groups: []
+  groups: [],
+  suspend: 0
 };
 
 export interface CommandGroupMethods {
   register: (group: CommandGroup) => void;
   unregister: (groupName: string) => void;
+  suspend: () => void;
+  resume: () => void;
 }
 
 export const CommandGroupContext = createContext({
   register: () => {},
-  unregister: () => {}
+  unregister: () => {},
+  suspend: () => {},
+  resume: () => {}
 } as CommandGroupMethods);
 
 export const CommandGroupProvider: React.FC = ({ children }) => {
@@ -99,7 +112,9 @@ export const CommandGroupProvider: React.FC = ({ children }) => {
       },
       unregister: (groupName) => {
         dispatch({ type: "unregister", payload: groupName });
-      }
+      },
+      suspend: () => dispatch({ type: "suspend" }),
+      resume: () => dispatch({ type: "resume" })
     }),
     []
   );
@@ -117,7 +132,11 @@ export const CommandGroupProvider: React.FC = ({ children }) => {
     );
     return ret;
   }, [state.groups]);
+  const suspended = state.suspend > 0;
   useEffect(() => {
+    if (suspended) {
+      return;
+    }
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) {
         return;
@@ -133,7 +152,7 @@ export const CommandGroupProvider: React.FC = ({ children }) => {
     return () => {
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [hotkeyMap]);
+  }, [hotkeyMap, suspended]);
 
   return <CommandGroupContext.Provider value={methods}>{children}</CommandGroupContext.Provider>;
 };

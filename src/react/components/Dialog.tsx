@@ -7,7 +7,8 @@ import {
   IconButton
 } from "@material-ui/core";
 import { Icon } from "./Icon";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
+import { useCommandGroup } from "@/hooks/useCommandGroup";
 
 export interface DialogMethods {
   open: () => void;
@@ -41,6 +42,13 @@ export const Dialog: React.FC<DialogProps> = ({
   actions,
   children
 }) => {
+  const commandGroup = useCommandGroup();
+  useEffect(() => {
+    if (isOpened) {
+      commandGroup.suspend();
+      return () => commandGroup.resume();
+    }
+  }, [isOpened, commandGroup]);
   const handleClose = useCallback(() => setOpened(false), [setOpened]);
   const handleEnter = useMemo(() => {
     const defaultAction = actions?.find((a) => a.default);
