@@ -1,32 +1,20 @@
-import { useDispatch } from "@/store";
+import { useDispatch, useSelector } from "@/store";
 import { clamp } from "@/util";
 import { TextField } from "@material-ui/core";
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState
-} from "react";
-import { Dialog, DialogActionHandler, DialogMethods } from "../Dialog";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Dialog, DialogActionHandler } from "../Dialog";
 import { COMMIT } from "@/store/thunk/commit";
-import { RELOAD_REPOSITORY } from "@/store/thunk/reloadRepository";
-import { SHOW_ALERT } from "@/store/misc";
+import { CLOSE_DIALOG } from "@/store/repository";
 
-const CommitDialog: React.ForwardRefRenderFunction<DialogMethods> = (_, ref) => {
+const CommitDialog: React.VFC = () => {
   const dispatch = useDispatch();
+  const opened = useSelector((state) => state.repository.activeDialog === "commit");
   const inputRef = useRef<HTMLInputElement>(null);
-  const [opened, setOpened] = useState(false);
   const [rows, setRows] = useState(6);
+  const close = useCallback(() => dispatch(CLOSE_DIALOG()), [dispatch]);
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setRows(clamp(e.target.value.split(/\n/g).length, 6, 24));
   }, []);
-  useImperativeHandle(ref, () => ({
-    open: () => setOpened(true),
-    close: () => setOpened(false)
-  }));
   useEffect(() => {
     if (opened) {
       setRows(6);
@@ -35,13 +23,9 @@ const CommitDialog: React.ForwardRefRenderFunction<DialogMethods> = (_, ref) => 
   }, [opened]);
   const invokeCommit = useCallback(async () => {
     const message = inputRef.current?.value || "";
-    if (!message) {
-      dispatch(SHOW_ALERT({ type: "warning", message: "Input commit message" }));
-      return;
+    if (await dispatch(COMMIT(message))) {
+      dispatch(CLOSE_DIALOG());
     }
-    await dispatch(COMMIT(message));
-    await dispatch(RELOAD_REPOSITORY());
-    setOpened(false);
   }, [dispatch]);
   const actions = useMemo<DialogActionHandler[]>(
     () => [
@@ -57,7 +41,6 @@ const CommitDialog: React.ForwardRefRenderFunction<DialogMethods> = (_, ref) => 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
       e.stopPropagation();
-      console.log(e);
       if (e.ctrlKey && e.code === "Enter") {
         invokeCommit();
       }
@@ -68,8 +51,8 @@ const CommitDialog: React.ForwardRefRenderFunction<DialogMethods> = (_, ref) => 
     <Dialog
       className="w-[60rem] max-w-none"
       title="Commit"
-      isOpened={opened}
-      setOpened={setOpened}
+      opened={opened}
+      close={close}
       actions={actions}
     >
       <TextField
@@ -86,4 +69,4 @@ const CommitDialog: React.ForwardRefRenderFunction<DialogMethods> = (_, ref) => 
   );
 };
 
-export default forwardRef(CommitDialog);
+export default CommitDialog;

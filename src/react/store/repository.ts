@@ -30,13 +30,15 @@ interface State {
         currentIndex: number;
       }
     | undefined;
+  activeDialog: "commit" | undefined;
 }
 
 const initialState: State = {
   path: undefined,
   log: undefined,
   selectedLogDetail: undefined,
-  tab: undefined
+  tab: undefined,
+  activeDialog: undefined
 };
 
 const setLog = (
@@ -54,6 +56,7 @@ const setLog = (
   state.path = path;
   state.log = log;
   state.selectedLogDetail = undefined;
+  state.activeDialog = undefined;
   if (!keepTabs) {
     state.tab = {
       tabs: [{ type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false }],
@@ -67,6 +70,7 @@ const closeRepository = (state: State) => {
   state.log = undefined;
   state.selectedLogDetail = undefined;
   state.tab = undefined;
+  state.activeDialog = undefined;
 };
 
 const setSelectedLogDetail = (
@@ -128,6 +132,14 @@ const selectPreviousTab = ({ tab }: State) => {
   tab.currentIndex = 1 <= tab.currentIndex ? tab.currentIndex - 1 : tab.tabs.length - 1;
 };
 
+const openDialog = (state: State, { payload }: PayloadAction<{ dialog: "commit" }>) => {
+  state.activeDialog = payload.dialog;
+};
+
+const closeDialog = (state: State) => {
+  state.activeDialog = undefined;
+};
+
 const slice = createSlice({
   name: "repository",
   initialState,
@@ -139,7 +151,9 @@ const slice = createSlice({
     removeTab,
     selectTab,
     selectNextTab,
-    selectPreviousTab
+    selectPreviousTab,
+    openDialog,
+    closeDialog
   }
 });
 
@@ -151,7 +165,9 @@ export const {
   removeTab: REMOVE_TAB,
   selectTab: SELECT_TAB,
   selectNextTab: SELECT_NEXT_TAB,
-  selectPreviousTab: SELECT_PREVIOUS_TAB
+  selectPreviousTab: SELECT_PREVIOUS_TAB,
+  openDialog: OPEN_DIALOG,
+  closeDialog: CLOSE_DIALOG
 } = slice.actions;
 
 export default slice.reducer;
