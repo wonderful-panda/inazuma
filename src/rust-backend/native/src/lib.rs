@@ -37,5 +37,6 @@ register_module!(mut cx, {
         "findRepositoryRootAsync",
         find_repository_root::find_repository_root_async,
     )?;
+    cx.export_function("commitAsync", commit::commit)?;
     Ok(())
 });

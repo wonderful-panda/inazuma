@@ -4,6 +4,9 @@ export const assertNever = (_: never): never => {
   throw new Error("This function must be unreachable");
 };
 
+export const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
 export const shortHash = (value: string) => value.slice(0, 8);
 
 export const getFileName = (fullpath: string): string => {

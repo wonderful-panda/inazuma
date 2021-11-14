@@ -139,6 +139,7 @@ declare global {
     getTextFileContent(params: { repoPath: string; file: FileSpec }): Promise<TextFile>;
     addToIndex(params: { repoPath: string; relPath: string }): Promise<void>;
     removeFromIndex(params: { repoPath: string; relPath: string }): Promise<void>;
+    commit(params: { repoPath: string; message: string }): Promise<void>;
     yankText(text: string): Promise<void>;
     showOpenDialog(options: Electron.OpenDialogOptions): Promise<Electron.OpenDialogReturnValue>;
     __openPty(options: OpenPtyOptions): Promise<number>;

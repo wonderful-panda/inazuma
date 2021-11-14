@@ -17,6 +17,7 @@ const keys: Record<keyof BrowserCommand, null> = {
   saveEnvironment: null,
   addToIndex: null,
   removeFromIndex: null,
+  commit: null,
   __openPty: null
 };
 

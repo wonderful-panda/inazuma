@@ -16,7 +16,8 @@ import {
   getCommitDetailAsync,
   lstreeAsync,
   addToIndexAsync,
-  removeFromIndexAsync
+  removeFromIndexAsync,
+  commitAsync
 } from "inazuma-rust-backend";
 import { status } from "./status";
 
@@ -80,6 +81,9 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
     },
     removeFromIndex(_, { repoPath, relPath }) {
       return removeFromIndexAsync(repoPath, relPath);
+    },
+    commit(_, { repoPath, message }) {
+      return commitAsync(repoPath, message);
     },
     async yankText(_, text) {
       clipboard.writeText(text);

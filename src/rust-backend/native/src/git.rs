@@ -1,4 +1,5 @@
 pub mod blame;
+pub mod commit;
 pub mod commit_detail;
 pub mod file;
 pub mod index;

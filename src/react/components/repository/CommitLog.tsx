@@ -14,8 +14,9 @@ import { CommandGroup, Cmd } from "../CommandGroup";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { SHOW_LOG_DETAIL } from "@/store/thunk/showLogDetail";
 import { browseSourceTree } from "@/commands/browseSourceTree";
-
-const actionCommands = [browseSourceTree];
+import CommitDialog from "./CommitDialog";
+import { DialogMethods } from "../Dialog";
+import { CommitCommand } from "@/commands/types";
 
 const CommitLogInner: React.VFC<{
   active: boolean;
@@ -27,6 +28,20 @@ const CommitLogInner: React.VFC<{
   const [selectedIndex, setSelectedIndex] = useState(0);
   const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
   const listRef = useRef<VirtualListMethods>(null);
+  const commitDialogRef = useRef<DialogMethods>(null);
+  const actionCommands = useMemo<CommitCommand[]>(
+    () => [
+      browseSourceTree,
+      {
+        id: "Commit",
+        label: "Commit",
+        icon: "mdi:content-save",
+        hidden: (commit) => commit.id !== "--",
+        handler: () => commitDialogRef.current?.open()
+      }
+    ],
+    []
+  );
   const selectLog = useMemo(
     () =>
       debounce(async (index: number) => {
@@ -101,6 +116,7 @@ const CommitLogInner: React.VFC<{
         }
         second={detail}
       />
+      <CommitDialog ref={commitDialogRef} />
     </>
   );
 };
