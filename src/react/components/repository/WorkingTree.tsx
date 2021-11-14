@@ -8,6 +8,10 @@ import FlexCard from "../FlexCard";
 import SplitterPanel from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
 import FileList, { useFileListRowEventHandler } from "./FileList";
+import { Button } from "@material-ui/core";
+import { useDispatch } from "@/store";
+import { STAGE, UNSTAGE } from "@/store/thunk/staging";
+import { OPEN_DIALOG } from "@/store/repository";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat;
@@ -48,6 +52,7 @@ const unstagedActionCommands = [diffUnstaged, stage];
 const stagedActionCommands = [diffStaged, unstage];
 
 const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
+  const dispatch = useDispatch();
   const handleContextMenu = useFileContextMenu(stat);
   const unstagedListRef = useRef<VirtualListMethods>(null);
   const stagedListRef = useRef<VirtualListMethods>(null);
@@ -109,6 +114,14 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
   const stagedSelector = useListItemSelector(stat.stagedFiles.length, setStagedIndex);
   const handleUnstagedRowDoubleClick = useFileListRowEventHandler(diffUnstaged, stat);
   const handleStagedRowDoubleClick = useFileListRowEventHandler(diffStaged, stat);
+  const callbacks = useMemo(
+    () => ({
+      stageAll: () => dispatch(STAGE("**/*")),
+      unstageAll: () => dispatch(UNSTAGE("**/*")),
+      commit: () => dispatch(OPEN_DIALOG({ dialog: "commit" }))
+    }),
+    [dispatch]
+  );
   return (
     <SplitterPanel
       persistKey="repository/WorkingTree"
@@ -138,6 +151,13 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
               </div>
             </SelectedIndexProvider>
           }
+          actions={
+            <>
+              <Button disabled={unstagedFiles.length === 0} onClick={callbacks.stageAll}>
+                Stage all files
+              </Button>
+            </>
+          }
         />
       }
       second={
@@ -161,6 +181,16 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
                   onRowContextMenu={handleContextMenu}
                 />
               </div>
+            }
+            actions={
+              <>
+                <Button disabled={stat.stagedFiles.length === 0} onClick={callbacks.unstageAll}>
+                  Unstage all files
+                </Button>
+                <Button disabled={stat.stagedFiles.length === 0} onClick={callbacks.commit}>
+                  Commit
+                </Button>
+              </>
             }
           />
         </SelectedIndexProvider>
