@@ -8,7 +8,8 @@ import {
   Typography
 } from "@material-ui/core";
 import { forwardRef, useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
-import { DialogMethods, FullscreenDialog } from "./FullscreenDialog";
+import { DialogMethods } from "./Dialog";
+import { FullscreenDialog } from "./FullscreenDialog";
 
 const SectionContent: React.FC = ({ children }) => (
   <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>

@@ -1,5 +1,6 @@
 import { forwardRef, ForwardRefRenderFunction, useImperativeHandle, useState } from "react";
-import { DialogMethods, FullscreenDialog } from "./FullscreenDialog";
+import { DialogMethods } from "./Dialog";
+import { FullscreenDialog } from "./FullscreenDialog";
 import { version } from "../../../package.json";
 
 const AboutDialogInner: ForwardRefRenderFunction<DialogMethods> = (_, ref) => {
