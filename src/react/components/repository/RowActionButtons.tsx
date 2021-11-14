@@ -25,7 +25,7 @@ const RowActionButtons: React.VFC<{
             title={a.label}
             onClick={handleClick}
           >
-            <Icon icon={a.icon!} />
+            <Icon icon={a.icon} />
           </IconButton>
         );
       }),
