@@ -18,6 +18,7 @@ declare global {
   type TagRef = backend.TagRef;
   type RemoteRef = backend.RemoteRef;
   type Ref = backend.Ref;
+  type CommitOptions = backend.CommitOptions;
 
   type Resolve<T> = (arg: T) => void;
   type Dict<T> = { [key: string]: T };
@@ -139,7 +140,7 @@ declare global {
     getTextFileContent(params: { repoPath: string; file: FileSpec }): Promise<TextFile>;
     addToIndex(params: { repoPath: string; relPath: string }): Promise<void>;
     removeFromIndex(params: { repoPath: string; relPath: string }): Promise<void>;
-    commit(params: { repoPath: string; message: string }): Promise<void>;
+    commit(params: { repoPath: string; options: CommitOptions }): Promise<void>;
     yankText(text: string): Promise<void>;
     showOpenDialog(options: Electron.OpenDialogOptions): Promise<Electron.OpenDialogReturnValue>;
     __openPty(options: OpenPtyOptions): Promise<number>;

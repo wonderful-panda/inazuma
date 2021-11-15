@@ -68,6 +68,16 @@ declare interface BlameEntry {
   lineNo: number[];
 }
 
+declare type CommitOptions =
+  | {
+      amend?: false;
+      message: string;
+    }
+  | {
+      amend: true;
+      message?: string;
+    };
+
 export declare function logAsync(repoPath: string, maxCount: number): Promise<Commit[]>;
 
 export declare function filelogAsync(
@@ -118,6 +128,9 @@ export declare function addToIndexAsync(repoPath: string, relPath: string): Prom
 
 export declare function removeFromIndexAsync(repoPath: string, relPath: string): Promise<void>;
 
-export declare function commitAsync(repoPath: string, message: string): Promise<void>;
+export declare function commitAsync(
+  repoPath: string,
+  options: { amend?: false; message: string } | { amend: true; message?: string }
+): Promise<void>;
 
 export declare function findRepositoryRootAsync(): Promise<string | undefined>;

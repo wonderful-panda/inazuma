@@ -30,6 +30,8 @@ pub enum GitError {
     UnexpectedOutput { command: String, text: String },
     #[error("GitError(exec failed) {}", .0.to_string())]
     ExecFailed(#[from] std::io::Error),
+    #[error("GitError({command}, argument error) {message}")]
+    ArgumentError { command: String, message: String },
 }
 
 impl GitError {

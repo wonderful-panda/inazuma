@@ -4,10 +4,10 @@ import { Dispatch, RootState } from "..";
 import { SHOW_ALERT, SHOW_ERROR } from "../misc";
 import { RELOAD_REPOSITORY } from "./reloadRepository";
 
-const commit = (message: string) => {
+const commit = (options: CommitOptions) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     try {
-      if (!message) {
+      if (!options.amend && !options.message) {
         dispatch(SHOW_ALERT({ type: "warning", message: "Input commit message" }));
         return false;
       }
@@ -16,7 +16,7 @@ const commit = (message: string) => {
       if (!repoPath) {
         return false;
       }
-      await browserApi.commit({ repoPath, message });
+      await browserApi.commit({ repoPath, options });
       await dispatch(RELOAD_REPOSITORY());
       return true;
     } catch (error) {

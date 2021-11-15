@@ -82,8 +82,8 @@ export function setupBrowserCommands(_repoSessions: RepositorySessions): Browser
     removeFromIndex(_, { repoPath, relPath }) {
       return removeFromIndexAsync(repoPath, relPath);
     },
-    commit(_, { repoPath, message }) {
-      return commitAsync(repoPath, message);
+    commit(_, { repoPath, options }) {
+      return commitAsync(repoPath, options);
     },
     async yankText(_, text) {
       clipboard.writeText(text);
