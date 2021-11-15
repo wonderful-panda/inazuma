@@ -11,7 +11,7 @@ import FileList, { useFileListRowEventHandler } from "./FileList";
 import { Button } from "@material-ui/core";
 import { useDispatch } from "@/store";
 import { STAGE, UNSTAGE } from "@/store/thunk/staging";
-import { OPEN_DIALOG } from "@/store/repository";
+import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat;
@@ -118,7 +118,7 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
     () => ({
       stageAll: () => dispatch(STAGE("**/*")),
       unstageAll: () => dispatch(UNSTAGE("**/*")),
-      commit: () => dispatch(OPEN_DIALOG({ dialog: "commit" }))
+      commit: () => dispatch(BEGIN_COMMIT())
     }),
     [dispatch]
   );

@@ -6,7 +6,7 @@ import WorkingTree from "./WorkingTree";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "@/store";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { CommitLogItems, OPEN_DIALOG } from "@/store/repository";
+import { CommitLogItems } from "@/store/repository";
 import useListItemSelector from "@/hooks/useListItemSelector";
 import { useCommitContextMenu } from "@/hooks/useContextMenu";
 import { VirtualListMethods } from "../VirtualList";
@@ -16,6 +16,7 @@ import { SHOW_LOG_DETAIL } from "@/store/thunk/showLogDetail";
 import { browseSourceTree } from "@/commands/browseSourceTree";
 import CommitDialog from "./CommitDialog";
 import { CommitCommand } from "@/commands/types";
+import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
 
 const CommitLogInner: React.VFC<{
   active: boolean;
@@ -35,7 +36,7 @@ const CommitLogInner: React.VFC<{
         label: "Commit",
         icon: "mdi:content-save",
         hidden: (commit) => commit.id !== "--",
-        handler: () => dispatch(OPEN_DIALOG({ dialog: "commit" }))
+        handler: () => dispatch(BEGIN_COMMIT())
       }
     ],
     [dispatch]
