@@ -23,6 +23,7 @@ import { SHOW_ERROR } from "./store/misc";
 import { serializeError } from "./util";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
 import lazyWithPreload from "./components/lazyWithPreload";
+import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 
 const RepositoryPage = lazyWithPreload(() => import("./components/repository"));
 
@@ -156,13 +157,15 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <Suspense fallback={<Loading open />}>
-        <CommandGroupProvider>
-          <ContextMenuProvider>
-            <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
-              {content}
-            </PersistStateProvider>
-          </ContextMenuProvider>
-        </CommandGroupProvider>
+        <ConfirmDialogProvider>
+          <CommandGroupProvider>
+            <ContextMenuProvider>
+              <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+                {content}
+              </PersistStateProvider>
+            </ContextMenuProvider>
+          </CommandGroupProvider>
+        </ConfirmDialogProvider>
       </Suspense>
     </ThemeProvider>
   );

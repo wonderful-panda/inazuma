@@ -23,7 +23,7 @@ export interface DialogActionHandler {
 }
 
 export interface DialogProps {
-  title: string;
+  title?: string;
   fullScreen?: boolean;
   opened: boolean;
   close: () => void;
@@ -70,12 +70,10 @@ export const Dialog: React.FC<DialogProps> = ({
       TransitionComponent={TransitionComponent}
       transitionDuration={200}
     >
-      <DialogTitle>
-        {title}
-        <IconButton className="absolute top-2 right-2" onClick={close}>
-          <Icon icon="mdi:close" />
-        </IconButton>
-      </DialogTitle>
+      <IconButton className="absolute top-2 right-2" onClick={close}>
+        <Icon icon="mdi:close" />
+      </IconButton>
+      {title && <DialogTitle>{title}</DialogTitle>}
       <DialogContent dividers>{children}</DialogContent>
       <DialogActions className="pr-4">
         {actions?.map((a, i) => (
