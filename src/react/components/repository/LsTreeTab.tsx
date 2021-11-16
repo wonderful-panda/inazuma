@@ -1,4 +1,3 @@
-import browserApi from "@/browserApi";
 import { useDispatch } from "@/store";
 import { SHOW_ERROR } from "@/store/misc";
 import { filterTreeItems, sortTreeInplace } from "@/tree";
@@ -14,6 +13,7 @@ import { debounce } from "lodash";
 import useTreeItemSelector from "@/hooks/useTreeItemSelector";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import BlamePanel from "./BlamePanel";
+import dispatchBrowser from "@/dispatchBrowser";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -129,8 +129,7 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs }) => {
   const [blameLoading, setBlameLoading] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
-    browserApi
-      .getTree({ repoPath, sha })
+    dispatchBrowser("getTree", { repoPath, sha })
       .then((entries) => {
         sortTreeInplace(entries, (a, b) => {
           if (a.data.type !== b.data.type) {
@@ -156,7 +155,7 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs }) => {
       }
       setBlameLoading(true);
       try {
-        const blame = await browserApi.getBlame({ repoPath, relPath: path, sha });
+        const blame = await dispatchBrowser("getBlame", { repoPath, relPath: path, sha });
         setBlame({ blame, path });
       } catch (e) {
         dispatch(SHOW_ERROR({ error: serializeError(e) }));

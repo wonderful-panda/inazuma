@@ -1,4 +1,4 @@
-import browserApi from "@/browserApi";
+import dispatchBrowser from "@/dispatchBrowser";
 import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";
 import { SHOW_ALERT, SHOW_ERROR } from "../misc";
@@ -16,7 +16,7 @@ const showExternalDiff = (left: FileSpec, right: FileSpec) => {
         dispatch(SHOW_ALERT({ type: "warning", message: "External diff tool is not configured" }));
         return;
       }
-      await browserApi.showExternalDiff({ repoPath, left, right });
+      await dispatchBrowser("showExternalDiff", { repoPath, left, right });
     } catch (error) {
       dispatch(SHOW_ERROR({ error: serializeError(error) }));
     }

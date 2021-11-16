@@ -1,4 +1,4 @@
-import browserApi from "@/browserApi";
+import dispatchBrowser from "@/dispatchBrowser";
 import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";
 import { SHOW_ERROR } from "../misc";
@@ -12,9 +12,9 @@ const stage = (relPath: string) => {
       if (!repoPath) {
         return;
       }
-      await browserApi.addToIndex({ repoPath, relPath });
+      await dispatchBrowser("addToIndex", { repoPath, relPath });
       if (state.repository.selectedLogDetail?.id === "--") {
-        const value = await browserApi.getLogDetail({ repoPath, sha: "--" });
+        const value = await dispatchBrowser("getLogDetail", { repoPath, sha: "--" });
         dispatch(_SET_SELECTED_LOG_DETAIL({ repoPath, value }));
       }
     } catch (error) {
@@ -31,9 +31,9 @@ const unstage = (relPath: string) => {
       if (!repoPath) {
         return;
       }
-      await browserApi.removeFromIndex({ repoPath, relPath });
+      await dispatchBrowser("removeFromIndex", { repoPath, relPath });
       if (state.repository.selectedLogDetail?.id === "--") {
-        const value = await browserApi.getLogDetail({ repoPath, sha: "--" });
+        const value = await dispatchBrowser("getLogDetail", { repoPath, sha: "--" });
         dispatch(_SET_SELECTED_LOG_DETAIL({ repoPath, value }));
       }
     } catch (error) {

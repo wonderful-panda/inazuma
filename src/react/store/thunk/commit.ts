@@ -1,4 +1,4 @@
-import browserApi from "@/browserApi";
+import dispatchBrowser from "@/dispatchBrowser";
 import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";
 import { SHOW_ALERT, SHOW_ERROR } from "../misc";
@@ -16,7 +16,7 @@ const commit = (options: CommitOptions) => {
       if (!repoPath) {
         return false;
       }
-      const stat = await browserApi.getLogDetail({ repoPath, sha: "--" });
+      const stat = await dispatchBrowser("getLogDetail", { repoPath, sha: "--" });
       if (stat.type !== "status") {
         throw new Error("stat.type must be 'status'");
       }
@@ -28,7 +28,7 @@ const commit = (options: CommitOptions) => {
         dispatch(SHOW_ALERT({ type: "warning", message: "One or more files are still unmerged." }));
         return false;
       }
-      await browserApi.commit({ repoPath, options });
+      await dispatchBrowser("commit", { repoPath, options });
       await dispatch(RELOAD_REPOSITORY());
       return true;
     } catch (error) {

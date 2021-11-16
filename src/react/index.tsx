@@ -5,7 +5,6 @@ import Home from "./components/home";
 import { createTheme, ThemeProvider } from "@material-ui/core";
 import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
-import browserApi from "./browserApi";
 import {
   loadStateToSessionStorage,
   persistDataPromise,
@@ -24,6 +23,7 @@ import { serializeError } from "./util";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
 import lazyWithPreload from "./components/lazyWithPreload";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
+import dispatchBrowser from "./dispatchBrowser";
 
 const RepositoryPage = lazyWithPreload(() => import("./components/repository"));
 
@@ -102,14 +102,14 @@ const init = async (dispatch: Dispatch) => {
   watch(
     (state) => state.persist.config,
     (newValue) => {
-      browserApi.resetConfig(newValue);
+      dispatchBrowser("resetConfig", newValue);
       updateFont(newValue.fontFamily);
       updateFontSize(newValue.fontSize);
     }
   );
   watch(
     (state) => state.persist.env.recentOpenedRepositories,
-    (newValue) => browserApi.saveEnvironment("recentOpened", newValue)
+    (newValue) => dispatchBrowser("saveEnvironment", "recentOpened", newValue)
   );
   watch(
     (state) => state.repository.path,

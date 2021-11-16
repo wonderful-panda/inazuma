@@ -1,4 +1,4 @@
-import browserApi from "@/browserApi";
+import dispatchBrowser from "@/dispatchBrowser";
 import { SHOW_ALERT } from "@/store/misc";
 import { shortHash } from "@/util";
 import { CommitCommand } from "./types";
@@ -8,7 +8,7 @@ export const copyFullHash: CommitCommand = {
   label: "Copy full hash",
   hidden: (commit) => commit.id === "--",
   handler: async (dispatch, commit) => {
-    await browserApi.yankText(commit.id);
+    await dispatchBrowser("copyTextToClipboard", commit.id);
     dispatch(SHOW_ALERT({ type: "success", message: `Copied: ${commit.id}` }));
   }
 };
@@ -19,7 +19,7 @@ export const copyShortHash: CommitCommand = {
   hidden: (commit) => commit.id === "--",
   handler: async (dispatch, commit) => {
     const hash = shortHash(commit.id);
-    await browserApi.yankText(hash);
+    await dispatchBrowser("copyTextToClipboard", hash);
     dispatch(SHOW_ALERT({ type: "success", message: `Copied: ${hash}` }));
   }
 };

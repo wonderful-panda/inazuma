@@ -1,4 +1,4 @@
-import browserApi from "@/browserApi";
+import dispatchBrowser from "@/dispatchBrowser";
 import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";
 import { SHOW_ERROR } from "../misc";
@@ -15,7 +15,7 @@ const showLogDetail = (sha: string | undefined) => {
       if (!sha) {
         dispatch(_SET_SELECTED_LOG_DETAIL({ repoPath, value: undefined }));
       } else {
-        const value = await browserApi.getLogDetail({ repoPath, sha });
+        const value = await dispatchBrowser("getLogDetail", { repoPath, sha });
         dispatch(_SET_SELECTED_LOG_DETAIL({ repoPath, value }));
       }
     } catch (error) {

@@ -1,4 +1,4 @@
-import browserApi from "@/browserApi";
+import dispatchBrowser from "@/dispatchBrowser";
 import { Grapher, GraphFragment } from "@/grapher";
 import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";
@@ -14,7 +14,7 @@ const reloadRepository = () => {
         return;
       }
       dispatch(SHOW_LOADING());
-      const { commits, refs } = await browserApi.openRepository(path);
+      const { commits, refs } = await dispatchBrowser("openRepository", path);
       const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
       const graph: Record<string, GraphFragment> = {};
       commits.forEach((c) => {

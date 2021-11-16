@@ -5,8 +5,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Dialog, DialogActionHandler } from "../Dialog";
 import { COMMIT } from "@/store/thunk/commit";
 import { CLOSE_DIALOG } from "@/store/repository";
-import browserApi from "@/browserApi";
 import { SHOW_ERROR } from "@/store/misc";
+import dispatchBrowser from "@/dispatchBrowser";
 
 const CommitDialog: React.VFC = () => {
   const dispatch = useDispatch();
@@ -39,7 +39,7 @@ const CommitDialog: React.VFC = () => {
       }
       try {
         // get commit message of HEAD and set it to TextArea.
-        const commitDetail = await browserApi.getLogDetail({ repoPath, sha: "HEAD" });
+        const commitDetail = await dispatchBrowser("getLogDetail", { repoPath, sha: "HEAD" });
         if (commitDetail.type === "commit") {
           // always true
           messageRef.current.value =

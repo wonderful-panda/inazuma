@@ -2,12 +2,12 @@ import { Divider, List, Typography } from "@material-ui/core";
 import { RepositoryListItem } from "./RepositoryListItem";
 import { useCallback, useMemo } from "react";
 import { MainWindow } from "@/components/MainWindow";
-import browserApi from "@/browserApi";
 import { useDispatch, useSelector } from "@/store";
 import { REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
 import { OPEN_REPOSITORY } from "@/store/thunk/openRepository";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { Command } from "@/context/CommandGroupContext";
+import dispatchBrowser from "@/dispatchBrowser";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ const Home = () => {
     const options: Electron.OpenDialogOptions = {
       properties: ["openDirectory"]
     };
-    const ret = await browserApi.showOpenDialog(options);
+    const ret = await dispatchBrowser("showOpenDialog", options);
     if (!ret.canceled) {
       handleOpen(ret.filePaths[0]);
     }

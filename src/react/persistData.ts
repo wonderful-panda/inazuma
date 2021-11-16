@@ -1,5 +1,4 @@
-import browserApi from "./browserApi";
-
+import dispatchBrowser from "./dispatchBrowser";
 /*
  * load / save between sessionStorage and environment.json
  *
@@ -7,7 +6,7 @@ import browserApi from "./browserApi";
  * multiple Electron instances run at same time.
  */
 
-export const persistDataPromise = browserApi.loadPersistentData();
+export const persistDataPromise = dispatchBrowser("loadPersistentData");
 
 export const STORAGE_PREFIX = "inazuma:";
 export const loadStateToSessionStorage = async () => {
@@ -29,5 +28,5 @@ export const saveStateToEnvFile = async () => {
       state[key.slice(STORAGE_PREFIX.length)] = sessionStorage.getItem(key)!;
     }
   }
-  browserApi.saveEnvironment("state", state);
+  dispatchBrowser("saveEnvironment", "state", state);
 };

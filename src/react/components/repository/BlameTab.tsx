@@ -1,4 +1,4 @@
-import browserApi from "@/browserApi";
+import dispatchBrowser from "@/dispatchBrowser";
 import { useEffect, useState } from "react";
 import Loading from "../Loading";
 import BlamePanel from "./BlamePanel";
@@ -17,7 +17,7 @@ const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
       return;
     }
     setBlame(undefined);
-    browserApi.getBlame({ repoPath, relPath: path, sha: sha }).then((blame) => {
+    dispatchBrowser("getBlame", { repoPath, relPath: path, sha: sha }).then((blame) => {
       setBlame(blame);
     });
   }, [repoPath, path, sha]);

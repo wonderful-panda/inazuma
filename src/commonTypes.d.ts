@@ -2,7 +2,6 @@
  * Type definitions needed by both browser and renderer
  */
 import type * as backend from "inazuma-rust-backend";
-import type * as Electron from "electron";
 
 declare global {
   type Commit = backend.Commit;
@@ -125,27 +124,6 @@ declare global {
     kill: { signal?: string };
   };
 
-  interface BrowserCommand {
-    openRepository(repoPath: string): Promise<{ commits: Commit[]; refs: Refs }>;
-    getLogDetail(params: { repoPath: string; sha: string }): Promise<LogDetail>;
-    getBlame(params: { repoPath: string; relPath: string; sha: string }): Promise<Blame>;
-    getFileLog(params: { repoPath: string; relPath: string; sha: string }): Promise<FileCommit[]>;
-    getTree(params: { repoPath: string; sha: string }): Promise<LstreeEntry[]>;
-    getConfig(): Promise<Config>;
-    loadPersistentData(): Promise<{ config: Config; environment: Environment }>;
-    saveEnvironment<K extends keyof Environment>(key: K, value: Environment[K]): Promise<void>;
-    resetConfig(config: Config): Promise<void>;
-    runInteractiveShell(curdir: string): Promise<void>;
-    showExternalDiff(params: { repoPath: string; left: FileSpec; right: FileSpec }): Promise<void>;
-    getTextFileContent(params: { repoPath: string; file: FileSpec }): Promise<TextFile>;
-    addToIndex(params: { repoPath: string; relPath: string }): Promise<void>;
-    removeFromIndex(params: { repoPath: string; relPath: string }): Promise<void>;
-    commit(params: { repoPath: string; options: CommitOptions }): Promise<void>;
-    yankText(text: string): Promise<void>;
-    showOpenDialog(options: Electron.OpenDialogOptions): Promise<Electron.OpenDialogReturnValue>;
-    __openPty(options: OpenPtyOptions): Promise<number>;
-  }
-
   interface ErrorLike {
     name: string;
     message: string;
@@ -161,22 +139,4 @@ declare global {
         status: "failed";
         error: ErrorLike;
       };
-
-  interface RendererGlobals {
-    browserApi: BrowserCommand;
-    browserEvents: {
-      listen: <K extends keyof BrowserEvent>(
-        type: K,
-        listener: (payload: BrowserEvent[K]) => void
-      ) => void;
-    };
-    pty: {
-      open: (
-        options: OpenPtyOptions,
-        listeners: PtyListeners
-      ) => Promise<{
-        [K in keyof PtyCommands]: (payload: PtyCommands[K]) => Promise<void>;
-      }>;
-    };
-  }
 }

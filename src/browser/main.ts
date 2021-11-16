@@ -1,25 +1,25 @@
 import Electron from "electron";
 import { config, environment } from "./persistent";
 import wm from "./windowManager";
-import { setupRepositorySessions } from "./repositorySession";
-import { setupBrowserCommands } from "./actions";
 import { parseCommandLine } from "./options";
+import { registerHandlers } from "./registerHandlers";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   REDUX_DEVTOOLS
 } from "electron-devtools-installer";
 import path from "path";
 import { findRepositoryRootAsync } from "inazuma-rust-backend";
+import { repositorySessions } from "./repositorySession";
+import * as handlers from "./handlers";
 
 const options = parseCommandLine();
 
-const repoSessions = setupRepositorySessions();
-setupBrowserCommands(repoSessions);
+registerHandlers(handlers);
 
 Electron.app.on("window-all-closed", () => {
   config.save();
   environment.save();
-  repoSessions.dispose();
+  repositorySessions.dispose();
   if (process.platform !== "darwin") {
     Electron.app.quit();
   }

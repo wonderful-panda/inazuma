@@ -1,45 +1,19 @@
 import { contextBridge, ipcRenderer } from "electron";
-
-const keys: Record<keyof BrowserCommand, null> = {
-  openRepository: null,
-  getLogDetail: null,
-  getBlame: null,
-  getFileLog: null,
-  getTree: null,
-  getConfig: null,
-  resetConfig: null,
-  runInteractiveShell: null,
-  showExternalDiff: null,
-  getTextFileContent: null,
-  yankText: null,
-  showOpenDialog: null,
-  loadPersistentData: null,
-  saveEnvironment: null,
-  addToIndex: null,
-  removeFromIndex: null,
-  commit: null,
-  __openPty: null
+const dispatchBrowser: BrowserMethodDispatch = async (name, ...args) => {
+  const ret: BrowserCommandResult = await ipcRenderer.invoke(name, ...args);
+  console.debug(name, ret);
+  if (ret.status === "succeeded") {
+    return ret.result;
+  } else {
+    console.error(ret.error);
+    throw ret.error;
+  }
 };
-
-const bridge = {} as BrowserCommand;
-Object.keys(keys).forEach((key) => {
-  (bridge as any)[key] = async (...args: any[]) => {
-    const ret: BrowserCommandResult = await ipcRenderer.invoke(key, ...args);
-    console.log(key, ret);
-    if (ret.status === "succeeded") {
-      return ret.result;
-    } else {
-      console.error(ret.error);
-      throw ret.error;
-    }
-  };
-});
 
 const expose = <K extends keyof RendererGlobals>(name: K, value: RendererGlobals[K]) => {
   contextBridge.exposeInMainWorld(name, value);
 };
-
-expose("browserApi", bridge);
+expose("dispatchBrowser", dispatchBrowser);
 
 expose("browserEvents", {
   listen: (type, listener) => {
@@ -67,7 +41,7 @@ const openPty = async (
   options: OpenPtyOptions,
   listeners: PtyListeners
 ): Promise<{ [K in keyof PtyCommands]: (payload: PtyCommands[K]) => Promise<void> }> => {
-  const token = await bridge.__openPty(options);
+  const token = await dispatchBrowser("__openPty", options);
   listenPtyEvent("data", token, listeners.onData);
   listenPtyEvent("exit", token, listeners.onExit);
   return {
