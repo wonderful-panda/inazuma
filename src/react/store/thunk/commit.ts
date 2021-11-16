@@ -16,6 +16,18 @@ const commit = (options: CommitOptions) => {
       if (!repoPath) {
         return false;
       }
+      const stat = await browserApi.getLogDetail({ repoPath, sha: "--" });
+      if (stat.type !== "status") {
+        throw new Error("stat.type must be 'status'");
+      }
+      if (!options.amend && stat.stagedFiles.length === 0) {
+        dispatch(SHOW_ALERT({ type: "warning", message: "Nothing to commit." }));
+        return false;
+      }
+      if (stat.stagedFiles.find((f) => f.statusCode === "U")) {
+        dispatch(SHOW_ALERT({ type: "warning", message: "One or more files are still unmerged." }));
+        return false;
+      }
       await browserApi.commit({ repoPath, options });
       await dispatch(RELOAD_REPOSITORY());
       return true;

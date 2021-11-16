@@ -205,9 +205,7 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
                 <Button disabled={!stagedChangesExist} onClick={callbacks.fixup}>
                   Fixup
                 </Button>
-                <Button disabled={!stagedChangesExist} onClick={callbacks.commit}>
-                  Commit
-                </Button>
+                <Button onClick={callbacks.commit}>Commit</Button>
               </>
             }
           />
