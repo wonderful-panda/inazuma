@@ -70,10 +70,10 @@ export const Dialog: React.FC<DialogProps> = ({
       TransitionComponent={TransitionComponent}
       transitionDuration={200}
     >
-      <IconButton className="absolute top-2 right-2" onClick={close}>
+      <IconButton className="absolute top-1 right-1" onClick={close}>
         <Icon icon="mdi:close" />
       </IconButton>
-      {title && <DialogTitle>{title}</DialogTitle>}
+      {title && <DialogTitle className="px-5 py-3">{title}</DialogTitle>}
       <DialogContent dividers>{children}</DialogContent>
       <DialogActions className="pr-4">
         {actions?.map((a, i) => (
