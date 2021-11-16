@@ -157,15 +157,13 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <Suspense fallback={<Loading open />}>
-        <ConfirmDialogProvider>
-          <CommandGroupProvider>
-            <ContextMenuProvider>
-              <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
-                {content}
-              </PersistStateProvider>
-            </ContextMenuProvider>
-          </CommandGroupProvider>
-        </ConfirmDialogProvider>
+        <CommandGroupProvider>
+          <ContextMenuProvider>
+            <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+              <ConfirmDialogProvider>{content}</ConfirmDialogProvider>
+            </PersistStateProvider>
+          </ContextMenuProvider>
+        </CommandGroupProvider>
       </Suspense>
     </ThemeProvider>
   );
