@@ -12,6 +12,8 @@ import { Button } from "@material-ui/core";
 import { useDispatch } from "@/store";
 import { STAGE, UNSTAGE } from "@/store/thunk/staging";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
+import { useConfirmDialog } from "@/hooks/useConfirmDialog";
+import { COMMIT } from "@/store/thunk/commit";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat;
@@ -110,6 +112,7 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
       active: "staged"
     }));
   }, []);
+  const confirm = useConfirmDialog();
   const unstagedSelector = useListItemSelector(unstagedFiles.length, setUnstagedIndex);
   const stagedSelector = useListItemSelector(stat.stagedFiles.length, setStagedIndex);
   const handleUnstagedRowDoubleClick = useFileListRowEventHandler(diffUnstaged, stat);
@@ -118,10 +121,22 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
     () => ({
       stageAll: () => dispatch(STAGE("**/*")),
       unstageAll: () => dispatch(UNSTAGE("**/*")),
-      commit: () => dispatch(BEGIN_COMMIT())
+      commit: () => dispatch(BEGIN_COMMIT()),
+      fixup: async () => {
+        const ret = await confirm.show({
+          title: "Fixup",
+          content: (
+            <span className="text-xl">Meld changes into last commit without changing message.</span>
+          )
+        });
+        if (ret) {
+          dispatch(COMMIT({ amend: true }));
+        }
+      }
     }),
-    [dispatch]
+    [dispatch, confirm]
   );
+  const stagedChangesExist = stat.stagedFiles.length > 0;
   return (
     <SplitterPanel
       persistKey="repository/WorkingTree"
@@ -184,10 +199,13 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
             }
             actions={
               <>
-                <Button disabled={stat.stagedFiles.length === 0} onClick={callbacks.unstageAll}>
+                <Button disabled={!stagedChangesExist} onClick={callbacks.unstageAll}>
                   Unstage all files
                 </Button>
-                <Button disabled={stat.stagedFiles.length === 0} onClick={callbacks.commit}>
+                <Button disabled={!stagedChangesExist} onClick={callbacks.fixup}>
+                  Fixup
+                </Button>
+                <Button disabled={!stagedChangesExist} onClick={callbacks.commit}>
                   Commit
                 </Button>
               </>
