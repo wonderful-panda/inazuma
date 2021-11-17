@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs-extra";
 import cp from "child_process";
 import { config } from "../persistent";
-import { RepositorySession, repositorySessions } from "../repositorySession";
+import { RepositorySession } from "../repositorySession";
 import { randomName, splitCommandline } from "../utils";
 import { saveTo } from "../file";
 import type { Handler } from ".";
@@ -46,7 +46,7 @@ const replaceOrPush = (array: string[], value: string, newValue: string): void =
 export const showExternalDiff: Handler<
   [{ repoPath: string; left: FileSpec; right: FileSpec }],
   void
-> = async (_, { repoPath, left, right }): Promise<void> => {
+> = async ({ repositorySessions }, { repoPath, left, right }): Promise<void> => {
   const rs = repositorySessions.prepare(repoPath);
   const externalDiffTool = config.data.externalDiffTool;
   if (!externalDiffTool) {

@@ -58,5 +58,3 @@ export function setupRepositorySessions(): RepositorySessions {
     }
   };
 }
-
-export const repositorySessions = setupRepositorySessions();

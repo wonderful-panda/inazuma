@@ -9,12 +9,13 @@ import installExtension, {
 } from "electron-devtools-installer";
 import path from "path";
 import { findRepositoryRootAsync } from "inazuma-rust-backend";
-import { repositorySessions } from "./repositorySession";
+import { setupRepositorySessions } from "./repositorySession";
 import * as handlers from "./handlers";
 
 const options = parseCommandLine();
 
-registerHandlers(handlers);
+const repositorySessions = setupRepositorySessions();
+registerHandlers(repositorySessions, handlers);
 
 Electron.app.on("window-all-closed", () => {
   config.save();

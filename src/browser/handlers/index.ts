@@ -16,21 +16,25 @@ import {
   BrowserWindow,
   clipboard,
   dialog,
+  IpcMainInvokeEvent,
   OpenDialogOptions,
   OpenDialogReturnValue
 } from "electron";
 import { openPty } from "../pty";
 import { status } from "../status";
+import { RepositorySessions } from "../repositorySession";
 
 export { openRepository } from "./openRepository";
 export { showExternalDiff } from "./showExternalDiff";
 
-export type Handler<T extends unknown[], R> = (
-  event: Electron.IpcMainInvokeEvent,
-  ...args: T
-) => Promise<R>;
+export type Handler<T extends unknown[], R> = (ctx: HandlerCtx, ...args: T) => Promise<R>;
 
 export type SinglePayloadHandler<T, R> = Handler<[T], R>;
+
+export interface HandlerCtx {
+  event: IpcMainInvokeEvent;
+  repositorySessions: RepositorySessions;
+}
 
 export const getLogDetail: SinglePayloadHandler<{ repoPath: string; sha: string }, LogDetail> =
   async (_, { repoPath, sha }) => {
@@ -137,5 +141,5 @@ export const saveEnvironment = async <K extends keyof Environment>(
   environment.updatePartial(key, value);
 };
 
-export const __openPty: SinglePayloadHandler<OpenPtyOptions, number> = (event, options) =>
+export const __openPty: SinglePayloadHandler<OpenPtyOptions, number> = ({ event }, options) =>
   Promise.resolve(openPty(event.sender, options));
