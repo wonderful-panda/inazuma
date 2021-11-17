@@ -46,7 +46,7 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
   return (
     <div
       className={classNames(
-        "flex box-border cursor-pointer group",
+        "flex box-border cursor-pointer overflow-hidden group",
         "pl-4 border-b border-solid border-paper",
         index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
