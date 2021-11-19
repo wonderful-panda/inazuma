@@ -16,6 +16,10 @@ register_module!(mut cx, {
         bridge::status::get_workingtree_stat_async,
     )?;
     cx.export_function(
+        "getChangesBetweenAsync",
+        bridge::diff::get_changes_between_async,
+    )?;
+    cx.export_function(
         "getUntrackedFilesAsync",
         bridge::status::get_untracked_files_async,
     )?;

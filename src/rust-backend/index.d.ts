@@ -97,6 +97,12 @@ export declare function getWorkingTreeStatAsync(
   cached: boolean
 ): Promise<FileEntry[]>;
 
+export declare function getChangesBetweenAsync(
+  repoPath: string,
+  revspec1: string,
+  revspec2: string
+): Promise<FileEntry[]>;
+
 export declare function getUntrackedFilesAsync(repoPath: string): Promise<string[]>;
 
 export declare function getWorkingTreeParentsAsync(repoPath: string): Promise<string[]>;
