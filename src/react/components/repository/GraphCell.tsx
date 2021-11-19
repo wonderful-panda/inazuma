@@ -72,6 +72,11 @@ const GraphCell: React.VFC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   } else {
     radius = 6;
   }
+  let nodeMaskRadius = radius + 3;
+  if (height < 36) {
+    radius -= 1;
+    nodeMaskRadius -= 2;
+  }
   const nodeX = c2x(node.index, GRID_WIDTH);
   const nodeY = height / 2;
   const shortId = shortHash(graph.id);
@@ -86,7 +91,7 @@ const GraphCell: React.VFC<Props> = ({ graph, height, head, maskIdPrefix }) => {
       <defs>
         <mask key="0" id={nodeMask} maskUnits="userSpaceOnUse">
           <rect width="100%" height="100%" fill="white" />
-          <circle cx={nodeX} cy={nodeY} r={radius + 3} fill="black" />
+          <circle cx={nodeX} cy={nodeY} r={nodeMaskRadius} fill="black" />
         </mask>
         <mask key="1" id={edgeMask} maskUnits="userSpaceOnUse">
           <rect width="100%" height="100%" fill="white" />
