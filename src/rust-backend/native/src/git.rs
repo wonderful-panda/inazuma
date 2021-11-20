@@ -60,7 +60,8 @@ fn exec(
     configs: &[&str],
 ) -> std::io::Result<Output> {
     let mut cmd = Command::new("git");
-    cmd.arg("-C")
+    cmd.env("GIT_TERMINAL_PROMPT", "0")
+        .arg("-C")
         .arg(repo_path)
         .arg("--git-dir")
         .arg(repo_path.join(".git"));
@@ -77,6 +78,7 @@ fn exec(
 
 pub fn find_repository_root() -> Result<Option<String>, GitError> {
     let mut cmd = Command::new("git");
+    cmd.env("GIT_TERMINAL_PROMPT", "0");
     cmd.arg("rev-parse");
     cmd.arg("--show-toplevel");
     if cfg!(target_os = "windows") {
