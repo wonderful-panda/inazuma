@@ -1,4 +1,5 @@
 import { SHOW_EXTERNAL_DIFF } from "@/store/thunk/showExternalDiff";
+import { shortHash } from "@/util";
 import { FileCommand } from "./types";
 
 export const diffWithParent: FileCommand = {
@@ -92,3 +93,26 @@ export const diffStaged: FileCommand = {
     );
   }
 };
+
+export const diffAgainst = (baseCommit: DagNode): FileCommand => ({
+  id: `DiffAgainst-${baseCommit.id}`,
+  label: `Compare with ${shortHash(baseCommit.id)}`,
+  icon: "octicon:git-compare-16",
+  hidden: (commit) => {
+    if (commit.id === "--" || commit.parentIds.length === 0) {
+      return true;
+    }
+    return false;
+  },
+  disabled(_, file) {
+    return file.statusCode === "A" || file.statusCode === "D";
+  },
+  handler(dispatch, commit, file) {
+    dispatch(
+      SHOW_EXTERNAL_DIFF(
+        { path: file.oldPath || file.path, revspec: baseCommit.id },
+        { path: file.path, revspec: commit.id }
+      )
+    );
+  }
+});

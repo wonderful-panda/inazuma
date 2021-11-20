@@ -7,6 +7,10 @@ export type TabType = {
   tree: {
     sha: string;
   };
+  commitDiff: {
+    commit1: DagNode;
+    commit2: DagNode;
+  };
   file: {
     sha: string;
     path: string;

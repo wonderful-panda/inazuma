@@ -17,6 +17,15 @@ import { browseSourceTree } from "@/commands/browseSourceTree";
 import CommitDialog from "./CommitDialog";
 import { CommitCommand } from "@/commands/types";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
+import { SHOW_COMMIT_DIFF } from "@/store/thunk/showCommitDiff";
+
+const beginCommit: CommitCommand = {
+  id: "Commit",
+  label: "Commit",
+  icon: "mdi:content-save",
+  hidden: (commit) => commit.id !== "--",
+  handler: (dispatch) => dispatch(BEGIN_COMMIT())
+};
 
 const CommitLogInner: React.VFC<{
   active: boolean;
@@ -31,15 +40,26 @@ const CommitLogInner: React.VFC<{
   const actionCommands = useMemo<CommitCommand[]>(
     () => [
       browseSourceTree,
+      beginCommit,
       {
-        id: "Commit",
-        label: "Commit",
-        icon: "mdi:content-save",
-        hidden: (commit) => commit.id !== "--",
-        handler: () => dispatch(BEGIN_COMMIT())
+        id: "CompareCommits",
+        label: "Compare with selected commit",
+        icon: "octicon:git-compare-16",
+        hidden: (commit) => commit.id === "--",
+        disabled: (commit) => {
+          const selectedCommit = log.commits[selectedIndex];
+          if (!selectedCommit || selectedCommit.id === "--" || selectedCommit.id === commit.id) {
+            return true;
+          }
+          return false;
+        },
+        handler: (dispatch, commit) => {
+          const selectedCommit = log.commits[selectedIndex];
+          dispatch(SHOW_COMMIT_DIFF(selectedCommit, commit));
+        }
       }
     ],
-    [dispatch]
+    [log.commits, selectedIndex]
   );
   const selectLog = useMemo(
     () =>

@@ -18,6 +18,7 @@ import lazyWithPreload from "../lazyWithPreload";
 import { MainWindow } from "../MainWindow";
 import SplitterPanel from "../PersistSplitterPanel";
 import TabContainer, { TabContainerProps } from "../TabContainer";
+import CommitDiffTab from "./CommitDiffTab";
 import CommitLog from "./CommitLog";
 
 const BlameTab = lazyWithPreload(() => import("./BlameTab"));
@@ -43,6 +44,14 @@ const RepositoryPage: React.VFC = () => {
           return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} />;
         case "tree":
           return <LsTreeTab repoPath={repoPath} sha={tab.payload.sha} refs={refs} />;
+        case "commitDiff":
+          return (
+            <CommitDiffTab
+              repoPath={repoPath}
+              commit1={tab.payload.commit1}
+              commit2={tab.payload.commit2}
+            />
+          );
         default:
           assertNever(tab);
           break;
