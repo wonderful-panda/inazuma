@@ -1,6 +1,6 @@
 import Electron from "electron";
 import { config, environment } from "./persistent";
-import wm from "./windowManager";
+import { wm } from "./windowManager";
 import { parseCommandLine } from "./options";
 import { registerHandlers } from "./registerHandlers";
 import installExtension, {

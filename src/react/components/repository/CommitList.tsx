@@ -1,8 +1,8 @@
 import { useTheme } from "@material-ui/core";
 import { forwardRef, useCallback, useMemo } from "react";
 import { GraphFragment } from "@/grapher";
-import CommitListRow from "./CommitListRow";
-import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
+import { CommitListRow } from "./CommitListRow";
+import { VirtualList, VirtualListEvents, VirtualListMethods } from "../VirtualList";
 import { CommitCommand } from "@/commands/types";
 
 export interface CommitListProps extends VirtualListEvents<Commit> {
@@ -16,7 +16,7 @@ const getCommitListKey = (item: Commit) => item.id;
 
 let nextId = 0;
 
-const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
+const CommitList_: React.ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
   { commits, graph, refs, actionCommands, ...rest },
   ref
 ) => {
@@ -53,4 +53,4 @@ const CommitList: React.ForwardRefRenderFunction<VirtualListMethods, CommitListP
   );
 };
 
-export default forwardRef(CommitList);
+export const CommitList = forwardRef(CommitList_);

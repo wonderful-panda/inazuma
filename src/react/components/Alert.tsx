@@ -31,7 +31,7 @@ const bg: Record<AlertType, string> = {
   info: "bg-info"
 };
 
-const Alert: React.VFC<{
+const Alert_: React.VFC<{
   open: boolean;
   onClose?: (e: React.SyntheticEvent | React.MouseEvent, reason?: string) => void;
   message: string;
@@ -78,4 +78,4 @@ const Alert: React.VFC<{
   );
 };
 
-export default memo(Alert);
+export const Alert = memo(Alert_);

@@ -127,7 +127,7 @@ const InteractiveShellInner: React.VFC<InteractiveShellProps & { width: number; 
     );
   };
 
-const InteractiveShell: React.VFC<InteractiveShellProps> = (props) => {
+const InteractiveShell_: React.VFC<InteractiveShellProps> = (props) => {
   return (
     <AutoSizer className="flex-1">
       {(size) => <InteractiveShellInner {...props} {...size} />}
@@ -135,4 +135,4 @@ const InteractiveShell: React.VFC<InteractiveShellProps> = (props) => {
   );
 };
 
-export default memo(InteractiveShell);
+export const InteractiveShell = memo(InteractiveShell_);

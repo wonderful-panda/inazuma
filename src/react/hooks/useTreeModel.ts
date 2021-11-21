@@ -271,8 +271,7 @@ const reducer = <T extends unknown>(state: TreeModelState<T>, action: Action<T>)
   }
 };
 
-const useTreeModel = <T>() => {
+export const useTreeModel = <T>() => {
   return useReducer<Reducer<TreeModelState<T>, Action<T>>>(reducer, initialState);
 };
 export type TreeModelDispatch<T> = React.Dispatch<Action<T>>;
-export default useTreeModel;

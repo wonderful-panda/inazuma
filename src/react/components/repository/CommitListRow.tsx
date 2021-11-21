@@ -1,14 +1,14 @@
 import classNames from "classnames";
 import { GraphFragment } from "@/grapher";
 import { memo, useMemo } from "react";
-import GraphCell from "./GraphCell";
-import RefBadge from "./RefBadge";
+import { GraphCell } from "./GraphCell";
+import { RefBadge } from "./RefBadge";
 import { formatDateTimeLong } from "@/date";
-import GitHash from "../GitHash";
+import { GitHash } from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { Icon } from "@iconify/react";
 import { CommitCommand, IconActionItem } from "@/commands/types";
-import RowActionButtons from "./RowActionButtons";
+import { RowActionButtons } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
 import { useDispatch } from "@/store";
 
@@ -23,7 +23,7 @@ export interface CommitListRowProps {
   actionCommands?: readonly CommitCommand[];
 }
 
-const CommitListRow: React.VFC<CommitListRowProps> = ({
+const CommitListRow_: React.VFC<CommitListRowProps> = ({
   height,
   commit,
   graph,
@@ -76,4 +76,4 @@ const CommitListRow: React.VFC<CommitListRowProps> = ({
   );
 };
 
-export default memo(CommitListRow);
+export const CommitListRow = memo(CommitListRow_);

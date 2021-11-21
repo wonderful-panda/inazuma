@@ -1,4 +1,4 @@
-import dispatchBrowser from "@/dispatchBrowser";
+import { dispatchBrowser } from "@/dispatchBrowser";
 import { SHOW_ALERT } from "@/store/misc";
 import { shortHash } from "@/util";
 import { CommitCommand } from "./types";

@@ -1,6 +1,6 @@
 import { forwardRef, useCallback } from "react";
-import FileListRow from "./FileListRow";
-import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
+import { FileListRow } from "./FileListRow";
+import { VirtualList, VirtualListEvents, VirtualListMethods } from "../VirtualList";
 import { FileCommand } from "@/commands/types";
 import { useDispatch } from "@/store";
 import { executeFileCommand } from "@/commands";
@@ -27,7 +27,7 @@ export const useFileListRowEventHandler = (command: FileCommand, commit: DagNode
   );
 };
 
-const FileList: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps> = (
+const FileList_: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps> = (
   { commit, files, actionCommands, ...rest },
   ref
 ) => {
@@ -60,4 +60,4 @@ const FileList: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps
   );
 };
 
-export default forwardRef(FileList);
+export const FileList = forwardRef(FileList_);

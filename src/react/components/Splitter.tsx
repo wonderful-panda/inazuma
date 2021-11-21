@@ -35,7 +35,7 @@ const RotateButton: React.VFC<{
   </IconButton>
 );
 
-const Splitter: React.VFC<SplitterProps> = ({
+export const Splitter: React.VFC<SplitterProps> = ({
   horiz,
   thickness,
   allowDirectionChange,
@@ -91,5 +91,3 @@ const Splitter: React.VFC<SplitterProps> = ({
     </div>
   );
 };
-
-export default Splitter;

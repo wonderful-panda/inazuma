@@ -114,7 +114,6 @@ const VirtualListInner = <T extends unknown>(
   );
 };
 
-const VirtualList = forwardRef(VirtualListInner) as <T>(
+export const VirtualList = forwardRef(VirtualListInner) as <T>(
   props: VirtualListProps<T> & { ref?: React.ForwardedRef<VirtualListMethods> }
 ) => ReturnType<typeof VirtualListInner>;
-export default VirtualList;

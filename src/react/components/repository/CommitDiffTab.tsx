@@ -1,17 +1,17 @@
-import dispatchBrowser from "@/dispatchBrowser";
+import { dispatchBrowser } from "@/dispatchBrowser";
 import { useDispatch } from "@/store";
 import { SHOW_ERROR } from "@/store/misc";
 import { serializeError, shortHash } from "@/util";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import SplitterPanel from "../PersistSplitterPanel";
-import FileList, { useFileListRowEventHandler } from "./FileList";
-import Loading from "../Loading";
-import FlexCard from "../FlexCard";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import { FileList, useFileListRowEventHandler } from "./FileList";
+import { Loading } from "../Loading";
+import { FlexCard } from "../FlexCard";
 import { VirtualListMethods } from "../VirtualList";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import useListItemSelector from "@/hooks/useListItemSelector";
+import { useListItemSelector } from "@/hooks/useListItemSelector";
 import { diffAgainst } from "@/commands/diff";
-import DiffViewer from "./DiffViewer";
+import { DiffViewer } from "./DiffViewer";
 import { debounce } from "lodash";
 
 export interface CommitDiffTabProps {
@@ -117,7 +117,7 @@ const CommitDiffContent: React.VFC<{
   );
 
   return (
-    <SplitterPanel
+    <PersistSplitterPanel
       persistKey="repository/commitDiffTab"
       initialDirection="horiz"
       initialRatio={0.3}

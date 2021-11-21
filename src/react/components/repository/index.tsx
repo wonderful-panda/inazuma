@@ -13,16 +13,16 @@ import { RELOAD_REPOSITORY } from "@/store/thunk/reloadRepository";
 import { assertNever } from "@/util";
 import { useCallback, useMemo } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
-import InteractiveShell from "../InteractiveShell";
-import lazyWithPreload from "../lazyWithPreload";
+import { InteractiveShell } from "../InteractiveShell";
+import { lazyWithPreload } from "../lazyWithPreload";
 import { MainWindow } from "../MainWindow";
-import SplitterPanel from "../PersistSplitterPanel";
-import TabContainer, { TabContainerProps } from "../TabContainer";
-import CommitDiffTab from "./CommitDiffTab";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import { TabContainer, TabContainerProps } from "../TabContainer";
 import CommitLog from "./CommitLog";
 
 const BlameTab = lazyWithPreload(() => import("./BlameTab"));
 const LsTreeTab = lazyWithPreload(() => import("./LsTreeTab"));
+const CommitDiffTab = lazyWithPreload(() => import("./CommitDiffTab"));
 
 const RepositoryPage: React.VFC = () => {
   const dispatch = useDispatch();
@@ -115,7 +115,7 @@ const RepositoryPage: React.VFC = () => {
         <Cmd name="CloseRepository" hotkey="Ctrl+H" handler={callbacks.closeRepository} />
         <Cmd name="ReloadRepository" hotkey="Ctrl+R" handler={callbacks.reloadRepository} />
       </CommandGroup>
-      <SplitterPanel
+      <PersistSplitterPanel
         persistKey="repository"
         initialDirection="horiz"
         initialRatio={0.7}

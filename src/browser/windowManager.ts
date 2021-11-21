@@ -20,5 +20,4 @@ class WindowManager {
   }
 }
 
-const wm = new WindowManager();
-export default wm;
+export const wm = new WindowManager();

@@ -1,4 +1,4 @@
-import dispatchBrowser from "@/dispatchBrowser";
+import { dispatchBrowser } from "@/dispatchBrowser";
 import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";
 import { SHOW_ERROR } from "../misc";

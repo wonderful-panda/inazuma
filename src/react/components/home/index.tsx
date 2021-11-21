@@ -7,7 +7,7 @@ import { REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
 import { OPEN_REPOSITORY } from "@/store/thunk/openRepository";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { Command } from "@/context/CommandGroupContext";
-import dispatchBrowser from "@/dispatchBrowser";
+import { dispatchBrowser } from "@/dispatchBrowser";
 
 const Home = () => {
   const dispatch = useDispatch();

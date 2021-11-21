@@ -8,7 +8,12 @@ interface ConfirmDialogProps {
   onClose: (accepted: boolean) => void;
 }
 
-const ConfirmDialog: React.VFC<ConfirmDialogProps> = ({ opened, title, content, onClose }) => {
+export const ConfirmDialog: React.VFC<ConfirmDialogProps> = ({
+  opened,
+  title,
+  content,
+  onClose
+}) => {
   const handleCancel = useCallback(() => {
     onClose(false);
   }, [onClose]);
@@ -35,5 +40,3 @@ const ConfirmDialog: React.VFC<ConfirmDialogProps> = ({ opened, title, content, 
     </Dialog>
   );
 };
-
-export default ConfirmDialog;

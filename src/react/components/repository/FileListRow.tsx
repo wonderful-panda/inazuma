@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import { Typography } from "@material-ui/core";
 import React, { memo, useMemo } from "react";
-import FileStatusIcon from "./FileStatusIcon";
+import { FileStatusIcon } from "./FileStatusIcon";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { FileCommand, IconActionItem } from "@/commands/types";
 import { fileCommandsToActions } from "@/commands";
 import { useDispatch } from "@/store";
-import RowActionButtons from "./RowActionButtons";
+import { RowActionButtons } from "./RowActionButtons";
 
 export interface FileListRowProps {
   commit: DagNode;
@@ -57,7 +57,7 @@ const OldPath: React.VFC<{ file: FileEntry }> = ({ file }) =>
     <></>
   );
 
-const FileListRow: React.VFC<FileListRowProps> = ({
+const FileListRow_: React.VFC<FileListRowProps> = ({
   commit,
   file,
   index,
@@ -108,4 +108,4 @@ const FileListRow: React.VFC<FileListRowProps> = ({
   );
 };
 
-export default memo(FileListRow);
+export const FileListRow = memo(FileListRow_);

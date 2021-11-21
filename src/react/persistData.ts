@@ -1,4 +1,4 @@
-import dispatchBrowser from "./dispatchBrowser";
+import { dispatchBrowser } from "./dispatchBrowser";
 /*
  * load / save between sessionStorage and environment.json
  *

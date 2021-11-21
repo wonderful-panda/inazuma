@@ -3,7 +3,7 @@ import { shortHash } from "@/util";
 
 const className = "flex-row-nowrap flex-grow-0 flex-shrink-0 px-2 h-8 items-center";
 
-const BlameFooter: React.VFC<{ commit?: Commit }> = ({ commit }) => {
+export const BlameFooter: React.VFC<{ commit?: Commit }> = ({ commit }) => {
   if (!commit) {
     return <div className={className} />;
   }
@@ -18,5 +18,3 @@ const BlameFooter: React.VFC<{ commit?: Commit }> = ({ commit }) => {
     </div>
   );
 };
-
-export default BlameFooter;

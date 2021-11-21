@@ -94,7 +94,7 @@ const TabPage = <T extends unknown>(p: {
   }
 };
 
-const TabContainer = <T extends unknown = Record<string, any>>(p: TabContainerProps<T>) => {
+export const TabContainer = <T extends unknown = Record<string, any>>(p: TabContainerProps<T>) => {
   const styles = useStyles();
   const tabBarRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -141,5 +141,3 @@ const TabContainer = <T extends unknown = Record<string, any>>(p: TabContainerPr
     </div>
   );
 };
-
-export default TabContainer;

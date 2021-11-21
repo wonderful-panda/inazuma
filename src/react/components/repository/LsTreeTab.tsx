@@ -3,17 +3,17 @@ import { SHOW_ERROR } from "@/store/misc";
 import { filterTreeItems, sortTreeInplace } from "@/tree";
 import { serializeError } from "@/util";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import useTreeModel, { TreeItemVM } from "@/hooks/useTreeModel";
-import SplitterPanel from "../PersistSplitterPanel";
-import Loading from "../Loading";
-import LsTree from "./LsTree";
+import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import { Loading } from "../Loading";
+import { LsTree } from "./LsTree";
 import { IconButton, TextField } from "@material-ui/core";
 import { Icon } from "../Icon";
 import { debounce } from "lodash";
-import useTreeItemSelector from "@/hooks/useTreeItemSelector";
+import { useTreeItemSelector } from "@/hooks/useTreeItemSelector";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import BlamePanel from "./BlamePanel";
-import dispatchBrowser from "@/dispatchBrowser";
+import { BlamePanel } from "./BlamePanel";
+import { dispatchBrowser } from "@/dispatchBrowser";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -169,7 +169,7 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs }) => {
   return !entries ? (
     <Loading open />
   ) : (
-    <SplitterPanel
+    <PersistSplitterPanel
       persistKey="repository/LsTreeTab"
       initialRatio={0.3}
       initialDirection="horiz"

@@ -61,7 +61,7 @@ const actualColor = (id: string, color: string) => {
   return id === "--" ? WORK_COLOR : color;
 };
 
-const GraphCell: React.VFC<Props> = ({ graph, height, head, maskIdPrefix }) => {
+const GraphCell_: React.VFC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   const node = graph.node;
   const width = GRID_WIDTH * graph.width;
   let radius: number;
@@ -151,4 +151,4 @@ const GraphCell: React.VFC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   );
 };
 
-export default memo(GraphCell);
+export const GraphCell = memo(GraphCell_);

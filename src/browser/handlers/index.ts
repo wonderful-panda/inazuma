@@ -10,7 +10,7 @@ import {
 } from "inazuma-rust-backend";
 import { config, environment } from "../persistent";
 import { blame } from "../blame";
-import wm from "../windowManager";
+import { wm } from "../windowManager";
 import { splitCommandline } from "../utils";
 import { getTextFileContent as getTextFileContent_ } from "../file";
 import {

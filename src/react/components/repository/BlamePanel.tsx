@@ -1,14 +1,14 @@
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useFileCommitContextMenu } from "@/hooks/useContextMenu";
-import useListItemSelector from "@/hooks/useListItemSelector";
+import { useListItemSelector } from "@/hooks/useListItemSelector";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import GitHash from "../GitHash";
-import SplitterPanel from "../PersistSplitterPanel";
+import { GitHash } from "../GitHash";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
-import BlameFooter from "./BlameFooter";
-import BlameViewer from "./BlameViewer";
-import FileCommitList from "./FileCommitList";
+import { BlameFooter } from "./BlameFooter";
+import { BlameViewer } from "./BlameViewer";
+import { FileCommitList } from "./FileCommitList";
 
 setupMonaco();
 
@@ -61,7 +61,7 @@ export interface BlamePanelProps {
   refs: Refs | undefined;
 }
 
-const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, sha, refs }) => {
+export const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, sha, refs }) => {
   const handleRowContextMenu = useFileCommitContextMenu(path);
   const [selectedItem, setSelectedItem] = useState({
     index: -1,
@@ -104,7 +104,7 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, sha, 
         <span className="text-greytext pr-2">@</span>
         <GitHash className="text-greytext" hash={sha} />
       </div>
-      <SplitterPanel
+      <PersistSplitterPanel
         persistKey={persistKey}
         initialRatio={0.3}
         initialDirection="horiz"
@@ -138,5 +138,3 @@ const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, sha, 
     </div>
   );
 };
-
-export default BlamePanel;

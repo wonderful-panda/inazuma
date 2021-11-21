@@ -1,5 +1,5 @@
 import * as monaco from "monaco-editor";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 type IStandaloneDiffEditor = monaco.editor.IStandaloneDiffEditor;
 type IDiffEditorConstructionOptions = monaco.editor.IDiffEditorConstructionOptions;
@@ -19,7 +19,7 @@ export interface MonacoDiffEditorProps {
 
 const emptyContent: DiffContent = { content: "", language: "plaintext" };
 
-const MonacoEditor: React.VFC<MonacoDiffEditorProps> = ({
+const MonacoDiffEditor_: React.VFC<MonacoDiffEditorProps> = ({
   className,
   left = emptyContent,
   right = emptyContent,
@@ -60,4 +60,4 @@ const MonacoEditor: React.VFC<MonacoDiffEditorProps> = ({
   return <div ref={editorRef} className={className} />;
 };
 
-export default MonacoEditor;
+export const MonacoDiffEditor = memo(MonacoDiffEditor_);

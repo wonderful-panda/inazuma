@@ -12,7 +12,7 @@ export interface ListItemSelector {
   handleRowClick: (event: React.MouseEvent, index: number) => void;
 }
 
-const useListItemSelector = (
+export const useListItemSelector = (
   itemsCount: number,
   setValue: React.Dispatch<React.SetStateAction<number>>,
   extraKeyHandlers?: Record<string, () => void>
@@ -71,5 +71,3 @@ const useListItemSelector = (
     };
   }, [itemsCount, setValue, extraKeyHandlers]);
 };
-
-export default useListItemSelector;

@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import SplitterPanel from "../PersistSplitterPanel";
-import CommitDetail from "./CommitDetail";
-import CommitList from "./CommitList";
-import WorkingTree from "./WorkingTree";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import { CommitDetail } from "./CommitDetail";
+import { CommitList } from "./CommitList";
+import { WorkingTree } from "./WorkingTree";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "@/store";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { CommitLogItems } from "@/store/repository";
-import useListItemSelector from "@/hooks/useListItemSelector";
+import { useListItemSelector } from "@/hooks/useListItemSelector";
 import { useCommitContextMenu } from "@/hooks/useContextMenu";
 import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { SHOW_LOG_DETAIL } from "@/store/thunk/showLogDetail";
 import { browseSourceTree } from "@/commands/browseSourceTree";
-import CommitDialog from "./CommitDialog";
+import { CommitDialog } from "./CommitDialog";
 import { CommitCommand } from "@/commands/types";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
 import { SHOW_COMMIT_DIFF } from "@/store/thunk/showCommitDiff";
@@ -112,7 +112,7 @@ const CommitLogInner: React.VFC<{
         <Cmd name="PrevCommit" hotkey="Ctrl+P" handler={itemSelector.movePrevious} />
         <Cmd name="ShowLsTree" hotkey="Ctrl+L" handler={showLsTreeTab} />
       </CommandGroup>
-      <SplitterPanel
+      <PersistSplitterPanel
         persistKey="repository/CommitLog"
         initialDirection="horiz"
         initialRatio={0.7}

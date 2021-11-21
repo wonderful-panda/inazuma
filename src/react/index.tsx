@@ -17,13 +17,13 @@ import { Provider, useDispatch } from "react-redux";
 import { RESET_RECENT_OPENED_REPOSITORIES, UPDATE_CONFIG } from "./store/persist";
 import { CommandGroupProvider } from "./context/CommandGroupContext";
 import { OPEN_REPOSITORY } from "./store/thunk/openRepository";
-import Loading from "./components/Loading";
+import { Loading } from "./components/Loading";
 import { SHOW_ERROR } from "./store/misc";
 import { serializeError } from "./util";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
-import lazyWithPreload from "./components/lazyWithPreload";
+import { lazyWithPreload } from "./components/lazyWithPreload";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
-import dispatchBrowser from "./dispatchBrowser";
+import { dispatchBrowser } from "./dispatchBrowser";
 
 const RepositoryPage = lazyWithPreload(() => import("./components/repository"));
 

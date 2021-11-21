@@ -33,7 +33,7 @@ const Remote: React.VFC<{ r: RemoteRef }> = ({ r }) => (
   <Badge className="text-[grey] border border-solid border-current rounded-xl">{`${r.remote}/${r.name}`}</Badge>
 );
 
-const RefBadge: React.VFC<{ r: Ref }> = ({ r }) => {
+export const RefBadge: React.VFC<{ r: Ref }> = ({ r }) => {
   switch (r.type) {
     case "HEAD":
       return <></>;
@@ -49,5 +49,3 @@ const RefBadge: React.VFC<{ r: Ref }> = ({ r }) => {
       return assertNever(r);
   }
 };
-
-export default RefBadge;

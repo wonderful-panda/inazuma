@@ -6,9 +6,9 @@ import { Dialog, DialogActionHandler } from "../Dialog";
 import { COMMIT } from "@/store/thunk/commit";
 import { CLOSE_DIALOG } from "@/store/repository";
 import { SHOW_ERROR } from "@/store/misc";
-import dispatchBrowser from "@/dispatchBrowser";
+import { dispatchBrowser } from "@/dispatchBrowser";
 
-const CommitDialog: React.VFC = () => {
+export const CommitDialog: React.VFC = () => {
   const dispatch = useDispatch();
   const repoPath = useSelector((state) => state.repository.path);
   const opened = useSelector((state) => state.repository.activeDialog === "commit");
@@ -112,5 +112,3 @@ const CommitDialog: React.VFC = () => {
     </Dialog>
   );
 };
-
-export default CommitDialog;

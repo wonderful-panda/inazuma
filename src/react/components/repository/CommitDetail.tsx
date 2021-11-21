@@ -1,17 +1,17 @@
 import { Button } from "@material-ui/core";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "../Icon";
-import GitHash from "../GitHash";
-import SplitterPanel from "../PersistSplitterPanel";
+import { GitHash } from "../GitHash";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { formatDateTimeLong } from "@/date";
-import RefBadge from "./RefBadge";
-import FlexCard from "../FlexCard";
+import { RefBadge } from "./RefBadge";
+import { FlexCard } from "../FlexCard";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import FileList, { useFileListRowEventHandler } from "./FileList";
+import { FileList, useFileListRowEventHandler } from "./FileList";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
 import { diffWithParent } from "@/commands/diff";
 import { useDispatch } from "@/store";
-import useListItemSelector from "@/hooks/useListItemSelector";
+import { useListItemSelector } from "@/hooks/useListItemSelector";
 import { VirtualListMethods } from "../VirtualList";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { showFileContent } from "@/commands/showFileContent";
@@ -77,7 +77,7 @@ const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => 
 };
 const CommitMetadata = memo(CommitMetadataInner);
 
-const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
+export const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
   const commit = props.commit;
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const listRef = useRef<VirtualListMethods>(null);
@@ -89,7 +89,7 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
   const onRowDoubleClick = useFileListRowEventHandler(diffWithParent, commit);
   const onRowContextMenu = useFileContextMenu(commit);
   return (
-    <SplitterPanel
+    <PersistSplitterPanel
       persistKey="repository/CommitDetail"
       initialRatio={0.5}
       allowDirectionChange={false}
@@ -122,5 +122,3 @@ const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
     />
   );
 };
-
-export default memo(CommitDetail);

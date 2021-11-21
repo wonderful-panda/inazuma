@@ -1,5 +1,5 @@
 import { usePersistState } from "@/hooks/usePersistState";
-import SplitterPanel, { SplitterPanelProps } from "./SplitterPanel";
+import { SplitterPanel, SplitterPanelProps } from "./SplitterPanel";
 
 export type PersistSplitterPanelProps = Omit<
   SplitterPanelProps,
@@ -10,7 +10,7 @@ export type PersistSplitterPanelProps = Omit<
   persistKey: string;
 };
 
-const PersistSplitterPanel: React.VFC<PersistSplitterPanelProps> = ({
+export const PersistSplitterPanel: React.VFC<PersistSplitterPanelProps> = ({
   initialRatio,
   initialDirection,
   persistKey,
@@ -33,5 +33,3 @@ const PersistSplitterPanel: React.VFC<PersistSplitterPanelProps> = ({
     />
   );
 };
-
-export default PersistSplitterPanel;

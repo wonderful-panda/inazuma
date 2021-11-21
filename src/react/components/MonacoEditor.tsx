@@ -1,5 +1,5 @@
 import * as monaco from "monaco-editor";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 type IStandaloneCodeEditor = monaco.editor.IStandaloneCodeEditor;
 
@@ -11,7 +11,7 @@ export interface MonacoEditorProps {
   onEditorMounted?: (editor: IStandaloneCodeEditor) => void;
 }
 
-const MonacoEditor: React.VFC<MonacoEditorProps> = ({
+const MonacoEditor_: React.VFC<MonacoEditorProps> = ({
   className,
   language,
   options,
@@ -52,4 +52,4 @@ const MonacoEditor: React.VFC<MonacoEditorProps> = ({
   return <div ref={editorRef} className={className} />;
 };
 
-export default MonacoEditor;
+export const MonacoEditor = memo(MonacoEditor_);

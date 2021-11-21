@@ -1,6 +1,6 @@
 import { forwardRef, useCallback } from "react";
-import FileCommitListRow from "./FileCommitListRow";
-import VirtualList, { VirtualListEvents, VirtualListMethods } from "../VirtualList";
+import { FileCommitListRow } from "./FileCommitListRow";
+import { VirtualList, VirtualListEvents, VirtualListMethods } from "../VirtualList";
 import { useTheme } from "@material-ui/core";
 
 export interface FileCommitListProps extends VirtualListEvents<FileCommit> {
@@ -18,7 +18,7 @@ export const getRowHeight = (commit: FileCommit, baseFontSize: number) => {
 
 export const getFileCommitListKey = (item: FileCommit) => item.id;
 
-const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCommitListProps> = (
+const FileCommitList_: React.ForwardRefRenderFunction<VirtualListMethods, FileCommitListProps> = (
   { commits, refs, ...rest },
   ref
 ) => {
@@ -55,4 +55,4 @@ const FileCommitList: React.ForwardRefRenderFunction<VirtualListMethods, FileCom
   );
 };
 
-export default forwardRef(FileCommitList);
+export const FileCommitList = forwardRef(FileCommitList_);

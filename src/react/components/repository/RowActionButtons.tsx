@@ -1,9 +1,9 @@
 import { IconActionItem } from "@/commands/types";
 import { IconButton } from "@material-ui/core";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Icon } from "../Icon";
 
-const RowActionButtons: React.VFC<{
+const RowActionButtons_: React.VFC<{
   size: number;
   actions?: readonly IconActionItem[];
 }> = ({ size, actions }) => {
@@ -41,4 +41,4 @@ const RowActionButtons: React.VFC<{
   );
 };
 
-export default RowActionButtons;
+export const RowActionButtons = memo(RowActionButtons_);

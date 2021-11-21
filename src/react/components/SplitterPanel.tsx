@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { forwardRef, useCallback, useMemo, useRef } from "react";
-import Splitter from "./Splitter";
+import { Splitter } from "./Splitter";
 
 const FLEX_SUM = 1000;
 
@@ -48,7 +48,7 @@ const PanelInner = (
 );
 const Panel = forwardRef(PanelInner);
 
-const SplitterPanel: React.VFC<SplitterPanelProps> = ({
+export const SplitterPanel: React.VFC<SplitterPanelProps> = ({
   first,
   second,
   direction = "horiz",
@@ -138,5 +138,3 @@ const SplitterPanel: React.VFC<SplitterPanelProps> = ({
     </div>
   );
 };
-
-export default SplitterPanel;

@@ -1,4 +1,4 @@
-import dispatchBrowser from "@/dispatchBrowser";
+import { dispatchBrowser } from "@/dispatchBrowser";
 import { Grapher, GraphFragment } from "@/grapher";
 import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";

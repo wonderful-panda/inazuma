@@ -5,7 +5,7 @@ import { makeStyles, useTheme } from "@material-ui/core";
 import * as monaco from "monaco-editor";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import MonacoEditor from "../MonacoEditor";
+import { MonacoEditor } from "../MonacoEditor";
 
 type IStandaloneCodeEditor = monaco.editor.IStandaloneCodeEditor;
 type IEditorConstructionOptions = monaco.editor.IEditorConstructionOptions;
@@ -125,7 +125,7 @@ const getHunkBorderLineNumbers = (blame: Blame) => {
   return lineNumbers;
 };
 
-const BlameViewer: React.VFC<BlameViewerProps> = ({
+const BlameViewer_: React.VFC<BlameViewerProps> = ({
   language,
   blame,
   selectedCommitId,
@@ -230,4 +230,4 @@ const BlameViewer: React.VFC<BlameViewerProps> = ({
   );
 };
 
-export default memo(BlameViewer);
+export const BlameViewer = memo(BlameViewer_);

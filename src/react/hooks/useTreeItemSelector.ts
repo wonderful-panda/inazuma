@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from "react";
-import useListItemSelector, { ListItemSelector } from "./useListItemSelector";
+import { useListItemSelector, ListItemSelector } from "./useListItemSelector";
 import { TreeModelDispatch, TreeModelState } from "./useTreeModel";
 
-const useTreeItemSelector = <T>(
+export const useTreeItemSelector = <T>(
   treeModelState: TreeModelState<T>,
   treeModelDispatch: TreeModelDispatch<T>
 ): ListItemSelector => {
@@ -25,5 +25,3 @@ const useTreeItemSelector = <T>(
     extraKeyHandlers
   );
 };
-
-export default useTreeItemSelector;

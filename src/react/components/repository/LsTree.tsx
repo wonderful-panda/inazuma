@@ -5,7 +5,7 @@ import { useTheme } from "@material-ui/core";
 import classNames from "classnames";
 import { useCallback } from "react";
 import { VirtualListEvents } from "../VirtualList";
-import VirtualTree from "../VirtualTree";
+import { VirtualTree } from "../VirtualTree";
 
 export interface LsTreeProps extends VirtualListEvents<TreeItemVM<LstreeEntryData>> {
   treeModelState: TreeModelState<LstreeEntryData>;
@@ -34,7 +34,7 @@ const LsTreeRow: React.VFC<{
   );
 };
 
-const LsTree: React.VFC<LsTreeProps> = ({
+export const LsTree: React.VFC<LsTreeProps> = ({
   treeModelState,
   treeModelDispatch,
   getRowClass,
@@ -59,5 +59,3 @@ const LsTree: React.VFC<LsTreeProps> = ({
     />
   );
 };
-
-export default LsTree;

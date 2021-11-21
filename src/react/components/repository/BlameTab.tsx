@@ -1,7 +1,7 @@
-import dispatchBrowser from "@/dispatchBrowser";
+import { dispatchBrowser } from "@/dispatchBrowser";
 import { useEffect, useState } from "react";
-import Loading from "../Loading";
-import BlamePanel from "./BlamePanel";
+import { Loading } from "../Loading";
+import { BlamePanel } from "./BlamePanel";
 
 export interface BlameTabProps {
   repoPath: string;

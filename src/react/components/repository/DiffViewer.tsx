@@ -1,8 +1,8 @@
 import type * as monaco from "monaco-editor";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
-import { useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import MonacoDiffEditor, { DiffContent } from "../MonacoDiffEditor";
+import { MonacoDiffEditor, DiffContent } from "../MonacoDiffEditor";
 
 setupMonaco();
 
@@ -34,7 +34,7 @@ const useDiffContent = (tf: TextFile | undefined) =>
     [tf]
   );
 
-const DiffViewer: React.VFC<DiffViewerProps> = ({ left, right }) => {
+const DiffViewer_: React.VFC<DiffViewerProps> = ({ left, right }) => {
   const [editor, setEditor] = useState<IStandaloneDiffEditor | undefined>(undefined);
   const onEditorMounted = useCallback((editor: IStandaloneDiffEditor) => {
     setEditor(editor);
@@ -61,4 +61,4 @@ const DiffViewer: React.VFC<DiffViewerProps> = ({ left, right }) => {
   );
 };
 
-export default DiffViewer;
+export const DiffViewer = memo(DiffViewer_);

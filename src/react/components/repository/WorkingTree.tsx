@@ -1,13 +1,13 @@
 import { stage, unstage } from "@/commands/staging";
 import { diffStaged, diffUnstaged } from "@/commands/diff";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import useListItemSelector from "@/hooks/useListItemSelector";
+import { useListItemSelector } from "@/hooks/useListItemSelector";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import FlexCard from "../FlexCard";
-import SplitterPanel from "../PersistSplitterPanel";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FlexCard } from "../FlexCard";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
-import FileList, { useFileListRowEventHandler } from "./FileList";
+import { FileList, useFileListRowEventHandler } from "./FileList";
 import { Button } from "@material-ui/core";
 import { useDispatch } from "@/store";
 import { STAGE, UNSTAGE } from "@/store/thunk/staging";
@@ -53,7 +53,7 @@ const getActive = (
 const unstagedActionCommands = [diffUnstaged, stage];
 const stagedActionCommands = [diffStaged, unstage];
 
-const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
+export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
   const dispatch = useDispatch();
   const handleContextMenu = useFileContextMenu(stat);
   const unstagedListRef = useRef<VirtualListMethods>(null);
@@ -138,7 +138,7 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
   );
   const stagedChangesExist = stat.stagedFiles.length > 0;
   return (
-    <SplitterPanel
+    <PersistSplitterPanel
       persistKey="repository/WorkingTree"
       initialRatio={0.5}
       initialDirection={orientation === "portrait" ? "vert" : "horiz"}
@@ -216,5 +216,3 @@ const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
     />
   );
 };
-
-export default memo(WorkingTree);
