@@ -25,19 +25,30 @@ const SecondPanel: React.VFC<SecondPanelProps> = ({
   selectedCommitId,
   onUpdateSelectedCommitId
 }) => {
+  const handleRowContextMenu = useFileCommitContextMenu(path);
   const language = getLangIdFromPath(path);
   const [hoveredCommit, setHoveredCommit] = useState<Commit | undefined>(undefined);
   const commits = useMemo(() => {
     return blame.commits.reduce((prev, cur) => {
       prev[cur.id] = cur;
       return prev;
-    }, {} as Record<string, Commit>);
+    }, {} as Record<string, FileCommit>);
   }, [blame]);
   const onHoveredCommitIdChanged = useCallback(
     (value: string | undefined) => {
       setHoveredCommit(value ? commits[value] : undefined);
     },
     [commits]
+  );
+  const handleContextMenu = useCallback(
+    (e: MouseEvent, commitId: string) => {
+      const commit = commits[commitId];
+      if (!commit) {
+        return;
+      }
+      handleRowContextMenu(e, -1, commit);
+    },
+    [commits, handleRowContextMenu]
   );
   return (
     <div className="flex-col-nowrap flex-1 p-1">
@@ -47,6 +58,7 @@ const SecondPanel: React.VFC<SecondPanelProps> = ({
         selectedCommitId={selectedCommitId}
         onUpdateSelectedcommitId={onUpdateSelectedCommitId}
         onHoveredCommitIdChanged={onHoveredCommitIdChanged}
+        onContextMenu={handleContextMenu}
       />
       <BlameFooter commit={hoveredCommit} />
     </div>

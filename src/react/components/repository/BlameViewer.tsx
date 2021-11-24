@@ -59,6 +59,7 @@ export interface BlameViewerProps {
   selectedCommitId: string | undefined;
   onUpdateSelectedcommitId: (value: string | undefined) => void;
   onHoveredCommitIdChanged?: (value: string | undefined) => void;
+  onContextMenu?: (event: MouseEvent, commitId: string) => void;
 }
 
 const useDecorationEffect = (
@@ -130,13 +131,14 @@ const BlameViewer_: React.VFC<BlameViewerProps> = ({
   blame,
   selectedCommitId,
   onUpdateSelectedcommitId,
-  onHoveredCommitIdChanged
+  onHoveredCommitIdChanged,
+  onContextMenu
 }) => {
   const theme = useTheme();
   const styles = useStyles();
   const [editor, setEditor] = useState<IStandaloneCodeEditor | null>(null);
   const [hoveredCommitId, setHoveredCommitId] = useState<string | undefined>(undefined);
-  const onEditorMounted = useCallback((editor: IStandaloneCodeEditor) => {
+  const handleEditorMounted = useCallback((editor: IStandaloneCodeEditor) => {
     setEditor(editor);
   }, []);
   const options = useMemo<IEditorConstructionOptions>(
@@ -152,18 +154,29 @@ const BlameViewer_: React.VFC<BlameViewerProps> = ({
     onHoveredCommitIdChanged?.(hoveredCommitId);
   }, [onHoveredCommitIdChanged, hoveredCommitId]);
 
-  const onMouseMove = useCallback(
+  const handleMouseMove = useCallback(
     (e: IEditorMouseEvent) => {
       const commitId = blame.commitIds[(e.target.position?.lineNumber || 0) - 1];
       setHoveredCommitId(commitId);
     },
     [blame]
   );
-  const onMouseLeave = useCallback(() => {
+  const handleMouseLeave = useCallback(() => {
     setHoveredCommitId(undefined);
   }, []);
 
-  const onMouseDown = useCallback(
+  const handleContextMenu = useCallback(
+    (e: IEditorMouseEvent) => {
+      if (!e.target.position || !onContextMenu) {
+        return;
+      }
+      const commitId = blame.commitIds[e.target.position.lineNumber - 1];
+      onContextMenu(e.event.browserEvent, commitId);
+    },
+    [blame, onContextMenu]
+  );
+
+  const handleMouseDown = useCallback(
     (e: IEditorMouseEvent) => {
       const { position, type } = e.target;
       if (!position) {
@@ -183,19 +196,24 @@ const BlameViewer_: React.VFC<BlameViewerProps> = ({
   );
 
   useEffect(() => {
-    const disposable = editor?.onMouseDown(onMouseDown);
+    const disposable = editor?.onMouseDown(handleMouseDown);
     return () => disposable?.dispose();
-  }, [editor, onMouseDown]);
+  }, [editor, handleMouseDown]);
 
   useEffect(() => {
-    const disposable = editor?.onMouseMove(onMouseMove);
+    const disposable = editor?.onMouseMove(handleMouseMove);
     return () => disposable?.dispose();
-  }, [editor, onMouseMove]);
+  }, [editor, handleMouseMove]);
 
   useEffect(() => {
-    const disposable = editor?.onMouseLeave(onMouseLeave);
+    const disposable = editor?.onMouseLeave(handleMouseLeave);
     return () => disposable?.dispose();
-  }, [editor, onMouseLeave]);
+  }, [editor, handleMouseLeave]);
+
+  useEffect(() => {
+    const disposable = editor?.onContextMenu(handleContextMenu);
+    return () => disposable?.dispose();
+  }, [editor, handleContextMenu]);
 
   const hunkBorderLineNumbers = useMemo(() => getHunkBorderLineNumbers(blame), [blame]);
   useDecorationEffect(editor, hunkBorderLineNumbers, hunkBorderDecorationOptions);
@@ -222,7 +240,7 @@ const BlameViewer_: React.VFC<BlameViewerProps> = ({
             language={language}
             value={blame.content.text}
             className={styles.wrapper}
-            onEditorMounted={onEditorMounted}
+            onEditorMounted={handleEditorMounted}
           />
         )}
       </AutoSizer>

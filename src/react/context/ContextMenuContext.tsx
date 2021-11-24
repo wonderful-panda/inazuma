@@ -4,7 +4,7 @@ import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import { createContext, useCallback, useMemo, useState } from "react";
 
 export interface ContextMenuMethods {
-  show: (event: React.MouseEvent, menus: ActionItem[]) => void;
+  show: (event: React.MouseEvent | MouseEvent, menus: ActionItem[]) => void;
 }
 
 export const ContextMenuContext = createContext<ContextMenuMethods>({
