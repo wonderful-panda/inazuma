@@ -222,8 +222,7 @@ impl WriteToJsObject for FileDelta {
         match self {
             FileDelta::Binary => {
                 propset!(cx, obj, {
-                    insertions: "-",
-                    deletions: "-"
+                    type: "binary"
                 });
             }
             FileDelta::Text {
@@ -231,6 +230,7 @@ impl WriteToJsObject for FileDelta {
                 deletions,
             } => {
                 propset!(cx, obj, {
+                    type: "text",
                     insertions: insertions,
                     deletions: deletions
                 });
@@ -244,7 +244,7 @@ impl WriteToJsObject for FileStat {
     fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
         propset!(cx, obj, {
             ...self.file,
-            ...self.delta
+            delta: self.delta
         });
         Ok(())
     }

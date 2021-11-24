@@ -10,8 +10,13 @@ declare interface FileEntry {
   path: string;
   oldPath?: string;
   statusCode: string;
-  insertions?: number | "-";
-  deletions?: number | "-";
+  delta?:
+    | { type: "binary" }
+    | {
+        type: "text";
+        insertions: number;
+        deletions: number;
+      };
 }
 
 declare interface CommitDetail extends Commit {

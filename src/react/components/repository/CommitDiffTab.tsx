@@ -31,14 +31,14 @@ const loadContents = (
   }
   const leftPath = file.oldPath || file.path;
   const left =
-    file.statusCode === "A" || file.deletions === "-"
+    file.statusCode === "A" || file.delta?.type !== "text"
       ? Promise.resolve(undefined)
       : dispatchBrowser("getTextFileContent", {
           repoPath,
           file: { path: leftPath, revspec: sha1 }
         });
   const right =
-    file.statusCode === "D" || file.insertions === "-"
+    file.statusCode === "D" || file.delta?.type !== "text"
       ? Promise.resolve(undefined)
       : dispatchBrowser("getTextFileContent", {
           repoPath,

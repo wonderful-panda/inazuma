@@ -17,16 +17,12 @@ export interface FileListRowProps {
 }
 
 const getFileType = (item: FileEntry) => {
-  if (item.insertions === undefined) {
+  if (item.delta === undefined) {
     return "unknown";
-  } else if (item.insertions === "-") {
-    return "binary";
   } else {
-    return "text";
+    return item.delta.type;
   }
 };
-
-const isNumberStat = (stat: "-" | number | undefined) => stat !== undefined && stat !== "-";
 
 const FileType: React.VFC<{ file: FileEntry }> = ({ file }) => (
   <div className="font-bold px-0.5 text-greytext mx-1 my-auto uppercase">{getFileType(file)}</div>
@@ -34,11 +30,11 @@ const FileType: React.VFC<{ file: FileEntry }> = ({ file }) => (
 
 const NumStat: React.VFC<{ file: FileEntry }> = ({ file }) => (
   <>
-    {isNumberStat(file.insertions) && (
-      <div className="mx-1 my-auto text-[lightgreen]">+{file.insertions}</div>
-    )}
-    {isNumberStat(file.deletions) && (
-      <div className="mx-1 my-auto text-[hotpink]">-{file.deletions}</div>
+    {file.delta?.type === "text" && (
+      <>
+        <div className="mx-1 my-auto text-[lightgreen]">+{file.delta.insertions}</div>
+        <div className="mx-1 my-auto text-[hotpink]">-{file.delta.deletions}</div>
+      </>
     )}
   </>
 );
