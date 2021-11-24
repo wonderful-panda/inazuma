@@ -38,27 +38,33 @@ fn invoke_callback<R: ToJsValue + Send + 'static>(
     });
 }
 
-macro_rules! set_props {
-    ($cx:ident, $obj:ident, {
-        $($key:ident: $value:expr),*
-    }) => {
-        {
-            $(
-                let temp_value = &($value);
-                let temp_value = temp_value.to_js_value($cx)?;
-                $obj.set($cx, stringify!($key), temp_value)?;
-            )*
-        }
+macro_rules! propset {
+    ($cx:ident, $obj:ident, { $key:ident: $value:expr }) => {{
+        let temp_value = &($value);
+        let temp_value = temp_value.to_js_value($cx)?;
+        $obj.set($cx, stringify!($key), temp_value)?;
+    }};
+    ($cx:ident, $obj:ident, { ... $value:expr }) => {{
+        let temp_value = &($value);
+        temp_value.write($cx, &($obj))?;
+    }};
+    ($cx:ident, $obj:ident, { $key:ident: $value:expr, $($rest:tt)+ }) => {
+        propset!($cx, $obj, { $key: $value });
+        propset!($cx, $obj, { $($rest)+ });
     };
+    ($cx:ident, $obj:ident, { ...$value:expr, $($rest:tt)+ }) => {{
+        propset!($cx, $obj, { ...$value });
+        propset!($cx, $obj, { $($rest)+ });
+    }};
 }
 
-macro_rules! new_obj {
+macro_rules! jsobj {
     ($cx:ident, {
         $($key:ident: $value:expr),*
     }) => {
         {
             let temp_obj = JsObject::new($cx);
-            set_props!($cx, temp_obj, {
+            propset!($cx, temp_obj, {
                 $($key: $value),*
             });
             temp_obj
@@ -66,12 +72,25 @@ macro_rules! new_obj {
     };
 }
 
-// For basic types
+pub trait WriteToJsObject {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()>;
+}
+
 pub trait ToJsValue {
     type ValueType: Managed + Value;
     fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType>;
 }
 
+impl<T: WriteToJsObject> ToJsValue for T {
+    type ValueType = JsObject;
+    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
+        let obj = JsObject::new(cx);
+        self.write(cx, &obj)?;
+        Ok(obj)
+    }
+}
+
+// For basic types
 impl ToJsValue for () {
     type ValueType = JsUndefined;
     fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
@@ -127,16 +146,14 @@ impl<T: ToJsValue> ToJsValue for Vec<T> {
     }
 }
 
-impl<K: AsRef<str>, T: ToJsValue> ToJsValue for HashMap<K, T> {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let ret = JsObject::new(cx);
+impl<K: AsRef<str>, T: ToJsValue> WriteToJsObject for HashMap<K, T> {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
         for (k, v) in self.iter() {
             let key = cx.string(&k);
             let value = v.to_js_value(cx)?;
-            ret.set(cx, key, value)?;
+            obj.set(cx, key, value)?;
         }
-        Ok(ret)
+        Ok(())
     }
 }
 
@@ -156,61 +173,55 @@ impl<T: ToJsValue> ToJsValue for Option<T> {
     type ValueType = JsValue;
     fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
         let value = match self {
-            Some(ref v) => v.to_js_value(cx)?.as_value(cx),
-            None => cx.undefined().as_value(cx),
+            Some(ref v) => v.to_js_value(cx)?.upcast(),
+            None => cx.undefined().upcast(),
         };
         Ok(value)
     }
 }
 
 // For composite types
-impl ToJsValue for Commit {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let parents: Vec<&str> = self.parents.split(" ").collect();
-        let obj = new_obj!(cx, {
+impl WriteToJsObject for Commit {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
             id: self.id,
-            parentIds: parents,
+            parentIds: self.parents.split(" ").collect::<Vec<&str>>(),
             author: self.author,
             date: self.author_time,
             summary: self.summary
         });
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for FileLogEntry {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = self.commit.to_js_value(cx)?;
-        set_props!(cx, obj, {
+impl WriteToJsObject for FileLogEntry {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
+            ...self.commit,
             path: self.path,
             oldPath: self.old_path,
             statusCode: self.status_code
         });
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for FileEntry {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = new_obj!(cx, {
+impl WriteToJsObject for FileEntry {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
             path: self.path,
             oldPath: self.old_path,
             statusCode: self.status_code
         });
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for FileStat {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = self.file.to_js_value(cx)?;
-        match self.delta {
+impl WriteToJsObject for FileDelta {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        match self {
             FileDelta::Binary => {
-                set_props!(cx, obj, {
+                propset!(cx, obj, {
                     insertions: "-",
                     deletions: "-"
                 });
@@ -219,116 +230,132 @@ impl ToJsValue for FileStat {
                 insertions,
                 deletions,
             } => {
-                set_props!(cx, obj, {
+                propset!(cx, obj, {
                     insertions: insertions,
                     deletions: deletions
                 });
             }
         }
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for CommitDetail {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = self.commit.to_js_value(cx)?;
-        set_props!(cx, obj, {
+impl WriteToJsObject for FileStat {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
+            ...self.file,
+            ...self.delta
+        });
+        Ok(())
+    }
+}
+
+impl WriteToJsObject for CommitDetail {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
+            ...self.commit,
             body: self.body,
             files: self.files
         });
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for BlameEntry {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = new_obj!(cx, {
+impl WriteToJsObject for BlameEntry {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
             id: self.id,
             lineNo: self.line_no
         });
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for BranchRef {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = new_obj!(cx, {
+impl WriteToJsObject for BranchRef {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
             type: "heads",
             id: self.sha,
             fullname: self.fullname,
             name: self.name,
             current: self.current
         });
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for TagRef {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = new_obj!(cx, {
+impl WriteToJsObject for TagRef {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
             type: "tags",
             id: self.sha,
             fullname: self.fullname,
             name: self.name,
             tagId: self.tag_sha
         });
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for RemoteRef {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = new_obj!(cx, {
+impl WriteToJsObject for RemoteRef {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
             type: "remotes",
             id: self.sha,
             fullname: self.fullname,
             name: self.name,
             remote: self.remote
         });
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for Refs {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = new_obj!(cx, {
+impl WriteToJsObject for Refs {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        propset!(cx, obj, {
             head: self.head,
             mergeHeads: self.merge_heads,
             heads: self.branches,
             tags: self.tags,
             remotes: self.remotes
         });
-        Ok(obj)
+        Ok(())
     }
 }
 
-impl ToJsValue for LstreeEntry {
-    type ValueType = JsObject;
-    fn to_js_value<'a, C: Context<'a>>(&self, cx: &mut C) -> JsResult<'a, Self::ValueType> {
-        let obj = JsObject::new(cx);
-        let data = JsObject::new(cx);
+impl WriteToJsObject for LstreeEntry {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
         match &self {
             LstreeEntry::Tree { path, children } => {
-                set_props!(cx, data, {
-                    type: "tree",
-                    path: path
+                propset!(cx, obj, {
+                    data: jsobj!(cx, {
+                        type: "tree",
+                        path: path
+                    }),
+                    children: children
                 });
-                set_props!(cx, obj, { children: children });
             }
             LstreeEntry::Blob { path } => {
-                set_props!(cx, data, {
-                    type: "blob",
-                    path: path
+                propset!(cx, obj, {
+                    data: jsobj!(cx, {
+                        type: "blob",
+                        path: path
+                    })
                 });
             }
-        }
-        obj.set(cx, "data", data)?;
-        Ok(obj)
+        };
+        Ok(())
+    }
+}
+
+pub trait ToJsValueDummy<'a> {
+    type ValueType: Managed + Value;
+    fn to_js_value<C: Context<'a>>(&self, _: &mut C) -> JsResult<'a, Self::ValueType>;
+}
+
+impl<'a, T: Managed + Value> ToJsValueDummy<'a> for Handle<'a, T> {
+    type ValueType = T;
+    fn to_js_value<C: Context<'a>>(&self, _: &mut C) -> JsResult<'a, Self::ValueType> {
+        Ok(*self)
     }
 }
