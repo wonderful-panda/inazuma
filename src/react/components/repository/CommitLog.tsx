@@ -18,6 +18,7 @@ import { CommitDialog } from "./CommitDialog";
 import { CommitCommand } from "@/commands/types";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
 import { SHOW_COMMIT_DIFF } from "@/store/thunk/showCommitDiff";
+import { SHOW_ALERT } from "@/store/misc";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -35,8 +36,14 @@ const CommitLogInner: React.VFC<{
 }> = ({ active, repoPath, log, logDetail }) => {
   const dispatch = useDispatch();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const selectedIndexRef = useRef(0);
   const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
   const listRef = useRef<VirtualListMethods>(null);
+  useEffect(() => {
+    selectedIndexRef.current = selectedIndex;
+    listRef.current?.scrollToItem(selectedIndex);
+  }, [selectedIndex]);
+
   const actionCommands = useMemo<CommitCommand[]>(
     () => [
       browseSourceTree,
@@ -46,20 +53,17 @@ const CommitLogInner: React.VFC<{
         label: "Compare with selected commit",
         icon: "octicon:git-compare-16",
         hidden: (commit) => commit.id === "--",
-        disabled: (commit) => {
-          const selectedCommit = log.commits[selectedIndex];
-          if (!selectedCommit || selectedCommit.id === "--" || selectedCommit.id === commit.id) {
-            return true;
-          }
-          return false;
-        },
         handler: (dispatch, commit) => {
-          const selectedCommit = log.commits[selectedIndex];
+          const selectedCommit = log.commits[selectedIndexRef.current];
+          if (!selectedCommit || selectedCommit.id === "--" || selectedCommit.id === commit.id) {
+            dispatch(SHOW_ALERT({ type: "warning", message: "Base commit is not selected." }));
+            return;
+          }
           dispatch(SHOW_COMMIT_DIFF(selectedCommit, commit));
         }
       }
     ],
-    [log.commits, selectedIndex]
+    [log.commits]
   );
   const selectLog = useMemo(
     () =>
@@ -82,8 +86,6 @@ const CommitLogInner: React.VFC<{
   useEffect(() => {
     selectLog(selectedIndex);
   }, [selectedIndex, selectLog]);
-
-  useEffect(() => listRef.current?.scrollToItem(selectedIndex), [selectedIndex]);
 
   const detail = useCallback(
     (direction: Direction) => {
