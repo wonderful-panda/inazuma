@@ -16,8 +16,8 @@ import { debounce } from "lodash";
 
 export interface CommitDiffTabProps {
   repoPath: string;
-  commit1: DagNode;
-  commit2: DagNode;
+  commit1: Commit;
+  commit2: Commit;
 }
 
 const loadContents = (
@@ -50,8 +50,8 @@ const loadContents = (
 const CommitDiffContent: React.VFC<{
   repoPath: string;
   files: FileEntry[];
-  commit1: DagNode;
-  commit2: DagNode;
+  commit1: Commit;
+  commit2: Commit;
 }> = ({ repoPath, commit1, commit2, files }) => {
   const dispatch = useDispatch();
   const listRef = useRef<VirtualListMethods>(null);

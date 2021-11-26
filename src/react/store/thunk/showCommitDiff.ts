@@ -3,7 +3,7 @@ import { Dispatch, RootState } from "..";
 import { SHOW_ERROR } from "../misc";
 import { ADD_TAB } from "../repository";
 
-const showCommitDiff = (commit1: DagNode, commit2: DagNode) => {
+const showCommitDiff = (commit1: Commit, commit2: Commit) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     try {
       const state = getState();

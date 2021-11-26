@@ -9,7 +9,7 @@ import { useDispatch } from "@/store";
 import { RowActionButtons } from "./RowActionButtons";
 
 export interface FileListRowProps {
-  commit: DagNode;
+  commit: Commit;
   file: FileEntry;
   index: number;
   height: number;

@@ -5,18 +5,18 @@ export interface CommitCommand {
   id: string;
   label: string;
   icon?: IconName;
-  handler(dispatch: Dispatch, commit: DagNode): void;
-  hidden?(commit: DagNode): boolean;
-  disabled?(commit: DagNode): boolean;
+  handler(dispatch: Dispatch, commit: Commit): void;
+  hidden?(commit: Commit): boolean;
+  disabled?(commit: Commit): boolean;
 }
 
 export interface FileCommand {
   id: string;
   label: string;
   icon?: IconName;
-  handler(dispatch: Dispatch, commit: DagNode, file: FileEntry, localPath: string): void;
-  hidden?(commit: DagNode, file: FileEntry): boolean;
-  disabled?(commit: DagNode, file: FileEntry): boolean;
+  handler(dispatch: Dispatch, commit: Commit, file: FileEntry, localPath: string): void;
+  hidden?(commit: Commit, file: FileEntry): boolean;
+  disabled?(commit: Commit, file: FileEntry): boolean;
 }
 
 export interface ActionItem {

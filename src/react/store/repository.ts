@@ -8,8 +8,8 @@ export type TabType = {
     sha: string;
   };
   commitDiff: {
-    commit1: DagNode;
-    commit2: DagNode;
+    commit1: Commit;
+    commit2: Commit;
   };
   file: {
     sha: string;

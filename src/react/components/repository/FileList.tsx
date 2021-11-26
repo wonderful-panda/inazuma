@@ -7,14 +7,14 @@ import { executeFileCommand } from "@/commands";
 import { useTheme } from "@material-ui/core";
 
 export interface FileListProps extends VirtualListEvents<FileEntry> {
-  commit: DagNode;
+  commit: Commit;
   files: FileEntry[];
   actionCommands?: readonly FileCommand[];
 }
 
 const getFileListKey = (item: FileEntry) => `${item.path}:${item.statusCode}`;
 
-export const useFileListRowEventHandler = (command: FileCommand, commit: DagNode | undefined) => {
+export const useFileListRowEventHandler = (command: FileCommand, commit: Commit | undefined) => {
   const dispatch = useDispatch();
   return useCallback(
     (_e: unknown, _index: number, item: FileEntry) => {

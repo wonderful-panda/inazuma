@@ -21,7 +21,7 @@ export const fileCommands = [
 export const executeCommitCommand = (
   command: CommitCommand,
   dispatch: Dispatch,
-  commit: DagNode
+  commit: Commit
 ) => {
   if (command.hidden?.(commit) || command.disabled?.(commit)) {
     return false;
@@ -33,7 +33,7 @@ export const executeCommitCommand = (
 export const executeCommand = (
   command: CommitCommand | FileCommand,
   dispatch: Dispatch,
-  commit: DagNode,
+  commit: Commit,
   file: FileEntry,
   localPath?: string
 ) => {
@@ -47,7 +47,7 @@ export const executeCommand = (
 export const executeFileCommand = (
   command: FileCommand,
   dispatch: Dispatch,
-  commit: DagNode,
+  commit: Commit,
   file: FileEntry,
   localPath?: string
 ) => {
@@ -57,7 +57,7 @@ export const executeFileCommand = (
 export const commitCommandsToActions = (
   dispatch: Dispatch,
   commands: readonly CommitCommand[] | undefined,
-  commit: DagNode
+  commit: Commit
 ): ActionItem[] => {
   if (!commands) {
     return [];
@@ -76,7 +76,7 @@ export const commitCommandsToActions = (
 export const commandsToActions = (
   dispatch: Dispatch,
   commands: readonly (CommitCommand | FileCommand)[] | undefined,
-  commit: DagNode,
+  commit: Commit,
   file: FileEntry,
   localPath?: string
 ): ActionItem[] => {
@@ -97,7 +97,7 @@ export const commandsToActions = (
 export const fileCommandsToActions = (
   dispatch: Dispatch,
   commands: readonly FileCommand[] | undefined,
-  commit: DagNode,
+  commit: Commit,
   file: FileEntry,
   localPath?: string
 ): ActionItem[] => {

@@ -3,7 +3,7 @@ import { Dispatch, RootState } from "..";
 import { SHOW_ERROR } from "../misc";
 import { ADD_TAB } from "../repository";
 
-const showLsTree = (commit: DagNode) => {
+const showLsTree = (commit: Commit) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     try {
       const state = getState();

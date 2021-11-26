@@ -11,12 +11,12 @@ import React, { useCallback, useContext } from "react";
 export const useCommitContextMenu = (): ((
   event: React.MouseEvent | MouseEvent,
   index: number,
-  item: DagNode
+  item: Commit
 ) => void) => {
   const dispatch = useDispatch();
   const { show } = useContext(ContextMenuContext);
   const onCommitContextMenu = useCallback(
-    (event: React.MouseEvent | MouseEvent, _index: number, commit: DagNode) => {
+    (event: React.MouseEvent | MouseEvent, _index: number, commit: Commit) => {
       if (!commit) {
         return;
       }
@@ -29,7 +29,7 @@ export const useCommitContextMenu = (): ((
 };
 
 export const useFileContextMenu = (
-  commit: DagNode | undefined
+  commit: Commit | undefined
 ): ((event: React.MouseEvent | MouseEvent, index: number, item: FileEntry) => void) => {
   const dispatch = useDispatch();
   const { show } = useContext(ContextMenuContext);

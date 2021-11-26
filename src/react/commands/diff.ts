@@ -94,7 +94,7 @@ export const diffStaged: FileCommand = {
   }
 };
 
-export const diffAgainst = (baseCommit: DagNode): FileCommand => ({
+export const diffAgainst = (baseCommit: Commit): FileCommand => ({
   id: `DiffAgainst-${baseCommit.id}`,
   label: `Compare with ${shortHash(baseCommit.id)}`,
   icon: "octicon:git-compare-16",
