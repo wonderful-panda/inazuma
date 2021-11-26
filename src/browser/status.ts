@@ -4,6 +4,14 @@ import {
   getWorkingTreeParentsAsync
 } from "inazuma-rust-backend";
 
+export const getWtreePseudoCommit = (parentIds: string[]): Commit & { id: "--" } => ({
+  id: "--",
+  parentIds,
+  author: "--",
+  summary: "<Working tree>",
+  date: new Date().getTime()
+});
+
 export async function status(repository: string): Promise<WorkingTreeStat> {
   const [untrackedFiles, unstagedFiles, stagedFiles, parentIds] = await Promise.all([
     getUntrackedFilesAsync(repository),
@@ -12,8 +20,7 @@ export async function status(repository: string): Promise<WorkingTreeStat> {
     getWorkingTreeParentsAsync(repository)
   ]);
   return {
-    id: "--",
-    parentIds,
+    ...getWtreePseudoCommit(parentIds),
     untrackedFiles,
     unstagedFiles,
     stagedFiles

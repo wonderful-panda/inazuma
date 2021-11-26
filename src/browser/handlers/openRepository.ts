@@ -1,5 +1,6 @@
 import { logAsync, refsAsync } from "inazuma-rust-backend";
 import type { Handler } from ".";
+import { getWtreePseudoCommit } from "../status";
 
 const getRefs = async (repoPath: string): Promise<Refs> => {
   const refs: Refs = {
@@ -28,21 +29,13 @@ const getRefs = async (repoPath: string): Promise<Refs> => {
   return refs;
 };
 
-const getWtreePseudoCommit = (headId: string | undefined, mergeHeads: string[]): Commit => ({
-  id: "--",
-  parentIds: headId ? [headId, ...mergeHeads] : mergeHeads,
-  author: "--",
-  summary: "<Working tree>",
-  date: new Date().getTime()
-});
-
 const fetchHistory = async (
   repoPath: string,
   num: number
 ): Promise<{ commits: Commit[]; refs: Refs }> => {
   const [refs, commits] = await Promise.all([getRefs(repoPath), logAsync(repoPath, num)]);
   if (refs.head) {
-    commits.unshift(getWtreePseudoCommit(refs.head, refs.mergeHeads));
+    commits.unshift(getWtreePseudoCommit([refs.head, ...refs.mergeHeads]));
   }
   return { commits, refs };
 };

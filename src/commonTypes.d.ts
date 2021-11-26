@@ -64,9 +64,8 @@ declare global {
 
   type FileCommit = backend.FileLogEntry;
 
-  interface WorkingTreeStat {
+  interface WorkingTreeStat extends Commit {
     id: "--";
-    parentIds: string[];
     untrackedFiles: string[];
     unstagedFiles: FileEntry[];
     stagedFiles: FileEntry[];
