@@ -1,7 +1,8 @@
 import { Icon } from "./Icon";
 import classNames from "classnames";
-import { Button, IconButton, makeStyles } from "@material-ui/core";
+import { Button, IconButton, Tooltip, makeStyles } from "@material-ui/core";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { GitHash } from "./GitHash";
 
 const CURRENT_TABBUTTON_CLASS = "__current_tabbutton__";
 
@@ -17,8 +18,23 @@ const useStyles = makeStyles({
   }
 });
 
+export const TooltipTitle: React.VFC<{ text: string }> = ({ text }) => (
+  <div className="text-secondary font-semibold uppercase">{text}</div>
+);
+
+export const TooltipCommitDisplay: React.VFC<{ commit: Commit; className?: string }> = ({
+  commit,
+  className
+}) => (
+  <div className={classNames("flex-row-nowrap items-center", className)}>
+    <GitHash className="mr-2 text-greytext" hash={commit.id} />
+    <span className="ellipsis">{commit.summary}</span>
+  </div>
+);
+
 const TabButton: React.VFC<{
   text: string;
+  tooltop: React.ReactChild;
   closable: boolean;
   select: () => void;
   close: () => void;
@@ -33,17 +49,24 @@ const TabButton: React.VFC<{
         }
       )}
     >
-      <Button
+      <Tooltip
+        title={p.tooltop}
         classes={{
-          root: classNames("normal-case m-0 p-0 h-7 leading-7", {
-            "font-bold text-primary": p.current
-          }),
-          label: "mr-auto pl-2 pr-6 whitespace-nowrap font-mono text-lg"
+          tooltip: "bg-tooltip px-4 py-2 drop-shadow text-base flex-col-nowrap max-w-lg"
         }}
-        onClick={p.select}
       >
-        {p.text}
-      </Button>
+        <Button
+          classes={{
+            root: classNames("normal-case m-0 p-0 h-7 leading-7", {
+              "font-bold text-primary": p.current
+            }),
+            label: "mr-auto pl-2 pr-6 whitespace-nowrap font-mono text-lg"
+          }}
+          onClick={p.select}
+        >
+          {p.text}
+        </Button>
+      </Tooltip>
       {p.closable && (
         <IconButton
           tabIndex={-1}
@@ -71,6 +94,7 @@ export type TabDefinition<T> = {
 export interface TabContainerProps<T> {
   tabs: readonly TabDefinition<T>[];
   currentTabIndex: number;
+  renderTabTooltip: (tab: TabDefinition<T>) => React.ReactChild;
   renderTabContent: (tab: TabDefinition<T>, active: boolean) => React.ReactNode;
   selectTab: (index: number) => void;
   closeTab: (index: number) => void;
@@ -117,6 +141,7 @@ export const TabContainer = <T extends unknown = Record<string, any>>(p: TabCont
           <TabButton
             key={t.id}
             text={t.title}
+            tooltop={p.renderTabTooltip(t)}
             closable={t.closable}
             select={() => p.selectTab(index)}
             close={() => p.closeTab(index)}

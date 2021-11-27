@@ -17,12 +17,30 @@ import { InteractiveShell } from "../InteractiveShell";
 import { lazyWithPreload } from "../lazyWithPreload";
 import { MainWindow } from "../MainWindow";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { TabContainer, TabContainerProps } from "../TabContainer";
+import { TabContainer, TabContainerProps, TooltipTitle } from "../TabContainer";
 import CommitLog from "./CommitLog";
+import BlameTabTooltip from "./BlameTabTooltip";
+import LsTreeTabTooltip from "./LsTreeTabTooltip";
+import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
 
 const BlameTab = lazyWithPreload(() => import("./BlameTab"));
 const LsTreeTab = lazyWithPreload(() => import("./LsTreeTab"));
 const CommitDiffTab = lazyWithPreload(() => import("./CommitDiffTab"));
+
+const renderTabTooltip: TabContainerProps<TabType>["renderTabTooltip"] = (tab) => {
+  switch (tab.type) {
+    case "commits":
+      return <TooltipTitle text="Commit log" />;
+    case "file":
+      return <BlameTabTooltip {...tab.payload} />;
+    case "tree":
+      return <LsTreeTabTooltip {...tab.payload} />;
+    case "commitDiff":
+      return <CommitDiffTabTooltip {...tab.payload} />;
+    default:
+      return assertNever(tab);
+  }
+};
 
 const RepositoryPage: React.VFC = () => {
   const dispatch = useDispatch();
@@ -122,6 +140,7 @@ const RepositoryPage: React.VFC = () => {
             tabs={tab.tabs}
             currentTabIndex={tab.currentIndex}
             renderTabContent={renderTabContent}
+            renderTabTooltip={renderTabTooltip}
             selectTab={callbacks.selectTab}
             closeTab={callbacks.closeTab}
           />
