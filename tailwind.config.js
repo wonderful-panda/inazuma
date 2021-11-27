@@ -48,7 +48,13 @@ module.exports = {
         col: "column",
         "col-reverse": "column-reverse"
       };
-      const newUtilities = {};
+      const newUtilities = {
+        ".ellipsis": {
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }
+      };
       ["row", "col", "row-reverese", "col-reverse"].forEach((direction) => {
         ["nowrap", "wrap", "wrap-reverse"].forEach((wrap) => {
           const className = `.flex-${direction}-${wrap}`;

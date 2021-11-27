@@ -24,7 +24,7 @@ const FilePaths: React.VFC<{ file: FileEntry }> = ({ file }) =>
       <div className="mr-1 my-auto leading-4 font-bold px-0.5 py-0 text-background bg-greytext">
         {file.statusCode.startsWith("R") ? "Rename" : "Copy"}
       </div>
-      <div className="flex-1 leading-5 overflow-hidden whitespace-nowrap overflow-ellipsis text-greytext">
+      <div className="flex-1 leading-5 ellipsis text-greytext">
         {file.oldPath}
         {" -> "}
         {file.path}
@@ -57,7 +57,7 @@ const FileCommitListRow_: React.VFC<FileCommitListRowProps> = ({
         <FileStatusIcon statusCode={commit.statusCode} />
       </div>
       <div className="relative flex flex-col flex-nowrap flex-1 ml-1 my-auto overflow-hidden">
-        <div className="flex-row-nowrap items-center text-lg leading-6 whitespace-nowrap overflow-hidden overflow-ellipsis">
+        <div className="flex-row-nowrap items-center text-lg leading-6 ellipsis">
           {refs && refs.map((r) => <RefBadge key={`${r.type}:${r.fullname}`} r={r} />)}
           {commit.summary}
         </div>

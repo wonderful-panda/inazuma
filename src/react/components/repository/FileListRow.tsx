@@ -45,9 +45,7 @@ const OldPath: React.VFC<{ file: FileEntry }> = ({ file }) =>
       <div className="font-bold leading-4 mx-1 my-auto px-0.5 py-0 text-background bg-greytext">
         {file.statusCode.startsWith("R") ? "Rename from" : "Copy from"}
       </div>
-      <div className="flex-1 font-bold overflow-hidden whitespace-nowrap overflow-ellipsis text-greytext">
-        {file.oldPath}
-      </div>
+      <div className="flex-1 font-bold ellipsis text-greytext">{file.oldPath}</div>
     </>
   ) : (
     <></>
@@ -82,11 +80,7 @@ const FileListRow_: React.VFC<FileListRowProps> = ({
         <FileStatusIcon statusCode={file.statusCode} />
       </div>
       <div className="flex-1 flex-col-nowrap pl-1 overflow-hidden font-mono">
-        <Typography
-          variant="subtitle1"
-          component="div"
-          className="whitespace-nowrap overflow-hidden overflow-ellipsis h-6 leading-6"
-        >
+        <Typography variant="subtitle1" component="div" className="ellipsis h-6 leading-6">
           {file.path}
         </Typography>
         <Typography
