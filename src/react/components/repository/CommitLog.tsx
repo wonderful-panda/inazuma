@@ -12,13 +12,14 @@ import { useCommitContextMenu } from "@/hooks/useContextMenu";
 import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
-import { SHOW_LOG_DETAIL } from "@/store/thunk/showLogDetail";
 import { browseSourceTree } from "@/commands/browseSourceTree";
 import { CommitDialog } from "./CommitDialog";
 import { CommitCommand } from "@/commands/types";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
 import { SHOW_COMMIT_DIFF } from "@/store/thunk/showCommitDiff";
 import { SHOW_ALERT } from "@/store/misc";
+import { RELOAD_WORKING_TREE } from "@/store/thunk/reloadWorkingTree";
+import { FETCH_COMMIT_DETAIL } from "@/store/thunk/fetchCommitDetail";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -32,11 +33,16 @@ const CommitLogInner: React.VFC<{
   active: boolean;
   repoPath: string;
   log: CommitLogItems;
-  logDetail: LogDetail | undefined;
-}> = ({ active, repoPath, log, logDetail }) => {
+}> = ({ active, repoPath, log }) => {
   const dispatch = useDispatch();
+  const workingTree = useSelector((state) => state.repository.workingTree);
+  const commitDetail = useSelector((state) => state.repository.commitDetail);
+  // selected row index, updated immediately
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(0);
+  // selected item id, updated lazily (after data-fetching completed)
+  const [loadedId, setLoadedId] = useState("");
+
   const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
   const listRef = useRef<VirtualListMethods>(null);
   useEffect(() => {
@@ -70,18 +76,25 @@ const CommitLogInner: React.VFC<{
       debounce(async (index: number) => {
         if (repoPath && 0 <= index) {
           const sha = log.commits[index].id;
-          dispatch(SHOW_LOG_DETAIL(sha));
+          if (sha === "--") {
+            await dispatch(RELOAD_WORKING_TREE());
+          } else {
+            await dispatch(FETCH_COMMIT_DETAIL(sha));
+          }
+          if (sha === log.commits[selectedIndexRef.current]?.id) {
+            setLoadedId(sha);
+          }
         }
       }, 200),
     [repoPath, log.commits, dispatch]
   );
   const currentRefs = useMemo(() => {
-    if (!logDetail) {
+    if (!loadedId) {
       return [];
     } else {
-      return log.refs.refsById[logDetail.id] || [];
+      return log.refs.refsById[loadedId] || [];
     }
-  }, [logDetail, log]);
+  }, [loadedId, log]);
 
   useEffect(() => {
     selectLog(selectedIndex);
@@ -92,19 +105,19 @@ const CommitLogInner: React.VFC<{
       const orientation = direction === "horiz" ? "portrait" : "landscape";
       return (
         <div className="flex flex-1 overflow-hidden m-2">
-          {logDetail === undefined || logDetail.type === "commit" ? (
-            <CommitDetail commit={logDetail} refs={currentRefs} orientation={orientation} />
+          {loadedId === "--" ? (
+            <WorkingTree stat={workingTree} orientation={orientation} />
           ) : (
-            <WorkingTree stat={logDetail} orientation={orientation} />
+            <CommitDetail commit={commitDetail} refs={currentRefs} orientation={orientation} />
           )}
         </div>
       );
     },
-    [currentRefs, logDetail]
+    [currentRefs, workingTree, commitDetail, loadedId]
   );
   const showLsTreeTab = useCallback(
-    () => logDetail?.type === "commit" && dispatch(SHOW_LSTREE(logDetail)),
-    [logDetail, dispatch]
+    () => loadedId !== "--" && commitDetail && dispatch(SHOW_LSTREE(commitDetail)),
+    [loadedId, commitDetail, dispatch]
   );
   const handleContextMenu = useCommitContextMenu();
   return (
@@ -145,11 +158,10 @@ const CommitLogInner: React.VFC<{
 const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
   const repoPath = useSelector((state) => state.repository.path);
   const log = useSelector((state) => state.repository.log);
-  const logDetail = useSelector((state) => state.repository.selectedLogDetail);
   if (!repoPath || !log) {
     return <></>;
   }
-  return <CommitLogInner active={active} repoPath={repoPath} log={log} logDetail={logDetail} />;
+  return <CommitLogInner active={active} repoPath={repoPath} log={log} />;
 };
 
 export default CommitLog;

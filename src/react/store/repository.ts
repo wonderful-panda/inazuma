@@ -27,7 +27,8 @@ export interface CommitLogItems {
 interface State {
   path: string | undefined;
   log: CommitLogItems | undefined;
-  selectedLogDetail: LogDetail | undefined;
+  workingTree: WorkingTreeStat | undefined;
+  commitDetail: CommitDetail | undefined;
   tab:
     | {
         tabs: RepositoryTab[];
@@ -40,7 +41,8 @@ interface State {
 const initialState: State = {
   path: undefined,
   log: undefined,
-  selectedLogDetail: undefined,
+  workingTree: undefined,
+  commitDetail: undefined,
   tab: undefined,
   activeDialog: undefined
 };
@@ -59,7 +61,8 @@ const setLog = (
 ) => {
   state.path = path;
   state.log = log;
-  state.selectedLogDetail = undefined;
+  state.workingTree = undefined;
+  state.commitDetail = undefined;
   state.activeDialog = undefined;
   if (!keepTabs) {
     state.tab = {
@@ -72,17 +75,27 @@ const setLog = (
 const closeRepository = (state: State) => {
   state.path = undefined;
   state.log = undefined;
-  state.selectedLogDetail = undefined;
+  state.workingTree = undefined;
+  state.commitDetail = undefined;
   state.tab = undefined;
   state.activeDialog = undefined;
 };
 
-const setSelectedLogDetail = (
+const setWorkingTree = (
   state: State,
-  { payload }: PayloadAction<{ repoPath: string; value: LogDetail | undefined }>
+  { payload }: PayloadAction<{ repoPath: string; value: WorkingTreeStat }>
 ) => {
   if (state.path === payload.repoPath) {
-    state.selectedLogDetail = payload.value;
+    state.workingTree = payload.value;
+  }
+};
+
+const setCommitDetail = (
+  state: State,
+  { payload }: PayloadAction<{ repoPath: string; value: CommitDetail }>
+) => {
+  if (state.path === payload.repoPath) {
+    state.commitDetail = payload.value;
   }
 };
 
@@ -149,7 +162,8 @@ const slice = createSlice({
   initialState,
   reducers: {
     setLog,
-    setSelectedLogDetail,
+    setWorkingTree,
+    setCommitDetail,
     closeRepository,
     addTab,
     removeTab,
@@ -163,7 +177,8 @@ const slice = createSlice({
 
 export const {
   setLog: _SET_LOG,
-  setSelectedLogDetail: _SET_SELECTED_LOG_DETAIL,
+  setWorkingTree: _SET_WORKING_TREE,
+  setCommitDetail: _SET_COMMIT_DETAIL,
   closeRepository: CLOSE_REPOSITORY,
   addTab: ADD_TAB,
   removeTab: REMOVE_TAB,

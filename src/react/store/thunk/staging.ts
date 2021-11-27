@@ -2,7 +2,7 @@ import { dispatchBrowser } from "@/dispatchBrowser";
 import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";
 import { SHOW_ERROR } from "../misc";
-import { _SET_SELECTED_LOG_DETAIL } from "../repository";
+import { RELOAD_WORKING_TREE } from "./reloadWorkingTree";
 
 const stage = (relPath: string) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
@@ -13,10 +13,7 @@ const stage = (relPath: string) => {
         return;
       }
       await dispatchBrowser("addToIndex", { repoPath, relPath });
-      if (state.repository.selectedLogDetail?.id === "--") {
-        const value = await dispatchBrowser("getLogDetail", { repoPath, sha: "--" });
-        dispatch(_SET_SELECTED_LOG_DETAIL({ repoPath, value }));
-      }
+      await dispatch(RELOAD_WORKING_TREE());
     } catch (error) {
       dispatch(SHOW_ERROR({ error: serializeError(error) }));
     }
@@ -32,10 +29,7 @@ const unstage = (relPath: string) => {
         return;
       }
       await dispatchBrowser("removeFromIndex", { repoPath, relPath });
-      if (state.repository.selectedLogDetail?.id === "--") {
-        const value = await dispatchBrowser("getLogDetail", { repoPath, sha: "--" });
-        dispatch(_SET_SELECTED_LOG_DETAIL({ repoPath, value }));
-      }
+      await dispatch(RELOAD_WORKING_TREE());
     } catch (error) {
       dispatch(SHOW_ERROR({ error: serializeError(error) }));
     }

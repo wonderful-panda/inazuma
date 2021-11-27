@@ -16,7 +16,7 @@ import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import { COMMIT } from "@/store/thunk/commit";
 
 export interface WorkingTreeProps {
-  stat: WorkingTreeStat;
+  stat: WorkingTreeStat | undefined;
   orientation: Orientation;
 }
 
@@ -88,10 +88,17 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
   useEffect(() => stagedListRef.current?.scrollToItem(stagedIndex), [stagedIndex]);
 
   const unstagedFiles = useMemo<FileEntry[]>(() => {
-    const ret = [
-      ...stat.unstagedFiles.map((f) => ({ ...f, unstaged: true })),
-      ...stat.untrackedFiles.map((f) => ({ path: f, statusCode: "?", unstaged: true }))
-    ];
+    const ret = stat
+      ? [
+          ...stat.unstagedFiles.map((f) => ({ ...f, unstaged: true })),
+          ...stat.untrackedFiles.map((f) => ({ path: f, statusCode: "?", unstaged: true }))
+        ]
+      : [];
+    ret.sort((a, b) => a.path.localeCompare(b.path));
+    return ret;
+  }, [stat]);
+  const stagedFiles = useMemo<FileEntry[]>(() => {
+    const ret = stat ? stat.stagedFiles : [];
     ret.sort((a, b) => a.path.localeCompare(b.path));
     return ret;
   }, [stat]);
@@ -114,7 +121,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
   }, []);
   const confirm = useConfirmDialog();
   const unstagedSelector = useListItemSelector(unstagedFiles.length, setUnstagedIndex);
-  const stagedSelector = useListItemSelector(stat.stagedFiles.length, setStagedIndex);
+  const stagedSelector = useListItemSelector(stagedFiles.length, setStagedIndex);
   const handleUnstagedRowDoubleClick = useFileListRowEventHandler(diffUnstaged, stat);
   const handleStagedRowDoubleClick = useFileListRowEventHandler(diffStaged, stat);
   const callbacks = useMemo(
@@ -136,7 +143,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
     }),
     [dispatch, confirm]
   );
-  const stagedChangesExist = stat.stagedFiles.length > 0;
+  const stagedChangesExist = stagedFiles.length > 0;
   return (
     <PersistSplitterPanel
       persistKey="repository/WorkingTree"
@@ -147,24 +154,26 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
         <FlexCard
           title="Unstaged changes"
           content={
-            <SelectedIndexProvider value={unstagedIndex}>
-              <div
-                className="flex flex-1 m-1 p-1"
-                onFocus={unstagedFocused}
-                tabIndex={0}
-                onKeyDown={unstagedSelector.handleKeyDown}
-              >
-                <FileList
-                  ref={unstagedListRef}
-                  commit={stat}
-                  files={unstagedFiles}
-                  actionCommands={unstagedActionCommands}
-                  onRowClick={unstagedSelector.handleRowClick}
-                  onRowDoubleClick={handleUnstagedRowDoubleClick}
-                  onRowContextMenu={handleContextMenu}
-                />
-              </div>
-            </SelectedIndexProvider>
+            stat && (
+              <SelectedIndexProvider value={unstagedIndex}>
+                <div
+                  className="flex flex-1 m-1 p-1"
+                  onFocus={unstagedFocused}
+                  tabIndex={0}
+                  onKeyDown={unstagedSelector.handleKeyDown}
+                >
+                  <FileList
+                    ref={unstagedListRef}
+                    commit={stat}
+                    files={unstagedFiles}
+                    actionCommands={unstagedActionCommands}
+                    onRowClick={unstagedSelector.handleRowClick}
+                    onRowDoubleClick={handleUnstagedRowDoubleClick}
+                    onRowContextMenu={handleContextMenu}
+                  />
+                </div>
+              </SelectedIndexProvider>
+            )
           }
           actions={
             <>
@@ -180,22 +189,24 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
           <FlexCard
             title="Staged changes"
             content={
-              <div
-                className="flex flex-1 m-1 p-1"
-                onFocus={stagedFocused}
-                tabIndex={0}
-                onKeyDown={stagedSelector.handleKeyDown}
-              >
-                <FileList
-                  ref={stagedListRef}
-                  commit={stat}
-                  files={stat.stagedFiles}
-                  actionCommands={stagedActionCommands}
-                  onRowClick={stagedSelector.handleRowClick}
-                  onRowDoubleClick={handleStagedRowDoubleClick}
-                  onRowContextMenu={handleContextMenu}
-                />
-              </div>
+              stat && (
+                <div
+                  className="flex flex-1 m-1 p-1"
+                  onFocus={stagedFocused}
+                  tabIndex={0}
+                  onKeyDown={stagedSelector.handleKeyDown}
+                >
+                  <FileList
+                    ref={stagedListRef}
+                    commit={stat}
+                    files={stagedFiles}
+                    actionCommands={stagedActionCommands}
+                    onRowClick={stagedSelector.handleRowClick}
+                    onRowDoubleClick={handleStagedRowDoubleClick}
+                    onRowContextMenu={handleContextMenu}
+                  />
+                </div>
+              )
             }
             actions={
               <>

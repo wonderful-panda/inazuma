@@ -37,6 +37,20 @@ export interface HandlerCtx {
   repositorySessions: RepositorySessions;
 }
 
+export const getWorkingTree: SinglePayloadHandler<{ repoPath: string }, WorkingTreeStat> = async (
+  _,
+  { repoPath }
+) => {
+  return await status(repoPath);
+};
+
+export const getCommitDetail: SinglePayloadHandler<
+  { repoPath: string; sha: string },
+  CommitDetail
+> = async (_, { repoPath, sha }) => {
+  return await getCommitDetailAsync(repoPath, sha);
+};
+
 export const getLogDetail: SinglePayloadHandler<{ repoPath: string; sha: string }, LogDetail> =
   async (_, { repoPath, sha }) => {
     if (sha === "--") {
