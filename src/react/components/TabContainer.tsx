@@ -105,12 +105,14 @@ const TabPage = <T extends unknown>(p: {
   tab: TabDefinition<T>;
   renderContent: (tab: TabDefinition<T>, active: boolean) => React.ReactNode;
 }) => {
+  // set true when first activated
   const [activated, setActivated] = useState(false);
   useLayoutEffect(() => {
     if (p.active && !activated) {
       setActivated(true);
     }
   }, [p.active, activated]);
+  // lazy load (render content after first activated)
   if (activated) {
     return <>{p.renderContent(p.tab, p.active)}</>;
   } else {
