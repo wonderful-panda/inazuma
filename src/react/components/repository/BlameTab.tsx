@@ -6,12 +6,13 @@ import { BlamePanel } from "./BlamePanel";
 export interface BlameTabProps {
   repoPath: string;
   path: string;
-  sha: string;
+  commit: Commit;
   refs: Refs | undefined;
 }
 
-const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, sha, refs }) => {
+const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, commit, refs }) => {
   const [blame, setBlame] = useState<Blame | undefined>(undefined);
+  const sha = commit.id;
   useEffect(() => {
     if (!repoPath) {
       return;

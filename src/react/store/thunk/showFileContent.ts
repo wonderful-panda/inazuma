@@ -19,7 +19,7 @@ const showFileContent = (commit: Commit, file: FileEntry) => {
           type: "file",
           id: `blame:${commit.id}/${file.path}`,
           title: `${getFileName(file.path)} @ ${shortHash(commit.id)}`,
-          payload: { path: file.path, sha: commit.id },
+          payload: { path: file.path, commit },
           closable: true
         })
       );

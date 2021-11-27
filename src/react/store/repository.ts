@@ -5,14 +5,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export type TabType = {
   commits: null;
   tree: {
-    sha: string;
+    commit: Commit;
   };
   commitDiff: {
     commit1: Commit;
     commit2: Commit;
   };
   file: {
-    sha: string;
+    commit: Commit;
     path: string;
   };
 };

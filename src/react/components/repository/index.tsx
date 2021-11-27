@@ -43,15 +43,9 @@ const RepositoryPage: React.VFC = () => {
         case "file":
           return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} />;
         case "tree":
-          return <LsTreeTab repoPath={repoPath} sha={tab.payload.sha} refs={refs} />;
+          return <LsTreeTab repoPath={repoPath} {...tab.payload} refs={refs} />;
         case "commitDiff":
-          return (
-            <CommitDiffTab
-              repoPath={repoPath}
-              commit1={tab.payload.commit1}
-              commit2={tab.payload.commit2}
-            />
-          );
+          return <CommitDiffTab repoPath={repoPath} {...tab.payload} />;
         default:
           assertNever(tab);
           break;

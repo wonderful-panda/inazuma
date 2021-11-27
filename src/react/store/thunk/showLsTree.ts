@@ -16,7 +16,7 @@ const showLsTree = (commit: Commit) => {
           type: "tree",
           id: `tree:${commit.id}`,
           title: `TREE @ ${shortHash(commit.id)}`,
-          payload: { sha: commit.id },
+          payload: { commit },
           closable: true
         })
       );

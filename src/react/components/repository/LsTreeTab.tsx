@@ -17,7 +17,7 @@ import { dispatchBrowser } from "@/dispatchBrowser";
 
 export interface LsTreeTabProps {
   repoPath: string;
-  sha: string;
+  commit: Commit;
   refs: Refs | undefined;
 }
 
@@ -123,11 +123,12 @@ const LsTreeWithFilter: React.VFC<{
   );
 };
 
-const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, sha, refs }) => {
+const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
   const [entries, setEntries] = useState<LstreeEntry[]>([]);
   const [blame, setBlame] = useState<{ blame: Blame; path: string } | undefined>(undefined);
   const [blameLoading, setBlameLoading] = useState(false);
   const dispatch = useDispatch();
+  const sha = commit.id;
   useEffect(() => {
     dispatchBrowser("getTree", { repoPath, sha })
       .then((entries) => {
