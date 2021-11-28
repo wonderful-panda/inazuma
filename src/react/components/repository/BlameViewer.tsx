@@ -102,7 +102,6 @@ const createEditorOptions = (blame: Blame, fontSize: number): IEditorConstructio
   return {
     readOnly: true,
     folding: false,
-    renderIndentGuides: false,
     minimap: { enabled: false },
     selectOnLineNumbers: false,
     contextmenu: false,

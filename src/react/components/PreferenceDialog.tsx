@@ -153,36 +153,38 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
   }
 );
 
-const PreferenceDialogInner: React.ForwardRefRenderFunction<DialogMethods, PreferenceDialogProps> =
-  (props, ref) => {
-    const [opened, setOpened] = useState(false);
-    useImperativeHandle(ref, () => ({
-      open: () => setOpened(true),
-      close: () => setOpened(false)
-    }));
-    const contentRef = useRef({} as ComponentRef<typeof PreferenceDialogContent>);
-    const close = useCallback(() => setOpened(false), []);
-    const handleSave = useCallback(() => {
-      contentRef.current.save();
-      setOpened(false);
-    }, []);
-    return (
-      <FullscreenDialog
-        title="PREFERENCE"
-        opened={opened}
-        close={close}
-        actions={[
-          {
-            text: "Save",
-            color: "primary",
-            default: true,
-            onClick: handleSave
-          }
-        ]}
-      >
-        {opened && <PreferenceDialogContent ref={contentRef} {...props} />}
-      </FullscreenDialog>
-    );
-  };
+const PreferenceDialogInner: React.ForwardRefRenderFunction<
+  DialogMethods,
+  PreferenceDialogProps
+> = (props, ref) => {
+  const [opened, setOpened] = useState(false);
+  useImperativeHandle(ref, () => ({
+    open: () => setOpened(true),
+    close: () => setOpened(false)
+  }));
+  const contentRef = useRef({} as ComponentRef<typeof PreferenceDialogContent>);
+  const close = useCallback(() => setOpened(false), []);
+  const handleSave = useCallback(() => {
+    contentRef.current.save();
+    setOpened(false);
+  }, []);
+  return (
+    <FullscreenDialog
+      title="PREFERENCE"
+      opened={opened}
+      close={close}
+      actions={[
+        {
+          text: "Save",
+          color: "primary",
+          default: true,
+          onClick: handleSave
+        }
+      ]}
+    >
+      {opened && <PreferenceDialogContent ref={contentRef} {...props} />}
+    </FullscreenDialog>
+  );
+};
 
 export const PreferenceDialog = forwardRef(PreferenceDialogInner);

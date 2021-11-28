@@ -51,22 +51,24 @@ export const getCommitDetail: SinglePayloadHandler<
   return await getCommitDetailAsync(repoPath, sha);
 };
 
-export const getLogDetail: SinglePayloadHandler<{ repoPath: string; sha: string }, LogDetail> =
-  async (_, { repoPath, sha }) => {
-    if (sha === "--") {
-      const workingTreeStatus = await status(repoPath);
-      return {
-        type: "status",
-        ...workingTreeStatus
-      };
-    } else {
-      const commitDetail = await getCommitDetailAsync(repoPath, sha);
-      return {
-        type: "commit",
-        ...commitDetail
-      };
-    }
-  };
+export const getLogDetail: SinglePayloadHandler<
+  { repoPath: string; sha: string },
+  LogDetail
+> = async (_, { repoPath, sha }) => {
+  if (sha === "--") {
+    const workingTreeStatus = await status(repoPath);
+    return {
+      type: "status",
+      ...workingTreeStatus
+    };
+  } else {
+    const commitDetail = await getCommitDetailAsync(repoPath, sha);
+    return {
+      type: "commit",
+      ...commitDetail
+    };
+  }
+};
 
 export const getBlame: SinglePayloadHandler<
   {
@@ -86,8 +88,10 @@ export const getFileLog: SinglePayloadHandler<
   FileCommit[]
 > = (_, { repoPath, relPath, sha }) => filelogAsync(repoPath, relPath, 1000, [sha]);
 
-export const getTree: SinglePayloadHandler<{ repoPath: string; sha: string }, LstreeEntry[]> =
-  async (_, { repoPath, sha }) => lstreeAsync(repoPath, sha);
+export const getTree: SinglePayloadHandler<
+  { repoPath: string; sha: string },
+  LstreeEntry[]
+> = async (_, { repoPath, sha }) => lstreeAsync(repoPath, sha);
 
 export const getConfig: Handler<[], Config> = () => Promise.resolve(config.data);
 
@@ -141,11 +145,13 @@ export const getCommitDiff: SinglePayloadHandler<
 export const copyTextToClipboard: SinglePayloadHandler<string, void> = (_, text) =>
   Promise.resolve(clipboard.writeText(text));
 
-export const showOpenDialog: SinglePayloadHandler<OpenDialogOptions, OpenDialogReturnValue> =
-  async (_, options) => {
-    const parent = BrowserWindow.getFocusedWindow();
-    return await (parent ? dialog.showOpenDialog(parent, options) : dialog.showOpenDialog(options));
-  };
+export const showOpenDialog: SinglePayloadHandler<
+  OpenDialogOptions,
+  OpenDialogReturnValue
+> = async (_, options) => {
+  const parent = BrowserWindow.getFocusedWindow();
+  return await (parent ? dialog.showOpenDialog(parent, options) : dialog.showOpenDialog(options));
+};
 
 export const loadPersistentData: Handler<[], { config: Config; environment: Environment }> = () =>
   Promise.resolve({
