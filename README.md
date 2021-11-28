@@ -2,28 +2,28 @@
 
 **NOT READY FOR USE**
 
-Git repository browser made by Electron and Vue
+Git repository browser made by Electron and React
 
-* Home
+- Home
   ![home](/image/home.png)
 
-* Log
+- Log
   ![log](/image/log.png)
 
-* Log (Another layout)
+- Log (Another layout)
   ![log](/image/log-another-layout.png)
 
-* Interactive shell integration
-  ![log](/image/shell-integration.png)
+- Interactive shell integration
+  ![shell](/image/shell-integration.png)
 
-* Blame
-  ![log](/image/blame.png)
+- Blame
+  ![blame](/image/blame.png)
 
-* Tree (with blame)
-  ![log](/image/lstree-with-blame.png)
+- Tree (with blame)
+  ![lstree](/image/lstree-with-blame.png)
 
-* Built-in diff
-  ![log](/image/sidebyside-diff.png)
+- Compare two commits
+  ![commit-diff](/image/commit-difference.png)
 
 ## LICENSE
 
