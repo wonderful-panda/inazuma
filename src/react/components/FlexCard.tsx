@@ -14,7 +14,7 @@ const FlexCard_: React.VFC<FlexCardProps> = ({ title, content, actions }) => {
         {title && <div className="border-b mb-1 border-solid border-current text-2xl">{title}</div>}
         <div className="flex-col-nowrap flex-1 overflow-hidden">{content}</div>
       </CardContent>
-      {actions && <CardActions className="ml-auto pt-0">{actions}</CardActions>}
+      {actions && <CardActions className="ml-auto pt-0 pr-4">{actions}</CardActions>}
     </Card>
   );
 };
