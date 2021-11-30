@@ -5,6 +5,8 @@ import { formatDateTimeLong } from "@/date";
 import { FileStatusIcon } from "./FileStatusIcon";
 import { GitHash } from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
+import { FileStat } from "./FileStat";
+import { Icon } from "@iconify/react";
 
 export const getRowHeightClass = (commit: FileCommit) => (commit.oldPath ? "h-[76px]" : "h-[52px]");
 
@@ -59,12 +61,15 @@ const FileCommitListRow_: React.VFC<FileCommitListRowProps> = ({
       <div className="relative flex flex-col flex-nowrap flex-1 ml-1 my-auto overflow-hidden">
         <div className="flex-row-nowrap items-center text-lg leading-6 ellipsis">
           {refs && refs.map((r) => <RefBadge key={`${r.type}:${r.fullname}`} r={r} />)}
-          {commit.summary}
+          <span className="ellipsis">{commit.summary}</span>
         </div>
-        <div className="flex-row-nowrap leading-5 pl-2 text-greytext whitespace-nowrap">
+        <div className="flex-row-nowrap items-center leading-5 pl-2 text-greytext ellipsis">
+          <FileStat className="text-base min-w-[6.5rem] mr-1" file={commit} />
           <GitHash hash={commit.id} />
-          <span className="ml-3 whitespace-nowrap">by {commit.author},</span>
-          <span className="mx-3 whitespace-nowrap">at {formatDateTimeLong(commit.date)}</span>
+          <Icon className="ml-3 mr-0.5 my-auto flex-shrink-0" icon="mdi:account" />
+          {commit.author}
+          <Icon className="ml-3 mr-0.5 my-auto flex-shrink-0" icon="mdi:clock-outline" />
+          {formatDateTimeLong(commit.date)}
         </div>
         {commit.oldPath && (
           <div className="flex-row-nowrap leading-5 pl-2 text-greytext whitespace-nowrap">

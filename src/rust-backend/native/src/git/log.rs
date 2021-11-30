@@ -1,3 +1,4 @@
+use super::commit_detail::parse_numstat_row;
 use super::types::*;
 use super::{exec, GitError};
 use std::path::Path;
@@ -108,8 +109,8 @@ pub fn parse_filelog_output(output: &str) -> Result<Vec<FileLogEntry>, GitError>
      * parents:{parents}\n
      * author:{author}\n
      * date:{author-date}\n
-     * summary:{summary}\0\n  # "\0\n" added before STAT LINE
-     * <STAT LINE>            # STAT LINE does not end with "\n"
+     * summary:{summary}\0\n  # "\0\n" added before NUMSTAT ROW
+     * <NUMSTAT ROW>
      */
 
     let mut id = "";
@@ -143,36 +144,13 @@ pub fn parse_filelog_output(output: &str) -> Result<Vec<FileLogEntry>, GitError>
             _ => {
                 // stat line
                 let commit = Commit::new(id, parents, author, date, summary);
+                let stat = parse_numstat_row(line)?.remove(0);
+                entries.push(FileLogEntry { commit, stat });
                 id = "";
                 parents = "";
                 author = "";
                 date = 0;
                 summary = "";
-                let tokens: Vec<&str> = line.split('\0').collect();
-                match tokens.as_slice() {
-                    [status_code, old_path, path, _] => {
-                        entries.push(FileLogEntry {
-                            commit,
-                            status_code: status_code.to_string(),
-                            path: path.to_string(),
-                            old_path: Some(old_path.to_string()),
-                        });
-                    }
-                    [status_code, path, _] => {
-                        entries.push(FileLogEntry {
-                            commit,
-                            status_code: status_code.to_string(),
-                            path: path.to_string(),
-                            old_path: None,
-                        });
-                    }
-                    _ => {
-                        return Err(GitError::UnexpectedOutput {
-                            command: String::from("log"),
-                            text: line.to_string(),
-                        })
-                    }
-                }
             }
         }
     }
@@ -190,7 +168,8 @@ pub fn filelog(
     let mut args = build_args(format.as_str(), max_count_option.as_str(), heads);
     args.push("--follow");
     args.push("-z");
-    args.push("--name-status");
+    args.push("--raw");
+    args.push("--numstat");
     args.push("--");
     args.push(rel_path);
     let output = exec(repo_path, "log", &args, &[])?;

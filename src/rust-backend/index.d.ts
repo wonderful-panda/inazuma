@@ -24,11 +24,7 @@ declare interface CommitDetail extends Commit {
   files: FileEntry[];
 }
 
-declare interface FileLogEntry extends Commit {
-  path: string;
-  oldPath?: string;
-  statusCode: string;
-}
+declare interface FileLogEntry extends Commit, FileEntry {}
 
 declare type LstreeEntry = {
   data: {
@@ -83,6 +79,15 @@ declare type CommitOptions =
       message?: string;
     };
 
+declare type Udiff =
+  | {
+      type: "text";
+      content: string;
+    }
+  | {
+      type: "binary" | "nodiff";
+    };
+
 export declare function logAsync(repoPath: string, maxCount: number): Promise<Commit[]>;
 
 export declare function filelogAsync(
@@ -107,6 +112,12 @@ export declare function getChangesBetweenAsync(
   revspec1: string,
   revspec2: string
 ): Promise<FileEntry[]>;
+
+export declare function getWorkingTreeUdiffAsync(
+  repoPath: string,
+  relpath: string,
+  cached: boolean
+): Promise<Udiff>;
 
 export declare function getUntrackedFilesAsync(repoPath: string): Promise<string[]>;
 

@@ -71,9 +71,7 @@ pub struct CommitDetail {
 #[derive(Debug, PartialEq, Eq)]
 pub struct FileLogEntry {
     pub commit: Commit,
-    pub path: String,
-    pub old_path: Option<String>,
-    pub status_code: String,
+    pub stat: FileStat,
 }
 
 #[derive(Debug, PartialEq, Eq)]

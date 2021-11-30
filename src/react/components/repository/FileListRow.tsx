@@ -7,6 +7,7 @@ import { FileCommand, IconActionItem } from "@/commands/types";
 import { fileCommandsToActions } from "@/commands";
 import { useDispatch } from "@/store";
 import { RowActionButtons } from "./RowActionButtons";
+import { FileStat } from "./FileStat";
 
 export interface FileListRowProps {
   commit: Commit;
@@ -15,29 +16,6 @@ export interface FileListRowProps {
   height: number;
   actionCommands?: readonly FileCommand[];
 }
-
-const getFileType = (item: FileEntry) => {
-  if (item.delta === undefined) {
-    return "unknown";
-  } else {
-    return item.delta.type;
-  }
-};
-
-const FileType: React.VFC<{ file: FileEntry }> = ({ file }) => (
-  <div className="font-bold px-0.5 text-greytext mx-1 my-auto uppercase">{getFileType(file)}</div>
-);
-
-const NumStat: React.VFC<{ file: FileEntry }> = ({ file }) => (
-  <>
-    {file.delta?.type === "text" && (
-      <>
-        <div className="mx-1 my-auto text-[lightgreen]">+{file.delta.insertions}</div>
-        <div className="mx-1 my-auto text-[hotpink]">-{file.delta.deletions}</div>
-      </>
-    )}
-  </>
-);
 
 const OldPath: React.VFC<{ file: FileEntry }> = ({ file }) =>
   file.oldPath ? (
@@ -70,7 +48,7 @@ const FileListRow_: React.VFC<FileListRowProps> = ({
   return (
     <div
       className={classNames(
-        "group relative flex overflow-hidden box-border cursor-pointer py-1",
+        "group relative flex flex-1 overflow-hidden box-border cursor-pointer py-1",
         "border-b border-solid border-highlight",
         index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
@@ -88,8 +66,7 @@ const FileListRow_: React.VFC<FileListRowProps> = ({
           component="div"
           className="flex-row-nowrap whitespace-nowrap h-4 leading-4"
         >
-          <FileType file={file} />
-          <NumStat file={file} />
+          <FileStat file={file} />
           <OldPath file={file} />
         </Typography>
       </div>

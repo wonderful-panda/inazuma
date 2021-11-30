@@ -198,9 +198,7 @@ impl WriteToJsObject for FileLogEntry {
     fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
         propset!(cx, obj, {
             ...self.commit,
-            path: self.path,
-            oldPath: self.old_path,
-            statusCode: self.status_code
+            ...self.stat
         });
         Ok(())
     }
