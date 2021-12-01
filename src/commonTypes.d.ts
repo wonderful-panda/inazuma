@@ -18,6 +18,7 @@ declare global {
   type RemoteRef = backend.RemoteRef;
   type Ref = backend.Ref;
   type CommitOptions = backend.CommitOptions;
+  type Udiff = backend.Udiff;
 
   type Resolve<T> = (arg: T) => void;
   type Dict<T> = { [key: string]: T };

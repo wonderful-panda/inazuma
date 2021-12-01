@@ -5,6 +5,7 @@ import {
   filelogAsync,
   getChangesBetweenAsync,
   getCommitDetailAsync,
+  getWorkingTreeUdiffAsync,
   lstreeAsync,
   removeFromIndexAsync
 } from "inazuma-rust-backend";
@@ -141,6 +142,15 @@ export const getCommitDiff: SinglePayloadHandler<
   { repoPath: string; sha1: string; sha2: string },
   FileEntry[]
 > = (_, { repoPath, sha1, sha2 }) => getChangesBetweenAsync(repoPath, sha1, sha2);
+
+export const getWorkingTreeUdiff: SinglePayloadHandler<
+  {
+    repoPath: string;
+    relPath: string;
+    cached: boolean;
+  },
+  Udiff
+> = (_, { repoPath, relPath, cached }) => getWorkingTreeUdiffAsync(repoPath, relPath, cached);
 
 export const copyTextToClipboard: SinglePayloadHandler<string, void> = (_, text) =>
   Promise.resolve(clipboard.writeText(text));

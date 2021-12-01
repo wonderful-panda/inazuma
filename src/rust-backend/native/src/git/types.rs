@@ -125,3 +125,9 @@ pub enum LstreeEntry {
         children: Vec<LstreeEntry>,
     },
 }
+
+pub enum Udiff {
+    Text { content: String },
+    Binary,
+    NoDiff,
+}

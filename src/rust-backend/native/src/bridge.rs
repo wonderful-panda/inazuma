@@ -323,7 +323,7 @@ impl WriteToJsObject for Refs {
 
 impl WriteToJsObject for LstreeEntry {
     fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
-        match &self {
+        match self {
             LstreeEntry::Tree { path, children } => {
                 propset!(cx, obj, {
                     data: jsobj!(cx, {
@@ -346,6 +346,29 @@ impl WriteToJsObject for LstreeEntry {
     }
 }
 
+impl WriteToJsObject for Udiff {
+    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
+        match self {
+            Udiff::Text { content } => {
+                propset!(cx, obj, {
+                    type: "text",
+                    content: content
+                });
+            }
+            Udiff::Binary => {
+                propset!(cx, obj, {
+                    type: "binary"
+                });
+            }
+            Udiff::NoDiff => {
+                propset!(cx, obj, {
+                    type: "nodiff"
+                });
+            }
+        }
+        Ok(())
+    }
+}
 pub trait ToJsValueDummy<'a> {
     type ValueType: Managed + Value;
     fn to_js_value<C: Context<'a>>(&self, _: &mut C) -> JsResult<'a, Self::ValueType>;

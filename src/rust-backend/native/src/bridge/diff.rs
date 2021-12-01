@@ -19,3 +19,18 @@ pub fn get_changes_between_async(mut cx: FunctionContext) -> JsResult<JsUndefine
 
     Ok(cx.undefined())
 }
+
+pub fn get_workingtree_udiff_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let repo_path = cx.argument::<JsString>(0)?.value(&mut cx);
+    let rel_path = cx.argument::<JsString>(1)?.value(&mut cx);
+    let cached = cx.argument::<JsBoolean>(2)?.value(&mut cx);
+    let callback = cx.argument::<JsFunction>(3)?.root(&mut cx);
+    let channel = cx.channel();
+    std::thread::spawn(move || {
+        let repo_path = Path::new(&repo_path);
+        let result = git::diff::get_workingtree_udiff(&repo_path, &rel_path, cached);
+        invoke_callback(&channel, callback, result)
+    });
+
+    Ok(cx.undefined())
+}
