@@ -77,7 +77,7 @@ export const VirtualTree = <T extends unknown>({
 
   const toggleExpand = useCallback(
     (item: TreeItem<T>) => {
-      treeModelDispatch({ type: "toggleItem", payload: item });
+      treeModelDispatch({ type: "toggleItem", payload: { item } });
     },
     [treeModelDispatch]
   );

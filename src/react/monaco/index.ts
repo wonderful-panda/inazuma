@@ -1,3 +1,4 @@
+import { blue, green, grey, red } from "@material-ui/core/colors";
 import { getExtension } from "@/util";
 import * as monaco from "monaco-editor";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
@@ -28,7 +29,30 @@ export const setup = () => {
       }
     }
   };
-  monaco.editor.setTheme("vs-dark");
+  // register syntax highlight for unified-diff
+  monaco.languages.register({ id: "unified-diff" });
+  monaco.languages.setMonarchTokensProvider("unified-diff", {
+    tokenizer: {
+      root: [
+        [/^@@.*@@.*/, "diff-marker"],
+        [/^<<.*>>/, "diff-invalid"],
+        [/^\+.*/, "diff-added"],
+        [/^-.*/, "diff-deleted"]
+      ]
+    }
+  });
+  monaco.editor.defineTheme("inazuma-dark", {
+    base: "vs-dark",
+    inherit: true,
+    rules: [
+      { token: "diff-marker", foreground: blue[600], fontStyle: "bold" },
+      { token: "diff-invalid", foreground: grey[600], fontStyle: "bold" },
+      { token: "diff-added", foreground: green[400] },
+      { token: "diff-deleted", foreground: red[300] }
+    ],
+    colors: {}
+  });
+  monaco.editor.setTheme("inazuma-dark");
 
   const { typescript, json, css } = monaco.languages;
   [typescript.typescriptDefaults, typescript.javascriptDefaults].forEach((d) => {
@@ -43,7 +67,7 @@ export const setup = () => {
   });
 
   [css.cssDefaults, css.lessDefaults, css.scssDefaults].forEach((d) =>
-    d.setDiagnosticsOptions({ validate: false })
+    d.setOptions({ validate: false })
   );
 };
 

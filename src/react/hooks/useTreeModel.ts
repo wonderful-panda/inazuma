@@ -9,17 +9,20 @@ export interface TreeItemVM<D> {
   parent: TreeItemVM<D> | undefined;
 }
 
+export type ItemSpec<D> = { item: TreeItem<D> } | { index: number };
+
 export interface ActionPayload<D = unknown> {
   reset: {
     items: readonly TreeItem<D>[];
   };
-  expandItem: TreeItem<D>;
-  collapseItem: TreeItem<D>;
-  toggleItem: TreeItem<D>;
+  expandItem: ItemSpec<D>;
+  collapseItem: ItemSpec<D>;
+  toggleItem: ItemSpec<D>;
   expandAll: never;
   collapseAll: never;
   setSelectedIndex: SetStateAction<number>;
   setSelectedItem: TreeItemVM<D> | undefined;
+  selectByPredicate: (item: TreeItemVM<D>) => boolean;
   expandOrSelectChild: never;
   collapseOrSelectParent: never;
 }
@@ -134,8 +137,9 @@ const reset = <T>(
 
 const expandItem = <T>(
   state: TreeModelState<T>,
-  item: ActionPayload<T>["expandItem"]
+  itemSpec: ActionPayload<T>["expandItem"]
 ): TreeModelState<T> => {
+  const item = "item" in itemSpec ? itemSpec.item : state.visibleItems[itemSpec.index].item;
   if (!item.children) {
     return state;
   }
@@ -148,8 +152,9 @@ const expandItem = <T>(
 
 const collapseItem = <T>(
   state: TreeModelState<T>,
-  item: ActionPayload<T>["collapseItem"]
+  itemSpec: ActionPayload<T>["collapseItem"]
 ): TreeModelState<T> => {
+  const item = "item" in itemSpec ? itemSpec.item : state.visibleItems[itemSpec.index].item;
   if (!item.children) {
     return state;
   }
@@ -163,8 +168,9 @@ const collapseItem = <T>(
 
 const toggleItem = <T>(
   state: TreeModelState<T>,
-  item: ActionPayload<T>["toggleItem"]
+  itemSpec: ActionPayload<T>["toggleItem"]
 ): TreeModelState<T> => {
+  const item = "item" in itemSpec ? itemSpec.item : state.visibleItems[itemSpec.index].item;
   if (!item.children) {
     return state;
   }
@@ -198,6 +204,14 @@ const setSelectedItem = <T>(
   }
 };
 
+const selectByPredicate = <T>(
+  state: TreeModelState<T>,
+  predicate: ActionPayload<T>["selectByPredicate"]
+): TreeModelState<T> => {
+  const selectedIndex = state.visibleItems.findIndex(predicate);
+  return { ...state, selectedIndex, selectedItem: state.visibleItems[selectedIndex] };
+};
+
 const expandAll = <T>(state: TreeModelState<T>): TreeModelState<T> => {
   const expandedItems = new Set<T>();
   for (const item of walkTree(state.rootItems)) {
@@ -224,7 +238,7 @@ const expandOrSelectChild = <T>(state: TreeModelState<T>): TreeModelState<T> => 
       return state;
     }
   } else {
-    return expandItem(state, state.selectedItem.item);
+    return expandItem(state, { item: state.selectedItem.item });
   }
 };
 
@@ -234,7 +248,7 @@ const collapseOrSelectParent = <T>(state: TreeModelState<T>): TreeModelState<T> 
   }
   const itemVm = state.selectedItem;
   if (itemVm.item.children && itemVm.expanded) {
-    return collapseItem(state, itemVm.item);
+    return collapseItem(state, { item: itemVm.item });
   } else {
     if (itemVm.parent) {
       return setSelectedItem(state, itemVm.parent);
@@ -258,6 +272,8 @@ const reducer = <T extends unknown>(state: TreeModelState<T>, action: Action<T>)
       return setSelectedIndex(state, action.payload);
     case "setSelectedItem":
       return setSelectedItem(state, action.payload);
+    case "selectByPredicate":
+      return selectByPredicate(state, action.payload);
     case "expandAll":
       return expandAll(state);
     case "collapseAll":
