@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { IconButton } from "@material-ui/core";
+import { IconButton } from "@mui/material";
 import { useCallback, useState } from "react";
 import { Icon } from "./Icon";
 
@@ -27,6 +27,7 @@ const RotateButton: React.VFC<{
     )}
     title="Switch direction"
     onClick={onClick}
+    size="large"
   >
     <Icon
       icon={`carbon:drag-${horiz ? "horizontal" : "vertical"}`}

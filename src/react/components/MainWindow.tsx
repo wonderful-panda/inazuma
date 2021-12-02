@@ -1,7 +1,7 @@
-import IconButton from "@material-ui/core/IconButton";
+import IconButton from "@mui/material/IconButton";
 import { Icon } from "./Icon";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Drawer, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
+import { Drawer, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import { PreferenceDialog } from "./PreferenceDialog";
 import { AboutDialog } from "./AboutDialog";
 import { Loading } from "./Loading";
@@ -117,7 +117,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
         <Cmd name="About" hotkey="Ctrl+Shift+V" handler={callbacks.openAbout} />
       </CommandGroup>
       <div className="absolute left-0 right-0 top-0 h-9 leading-9 pr-2 flex-row-nowrap bg-titlebar text-xl">
-        <IconButton className="p-0 w-9" onClick={openDrawer}>
+        <IconButton className="p-0 w-9" onClick={openDrawer} size="large">
           <Icon icon="mdi:menu" />
         </IconButton>
         <span className="flex-1">{props.title}</span>
@@ -129,6 +129,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
               disabled={a.disabled}
               className="p-0 w-9"
               onClick={a.handler}
+              size="large"
             >
               <Icon className="text-2xl text-inherit" icon={a.icon} />
             </IconButton>

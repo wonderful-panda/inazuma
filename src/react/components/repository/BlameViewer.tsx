@@ -1,7 +1,8 @@
 import { formatDate } from "@/date";
 import { lineNumbersToRanges } from "@/monaco";
 import { shortHash } from "@/util";
-import { makeStyles, useTheme } from "@material-ui/core";
+import { useTheme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import * as monaco from "monaco-editor";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";

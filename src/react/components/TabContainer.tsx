@@ -1,6 +1,7 @@
 import { Icon } from "./Icon";
 import classNames from "classnames";
-import { Button, IconButton, Tooltip, makeStyles } from "@material-ui/core";
+import { Button, IconButton, Tooltip } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GitHash } from "./GitHash";
 
@@ -56,11 +57,12 @@ const TabButton: React.VFC<{
         }}
       >
         <Button
+          color={p.current ? "primary" : "inherit"}
           classes={{
             root: classNames("normal-case m-0 p-0 h-7 leading-7", {
-              "font-bold text-primary": p.current
+              "font-bold": p.current
             }),
-            label: "mr-auto pl-2 pr-6 whitespace-nowrap font-mono text-lg"
+            text: "mr-auto pl-2 pr-6 whitespace-nowrap font-mono text-lg"
           }}
           onClick={p.select}
         >
@@ -72,6 +74,7 @@ const TabButton: React.VFC<{
           tabIndex={-1}
           className="absolute top-1 bottom-0 right-0 h-4 w-5 m-0 p-0 text-xs text-gray-500 hover:text-white"
           onClick={p.close}
+          size="large"
         >
           <Icon className="text-xs" icon="mdi:close" />
         </IconButton>

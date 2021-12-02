@@ -7,7 +7,7 @@ import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { Loading } from "../Loading";
 import { LsTree } from "./LsTree";
-import { IconButton, TextField } from "@material-ui/core";
+import { IconButton, TextField } from "@mui/material";
 import { Icon } from "../Icon";
 import { debounce } from "lodash";
 import { useTreeItemSelector } from "@/hooks/useTreeItemSelector";
@@ -95,6 +95,7 @@ const LsTreeWithFilter: React.VFC<{
         <TextField
           label="Filter by path"
           className="flex-1 whitespace-nowrap overflow-hidden"
+          variant="standard"
           onChange={onFilterTextChange}
         />
         <IconButton size="small" onClick={expandAll} title="Expand all">

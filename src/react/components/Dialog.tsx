@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton
-} from "@material-ui/core";
+} from "@mui/material";
 import { Icon } from "./Icon";
 import { useEffect, useMemo } from "react";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
@@ -70,18 +70,30 @@ export const Dialog: React.FC<DialogProps> = ({
       TransitionComponent={TransitionComponent}
       transitionDuration={200}
     >
-      <IconButton className="absolute top-1 right-1" onClick={close}>
+      <IconButton className="absolute top-1 right-1" onClick={close} size="large">
         <Icon icon="mdi:close" />
       </IconButton>
       {title && <DialogTitle className="px-5 py-3">{title}</DialogTitle>}
       <DialogContent dividers>{children}</DialogContent>
       <DialogActions className="pr-4">
         {actions?.map((a, i) => (
-          <Button key={i} className="text-xl" size="large" onClick={a.onClick} color={a.color}>
+          <Button
+            key={i}
+            className="text-xl"
+            size="large"
+            onClick={a.onClick}
+            color={a.color || "inherit"}
+          >
             {a.text}
           </Button>
         ))}
-        <Button key="__cancel__" className="text-xl mr-2" size="large" onClick={close}>
+        <Button
+          key="__cancel__"
+          className="text-xl mr-2"
+          size="large"
+          onClick={close}
+          color="inherit"
+        >
           Cancel
         </Button>
       </DialogActions>

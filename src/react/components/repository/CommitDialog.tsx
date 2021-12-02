@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "@/store";
 import { clamp, serializeError } from "@/util";
-import { Checkbox, FormControlLabel, TextField } from "@material-ui/core";
+import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogActionHandler } from "../Dialog";
 import { COMMIT } from "@/store/thunk/commit";
@@ -97,7 +97,6 @@ export const CommitDialog: React.VFC = () => {
         inputRef={messageRef}
         className="h-auto w-full"
         rows={rows}
-        variant="outlined"
         multiline
         label="Commit message"
         InputLabelProps={{ shrink: true }}

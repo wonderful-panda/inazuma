@@ -1,4 +1,4 @@
-import { blue, green, grey, red } from "@material-ui/core/colors";
+import { blue, green, grey, red } from "@mui/material/colors";
 import { getExtension } from "@/util";
 import * as monaco from "monaco-editor";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";

@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "../Icon";
 import { GitHash } from "../GitHash";
@@ -67,7 +67,7 @@ const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => 
       content={content}
       actions={
         <>
-          <Button disabled={!commit} onClick={showSourceTree_}>
+          <Button disabled={!commit} onClick={showSourceTree_} color="inherit">
             Browse source
           </Button>
         </>

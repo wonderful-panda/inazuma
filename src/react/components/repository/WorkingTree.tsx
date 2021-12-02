@@ -5,7 +5,7 @@ import * as monaco from "monaco-editor";
 import { FlexCard } from "../FlexCard";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
-import { Button, useTheme } from "@material-ui/core";
+import { Button, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "@/store";
 import { STAGE, UNSTAGE } from "@/store/thunk/staging";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
@@ -277,10 +277,15 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
           }
           actions={
             <>
-              <Button title={FIXUP_DESC} disabled={staged.length === 0} onClick={fixup}>
+              <Button
+                title={FIXUP_DESC}
+                disabled={staged.length === 0}
+                onClick={fixup}
+                color="inherit"
+              >
                 Fixup
               </Button>
-              <Button title="Commit staged changes" onClick={commit}>
+              <Button title="Commit staged changes" onClick={commit} color="inherit">
                 Commit
               </Button>
             </>

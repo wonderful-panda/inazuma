@@ -1,7 +1,7 @@
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
 import { getFileName } from "@/util";
-import { useTheme } from "@material-ui/core";
+import { useTheme } from "@mui/material";
 import classNames from "classnames";
 import { useCallback } from "react";
 import { VirtualListEvents } from "../VirtualList";

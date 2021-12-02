@@ -1,5 +1,5 @@
 import { IconActionItem } from "@/commands/types";
-import { IconButton } from "@material-ui/core";
+import { IconButton } from "@mui/material";
 import { memo, useMemo } from "react";
 import { Icon } from "../Icon";
 
@@ -24,6 +24,7 @@ const RowActionButtons_: React.VFC<{
             disabled={a.disabled}
             title={a.label}
             onClick={handleClick}
+            size="large"
           >
             <Icon icon={a.icon} />
           </IconButton>
