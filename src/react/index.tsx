@@ -2,7 +2,7 @@ import "xterm/css/xterm.css";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import Home from "./components/home";
-import { createTheme, ThemeProvider, Theme, StyledEngineProvider } from "@mui/material";
+import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
 import {
@@ -24,11 +24,6 @@ import { ContextMenuProvider } from "./context/ContextMenuContext";
 import { lazyWithPreload } from "./components/lazyWithPreload";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 import { dispatchBrowser } from "./dispatchBrowser";
-
-declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
 
 const RepositoryPage = lazyWithPreload(() => import("./components/repository"));
 

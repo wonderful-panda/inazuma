@@ -1,21 +1,18 @@
 import { Icon } from "./Icon";
 import classNames from "classnames";
-import { Button, IconButton, Tooltip } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Button, IconButton, styled, Tooltip } from "@mui/material";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GitHash } from "./GitHash";
 
 const CURRENT_TABBUTTON_CLASS = "__current_tabbutton__";
 
-const useStyles = makeStyles({
-  autohideScrollbar: {
-    "&::-webkit-scrollbar": {
-      display: "none",
-      height: "3px"
-    },
-    "&:hover::-webkit-scrollbar": {
-      display: "block"
-    }
+const TabBar = styled("div")({
+  "&::-webkit-scrollbar": {
+    display: "none",
+    height: "3px"
+  },
+  "&:hover::-webkit-scrollbar": {
+    display: "block"
   }
 });
 
@@ -124,7 +121,6 @@ const TabPage = <T extends unknown>(p: {
 };
 
 export const TabContainer = <T extends unknown = Record<string, any>>(p: TabContainerProps<T>) => {
-  const styles = useStyles();
   const tabBarRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = tabBarRef.current?.querySelector(`.${CURRENT_TABBUTTON_CLASS}`);
@@ -134,12 +130,8 @@ export const TabContainer = <T extends unknown = Record<string, any>>(p: TabCont
   const ref = useRef<HTMLDivElement>(null);
   return (
     <div ref={ref} className="flex-col-nowrap flex-1 items-stretch overflow-hidden p-0">
-      <div
-        className={classNames(
-          "flex-row-nowrap overflow-x-auto overflow-y-hidden h-7 m-0 min-w-full",
-          "bg-paper border-b border-solid border-background",
-          styles.autohideScrollbar
-        )}
+      <TabBar
+        className="flex-row-nowrap overflow-x-auto overflow-y-hidden h-7 m-0 min-w-full bg-paper border-b border-solid border-background"
         ref={tabBarRef}
       >
         {p.tabs.map((t, index) => (
@@ -153,7 +145,7 @@ export const TabContainer = <T extends unknown = Record<string, any>>(p: TabCont
             current={index === p.currentTabIndex}
           />
         ))}
-      </div>
+      </TabBar>
       {p.tabs.map((t, index) => (
         <div
           className={classNames("flex flex-1 overflow-hidden", {
