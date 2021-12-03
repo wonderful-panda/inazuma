@@ -15,6 +15,7 @@ import { useListItemSelector } from "@/hooks/useListItemSelector";
 import { VirtualListMethods } from "../VirtualList";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { showFileContent } from "@/commands/showFileContent";
+import { KeyDownTrapper } from "../KeyDownTrapper";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -101,7 +102,7 @@ export const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
           content={
             commit && (
               <SelectedIndexProvider value={selectedIndex}>
-                <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={handleKeyDown}>
+                <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
                   <FileList
                     ref={listRef}
                     commit={commit}
@@ -111,7 +112,7 @@ export const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
                     onRowDoubleClick={onRowDoubleClick}
                     onRowContextMenu={onRowContextMenu}
                   />
-                </div>
+                </KeyDownTrapper>
               </SelectedIndexProvider>
             )
           }

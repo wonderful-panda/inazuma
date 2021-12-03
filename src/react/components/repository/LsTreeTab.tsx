@@ -14,6 +14,7 @@ import { useTreeItemSelector } from "@/hooks/useTreeItemSelector";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { BlamePanel } from "./BlamePanel";
 import { dispatchBrowser } from "@/dispatchBrowser";
+import { KeyDownTrapper } from "../KeyDownTrapper";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -106,11 +107,7 @@ const LsTreeWithFilter: React.VFC<{
         </IconButton>
       </div>
       <SelectedIndexProvider value={state.selectedIndex}>
-        <div
-          className="flex flex-1 m-1 p-1 border border-paper"
-          tabIndex={0}
-          onKeyDown={handleKeyDownWithEnter}
-        >
+        <KeyDownTrapper className="m-1 p-1 border border-paper" onKeyDown={handleKeyDownWithEnter}>
           <LsTree
             treeModelState={state}
             treeModelDispatch={dispatch}
@@ -118,7 +115,7 @@ const LsTreeWithFilter: React.VFC<{
             onRowDoubleClick={handleRowDoubleClick}
             getRowClass={getRowClass}
           />
-        </div>
+        </KeyDownTrapper>
       </SelectedIndexProvider>
     </div>
   );

@@ -27,6 +27,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { useFixup, FIXUP_DESC } from "@/hooks/useFixup";
 import { SHOW_ERROR } from "@/store/misc";
 import { serializeError } from "@/util";
+import { KeyDownTrapper } from "../KeyDownTrapper";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -261,7 +262,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
         <FlexCard
           title="Changes"
           content={
-            <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={handleKeyDown}>
+            <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
               <SelectedIndexProvider value={treeModelState.selectedIndex}>
                 <VirtualTree<RowType>
                   treeModelState={treeModelState}
@@ -273,7 +274,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
                   onRowDoubleClick={handleRowDoubleClick}
                 />
               </SelectedIndexProvider>
-            </div>
+            </KeyDownTrapper>
           }
           actions={
             <>

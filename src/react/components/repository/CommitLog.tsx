@@ -20,6 +20,7 @@ import { SHOW_COMMIT_DIFF } from "@/store/thunk/showCommitDiff";
 import { SHOW_ALERT } from "@/store/misc";
 import { RELOAD_WORKING_TREE } from "@/store/thunk/reloadWorkingTree";
 import { FETCH_COMMIT_DETAIL } from "@/store/thunk/fetchCommitDetail";
+import { KeyDownTrapper } from "../KeyDownTrapper";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -137,7 +138,7 @@ const CommitLogInner: React.VFC<{
         secondPanelMinSize="20%"
         first={
           <SelectedIndexProvider value={selectedIndex}>
-            <div className="flex flex-1 m-2" tabIndex={0} onKeyDown={itemSelector.handleKeyDown}>
+            <KeyDownTrapper className="m-2" onKeyDown={itemSelector.handleKeyDown}>
               <CommitList
                 ref={listRef}
                 {...log}
@@ -145,7 +146,7 @@ const CommitLogInner: React.VFC<{
                 onRowClick={itemSelector.handleRowClick}
                 onRowContextMenu={handleContextMenu}
               />
-            </div>
+            </KeyDownTrapper>
           </SelectedIndexProvider>
         }
         second={detail}

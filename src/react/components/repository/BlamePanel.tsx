@@ -4,6 +4,7 @@ import { useListItemSelector } from "@/hooks/useListItemSelector";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GitHash } from "../GitHash";
+import { KeyDownTrapper } from "../KeyDownTrapper";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
 import { BlameFooter } from "./BlameFooter";
@@ -122,11 +123,7 @@ export const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path
         initialDirection="horiz"
         first={
           <SelectedIndexProvider value={selectedItem.index}>
-            <div
-              className="flex flex-1 m-1 p-1 border border-paper"
-              tabIndex={0}
-              onKeyDown={handleKeyDown}
-            >
+            <KeyDownTrapper className="m-1 p-1 border border-paper" onKeyDown={handleKeyDown}>
               <FileCommitList
                 ref={listRef}
                 commits={blame.commits}
@@ -134,7 +131,7 @@ export const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path
                 onRowClick={handleRowClick}
                 onRowContextMenu={handleRowContextMenu}
               />
-            </div>
+            </KeyDownTrapper>
           </SelectedIndexProvider>
         }
         second={
