@@ -4,7 +4,7 @@ import { assertNever } from "@/util";
 const Badge: React.FC<{ className?: string }> = ({ className, children }) => (
   <span
     className={classNames(
-      "align-middle h-4 leading-4 text-sm mr-1 my-auto px-2 box-content cursor-default bg-background",
+      "align-middle h-4 leading-4 text-sm mr-1 my-auto px-2 box-content whitespace-nowrap cursor-default bg-background",
       className
     )}
   >
