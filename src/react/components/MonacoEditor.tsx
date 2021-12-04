@@ -1,5 +1,5 @@
 import * as monaco from "monaco-editor";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 type IStandaloneCodeEditor = monaco.editor.IStandaloneCodeEditor;
 
@@ -44,7 +44,7 @@ const MonacoEditor_: React.VFC<MonacoEditorProps> = ({
     }
   }, [editor, language]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     editor?.setValue(value);
     editor?.setScrollPosition({ scrollLeft: 0, scrollTop: 0 });
   }, [editor, value]);
