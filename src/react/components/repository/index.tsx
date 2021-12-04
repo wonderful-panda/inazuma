@@ -14,7 +14,6 @@ import { assertNever } from "@/util";
 import { useCallback, useMemo } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { InteractiveShell } from "../InteractiveShell";
-import { lazyWithPreload } from "../lazyWithPreload";
 import { MainWindow } from "../MainWindow";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { TabContainer, TabContainerProps, TooltipTitle } from "../TabContainer";
@@ -22,10 +21,11 @@ import CommitLog from "./CommitLog";
 import BlameTabTooltip from "./BlameTabTooltip";
 import LsTreeTabTooltip from "./LsTreeTabTooltip";
 import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
+import { lazy } from "../hoc/lazy";
 
-const BlameTab = lazyWithPreload(() => import("./BlameTab"));
-const LsTreeTab = lazyWithPreload(() => import("./LsTreeTab"));
-const CommitDiffTab = lazyWithPreload(() => import("./CommitDiffTab"));
+const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
+const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
+const CommitDiffTab = lazy(() => import("./CommitDiffTab"), { preload: true });
 
 const renderTabTooltip: TabContainerProps<TabType>["renderTabTooltip"] = (tab) => {
   switch (tab.type) {

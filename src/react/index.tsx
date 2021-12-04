@@ -1,5 +1,5 @@
 import "xterm/css/xterm.css";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import Home from "./components/home";
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
@@ -21,11 +21,11 @@ import { Loading } from "./components/Loading";
 import { SHOW_ERROR } from "./store/misc";
 import { serializeError } from "./util";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
-import { lazyWithPreload } from "./components/lazyWithPreload";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 import { dispatchBrowser } from "./dispatchBrowser";
+import { lazy } from "./components/hoc/lazy";
 
-const RepositoryPage = lazyWithPreload(() => import("./components/repository"));
+const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
 const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
 const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");
@@ -154,15 +154,13 @@ const App = () => {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
-        <Suspense fallback={<Loading open />}>
-          <CommandGroupProvider>
-            <ContextMenuProvider>
-              <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
-                <ConfirmDialogProvider>{content}</ConfirmDialogProvider>
-              </PersistStateProvider>
-            </ContextMenuProvider>
-          </CommandGroupProvider>
-        </Suspense>
+        <CommandGroupProvider>
+          <ContextMenuProvider>
+            <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+              <ConfirmDialogProvider>{content}</ConfirmDialogProvider>
+            </PersistStateProvider>
+          </ContextMenuProvider>
+        </CommandGroupProvider>
       </ThemeProvider>
     </StyledEngineProvider>
   );
