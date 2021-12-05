@@ -43,10 +43,19 @@ const iconNames = [];
 const collection = new Collection();
 Object.keys(icons).forEach((collectionName) => {
   if (!collection.loadIconifyCollection(collectionName)) {
-    console.error("failed to load iconify collection: ", collectionName);
+    console.error("[Error] Failed to load iconify collection:", collectionName);
   }
   iconNames.push(...icons[collectionName].map((n) => `${collectionName}:${n}`));
-  data.push(collection.getIcons(icons[collectionName]));
+  const iconData = collection.getIcons(icons[collectionName]);
+  for (const n of icons[collectionName]) {
+    const iconName = `${collectionName}:${n}`;
+    if (iconData.icons[n]) {
+      iconNames.push(iconName);
+    } else {
+      console.error("[Error] Icon data not found:", iconName);
+    }
+  }
+  data.push(iconData);
 });
 
 if (!fs.existsSync("src/react/generated")) {
