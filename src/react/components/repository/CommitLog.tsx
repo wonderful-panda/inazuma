@@ -17,11 +17,12 @@ import { CommitDialog } from "./CommitDialog";
 import { CommitCommand } from "@/commands/types";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
 import { SHOW_COMMIT_DIFF } from "@/store/thunk/showCommitDiff";
-import { SHOW_ALERT } from "@/store/misc";
+import { SHOW_WARNING } from "@/store/misc";
 import { RELOAD_WORKING_TREE } from "@/store/thunk/reloadWorkingTree";
 import { FETCH_COMMIT_DETAIL } from "@/store/thunk/fetchCommitDetail";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { PinnedIdContext, SetPinnedIdContext } from "./CommitListRow";
+import { useStateWithRef } from "@/hooks/useStateWithRef";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -40,25 +41,18 @@ const CommitLogInner: React.VFC<{
   const workingTree = useSelector((state) => state.repository.workingTree);
   const commitDetail = useSelector((state) => state.repository.commitDetail);
   // selected row index, updated immediately
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const selectedIndexRef = useRef(0);
+  const [selectedIndex, setSelectedIndex, selectedIndexRef] = useStateWithRef(0);
   // selected item id, updated lazily (after data-fetching completed)
   const [loadedId, setLoadedId] = useState("");
 
-  const [pinnedId, setPinnedId] = useState<string | undefined>(undefined);
-  const pinnedIdRef = useRef<string | undefined>(undefined);
+  const [pinnedId, setPinnedId, pinnedIdRef] = useStateWithRef<string | undefined>(undefined);
   const pinned = !!pinnedId;
 
   const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
   const listRef = useRef<VirtualListMethods>(null);
   useEffect(() => {
-    selectedIndexRef.current = selectedIndex;
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
-
-  useEffect(() => {
-    pinnedIdRef.current = pinnedId;
-  }, [pinnedId]);
 
   const actionCommands = useMemo<CommitCommand[]>(
     () => [
@@ -72,38 +66,32 @@ const CommitLogInner: React.VFC<{
         handler: (dispatch, commit) => {
           const baseCommitId = pinnedIdRef.current ? pinnedIdRef.current : commit.parentIds[0];
           if (baseCommitId === commit.id) {
-            dispatch(
-              SHOW_ALERT({ type: "warning", message: "Select commit and BASE commit are same" })
-            );
+            dispatch(SHOW_WARNING("Selected commit and BASE commit are same"));
             return;
           }
           const baseCommit = log.commits.find((c) => c.id === baseCommitId);
           if (!baseCommit) {
-            dispatch(SHOW_ALERT({ type: "warning", message: "BASE commit is not found" }));
+            dispatch(SHOW_WARNING("BASE commit is not found"));
             return;
           }
           dispatch(SHOW_COMMIT_DIFF(baseCommit, commit));
         }
       }
     ],
-    [log.commits, pinned]
+    [log.commits, pinned, pinnedIdRef]
   );
   const selectLog = useMemo(
     () =>
       debounce(async (index: number) => {
         if (repoPath && 0 <= index) {
           const sha = log.commits[index].id;
-          if (sha === "--") {
-            await dispatch(RELOAD_WORKING_TREE());
-          } else {
-            await dispatch(FETCH_COMMIT_DETAIL(sha));
-          }
+          await dispatch(sha === "--" ? RELOAD_WORKING_TREE() : FETCH_COMMIT_DETAIL(sha));
           if (sha === log.commits[selectedIndexRef.current]?.id) {
             setLoadedId(sha);
           }
         }
       }, 200),
-    [repoPath, log.commits, dispatch]
+    [repoPath, log.commits, dispatch, selectedIndexRef]
   );
   const currentRefs = useMemo(() => {
     if (!loadedId) {

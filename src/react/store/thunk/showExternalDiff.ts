@@ -1,26 +1,22 @@
 import { dispatchBrowser } from "@/dispatchBrowser";
-import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";
-import { SHOW_ALERT, SHOW_ERROR } from "../misc";
+import { SHOW_WARNING } from "../misc";
+import { withHandleError } from "./withHandleError";
 
 const showExternalDiff = (left: FileSpec, right: FileSpec) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
-    try {
-      const state = getState();
-      const repoPath = state.repository.path;
-      if (!repoPath) {
-        return;
-      }
-      const externalDiffTool = state.persist.config.externalDiffTool;
-      if (!externalDiffTool) {
-        dispatch(SHOW_ALERT({ type: "warning", message: "External diff tool is not configured" }));
-        return;
-      }
-      await dispatchBrowser("showExternalDiff", { repoPath, left, right });
-    } catch (error) {
-      dispatch(SHOW_ERROR({ error: serializeError(error) }));
+    const state = getState();
+    const repoPath = state.repository.path;
+    if (!repoPath) {
+      return;
     }
+    const externalDiffTool = state.persist.config.externalDiffTool;
+    if (!externalDiffTool) {
+      dispatch(SHOW_WARNING("External diff tool is not configured"));
+      return;
+    }
+    await dispatchBrowser("showExternalDiff", { repoPath, left, right });
   };
 };
 
-export const SHOW_EXTERNAL_DIFF = showExternalDiff;
+export const SHOW_EXTERNAL_DIFF = withHandleError(showExternalDiff);

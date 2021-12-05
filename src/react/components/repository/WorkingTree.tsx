@@ -25,8 +25,7 @@ import { RowActionButtons } from "./RowActionButtons";
 import { MonacoEditor } from "../MonacoEditor";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { useFixup, FIXUP_DESC } from "@/hooks/useFixup";
-import { SHOW_ERROR } from "@/store/misc";
-import { serializeError } from "@/util";
+import { REPORT_ERROR } from "@/store/misc";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 
 export interface WorkingTreeProps {
@@ -166,8 +165,8 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
               cached: !data.unstaged
             });
             setUdiff(udiff);
-          } catch (e) {
-            dispatch(SHOW_ERROR({ error: serializeError(e) }));
+          } catch (error) {
+            dispatch(REPORT_ERROR({ error }));
           }
         }
       }, 200),

@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from "@/store";
-import { clamp, serializeError } from "@/util";
+import { clamp } from "@/util";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogActionHandler } from "../Dialog";
 import { COMMIT } from "@/store/thunk/commit";
 import { CLOSE_DIALOG } from "@/store/repository";
-import { SHOW_ERROR } from "@/store/misc";
 import { dispatchBrowser } from "@/dispatchBrowser";
+import { REPORT_ERROR } from "@/store/misc";
 
 export const CommitDialog: React.VFC = () => {
   const dispatch = useDispatch();
@@ -46,8 +46,8 @@ export const CommitDialog: React.VFC = () => {
             commitDetail.summary + (commitDetail.body ? "\n\n" + commitDetail.body : "");
           handleChange();
         }
-      } catch (e) {
-        dispatch(SHOW_ERROR({ error: serializeError(e) }));
+      } catch (error) {
+        dispatch(REPORT_ERROR({ error }));
       }
     },
     [dispatch, repoPath, handleChange]
@@ -61,7 +61,8 @@ export const CommitDialog: React.VFC = () => {
       amend: amendRef.current.checked,
       message
     };
-    if (await dispatch(COMMIT(options))) {
+    const ret = await dispatch(COMMIT(options));
+    if (ret !== "failed" && ret) {
       dispatch(CLOSE_DIALOG());
     }
   }, [dispatch]);

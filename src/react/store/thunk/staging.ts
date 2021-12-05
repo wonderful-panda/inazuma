@@ -1,40 +1,31 @@
 import { dispatchBrowser } from "@/dispatchBrowser";
-import { serializeError } from "@/util";
 import { Dispatch, RootState } from "..";
-import { SHOW_ERROR } from "../misc";
 import { RELOAD_WORKING_TREE } from "./reloadWorkingTree";
+import { withHandleError } from "./withHandleError";
 
 const stage = (relPath: string) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
-    try {
-      const state = getState();
-      const repoPath = state.repository.path;
-      if (!repoPath) {
-        return;
-      }
-      await dispatchBrowser("addToIndex", { repoPath, relPath });
-      await dispatch(RELOAD_WORKING_TREE());
-    } catch (error) {
-      dispatch(SHOW_ERROR({ error: serializeError(error) }));
+    const state = getState();
+    const repoPath = state.repository.path;
+    if (!repoPath) {
+      return;
     }
+    await dispatchBrowser("addToIndex", { repoPath, relPath });
+    await dispatch(RELOAD_WORKING_TREE());
   };
 };
 
 const unstage = (relPath: string) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
-    try {
-      const state = getState();
-      const repoPath = state.repository.path;
-      if (!repoPath) {
-        return;
-      }
-      await dispatchBrowser("removeFromIndex", { repoPath, relPath });
-      await dispatch(RELOAD_WORKING_TREE());
-    } catch (error) {
-      dispatch(SHOW_ERROR({ error: serializeError(error) }));
+    const state = getState();
+    const repoPath = state.repository.path;
+    if (!repoPath) {
+      return;
     }
+    await dispatchBrowser("removeFromIndex", { repoPath, relPath });
+    await dispatch(RELOAD_WORKING_TREE());
   };
 };
 
-export const STAGE = stage;
-export const UNSTAGE = unstage;
+export const STAGE = withHandleError(stage);
+export const UNSTAGE = withHandleError(unstage);

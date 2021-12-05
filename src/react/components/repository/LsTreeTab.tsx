@@ -1,7 +1,6 @@
 import { useDispatch } from "@/store";
-import { SHOW_ERROR } from "@/store/misc";
+import { REPORT_ERROR } from "@/store/misc";
 import { filterTreeItems, sortTreeInplace } from "@/tree";
-import { serializeError } from "@/util";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
@@ -139,8 +138,8 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
         });
         setEntries(entries);
       })
-      .catch((e) => {
-        dispatch(SHOW_ERROR({ error: serializeError(e) }));
+      .catch((error) => {
+        dispatch(REPORT_ERROR({ error }));
       });
   }, [repoPath, sha, dispatch]);
   const onUpdateBlamePath = useCallback(
@@ -156,8 +155,8 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
       try {
         const blame = await dispatchBrowser("getBlame", { repoPath, relPath: path, sha });
         setBlame({ blame, path });
-      } catch (e) {
-        dispatch(SHOW_ERROR({ error: serializeError(e) }));
+      } catch (error) {
+        dispatch(REPORT_ERROR({ error }));
       } finally {
         setBlameLoading(false);
       }

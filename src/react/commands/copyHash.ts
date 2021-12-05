@@ -1,5 +1,5 @@
 import { dispatchBrowser } from "@/dispatchBrowser";
-import { SHOW_ALERT } from "@/store/misc";
+import { SHOW_SUCCESS } from "@/store/misc";
 import { shortHash } from "@/util";
 import { CommitCommand } from "./types";
 
@@ -9,7 +9,7 @@ export const copyFullHash: CommitCommand = {
   hidden: (commit) => commit.id === "--",
   handler: async (dispatch, commit) => {
     await dispatchBrowser("copyTextToClipboard", commit.id);
-    dispatch(SHOW_ALERT({ type: "success", message: `Copied: ${commit.id}` }));
+    dispatch(SHOW_SUCCESS(`Copied: ${commit.id}`));
   }
 };
 
@@ -20,6 +20,6 @@ export const copyShortHash: CommitCommand = {
   handler: async (dispatch, commit) => {
     const hash = shortHash(commit.id);
     await dispatchBrowser("copyTextToClipboard", hash);
-    dispatch(SHOW_ALERT({ type: "success", message: `Copied: ${hash}` }));
+    dispatch(SHOW_SUCCESS(`Copied: ${hash}`));
   }
 };

@@ -1,3 +1,4 @@
+import { serializeError } from "@/util";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface State {
   loading: boolean;
@@ -29,6 +30,22 @@ const slice = createSlice({
     showAlert: (state, { payload }: PayloadAction<{ type: AlertType; message: string }>) => {
       state.alert = payload;
     },
+    showWarning: (state, { payload }: PayloadAction<string>) => {
+      state.alert = { type: "warning", message: payload };
+    },
+    showSuccess: (state, { payload }: PayloadAction<string>) => {
+      state.alert = { type: "success", message: payload };
+    },
+    showInfo: (state, { payload }: PayloadAction<string>) => {
+      state.alert = { type: "info", message: payload };
+    },
+    reportError: (state, { payload: { error } }: PayloadAction<{ error: unknown }>) => {
+      const e = serializeError(error);
+      state.alert = {
+        type: "error",
+        message: `[${e.name}] ${e.message}`
+      };
+    },
     showError: (state, { payload: { error } }: PayloadAction<{ error: ErrorLike | Error }>) => {
       state.alert = {
         type: "error",
@@ -54,7 +71,10 @@ export const {
   showLoading: SHOW_LOADING,
   hideLoading: HIDE_LOADING,
   showAlert: SHOW_ALERT,
-  showError: SHOW_ERROR,
+  showWarning: SHOW_WARNING,
+  showSuccess: SHOW_SUCCESS,
+  showInfo: SHOW_INFO,
+  reportError: REPORT_ERROR,
   hideAlert: HIDE_ALERT,
   showInteractiveShell: SHOW_INTERACTIVE_SHELL,
   hideInteractiveShell: HIDE_INTERACTIVE_SHELL,

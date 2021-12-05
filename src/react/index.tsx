@@ -18,8 +18,7 @@ import { RESET_RECENT_OPENED_REPOSITORIES, UPDATE_CONFIG } from "./store/persist
 import { CommandGroupProvider } from "./context/CommandGroupContext";
 import { OPEN_REPOSITORY } from "./store/thunk/openRepository";
 import { Loading } from "./components/Loading";
-import { SHOW_ERROR } from "./store/misc";
-import { serializeError } from "./util";
+import { REPORT_ERROR } from "./store/misc";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 import { dispatchBrowser } from "./dispatchBrowser";
@@ -135,8 +134,8 @@ const App = () => {
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
     init(dispatch)
-      .catch((e) => {
-        dispatch(SHOW_ERROR({ error: serializeError(e) }));
+      .catch((error) => {
+        dispatch(REPORT_ERROR({ error }));
       })
       .finally(() => {
         setInitializing(false);

@@ -1,7 +1,7 @@
 import { dispatchBrowser } from "@/dispatchBrowser";
 import { useDispatch } from "@/store";
-import { SHOW_ERROR } from "@/store/misc";
-import { serializeError, shortHash } from "@/util";
+import { shortHash } from "@/util";
+import { REPORT_ERROR } from "@/store/misc";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { FileList, useFileListRowEventHandler } from "./FileList";
@@ -73,8 +73,8 @@ const CommitDiffContent: React.VFC<{
           console.log("selectFile");
           setLoading(true);
           setContent(await loadContents(repoPath, commit1.id, commit2.id, file));
-        } catch (e) {
-          dispatch(SHOW_ERROR({ error: serializeError(e) }));
+        } catch (error) {
+          dispatch(REPORT_ERROR({ error }));
         } finally {
           setLoading(false);
         }
@@ -134,7 +134,7 @@ const CommitDiffTab: React.VFC<CommitDiffTabProps> = ({ repoPath, commit1, commi
       sha2: commit2.id
     })
       .then((files) => setFiles(files))
-      .catch((e) => dispatch(SHOW_ERROR({ error: serializeError(e) })));
+      .catch((error) => dispatch(REPORT_ERROR({ error })));
   }, [dispatch, repoPath, commit1, commit2]);
   if (!files) {
     return <Loading open />;

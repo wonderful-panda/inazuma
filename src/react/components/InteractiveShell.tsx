@@ -1,10 +1,9 @@
 import AutoSizer from "react-virtualized-auto-sizer";
-import { SHOW_ERROR } from "@/store/misc";
-import { serializeError } from "@/util";
 import { memo, useCallback, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
+import { REPORT_ERROR } from "@/store/misc";
 
 type Shell = {
   ptyCommands: { [K in keyof PtyCommands]: (payload: PtyCommands[K]) => Promise<void> };
@@ -87,8 +86,8 @@ const InteractiveShellInner: React.VFC<
       term.open(wrapperRef.current!);
       fitAddon.fit();
       term.focus();
-    } catch (e) {
-      dispatch(SHOW_ERROR({ error: serializeError(e) }));
+    } catch (error) {
+      dispatch(REPORT_ERROR({ error }));
       hide();
     }
   }, [cmd, args, cwd, hide, fontFamily, fontSize, dispatch]);
