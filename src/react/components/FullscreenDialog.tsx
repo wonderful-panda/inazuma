@@ -1,5 +1,4 @@
-import { Slide } from "@material-ui/core";
-import { TransitionProps } from "@material-ui/core/transitions/transition";
+import { Slide, SlideProps } from "@mui/material";
 import { forwardRef } from "react";
 import { Dialog, DialogActionHandler } from "./Dialog";
 
@@ -10,7 +9,7 @@ export interface FullscreenDialogProps {
   actions?: readonly DialogActionHandler[];
 }
 
-const TransitionInner = (props: TransitionProps, ref: any) => (
+const TransitionInner = (props: SlideProps, ref: any) => (
   <Slide direction="right" ref={ref} {...props} mountOnEnter unmountOnExit />
 );
 const Transition = forwardRef(TransitionInner);

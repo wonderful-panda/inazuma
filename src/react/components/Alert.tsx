@@ -1,11 +1,17 @@
-import { IconButton, Slide, Snackbar, SnackbarContent, Typography } from "@material-ui/core";
+import {
+  IconButton,
+  Slide,
+  SlideProps,
+  Snackbar,
+  SnackbarContent,
+  Typography
+} from "@mui/material";
 import { Icon } from "./Icon";
 import { memo, useEffect, useState } from "react";
 import { assertNever } from "@/util";
-import { TransitionProps } from "@material-ui/core/transitions/transition";
 import { IconName } from "@/types/IconName";
 
-const Transition = (props: TransitionProps) => <Slide {...props} direction="up" />;
+const Transition = (props: SlideProps) => <Slide {...props} direction="up" />;
 
 const iconName = (type: AlertType): IconName => {
   switch (type) {
@@ -33,7 +39,7 @@ const bg: Record<AlertType, string> = {
 
 const Alert_: React.VFC<{
   open: boolean;
-  onClose?: (e: React.SyntheticEvent | React.MouseEvent, reason?: string) => void;
+  onClose?: (e: React.SyntheticEvent | React.MouseEvent | Event, reason?: string) => void;
   message: string;
   type: AlertType;
 }> = (props) => {

@@ -1,7 +1,7 @@
 import { formatDate } from "@/date";
 import { lineNumbersToRanges } from "@/monaco";
 import { shortHash } from "@/util";
-import { makeStyles, useTheme } from "@material-ui/core";
+import { styled, useTheme } from "@mui/material";
 import * as monaco from "monaco-editor";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -14,42 +14,40 @@ type IEditorMouseEvent = monaco.editor.IEditorMouseEvent;
 
 const { MouseTargetType, OverviewRulerLane } = monaco.editor;
 
-const useStyles = makeStyles({
-  wrapper: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    "& .margin-view-overlays": {
-      borderRight: "2px",
-      borderStyle: "solid",
-      borderColor: "#555 !important"
-    },
-    "& .line-numbers": {
-      color: "#555 !important",
-      cursor: "pointer !important",
-      paddingLeft: "1rem",
-      whiteSpace: "nowrap"
-    },
-    "& .hunk-border": {
-      borderTop: "1px",
-      borderStyle: "solid",
-      borderColor: "#444"
-    },
-    "& .hunk-border-margin": {
-      borderTop: "1px",
-      borderStyle: "solid",
-      borderColor: "#444",
-      "& ~ .line-numbers": {
-        color: "#ddd !important"
-      }
-    },
-    "& .selected-lines": {
-      backgroundColor: "rgba(255, 140, 0, 0.6)",
-      left: "0 !important",
-      width: "4px !important"
+const StyledMonacoEditor = styled(MonacoEditor)({
+  position: "absolute",
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  "& .margin-view-overlays": {
+    borderRight: "2px",
+    borderStyle: "solid",
+    borderColor: "#555 !important"
+  },
+  "& .line-numbers": {
+    color: "#555 !important",
+    cursor: "pointer !important",
+    paddingLeft: "1rem",
+    whiteSpace: "nowrap"
+  },
+  "& .hunk-border": {
+    borderTop: "1px",
+    borderStyle: "solid",
+    borderColor: "#444"
+  },
+  "& .hunk-border-margin": {
+    borderTop: "1px",
+    borderStyle: "solid",
+    borderColor: "#444",
+    "& ~ .line-numbers": {
+      color: "#ddd !important"
     }
+  },
+  "& .selected-lines": {
+    backgroundColor: "rgba(255, 140, 0, 0.6)",
+    left: "0 !important",
+    width: "4px !important"
   }
 });
 
@@ -134,7 +132,6 @@ const BlameViewer_: React.VFC<BlameViewerProps> = ({
   onContextMenu
 }) => {
   const theme = useTheme();
-  const styles = useStyles();
   const [editor, setEditor] = useState<IStandaloneCodeEditor | null>(null);
   const [hoveredCommitId, setHoveredCommitId] = useState<string | undefined>(undefined);
   const handleEditorMounted = useCallback((editor: IStandaloneCodeEditor) => {
@@ -234,11 +231,10 @@ const BlameViewer_: React.VFC<BlameViewerProps> = ({
     <div className="relative flex-1 overflow-hidden border border-solid border-paper">
       <AutoSizer className="flex flex-1 overflow-hidden" onResize={onResize}>
         {() => (
-          <MonacoEditor
+          <StyledMonacoEditor
             options={options}
             language={language}
             value={blame.content.text}
-            className={styles.wrapper}
             onEditorMounted={handleEditorMounted}
           />
         )}

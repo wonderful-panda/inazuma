@@ -37,7 +37,7 @@ body {
   display: flex;
 }
 
-:focus {
+:focus-visible {
   outline: #ffd600 solid 1px;
 }
 

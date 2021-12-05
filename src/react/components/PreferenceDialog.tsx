@@ -6,7 +6,7 @@ import {
   RadioGroup,
   TextField,
   Typography
-} from "@material-ui/core";
+} from "@mui/material";
 import { forwardRef, useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
 import { DialogMethods } from "./Dialog";
 import { FullscreenDialog } from "./FullscreenDialog";
@@ -92,12 +92,14 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
           <TextField
             label="Default font"
             margin="dense"
+            variant="standard"
             value={state.fontFamily.standard}
             onChange={(payload) => dispatch({ type: "fontFamilyStandard", payload })}
           />
           <TextField
             label="Monospace font"
             margin="dense"
+            variant="standard"
             value={state.fontFamily.monospace}
             onChange={(payload) => dispatch({ type: "fontFamilyMonospace", payload })}
           />
@@ -108,13 +110,9 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
               value={state.fontSize}
               onChange={(payload) => dispatch({ type: "fontSize", payload })}
             >
-              <FormControlLabel
-                value="x-small"
-                control={<Radio color="primary" />}
-                label="x-small"
-              />
-              <FormControlLabel value="small" control={<Radio color="primary" />} label="small" />
-              <FormControlLabel value="medium" control={<Radio color="primary" />} label="medium" />
+              <FormControlLabel value="x-small" control={<Radio />} label="x-small" />
+              <FormControlLabel value="small" control={<Radio />} label="small" />
+              <FormControlLabel value="medium" control={<Radio />} label="medium" />
             </RadioGroup>
           </div>
         </SectionContent>
@@ -125,12 +123,14 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
           <TextField
             label="External diff tool"
             margin="dense"
+            variant="standard"
             value={state.externalDiffTool}
             onChange={(payload) => dispatch({ type: "externalDiff", payload })}
           />
           <TextField
             label="Interactive shell"
             margin="dense"
+            variant="standard"
             value={state.interactiveShell}
             onChange={(payload) => dispatch({ type: "interactiveShell", payload })}
           />
@@ -143,6 +143,7 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
             label="Number of recent opened list"
             type="number"
             margin="dense"
+            variant="standard"
             style={{ maxWidth: "240px" }}
             value={state.recentListCount}
             onChange={(payload) => dispatch({ type: "recentListCount", payload })}

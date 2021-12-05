@@ -7,13 +7,14 @@ import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { Loading } from "../Loading";
 import { LsTree } from "./LsTree";
-import { IconButton, TextField } from "@material-ui/core";
+import { IconButton, TextField } from "@mui/material";
 import { Icon } from "../Icon";
 import { debounce } from "lodash";
 import { useTreeItemSelector } from "@/hooks/useTreeItemSelector";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { BlamePanel } from "./BlamePanel";
 import { dispatchBrowser } from "@/dispatchBrowser";
+import { KeyDownTrapper } from "../KeyDownTrapper";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -95,6 +96,7 @@ const LsTreeWithFilter: React.VFC<{
         <TextField
           label="Filter by path"
           className="flex-1 whitespace-nowrap overflow-hidden"
+          variant="standard"
           onChange={onFilterTextChange}
         />
         <IconButton size="small" onClick={expandAll} title="Expand all">
@@ -105,11 +107,7 @@ const LsTreeWithFilter: React.VFC<{
         </IconButton>
       </div>
       <SelectedIndexProvider value={state.selectedIndex}>
-        <div
-          className="flex flex-1 m-1 p-1 border border-paper"
-          tabIndex={0}
-          onKeyDown={handleKeyDownWithEnter}
-        >
+        <KeyDownTrapper className="m-1 p-1 border border-paper" onKeyDown={handleKeyDownWithEnter}>
           <LsTree
             treeModelState={state}
             treeModelDispatch={dispatch}
@@ -117,7 +115,7 @@ const LsTreeWithFilter: React.VFC<{
             onRowDoubleClick={handleRowDoubleClick}
             getRowClass={getRowClass}
           />
-        </div>
+        </KeyDownTrapper>
       </SelectedIndexProvider>
     </div>
   );

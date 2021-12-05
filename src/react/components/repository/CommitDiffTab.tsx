@@ -13,6 +13,7 @@ import { useListItemSelector } from "@/hooks/useListItemSelector";
 import { diffAgainst } from "@/commands/diff";
 import { DiffViewer } from "./DiffViewer";
 import { debounce } from "lodash";
+import { KeyDownTrapper } from "../KeyDownTrapper";
 
 export interface CommitDiffTabProps {
   repoPath: string;
@@ -90,11 +91,7 @@ const CommitDiffContent: React.VFC<{
         title={`Changes ${shortHash(commit1.id)} - ${shortHash(commit2.id)}`}
         content={
           <SelectedIndexProvider value={selectedIndex}>
-            <div
-              className="flex flex-1 m-1 p-1"
-              tabIndex={0}
-              onKeyDown={itemSelector.handleKeyDown}
-            >
+            <KeyDownTrapper className="m-1 p-1" onKeyDown={itemSelector.handleKeyDown}>
               <FileList
                 ref={listRef}
                 commit={commit2}
@@ -103,7 +100,7 @@ const CommitDiffContent: React.VFC<{
                 onRowDoubleClick={handleRowDoubleClick}
                 actionCommands={actionCommands}
               />
-            </div>
+            </KeyDownTrapper>
           </SelectedIndexProvider>
         }
       />

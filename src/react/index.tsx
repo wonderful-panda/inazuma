@@ -2,8 +2,8 @@ import "xterm/css/xterm.css";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import Home from "./components/home";
-import { createTheme, ThemeProvider } from "@material-ui/core";
-import { blue, green, lime, orange, red, yellow } from "@material-ui/core/colors";
+import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
+import { lime, yellow } from "@mui/material/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
 import {
   loadStateToSessionStorage,
@@ -52,31 +52,28 @@ const createMuiTheme = (baseFontSize: FontSize) =>
       secondary: {
         main: yellow.A700
       },
-      error: {
-        main: red[700]
-      },
-      warning: {
-        main: orange[700]
-      },
-      success: {
-        main: green[700]
-      },
-      info: {
-        main: blue[700]
-      },
       background: {
         default: "#222",
         paper: "#333"
       },
-      type: "dark"
+      mode: "dark"
     },
     typography: {
       fontFamily: "inherit"
     },
-    overrides: {
+    components: {
       MuiListItemIcon: {
-        root: {
-          minWidth: `${fontSizeNumber[baseFontSize] * 2.5}px`
+        styleOverrides: {
+          root: {
+            minWidth: `${fontSizeNumber[baseFontSize] * 2.5}px`
+          }
+        }
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: "none"
+          }
         }
       }
     },
@@ -155,17 +152,19 @@ const App = () => {
     }
   }, [initializing, repoPath]);
   return (
-    <ThemeProvider theme={theme}>
-      <Suspense fallback={<Loading open />}>
-        <CommandGroupProvider>
-          <ContextMenuProvider>
-            <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
-              <ConfirmDialogProvider>{content}</ConfirmDialogProvider>
-            </PersistStateProvider>
-          </ContextMenuProvider>
-        </CommandGroupProvider>
-      </Suspense>
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <Suspense fallback={<Loading open />}>
+          <CommandGroupProvider>
+            <ContextMenuProvider>
+              <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+                <ConfirmDialogProvider>{content}</ConfirmDialogProvider>
+              </PersistStateProvider>
+            </ContextMenuProvider>
+          </CommandGroupProvider>
+        </Suspense>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 

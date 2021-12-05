@@ -5,7 +5,7 @@ import * as monaco from "monaco-editor";
 import { FlexCard } from "../FlexCard";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
-import { Button, useTheme } from "@material-ui/core";
+import { Button, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "@/store";
 import { STAGE, UNSTAGE } from "@/store/thunk/staging";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
@@ -27,6 +27,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { useFixup, FIXUP_DESC } from "@/hooks/useFixup";
 import { SHOW_ERROR } from "@/store/misc";
 import { serializeError } from "@/util";
+import { KeyDownTrapper } from "../KeyDownTrapper";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -261,7 +262,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
         <FlexCard
           title="Changes"
           content={
-            <div className="flex flex-1 m-1 p-1" tabIndex={0} onKeyDown={handleKeyDown}>
+            <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
               <SelectedIndexProvider value={treeModelState.selectedIndex}>
                 <VirtualTree<RowType>
                   treeModelState={treeModelState}
@@ -273,14 +274,19 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
                   onRowDoubleClick={handleRowDoubleClick}
                 />
               </SelectedIndexProvider>
-            </div>
+            </KeyDownTrapper>
           }
           actions={
             <>
-              <Button title={FIXUP_DESC} disabled={staged.length === 0} onClick={fixup}>
+              <Button
+                title={FIXUP_DESC}
+                disabled={staged.length === 0}
+                onClick={fixup}
+                color="inherit"
+              >
                 Fixup
               </Button>
-              <Button title="Commit staged changes" onClick={commit}>
+              <Button title="Commit staged changes" onClick={commit} color="inherit">
                 Commit
               </Button>
             </>

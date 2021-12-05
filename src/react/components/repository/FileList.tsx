@@ -4,7 +4,7 @@ import { VirtualList, VirtualListEvents, VirtualListMethods } from "../VirtualLi
 import { FileCommand } from "@/commands/types";
 import { useDispatch } from "@/store";
 import { executeFileCommand } from "@/commands";
-import { useTheme } from "@material-ui/core";
+import { useTheme } from "@mui/material";
 
 export interface FileListProps extends VirtualListEvents<FileEntry> {
   commit: Commit;

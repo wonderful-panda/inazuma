@@ -1,4 +1,4 @@
-const colors = require("@material-ui/core/colors");
+const colors = require("@mui/material/colors");
 const plugin = require("tailwindcss/plugin");
 
 module.exports = {

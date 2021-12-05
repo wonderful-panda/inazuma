@@ -1,6 +1,6 @@
-import { Theme, ThemeOptions } from "@material-ui/core/styles/createTheme";
+import { Theme, ThemeOptions } from "@mui/material/styles";
 
-declare module "@material-ui/core/styles/createTheme" {
+declare module "@mui/material/styles/createTheme" {
   export interface Theme {
     custom: {
       baseFontSize: number;

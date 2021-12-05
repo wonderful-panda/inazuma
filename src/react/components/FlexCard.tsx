@@ -1,4 +1,4 @@
-import { Card, CardActions, CardContent } from "@material-ui/core";
+import { Card, CardActions, CardContent } from "@mui/material";
 import { memo } from "react";
 
 export interface FlexCardProps {

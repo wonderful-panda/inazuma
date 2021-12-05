@@ -1,7 +1,7 @@
 import { forwardRef, useCallback } from "react";
 import { FileCommitListRow } from "./FileCommitListRow";
 import { VirtualList, VirtualListEvents, VirtualListMethods } from "../VirtualList";
-import { useTheme } from "@material-ui/core";
+import { useTheme } from "@mui/material";
 
 export interface FileCommitListProps extends VirtualListEvents<FileCommit> {
   commits: readonly FileCommit[];

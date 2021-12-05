@@ -1,6 +1,6 @@
 import { ActionItem } from "@/commands/types";
 import { Icon } from "@/components/Icon";
-import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { createContext, useCallback, useMemo, useState } from "react";
 
 export interface ContextMenuMethods {

@@ -1,4 +1,4 @@
-import { Divider, List, Typography } from "@material-ui/core";
+import { Divider, List, Typography } from "@mui/material";
 import { RepositoryListItem } from "./RepositoryListItem";
 import { useCallback, useMemo } from "react";
 import { MainWindow } from "@/components/MainWindow";

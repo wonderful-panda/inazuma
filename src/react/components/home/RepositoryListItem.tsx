@@ -5,7 +5,7 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText
-} from "@material-ui/core";
+} from "@mui/material";
 import { useCallback, useMemo } from "react";
 import { IconName } from "@/types/IconName";
 
@@ -54,7 +54,7 @@ export const RepositoryListItem: React.VFC<RepositoryListItemProps> = ({
             className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75"
             onClick={onSecondaryActionClick}
           >
-            <IconButton className="text-2xl" edge="end">
+            <IconButton className="text-2xl" edge="end" size="large">
               <Icon icon={secondaryAction.icon} />
             </IconButton>
           </ListItemSecondaryAction>

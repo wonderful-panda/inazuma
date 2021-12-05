@@ -1,4 +1,4 @@
-import { useTheme } from "@material-ui/core";
+import { useTheme } from "@mui/material";
 import { forwardRef, useCallback, useMemo } from "react";
 import { GraphFragment } from "@/grapher";
 import { CommitListRow } from "./CommitListRow";
