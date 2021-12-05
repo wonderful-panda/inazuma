@@ -21,6 +21,7 @@ import { SHOW_ALERT } from "@/store/misc";
 import { RELOAD_WORKING_TREE } from "@/store/thunk/reloadWorkingTree";
 import { FETCH_COMMIT_DETAIL } from "@/store/thunk/fetchCommitDetail";
 import { KeyDownTrapper } from "../KeyDownTrapper";
+import { PinnedIdContext, SetPinnedIdContext } from "./CommitListRow";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -44,6 +45,10 @@ const CommitLogInner: React.VFC<{
   // selected item id, updated lazily (after data-fetching completed)
   const [loadedId, setLoadedId] = useState("");
 
+  const [pinnedId, setPinnedId] = useState<string | undefined>(undefined);
+  const pinnedIdRef = useRef<string | undefined>(undefined);
+  const pinned = !!pinnedId;
+
   const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
   const listRef = useRef<VirtualListMethods>(null);
   useEffect(() => {
@@ -51,26 +56,37 @@ const CommitLogInner: React.VFC<{
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
 
+  useEffect(() => {
+    pinnedIdRef.current = pinnedId;
+  }, [pinnedId]);
+
   const actionCommands = useMemo<CommitCommand[]>(
     () => [
       browseSourceTree,
       beginCommit,
       {
         id: "CompareCommits",
-        label: "Compare with selected commit",
+        label: pinned ? "Compare with Compare-BASE commit" : "Compare with parent",
         icon: "octicon:git-compare-16",
-        hidden: (commit) => commit.id === "--",
+        hidden: (commit) => commit.id === "--" || (!pinned && commit.parentIds.length === 0),
         handler: (dispatch, commit) => {
-          const selectedCommit = log.commits[selectedIndexRef.current];
-          if (!selectedCommit || selectedCommit.id === "--" || selectedCommit.id === commit.id) {
-            dispatch(SHOW_ALERT({ type: "warning", message: "Base commit is not selected." }));
+          const baseCommitId = pinnedIdRef.current ? pinnedIdRef.current : commit.parentIds[0];
+          if (baseCommitId === commit.id) {
+            dispatch(
+              SHOW_ALERT({ type: "warning", message: "Select commit and BASE commit are same" })
+            );
             return;
           }
-          dispatch(SHOW_COMMIT_DIFF(selectedCommit, commit));
+          const baseCommit = log.commits.find((c) => c.id === baseCommitId);
+          if (!baseCommit) {
+            dispatch(SHOW_ALERT({ type: "warning", message: "BASE commit is not found" }));
+            return;
+          }
+          dispatch(SHOW_COMMIT_DIFF(baseCommit, commit));
         }
       }
     ],
-    [log.commits]
+    [log.commits, pinned]
   );
   const selectLog = useMemo(
     () =>
@@ -138,15 +154,19 @@ const CommitLogInner: React.VFC<{
         secondPanelMinSize="20%"
         first={
           <SelectedIndexProvider value={selectedIndex}>
-            <KeyDownTrapper className="m-2" onKeyDown={itemSelector.handleKeyDown}>
-              <CommitList
-                ref={listRef}
-                {...log}
-                actionCommands={actionCommands}
-                onRowClick={itemSelector.handleRowClick}
-                onRowContextMenu={handleContextMenu}
-              />
-            </KeyDownTrapper>
+            <PinnedIdContext.Provider value={pinnedId}>
+              <SetPinnedIdContext.Provider value={setPinnedId}>
+                <KeyDownTrapper className="m-2" onKeyDown={itemSelector.handleKeyDown}>
+                  <CommitList
+                    ref={listRef}
+                    {...log}
+                    actionCommands={actionCommands}
+                    onRowClick={itemSelector.handleRowClick}
+                    onRowContextMenu={handleContextMenu}
+                  />
+                </KeyDownTrapper>
+              </SetPinnedIdContext.Provider>
+            </PinnedIdContext.Provider>
           </SelectedIndexProvider>
         }
         second={detail}

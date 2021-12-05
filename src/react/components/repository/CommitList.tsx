@@ -1,5 +1,5 @@
 import { useTheme } from "@mui/material";
-import { forwardRef, useCallback, useMemo } from "react";
+import { forwardRef, memo, useCallback, useMemo } from "react";
 import { GraphFragment } from "@/grapher";
 import { CommitListRow } from "./CommitListRow";
 import { VirtualList, VirtualListEvents, VirtualListMethods } from "../VirtualList";
@@ -53,4 +53,4 @@ const CommitList_: React.ForwardRefRenderFunction<VirtualListMethods, CommitList
   );
 };
 
-export const CommitList = forwardRef(CommitList_);
+export const CommitList = memo(forwardRef(CommitList_));

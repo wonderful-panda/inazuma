@@ -20,6 +20,7 @@ const icons = {
     "history",
     "home",
     "information-outline",
+    "map-marker",
     "menu",
     "minus",
     "plus",

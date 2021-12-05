@@ -1,11 +1,17 @@
 import { IconActionItem } from "@/commands/types";
 import { IconButton } from "@mui/material";
+import classNames from "classnames";
 import { memo, useMemo } from "react";
 import { Icon } from "../Icon";
 
+export interface RowActionItem extends IconActionItem {
+  alwaysVisible?: boolean;
+  className?: string;
+}
+
 const RowActionButtons_: React.VFC<{
   size: number;
-  actions?: readonly IconActionItem[];
+  actions?: readonly RowActionItem[];
 }> = ({ size, actions }) => {
   const buttons = useMemo(
     () =>
@@ -19,7 +25,11 @@ const RowActionButtons_: React.VFC<{
         return (
           <IconButton
             key={a.id}
-            className="p-1 my-auto opacity-75 hover:opacity-100 hover:bg-highlight"
+            className={classNames(
+              "p-1 my-auto hover:bg-highlight",
+              !a.alwaysVisible && "hidden group-hover:flex opacity-75 hover:opacity-100",
+              a.className
+            )}
             style={{ maxWidth: size, maxHeight: size }}
             disabled={a.disabled}
             title={a.label}
@@ -35,11 +45,7 @@ const RowActionButtons_: React.VFC<{
   if (!actions) {
     return <></>;
   }
-  return (
-    <div className="ml-1 mr-2 flex-row-nowrap items-center invisible max-w-0 group-hover:visible group-hover:max-w-none">
-      {buttons}
-    </div>
-  );
+  return <div className="ml-1 mr-2 flex-row-nowrap items-center">{buttons}</div>;
 };
 
 export const RowActionButtons = memo(RowActionButtons_);

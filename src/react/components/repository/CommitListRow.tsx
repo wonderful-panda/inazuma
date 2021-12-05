@@ -1,16 +1,22 @@
 import classNames from "classnames";
 import { GraphFragment } from "@/grapher";
-import { memo, useMemo } from "react";
+import { createContext, memo, useContext, useMemo } from "react";
 import { GraphCell } from "./GraphCell";
 import { RefBadge } from "./RefBadge";
 import { formatDateTimeLong } from "@/date";
 import { GitHash } from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { Icon } from "@iconify/react";
-import { CommitCommand, IconActionItem } from "@/commands/types";
-import { RowActionButtons } from "./RowActionButtons";
+import { CommitCommand } from "@/commands/types";
+import { RowActionButtons, RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
 import { useDispatch } from "@/store";
+
+export const PinnedIdContext = createContext<string | undefined>(undefined);
+
+export const SetPinnedIdContext = createContext<
+  React.Dispatch<React.SetStateAction<string | undefined>>
+>(() => () => {});
 
 export interface CommitListRowProps {
   height: number;
@@ -23,6 +29,25 @@ export interface CommitListRowProps {
   actionCommands?: readonly CommitCommand[];
 }
 
+const setCompareBaseAction = (
+  commit: Commit,
+  pinned: boolean,
+  setPinnedId: React.Dispatch<React.SetStateAction<string | undefined>>
+): RowActionItem => ({
+  id: "SetCompareBase",
+  icon: "mdi:map-marker",
+  label: "Mark this commit as Compare-BASE",
+  alwaysVisible: pinned,
+  className: pinned ? "text-secondary" : undefined,
+  handler: () => {
+    if (pinned) {
+      setPinnedId(undefined);
+    } else {
+      setPinnedId(commit.id);
+    }
+  }
+});
+
 const CommitListRow_: React.VFC<CommitListRowProps> = ({
   height,
   commit,
@@ -34,21 +59,27 @@ const CommitListRow_: React.VFC<CommitListRowProps> = ({
   actionCommands
 }) => {
   const selectedIndex = useSelectedIndex();
+  const pinnedId = useContext(PinnedIdContext);
+  const setPinnedId = useContext(SetPinnedIdContext);
+  const selected = selectedIndex === index;
+  const pinned = pinnedId === commit.id;
   const workingTree = commit.id === "--";
   const dispatch = useDispatch();
-  const actions = useMemo(
-    () =>
-      commitCommandsToActions(dispatch, actionCommands, commit).filter(
-        (a) => a.icon
-      ) as IconActionItem[],
-    [dispatch, actionCommands, commit]
-  );
+  const actions = useMemo(() => {
+    const ret = commitCommandsToActions(dispatch, actionCommands, commit).filter(
+      (a) => a.icon
+    ) as RowActionItem[];
+    if (!workingTree) {
+      ret.push(setCompareBaseAction(commit, pinned, setPinnedId));
+    }
+    return ret;
+  }, [dispatch, actionCommands, commit, pinned, setPinnedId, workingTree]);
   return (
     <div
       className={classNames(
         "flex box-border cursor-pointer overflow-hidden group",
         "pl-4 border-b border-solid border-paper",
-        index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
+        selected ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
     >
       <GraphCell graph={graph} height={height} head={head} maskIdPrefix={parentId} />
