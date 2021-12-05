@@ -14,9 +14,7 @@ import { useDispatch } from "@/store";
 
 export const PinnedIdContext = createContext<string | undefined>(undefined);
 
-export const SetPinnedIdContext = createContext<
-  React.Dispatch<React.SetStateAction<string | undefined>>
->(() => () => {});
+export const SetPinnedIdContext = createContext<SetState<string | undefined>>(() => () => {});
 
 export interface CommitListRowProps {
   height: number;
@@ -32,7 +30,7 @@ export interface CommitListRowProps {
 const setCompareBaseAction = (
   commit: Commit,
   pinned: boolean,
-  setPinnedId: React.Dispatch<React.SetStateAction<string | undefined>>
+  setPinnedId: SetState<string | undefined>
 ): RowActionItem => ({
   id: "SetCompareBase",
   icon: "mdi:map-marker",

@@ -10,3 +10,5 @@ type Orientation = "landscape" | "portrait";
 type Direction = "horiz" | "vert";
 
 type AlertType = "info" | "success" | "warning" | "error";
+
+type SetState<T> = React.Dispatch<React.SetStateAction<T>>;

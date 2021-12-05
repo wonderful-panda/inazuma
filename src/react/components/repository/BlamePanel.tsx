@@ -80,8 +80,8 @@ export const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path
     index: -1,
     commitId: undefined as string | undefined
   });
-  const setSelectedIndex = useCallback(
-    (value: React.SetStateAction<number>) => {
+  const setSelectedIndex = useCallback<SetState<number>>(
+    (value) => {
       setSelectedItem((cur) => {
         const index = typeof value === "function" ? value(cur.index) : value;
         const commitId = blame.commits[index]?.id;
@@ -91,8 +91,8 @@ export const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path
     [blame]
   );
 
-  const setSelectedCommitId = useCallback(
-    (value: React.SetStateAction<string | undefined>) => {
+  const setSelectedCommitId = useCallback<SetState<string | undefined>>(
+    (value) => {
       setSelectedItem((cur) => {
         const commitId = typeof value === "function" ? value(cur.commitId) : value;
         const index = blame.commits.findIndex((c) => c.id === commitId);

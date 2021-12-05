@@ -3,7 +3,7 @@ import type React from "react";
 import { useMemo } from "react";
 
 export interface ListItemSelector {
-  set: React.Dispatch<React.SetStateAction<number>>;
+  set: SetState<number>;
   moveNext: () => void;
   movePrevious: () => void;
   moveFirst: () => void;
@@ -14,7 +14,7 @@ export interface ListItemSelector {
 
 export const useListItemSelector = (
   itemsCount: number,
-  setValue: React.Dispatch<React.SetStateAction<number>>,
+  setValue: SetState<number>,
   extraKeyHandlers?: Record<string, () => void>
 ): ListItemSelector => {
   return useMemo(() => {

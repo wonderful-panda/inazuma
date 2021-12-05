@@ -6,8 +6,8 @@ export const useTreeItemSelector = <T>(
   treeModelState: TreeModelState<T>,
   treeModelDispatch: TreeModelDispatch<T>
 ): ListItemSelector => {
-  const setSelectedIndex = useCallback(
-    (value: React.SetStateAction<number>) => {
+  const setSelectedIndex = useCallback<SetState<number>>(
+    (value) => {
       treeModelDispatch({ type: "setSelectedIndex", payload: value });
     },
     [treeModelDispatch]
