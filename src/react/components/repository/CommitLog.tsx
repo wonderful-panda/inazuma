@@ -21,8 +21,9 @@ import { SHOW_WARNING } from "@/store/misc";
 import { RELOAD_WORKING_TREE } from "@/store/thunk/reloadWorkingTree";
 import { FETCH_COMMIT_DETAIL } from "@/store/thunk/fetchCommitDetail";
 import { KeyDownTrapper } from "../KeyDownTrapper";
-import { PinnedIdContext, SetPinnedIdContext } from "./CommitListRow";
+import { PinnedCommitContext, SetPinnedCommitContext } from "./CommitListRow";
 import { useStateWithRef } from "@/hooks/useStateWithRef";
+import { shortHash } from "@/util";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -31,6 +32,37 @@ const beginCommit: CommitCommand = {
   hidden: (commit) => commit.id !== "--",
   handler: (dispatch) => dispatch(BEGIN_COMMIT())
 };
+
+const compareWithParent = (commits: readonly Commit[]): CommitCommand => ({
+  id: "CompareCommitWithParent",
+  label: "Compare with parent",
+  icon: "octicon:git-compare-16",
+  hidden: (commit) => commit.id === "--" || commit.parentIds.length === 0,
+  handler: (dispatch, commit) => {
+    const baseCommit = commits.find((c) => c.id === commit.parentIds[0]);
+    if (!baseCommit) {
+      dispatch(SHOW_WARNING("Parent commit is not found"));
+      return;
+    }
+    dispatch(SHOW_COMMIT_DIFF(baseCommit, commit));
+  }
+});
+
+const compareWithPinnedCommit = (pinnedCommit: Commit | undefined): CommitCommand => ({
+  id: "CompareCommitWithPinnedCommit",
+  label: `Compare with Compare-BASE commit (${
+    pinnedCommit ? shortHash(pinnedCommit.id) : "NOT SELECTED"
+  })`,
+  icon: "mdi:map-marker-distance",
+  hidden: (commit) => commit.id === "--",
+  disabled: (commit) => !pinnedCommit || pinnedCommit.id === commit.id,
+  handler: (dispatch, commit) => {
+    if (!pinnedCommit) {
+      return;
+    }
+    dispatch(SHOW_COMMIT_DIFF(pinnedCommit, commit));
+  }
+});
 
 const CommitLogInner: React.VFC<{
   active: boolean;
@@ -45,8 +77,7 @@ const CommitLogInner: React.VFC<{
   // selected item id, updated lazily (after data-fetching completed)
   const [loadedId, setLoadedId] = useState("");
 
-  const [pinnedId, setPinnedId, pinnedIdRef] = useStateWithRef<string | undefined>(undefined);
-  const pinned = !!pinnedId;
+  const [pinnedCommit, setPinnedCommit] = useState<Commit | undefined>(undefined);
 
   const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
   const listRef = useRef<VirtualListMethods>(null);
@@ -58,27 +89,10 @@ const CommitLogInner: React.VFC<{
     () => [
       browseSourceTree,
       beginCommit,
-      {
-        id: "CompareCommits",
-        label: pinned ? "Compare with Compare-BASE commit" : "Compare with parent",
-        icon: "octicon:git-compare-16",
-        hidden: (commit) => commit.id === "--" || (!pinned && commit.parentIds.length === 0),
-        handler: (dispatch, commit) => {
-          const baseCommitId = pinnedIdRef.current ? pinnedIdRef.current : commit.parentIds[0];
-          if (baseCommitId === commit.id) {
-            dispatch(SHOW_WARNING("Selected commit and BASE commit are same"));
-            return;
-          }
-          const baseCommit = log.commits.find((c) => c.id === baseCommitId);
-          if (!baseCommit) {
-            dispatch(SHOW_WARNING("BASE commit is not found"));
-            return;
-          }
-          dispatch(SHOW_COMMIT_DIFF(baseCommit, commit));
-        }
-      }
+      compareWithParent(log.commits),
+      compareWithPinnedCommit(pinnedCommit)
     ],
-    [log.commits, pinned, pinnedIdRef]
+    [log.commits, pinnedCommit]
   );
   const selectLog = useMemo(
     () =>
@@ -142,8 +156,8 @@ const CommitLogInner: React.VFC<{
         secondPanelMinSize="20%"
         first={
           <SelectedIndexProvider value={selectedIndex}>
-            <PinnedIdContext.Provider value={pinnedId}>
-              <SetPinnedIdContext.Provider value={setPinnedId}>
+            <PinnedCommitContext.Provider value={pinnedCommit}>
+              <SetPinnedCommitContext.Provider value={setPinnedCommit}>
                 <KeyDownTrapper className="m-2" onKeyDown={itemSelector.handleKeyDown}>
                   <CommitList
                     ref={listRef}
@@ -153,8 +167,8 @@ const CommitLogInner: React.VFC<{
                     onRowContextMenu={handleContextMenu}
                   />
                 </KeyDownTrapper>
-              </SetPinnedIdContext.Provider>
-            </PinnedIdContext.Provider>
+              </SetPinnedCommitContext.Provider>
+            </PinnedCommitContext.Provider>
           </SelectedIndexProvider>
         }
         second={detail}

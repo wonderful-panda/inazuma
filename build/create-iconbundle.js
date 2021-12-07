@@ -21,6 +21,7 @@ const icons = {
     "home",
     "information-outline",
     "map-marker",
+    "map-marker-distance",
     "menu",
     "minus",
     "plus",

@@ -12,9 +12,9 @@ import { RowActionButtons, RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
 import { useDispatch } from "@/store";
 
-export const PinnedIdContext = createContext<string | undefined>(undefined);
+export const PinnedCommitContext = createContext<Commit | undefined>(undefined);
 
-export const SetPinnedIdContext = createContext<SetState<string | undefined>>(() => () => {});
+export const SetPinnedCommitContext = createContext<SetState<Commit | undefined>>(() => () => {});
 
 export interface CommitListRowProps {
   height: number;
@@ -30,7 +30,7 @@ export interface CommitListRowProps {
 const setCompareBaseAction = (
   commit: Commit,
   pinned: boolean,
-  setPinnedId: SetState<string | undefined>
+  setPinnedCommit: SetState<Commit | undefined>
 ): RowActionItem => ({
   id: "SetCompareBase",
   icon: "mdi:map-marker",
@@ -39,9 +39,9 @@ const setCompareBaseAction = (
   className: pinned ? "text-secondary" : undefined,
   handler: () => {
     if (pinned) {
-      setPinnedId(undefined);
+      setPinnedCommit(undefined);
     } else {
-      setPinnedId(commit.id);
+      setPinnedCommit(commit);
     }
   }
 });
@@ -57,10 +57,10 @@ const CommitListRow_: React.VFC<CommitListRowProps> = ({
   actionCommands
 }) => {
   const selectedIndex = useSelectedIndex();
-  const pinnedId = useContext(PinnedIdContext);
-  const setPinnedId = useContext(SetPinnedIdContext);
+  const pinnedCommit = useContext(PinnedCommitContext);
+  const setPinnedCommit = useContext(SetPinnedCommitContext);
   const selected = selectedIndex === index;
-  const pinned = pinnedId === commit.id;
+  const pinned = pinnedCommit?.id === commit.id;
   const workingTree = commit.id === "--";
   const dispatch = useDispatch();
   const actions = useMemo(() => {
@@ -68,10 +68,10 @@ const CommitListRow_: React.VFC<CommitListRowProps> = ({
       (a) => a.icon
     ) as RowActionItem[];
     if (!workingTree) {
-      ret.push(setCompareBaseAction(commit, pinned, setPinnedId));
+      ret.push(setCompareBaseAction(commit, pinned, setPinnedCommit));
     }
     return ret;
-  }, [dispatch, actionCommands, commit, pinned, setPinnedId, workingTree]);
+  }, [dispatch, actionCommands, commit, pinned, setPinnedCommit, workingTree]);
   return (
     <div
       className={classNames(
