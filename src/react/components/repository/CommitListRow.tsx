@@ -84,7 +84,9 @@ const CommitListRow_: React.VFC<CommitListRowProps> = ({
       <div className="relative my-auto flex-col-nowrap flex-1 ml-6 overflow-hidden">
         <div className="flex-row-nowrap items-center text-lg leading-6">
           {refs && refs.map((r) => <RefBadge key={`${r.type}:${r.fullname}`} r={r} />)}
-          <span className="ellipsis">{commit.summary}</span>
+          <span className={classNames("ellipsis", pinned && "text-secondary")}>
+            {commit.summary}
+          </span>
         </div>
         <div className="flex-row-nowrap leading-5 pl-1 text-greytext whitespace-nowrap">
           <GitHash hash={commit.id} />
