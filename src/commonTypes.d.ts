@@ -18,7 +18,6 @@ declare global {
   type RemoteRef = backend.RemoteRef;
   type Ref = backend.Ref;
   type CommitOptions = backend.CommitOptions;
-  type Udiff = backend.Udiff;
 
   type Resolve<T> = (arg: T) => void;
   type Dict<T> = { [key: string]: T };
@@ -88,6 +87,15 @@ declare global {
       encoding: string;
     };
   }
+
+  type Udiff =
+    | {
+        type: "text";
+        content: string;
+      }
+    | {
+        type: "binary" | "nodiff";
+      };
 
   interface BrowserEvent {
     configChanged: { config: Config };

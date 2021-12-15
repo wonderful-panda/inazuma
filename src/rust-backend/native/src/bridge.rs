@@ -346,29 +346,6 @@ impl WriteToJsObject for LstreeEntry {
     }
 }
 
-impl WriteToJsObject for Udiff {
-    fn write<'a, C: Context<'a>>(&self, cx: &mut C, obj: &JsObject) -> NeonResult<()> {
-        match self {
-            Udiff::Text { content } => {
-                propset!(cx, obj, {
-                    type: "text",
-                    content: content
-                });
-            }
-            Udiff::Binary => {
-                propset!(cx, obj, {
-                    type: "binary"
-                });
-            }
-            Udiff::NoDiff => {
-                propset!(cx, obj, {
-                    type: "nodiff"
-                });
-            }
-        }
-        Ok(())
-    }
-}
 pub trait ToJsValueDummy<'a> {
     type ValueType: Managed + Value;
     fn to_js_value<C: Context<'a>>(&self, _: &mut C) -> JsResult<'a, Self::ValueType>;

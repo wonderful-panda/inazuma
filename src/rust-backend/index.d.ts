@@ -79,15 +79,6 @@ declare type CommitOptions =
       message?: string;
     };
 
-declare type Udiff =
-  | {
-      type: "text";
-      content: string;
-    }
-  | {
-      type: "binary" | "nodiff";
-    };
-
 export declare function logAsync(repoPath: string, maxCount: number): Promise<Commit[]>;
 
 export declare function filelogAsync(
@@ -117,7 +108,7 @@ export declare function getWorkingTreeUdiffAsync(
   repoPath: string,
   relpath: string,
   cached: boolean
-): Promise<Udiff>;
+): Promise<Buffer>;
 
 export declare function getUntrackedFilesAsync(repoPath: string): Promise<string[]>;
 

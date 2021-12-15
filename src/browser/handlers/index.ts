@@ -1,4 +1,6 @@
 import cp from "child_process";
+import * as chardet from "chardet";
+import * as iconv from "iconv-lite";
 import {
   addToIndexAsync,
   commitAsync,
@@ -150,7 +152,21 @@ export const getWorkingTreeUdiff: SinglePayloadHandler<
     cached: boolean;
   },
   Udiff
-> = (_, { repoPath, relPath, cached }) => getWorkingTreeUdiffAsync(repoPath, relPath, cached);
+> = async (_, { repoPath, relPath, cached }) => {
+  const binaryContent = await getWorkingTreeUdiffAsync(repoPath, relPath, cached);
+  const encoding = chardet.detect(binaryContent) || "utf8";
+  const content = iconv.decode(binaryContent, encoding);
+  if (content.length === 0) {
+    return { type: "nodiff" };
+  } else {
+    const index = content.search(/^@@/m);
+    if (index < 0) {
+      return { type: "binary" };
+    } else {
+      return { type: "text", content: content.slice(index) };
+    }
+  }
+};
 
 export const copyTextToClipboard: SinglePayloadHandler<string, void> = (_, text) =>
   Promise.resolve(clipboard.writeText(text));
