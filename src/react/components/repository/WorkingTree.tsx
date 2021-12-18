@@ -55,13 +55,13 @@ const GroupHeader: React.VFC<{
             id: "StageAll",
             label: "Stage all files",
             icon: "mdi:plus",
-            handler: () => dispatch(STAGE("**/*"))
+            handler: () => dispatch(STAGE("*"))
           }
         : {
             id: "UnstageAll",
             label: "Unstage all files",
             icon: "mdi:minus",
-            handler: () => dispatch(UNSTAGE("**/*"))
+            handler: () => dispatch(UNSTAGE("*"))
           };
     return [action];
   }, [type, dispatch]);
