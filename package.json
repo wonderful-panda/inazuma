@@ -9,7 +9,7 @@
     "format": "prettier --write \"src/{react,browser}/**/*.{ts,tsx,js}\"",
     "lint": "eslint src/{react,browser}/**/*.{ts,tsx}",
     "typecheck:react": "tsc -p src/react/tsconfig.json --noEmit",
-    "prebuild": "build/create-iconbundle.js",
+    "prebuild": "node build/create-iconbundle.js",
     "build:neon": "electron-build-env neon build inazuma-rust-backend --release",
     "build:browser": "tsc -p src/browser/tsconfig.json",
     "build:tailwind": "tailwindcss -i ./src/react/index.css -o ./src/react/generated/tailwind.css",
