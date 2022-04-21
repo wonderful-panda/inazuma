@@ -5,6 +5,7 @@ pub mod diff;
 pub mod file;
 pub mod find_repository_root;
 pub mod index;
+pub mod js_object_extension;
 pub mod log;
 pub mod lstree;
 pub mod refs;
