@@ -1,13 +1,13 @@
 import { TreeItem } from "@/tree";
 import classNames from "classnames";
-import React, { memo, useCallback, useEffect, useRef } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { VirtualList, VirtualListEvents, VirtualListMethods } from "./VirtualList";
 import { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
 
 export interface VirtualTreeProps<T> extends VirtualListEvents<TreeItemVM<T>> {
   treeModelState: TreeModelState<T>;
   treeModelDispatch: TreeModelDispatch<T>;
-  itemSize: number;
+  itemSize: number | ((data: T) => number);
   getItemKey: (data: T) => string;
   renderRow: (item: TreeItem<T>, index: number, expanded: boolean) => React.ReactNode;
   onKeyDown?: (e: React.KeyboardEvent) => void;
@@ -85,10 +85,20 @@ export const VirtualTree = <T extends unknown>({
     (itemVm: TreeItemVM<T>) => getItemKey(itemVm.item.data),
     [getItemKey]
   );
+  const itemSize_ = useMemo(() => {
+    if (typeof itemSize === "number") {
+      return itemSize;
+    } else {
+      return (index: number) => {
+        const vm = treeModelState.visibleItems[index];
+        return itemSize(vm.item.data);
+      };
+    }
+  }, [itemSize, treeModelState.visibleItems]);
   const children = useCallback(
     ({ index, item: { item, expanded, level } }: { index: number; item: TreeItemVM<T> }) => (
       <VirtualTreeRow
-        height={itemSize}
+        height={typeof itemSize === "number" ? itemSize : itemSize(item.data)}
         item={item}
         index={index}
         level={level}
@@ -103,7 +113,7 @@ export const VirtualTree = <T extends unknown>({
     <VirtualList<TreeItemVM<T>>
       ref={listRef}
       items={treeModelState.visibleItems}
-      itemSize={itemSize}
+      itemSize={itemSize_}
       getItemKey={getItemKey_}
       {...rest}
     >

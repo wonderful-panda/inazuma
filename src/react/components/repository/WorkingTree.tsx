@@ -75,7 +75,7 @@ const GroupHeader: React.VFC<{
       style={{ height }}
     >
       <span className="flex-1">{type}</span>
-      <RowActionButtons actions={headerActions} size={height * 0.6} />
+      <RowActionButtons actions={headerActions} size={height * 0.8} />
     </div>
   );
 };
@@ -136,6 +136,17 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
   const repoPath = useSelector((state) => state.repository.path);
   const theme = useTheme();
   const rowHeight = theme.custom.baseFontSize * 3;
+  const headerRowHeight = rowHeight * 0.75;
+  const itemSize = useCallback(
+    (data: RowType) => {
+      if (typeof data === "string") {
+        return headerRowHeight;
+      } else {
+        return rowHeight;
+      }
+    },
+    [rowHeight, headerRowHeight]
+  );
   const treeRef = useRef<VirtualListMethods>(null);
   const [udiff, setUdiff] = useState<Udiff | undefined>(undefined);
   const selectedRowDataRef = useRef<RowType | undefined>(undefined);
@@ -232,7 +243,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
   const renderRow = useCallback<VirtualTreeProps<RowType>["renderRow"]>(
     (item, index) => {
       if (typeof item.data === "string") {
-        return <GroupHeader type={item.data} index={index} height={rowHeight} />;
+        return <GroupHeader type={item.data} index={index} height={headerRowHeight} />;
       } else {
         if (!stat) {
           return <></>;
@@ -248,7 +259,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
         );
       }
     },
-    [stat, rowHeight]
+    [stat, rowHeight, headerRowHeight]
   );
 
   return (
@@ -266,7 +277,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
                 <VirtualTree<RowType>
                   treeModelState={treeModelState}
                   treeModelDispatch={treeModelDispatch}
-                  itemSize={rowHeight}
+                  itemSize={itemSize}
                   getItemKey={getItemKey}
                   renderRow={renderRow}
                   onRowClick={handleRowClick}
