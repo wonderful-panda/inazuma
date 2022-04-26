@@ -3,6 +3,7 @@ extern crate log;
 extern crate env_logger;
 
 pub mod commands;
+pub mod git;
 pub mod state;
 pub mod types;
 
@@ -51,8 +52,15 @@ pub fn run() {
         .manage(EnvStateMutex::new())
         .manage(ConfigStateMutex::new())
         .invoke_handler(generate_handler![
+            commands::show_folder_selector,
             commands::load_persist_data,
-            commands::save_config
+            commands::store_state,
+            commands::store_recent_opened,
+            commands::save_config,
+            commands::fetch_history,
+            commands::get_commit_detail,
+            commands::get_workingtree_stat,
+            commands::yank_text
         ])
         .setup(|app| setup(app))
         .build(tauri::generate_context!())
