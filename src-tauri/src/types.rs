@@ -212,13 +212,58 @@ pub struct Refs {
     pub refs: Vec<Ref>,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(
+    rename_all = "camelCase",
+    deny_unknown_fields,
+    tag = "type",
+    content = "path"
+)]
+pub enum LstreeData {
+    Blob(String),
+    Tree(String),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct LstreeEntry {
+    pub data: LstreeData,
+    pub children: Option<Vec<LstreeEntry>>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct BlameEntry {
+    pub id: String,
+    pub line_no: Vec<u32>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct Blame {
+    pub blame_entries: Vec<BlameEntry>,
+    pub commits: Vec<FileLogEntry>,
+    pub content_base64: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields, tag = "type")]
+pub enum CommitOptions {
+    Normal { message: String },
+    Amend { message: Option<String> },
+}
+
 #[derive(JsonSchema)]
 pub struct Root(
+    Blame,
     Config,
     Environment,
     Commit,
     CommitDetail,
+    CommitOptions,
     WorkingTreeStat,
     Refs,
     FileLogEntry,
+    LstreeEntry,
+    BlameEntry,
 );

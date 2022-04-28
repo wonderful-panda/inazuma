@@ -52,15 +52,23 @@ pub fn run() {
         .manage(EnvStateMutex::new())
         .manage(ConfigStateMutex::new())
         .invoke_handler(generate_handler![
-            commands::show_folder_selector,
-            commands::load_persist_data,
-            commands::store_state,
-            commands::store_recent_opened,
-            commands::save_config,
             commands::fetch_history,
+            commands::commit,
+            commands::get_blame,
+            commands::get_changes_between,
             commands::get_commit_detail,
+            commands::get_content_base64,
+            commands::get_tree,
             commands::get_workingtree_stat,
-            commands::yank_text
+            commands::get_workingtree_udiff_base64,
+            commands::load_persist_data,
+            commands::save_config,
+            commands::show_folder_selector,
+            commands::stage,
+            commands::store_recent_opened,
+            commands::store_state,
+            commands::unstage,
+            commands::yank_text,
         ])
         .setup(|app| setup(app))
         .build(tauri::generate_context!())

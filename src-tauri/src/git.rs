@@ -3,8 +3,14 @@ use std::{path::Path, process::Output};
 use thiserror::Error;
 use tokio::process::Command;
 
+pub mod blame;
+pub mod commit;
 pub mod commit_detail;
+pub mod diff;
+pub mod file;
+pub mod index;
 pub mod log;
+pub mod lstree;
 pub mod merge_heads;
 pub mod refs;
 pub mod rev_parse;
@@ -71,5 +77,6 @@ pub async fn exec(
     if cfg!(target_os = "windows") {
         cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
     }
+    debug!("{}, git {}, {:?}", repo_path.display(), command, args);
     return cmd.output().await;
 }
