@@ -7,6 +7,7 @@ pub mod blame;
 pub mod commit;
 pub mod commit_detail;
 pub mod diff;
+pub mod external_diff;
 pub mod file;
 pub mod index;
 pub mod log;

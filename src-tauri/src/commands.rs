@@ -8,7 +8,7 @@ use tauri::{AppHandle, ClipboardManager, Runtime, State};
 use crate::state::pty::{PtyId, PtyStateMutex};
 use crate::{
     git,
-    state::{config::ConfigStateMutex, env::EnvStateMutex},
+    state::{config::ConfigStateMutex, env::EnvStateMutex, repositories::RepositoriesStateMutex},
     types::*,
 };
 
@@ -169,6 +169,32 @@ pub async fn commit(repo_path: &Path, options: CommitOptions) -> Result<(), Stri
             Ok(())
         }
     }
+}
+
+#[tauri::command]
+pub async fn show_external_diff(
+    repo_path: &Path,
+    left: FileSpec,
+    right: FileSpec,
+    config_state: State<'_, ConfigStateMutex>,
+    repo_state: State<'_, RepositoriesStateMutex>,
+) -> Result<(), String> {
+    let command_line = {
+        let config = config_state.0.lock().unwrap();
+        if let Some(ref command_line) = config.config.external_diff_tool {
+            command_line.clone()
+        } else {
+            return Err("External diff tool is not configured".into());
+        }
+    };
+    let repo = {
+        let mut repositories = repo_state.0.lock().unwrap();
+        repositories.get_or_insert(repo_path.to_path_buf()).clone()
+    };
+    git::external_diff::show_external_diff(&repo, &command_line, &left, &right)
+        .await
+        .map_err(|e| format!("{}", e))?;
+    Ok(())
 }
 
 #[tauri::command]

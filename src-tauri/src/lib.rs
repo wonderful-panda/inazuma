@@ -11,6 +11,7 @@ pub mod types;
 use state::config::{ConfigState, ConfigStateMutex};
 use state::env::{EnvState, EnvStateMutex};
 use state::pty::PtyStateMutex;
+use state::repositories::RepositoriesStateMutex;
 use std::{error::Error, fs::create_dir};
 use tauri::{generate_handler, App, Manager, RunEvent, Runtime, WindowEvent};
 
@@ -54,6 +55,7 @@ pub fn run() {
         .manage(EnvStateMutex::new())
         .manage(ConfigStateMutex::new())
         .manage(PtyStateMutex::new())
+        .manage(RepositoriesStateMutex::new())
         .invoke_handler(generate_handler![
             commands::fetch_history,
             commands::commit,
@@ -71,6 +73,7 @@ pub fn run() {
             commands::store_recent_opened,
             commands::store_state,
             commands::unstage,
+            commands::show_external_diff,
             commands::yank_text,
             commands::open_pty,
             commands::write_pty,
@@ -97,11 +100,14 @@ pub fn run() {
             }
         }
         RunEvent::Exit { .. } => {
-            let state = app_handle.state::<EnvStateMutex>();
-            let env_state = state.0.lock().unwrap();
+            let env_state = app_handle.state::<EnvStateMutex>();
+            let env_state = env_state.0.lock().unwrap();
             if let Err(e) = env_state.save() {
                 warn!("Failed to write env file, {}", e);
             }
+            let repositories_state = app_handle.state::<RepositoriesStateMutex>();
+            let mut repositories_state = repositories_state.0.lock().unwrap();
+            repositories_state.dispose();
         }
         _ => {}
     })

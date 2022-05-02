@@ -154,6 +154,13 @@ pub enum FileDelta {
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct FileSpec {
+    pub path: String,
+    pub revspec: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CommitDetail {
     #[serde(flatten)]
     pub commit: Commit,
@@ -263,6 +270,7 @@ pub struct Root(
     CommitOptions,
     WorkingTreeStat,
     Refs,
+    FileSpec,
     FileLogEntry,
     LstreeEntry,
     BlameEntry,

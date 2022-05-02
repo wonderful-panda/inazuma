@@ -23,7 +23,7 @@ pub async fn save_to(
     repo_path: &Path,
     rel_path: &str,
     revspec: &str,
-    dest_path: &str,
+    dest_path: &Path,
 ) -> Result<(), GitError> {
     let content = get_content(repo_path, rel_path, revspec).await?;
     write(dest_path, content).await?;
