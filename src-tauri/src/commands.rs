@@ -1,9 +1,11 @@
 use std::collections::HashMap;
 use std::path::Path;
 
+use portable_pty::ExitStatus;
 use tauri::{api::dialog::blocking::FileDialogBuilder, Window};
 use tauri::{AppHandle, ClipboardManager, Runtime, State};
 
+use crate::state::pty::{PtyId, PtyStateMutex};
 use crate::{
     git,
     state::{config::ConfigStateMutex, env::EnvStateMutex},
@@ -174,5 +176,59 @@ pub fn yank_text<T: Runtime>(text: &str, app_handle: AppHandle<T>) -> Result<(),
     app_handle
         .clipboard_manager()
         .write_text(text)
+        .map_err(|e| format!("{}", e))
+}
+
+#[tauri::command]
+pub fn open_pty<T: Runtime>(
+    command_line: &str,
+    cwd: &Path,
+    rows: u16,
+    cols: u16,
+    pty_state: State<'_, PtyStateMutex>,
+    window: Window<T>,
+) -> Result<usize, String> {
+    let win1 = window.clone();
+    let on_data = move |id: PtyId, data: &[u8]| {
+        let data = String::from_utf8(data.to_vec()).unwrap();
+        if let Err(e) = win1.emit(format!("pty-data:{}", id.0).as_str(), data) {
+            warn!("Failed to emit pty-data event, {}", e);
+        }
+    };
+    let win2 = window.clone();
+    let on_exit = move |id: PtyId, exit_code: ExitStatus| {
+        if let Err(e) = win2.emit(format!("pty-exit:{}", id.0).as_str(), exit_code.success()) {
+            warn!("Failed to emit pty-exit event, {}", e);
+        }
+    };
+    let mut pty = pty_state.0.lock().unwrap();
+    let id = pty
+        .open(command_line, cwd, rows, cols, on_data, on_exit)
+        .map_err(|e| format!("{}", e))?;
+    return Ok(id.0);
+}
+
+#[tauri::command]
+pub fn write_pty(id: usize, data: &str, pty_state: State<'_, PtyStateMutex>) -> Result<(), String> {
+    let pty = pty_state.0.lock().unwrap();
+    pty.write(PtyId(id), data.as_bytes())
+        .map_err(|e| format!("{}", e))
+}
+
+#[tauri::command]
+pub fn close_pty(id: usize, pty_state: State<'_, PtyStateMutex>) -> Result<(), String> {
+    let pty = pty_state.0.lock().unwrap();
+    pty.kill(PtyId(id)).map_err(|e| format!("{}", e))
+}
+
+#[tauri::command]
+pub fn resize_pty(
+    id: usize,
+    rows: u16,
+    cols: u16,
+    pty_state: State<'_, PtyStateMutex>,
+) -> Result<(), String> {
+    let pty = pty_state.0.lock().unwrap();
+    pty.resize(PtyId(id), rows, cols)
         .map_err(|e| format!("{}", e))
 }

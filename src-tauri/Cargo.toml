@@ -26,6 +26,8 @@ schemars = "0.8"
 tokio = { version = "1.17", features = ["full"] }
 regex = "1.5"
 base64 = "0.13"
+portable-pty = "0.7.0"
+shell-words = "1.1"
 
 [features]
 # by default Tauri runs in production mode

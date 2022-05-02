@@ -4,11 +4,13 @@ extern crate env_logger;
 
 pub mod commands;
 pub mod git;
+pub mod pty;
 pub mod state;
 pub mod types;
 
 use state::config::{ConfigState, ConfigStateMutex};
 use state::env::{EnvState, EnvStateMutex};
+use state::pty::PtyStateMutex;
 use std::{error::Error, fs::create_dir};
 use tauri::{generate_handler, App, Manager, RunEvent, Runtime, WindowEvent};
 
@@ -51,6 +53,7 @@ pub fn run() {
     let app = tauri::Builder::default()
         .manage(EnvStateMutex::new())
         .manage(ConfigStateMutex::new())
+        .manage(PtyStateMutex::new())
         .invoke_handler(generate_handler![
             commands::fetch_history,
             commands::commit,
@@ -69,6 +72,10 @@ pub fn run() {
             commands::store_state,
             commands::unstage,
             commands::yank_text,
+            commands::open_pty,
+            commands::write_pty,
+            commands::resize_pty,
+            commands::close_pty,
         ])
         .setup(|app| setup(app))
         .build(tauri::generate_context!())
