@@ -263,15 +263,15 @@ pub enum CommitOptions {
 #[derive(JsonSchema)]
 pub struct Root(
     Blame,
-    Config,
-    Environment,
+    BlameEntry,
     Commit,
     CommitDetail,
     CommitOptions,
-    WorkingTreeStat,
-    Refs,
-    FileSpec,
+    Config,
+    Environment,
     FileLogEntry,
+    FileSpec,
     LstreeEntry,
-    BlameEntry,
+    Refs,
+    WorkingTreeStat,
 );
