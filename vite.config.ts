@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [preactRefresh()],
   build: {
     sourcemap: "inline",
-    outDir: "../../dist/renderer"
+    outDir: "../../dist"
   },
   esbuild: {
     jsxFactory: "h",

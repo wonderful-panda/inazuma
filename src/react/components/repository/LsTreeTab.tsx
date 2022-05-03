@@ -12,8 +12,9 @@ import { debounce } from "lodash";
 import { useTreeItemSelector } from "@/hooks/useTreeItemSelector";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { BlamePanel } from "./BlamePanel";
-import { dispatchBrowser } from "@/dispatchBrowser";
 import { KeyDownTrapper } from "../KeyDownTrapper";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { useBlame } from "@/hooks/useBlame";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -122,12 +123,12 @@ const LsTreeWithFilter: React.VFC<{
 
 const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
   const [entries, setEntries] = useState<LstreeEntry[]>([]);
-  const [blame, setBlame] = useState<{ blame: Blame; path: string } | undefined>(undefined);
-  const [blameLoading, setBlameLoading] = useState(false);
+  const [blamePath, setBlamePath] = useState<string | undefined>(undefined);
+  const revspec = commit.id;
+  const blame = useBlame(repoPath, blamePath, revspec);
   const dispatch = useDispatch();
-  const sha = commit.id;
   useEffect(() => {
-    dispatchBrowser("getTree", { repoPath, sha })
+    invokeTauriCommand("get_tree", { repoPath, revspec })
       .then((entries) => {
         sortTreeInplace(entries, (a, b) => {
           if (a.data.type !== b.data.type) {
@@ -141,29 +142,7 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
       .catch((error) => {
         dispatch(REPORT_ERROR({ error }));
       });
-  }, [repoPath, sha, dispatch]);
-  const onUpdateBlamePath = useCallback(
-    async (path: string | undefined) => {
-      if (path === blame?.path) {
-        return;
-      }
-      if (!path) {
-        setBlame(undefined);
-        return;
-      }
-      setBlameLoading(true);
-      try {
-        const blame = await dispatchBrowser("getBlame", { repoPath, relPath: path, sha });
-        setBlame({ blame, path });
-      } catch (error) {
-        dispatch(REPORT_ERROR({ error }));
-      } finally {
-        setBlameLoading(false);
-      }
-    },
-    [dispatch, repoPath, sha, blame?.path]
-  );
-
+  }, [repoPath, revspec, dispatch]);
   return !entries ? (
     <Loading open />
   ) : (
@@ -174,22 +153,22 @@ const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
       first={
         <LsTreeWithFilter
           entries={entries}
-          blamePath={blame?.path}
-          onUpdateBlamePath={onUpdateBlamePath}
+          blamePath={blamePath}
+          onUpdateBlamePath={setBlamePath}
         />
       }
       second={
         <div className="flex flex-1 relative">
-          {blame && (
+          {blame?.blame && (
             <BlamePanel
               persistKey="repository/LsTreeTab/BlamePanel"
               blame={blame.blame}
               path={blame.path}
-              sha={sha}
+              sha={revspec}
               refs={refs}
             />
           )}
-          {blameLoading && <Loading open />}
+          {blame && !blame.blame && <Loading open />}
         </div>
       }
       allowDirectionChange

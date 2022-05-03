@@ -1,4 +1,3 @@
-import { dispatchBrowser } from "@/dispatchBrowser";
 import { useDispatch } from "@/store";
 import { shortHash } from "@/util";
 import { REPORT_ERROR } from "@/store/misc";
@@ -14,12 +13,33 @@ import { diffAgainst } from "@/commands/diff";
 import { DiffViewer } from "./DiffViewer";
 import { debounce } from "lodash";
 import { KeyDownTrapper } from "../KeyDownTrapper";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { decodeBase64, decodeToString } from "@/strings";
 
 export interface CommitDiffTabProps {
   repoPath: string;
   commit1: Commit;
   commit2: Commit;
 }
+
+const getContent = async (
+  repoPath: string,
+  relPath: string,
+  revspec: string
+): Promise<TextFile> => {
+  const s = await invokeTauriCommand("get_content_base64", {
+    repoPath,
+    relPath,
+    revspec
+  });
+  const { text: content, encoding } = decodeToString(decodeBase64(s));
+  return {
+    content,
+    encoding,
+    path: relPath,
+    revspec
+  };
+};
 
 const loadContents = (
   repoPath: string,
@@ -34,17 +54,11 @@ const loadContents = (
   const left =
     file.statusCode === "A" || file.delta?.type !== "text"
       ? Promise.resolve(undefined)
-      : dispatchBrowser("getTextFileContent", {
-          repoPath,
-          file: { path: leftPath, revspec: sha1 }
-        });
+      : getContent(repoPath, leftPath, sha1);
   const right =
     file.statusCode === "D" || file.delta?.type !== "text"
       ? Promise.resolve(undefined)
-      : dispatchBrowser("getTextFileContent", {
-          repoPath,
-          file: { path: file.path, revspec: sha2 }
-        });
+      : getContent(repoPath, file.path, sha2);
   return Promise.all([left, right]);
 };
 
@@ -70,7 +84,6 @@ const CommitDiffContent: React.VFC<{
     () =>
       debounce(async (file: FileEntry | undefined) => {
         try {
-          console.log("selectFile");
           setLoading(true);
           setContent(await loadContents(repoPath, commit1.id, commit2.id, file));
         } catch (error) {
@@ -128,10 +141,10 @@ const CommitDiffTab: React.VFC<CommitDiffTabProps> = ({ repoPath, commit1, commi
   const dispatch = useDispatch();
   const [files, setFiles] = useState<FileEntry[] | undefined>(undefined);
   useEffect(() => {
-    dispatchBrowser("getCommitDiff", {
+    invokeTauriCommand("get_changes_between", {
       repoPath,
-      sha1: commit1.id,
-      sha2: commit2.id
+      revspec1: commit1.id,
+      revspec2: commit2.id
     })
       .then((files) => setFiles(files))
       .catch((error) => dispatch(REPORT_ERROR({ error })));

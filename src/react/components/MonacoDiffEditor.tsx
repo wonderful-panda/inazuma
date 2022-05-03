@@ -48,7 +48,6 @@ const MonacoDiffEditor_: React.VFC<MonacoDiffEditorProps> = ({
     if (!editor) {
       return;
     }
-    console.log("setModel");
     editor.setModel({
       original: monaco.editor.createModel(left.content, left.language),
       modified: monaco.editor.createModel(right.content, right.language)

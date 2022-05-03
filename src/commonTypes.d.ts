@@ -1,75 +1,60 @@
 /*
  * Type definitions needed by both browser and renderer
  */
-import type * as backend from "inazuma-rust-backend";
+import type * as tt from "./react/types/tauri-types";
 
 declare global {
-  type Commit = backend.Commit;
-  type FileEntry = backend.FileEntry & {
+  type Commit = tt.Commit;
+  type FileEntry = tt.FileEntry & {
     unstaged?: boolean;
   };
-  type LstreeEntry = backend.LstreeEntry;
+  type LstreeEntry = tt.LstreeEntry;
   type LstreeEntryData = LstreeEntry["data"];
-  type CommitDetail = backend.CommitDetail;
-  type BranchRef = backend.BranchRef;
-  type HeadRef = backend.HeadRef;
-  type MergeHeadRef = backend.MergeHeadRef;
-  type TagRef = backend.TagRef;
-  type RemoteRef = backend.RemoteRef;
-  type Ref = backend.Ref;
-  type CommitOptions = backend.CommitOptions;
+  type CommitDetail = tt.CommitDetail;
+  type CommitOptions = tt.CommitOptions;
+  type FileSpec = tt.FileSpec;
+  type Ref = tt.Ref;
+  type BranchRef = tt.BranchRef;
+  type RemoteRef = tt.RemoteRef;
+  type TagRef = tt.TagRef;
 
   type Resolve<T> = (arg: T) => void;
   type Dict<T> = { [key: string]: T };
   type Consumer<T> = (value: T) => void;
   type Func<P, R> = (arg: P) => R;
 
-  type FontSize = "x-small" | "small" | "medium";
+  type FontSize = tt.FontSize;
 
   /**
    * Auto updated parsistent data written to .environment.json
    */
-  interface Environment {
-    windowSize?: {
-      width: number;
-      height: number;
-      maximized: boolean;
-    };
-    recentOpened?: string[];
-    state?: Record<string, string>;
-  }
+  type Environment = tt.Environment;
 
   /**
    * User specific parsistent data written to config.json
    */
-  interface Config {
-    fontFamily: {
-      standard?: string;
-      monospace?: string;
-    };
-    fontSize: FontSize;
-    recentListCount: number;
-    externalDiffTool?: string;
-    interactiveShell?: string;
-  }
+  type Config = tt.Config;
 
-  interface Refs extends backend.Refs {
-    refsById: Dict<Ref[]>;
-  }
+  type Refs = {
+    head?: string;
+    mergeHeads: string[];
+    branches: tt.BranchRef[];
+    tags: tt.TagRef[];
+    remotes: Record<string, tt.RemoteRef[]>;
+    refsById: Record<string, tt.Ref[]>;
+  };
 
   interface DagNode {
     id: string;
     parentIds: string[];
   }
 
-  type FileCommit = backend.FileLogEntry;
+  type FileCommit = tt.Commit & tt.FileEntry;
 
-  interface WorkingTreeStat extends Commit {
-    id: "--";
-    untrackedFiles: string[];
+  type WorkingTreeStat = tt.Commit & {
     unstagedFiles: FileEntry[];
     stagedFiles: FileEntry[];
-  }
+  };
 
   type LogDetail =
     | ({
@@ -97,54 +82,14 @@ declare global {
         type: "binary" | "nodiff";
       };
 
-  interface BrowserEvent {
-    configChanged: { config: Config };
-  }
-
-  interface FileSpec {
-    path: string;
-    revspec: string;
-  }
-
   interface TextFile extends FileSpec {
     encoding: string;
     content: string;
   }
-
-  type OpenPtyOptions = {
-    cwd: string;
-    file: string;
-    args: readonly string[];
-  };
-
-  type PtyEvents = {
-    data: string;
-    exit: { exitCode: number; signal?: number };
-  };
-
-  type PtyListeners = {
-    [K in keyof PtyEvents as `on${Capitalize<K>}`]: (payload: PtyEvents[K]) => void;
-  };
-
-  type PtyCommands = {
-    data: string;
-    resize: { cols: number; rows: number };
-    kill: { signal?: string };
-  };
 
   interface ErrorLike {
     name: string;
     message: string;
     stack?: string;
   }
-
-  type BrowserCommandResult =
-    | {
-        status: "succeeded";
-        result: any;
-      }
-    | {
-        status: "failed";
-        error: ErrorLike;
-      };
 }

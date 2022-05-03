@@ -9,7 +9,7 @@ import {
   SELECT_TAB,
   TabType
 } from "@/store/repository";
-import { RELOAD_REPOSITORY } from "@/store/thunk/reloadRepository";
+import { RELOAD_REPOSITORY } from "@/store/thunk/openRepository";
 import { assertNever } from "@/util";
 import { useCallback, useMemo } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
@@ -48,7 +48,7 @@ const RepositoryPage: React.VFC = () => {
   const refs = useSelector((state) => state.repository.log?.refs);
   const tab = useSelector((state) => state.repository.tab);
   const showInteractiveShell = useSelector((state) => state.misc.showInteractiveShell);
-  const monospace = useSelector((state) => state.persist.config.fontFamily.monospace);
+  const monospace = useSelector((state) => state.persist.config.fontFamily.monospace || undefined);
   const interactiveShell = useSelector((state) => state.persist.config.interactiveShell);
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
@@ -148,8 +148,8 @@ const RepositoryPage: React.VFC = () => {
         second={
           <InteractiveShell
             open={showInteractiveShell && !!interactiveShell}
-            cmd={interactiveShell!}
-            cwd={repoPath}
+            commandLine={interactiveShell!}
+            repoPath={repoPath}
             hide={callbacks.hideInteractiveShell}
             fontFamily={monospace}
           />

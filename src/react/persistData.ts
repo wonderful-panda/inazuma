@@ -1,18 +1,15 @@
-import { dispatchBrowser } from "./dispatchBrowser";
 /*
  * load / save between sessionStorage and environment.json
  *
  * The reason why we don't use localStorege is localStorage prevents
  * multiple Electron instances run at same time.
  */
-
-export const persistDataPromise = dispatchBrowser("loadPersistentData");
+import { Environment } from "@/types/tauri-types";
+import { invokeTauriCommand } from "./invokeTauriCommand";
 
 export const STORAGE_PREFIX = "inazuma:";
-export const loadStateToSessionStorage = async () => {
-  const {
-    environment: { state }
-  } = await persistDataPromise;
+export const loadStateToSessionStorage = async (env: Environment) => {
+  const state = env.state;
   if (state) {
     Object.getOwnPropertyNames(state).forEach((key) => {
       sessionStorage.setItem(STORAGE_PREFIX + key, state[key]);
@@ -21,12 +18,12 @@ export const loadStateToSessionStorage = async () => {
 };
 
 export const saveStateToEnvFile = async () => {
-  const state: Record<string, string> = {};
+  const newState: Record<string, string> = {};
   for (let i = 0; i < sessionStorage.length; ++i) {
     const key = sessionStorage.key(i);
     if (key && key.startsWith(STORAGE_PREFIX)) {
-      state[key.slice(STORAGE_PREFIX.length)] = sessionStorage.getItem(key)!;
+      newState[key.slice(STORAGE_PREFIX.length)] = sessionStorage.getItem(key)!;
     }
   }
-  dispatchBrowser("saveEnvironment", "state", state);
+  await invokeTauriCommand("store_state", { newState });
 };

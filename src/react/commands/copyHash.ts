@@ -1,4 +1,4 @@
-import { dispatchBrowser } from "@/dispatchBrowser";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { SHOW_SUCCESS } from "@/store/misc";
 import { shortHash } from "@/util";
 import { CommitCommand } from "./types";
@@ -8,7 +8,7 @@ export const copyFullHash: CommitCommand = {
   label: "Copy full hash",
   hidden: (commit) => commit.id === "--",
   handler: async (dispatch, commit) => {
-    await dispatchBrowser("copyTextToClipboard", commit.id);
+    await invokeTauriCommand("yank_text", { text: commit.id });
     dispatch(SHOW_SUCCESS(`Copied: ${commit.id}`));
   }
 };
@@ -18,8 +18,8 @@ export const copyShortHash: CommitCommand = {
   label: "Copy short hash",
   hidden: (commit) => commit.id === "--",
   handler: async (dispatch, commit) => {
-    const hash = shortHash(commit.id);
-    await dispatchBrowser("copyTextToClipboard", hash);
-    dispatch(SHOW_SUCCESS(`Copied: ${hash}`));
+    const text = shortHash(commit.id);
+    await invokeTauriCommand("yank_text", { text });
+    dispatch(SHOW_SUCCESS(`Copied: ${text}`));
   }
 };

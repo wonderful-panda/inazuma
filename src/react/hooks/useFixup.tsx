@@ -14,7 +14,7 @@ export const useFixup = () => {
       content: <span className="text-xl">{FIXUP_DESC}</span>
     });
     if (ret) {
-      dispatch(COMMIT({ amend: true }));
+      dispatch(COMMIT({ type: "amend" }));
     }
   }, [dispatch, confirm]);
 };
