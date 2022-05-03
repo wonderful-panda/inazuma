@@ -79,6 +79,7 @@ pub fn run() {
             commands::write_pty,
             commands::resize_pty,
             commands::close_pty,
+            commands::find_repository_root,
         ])
         .setup(|app| setup(app))
         .build(tauri::generate_context!())

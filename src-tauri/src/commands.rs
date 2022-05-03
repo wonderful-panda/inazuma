@@ -258,3 +258,8 @@ pub fn resize_pty(
     pty.resize(PtyId(id), rows, cols)
         .map_err(|e| format!("{}", e))
 }
+
+#[tauri::command]
+pub async fn find_repository_root() -> Result<Option<String>, String> {
+    Ok(git::find_repository_root().await?)
+}

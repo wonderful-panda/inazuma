@@ -81,3 +81,26 @@ pub async fn exec(
     debug!("{}, git {}, {:?}", repo_path.display(), command, args);
     return cmd.output().await;
 }
+
+pub async fn find_repository_root() -> Result<Option<String>, GitError> {
+    let mut cmd = Command::new("git");
+    cmd.env("GIT_TERMINAL_PROMPT", "0");
+    cmd.arg("rev-parse");
+    cmd.arg("--show-toplevel");
+    if cfg!(target_os = "windows") {
+        cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
+    }
+    let ret = cmd
+        .output()
+        .await
+        .or_else(|e| Err(GitError::ExecFailed(e)))?;
+    if ret.status.success() {
+        let path = std::str::from_utf8(&ret.stdout)
+            .unwrap()
+            .trim_end_matches('\n')
+            .to_string();
+        Ok(Some(path))
+    } else {
+        Ok(None)
+    }
+}
