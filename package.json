@@ -22,7 +22,7 @@
     "watch:ts": "vite",
     "watch:frontend": "run-p \"build:tailwind -w\" \"typecheck -w\" watch:ts",
     "watch:tauri": "tauri dev",
-    "watch": "run-p watch:frontend dev:tauri",
+    "watch": "run-p watch:*",
     "all": "run-s clean format lint build"
   },
   "dependencies": {
