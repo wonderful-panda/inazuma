@@ -5,7 +5,7 @@ use shell_words;
 use std::error::Error;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
-use std::thread;
+use tokio;
 
 pub struct Pty {
     pty_master: Arc<Mutex<Option<Box<dyn MasterPty + Send>>>>,
@@ -53,7 +53,7 @@ impl Pty {
         *self.pty_master.lock().unwrap() = Some(pair.master);
         *self.pty_killer.lock().unwrap() = Some(killer);
 
-        thread::spawn(move || {
+        tokio::task::spawn_blocking(move || {
             let mut buf = [0u8; 8162];
             while let Ok(len) = reader.read(&mut buf) {
                 if len == 0 {
@@ -67,7 +67,7 @@ impl Pty {
         let pty_master = self.pty_master.clone();
         let pty_killer = self.pty_killer.clone();
         let pty_child = Mutex::new(child);
-        thread::spawn(move || {
+        tokio::task::spawn_blocking(move || {
             let mut child = pty_child.lock().unwrap();
             let exit_code = child.wait().unwrap();
             debug!("pty closed: {:?}", exit_code);

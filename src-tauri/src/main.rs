@@ -6,7 +6,8 @@
 extern crate env_logger;
 extern crate log;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     env_logger::init();
     app::run()
 }
