@@ -6,7 +6,6 @@ import Home from "./components/home";
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
-import { loadStateToSessionStorage, saveStateToEnvFile, STORAGE_PREFIX } from "./persistData";
 import { getCssVariable, setCssVariable } from "./cssvar";
 import store, { Dispatch, useSelector, watch } from "./store";
 import { Provider, useDispatch } from "react-redux";
@@ -20,6 +19,7 @@ import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 import { lazy } from "./components/hoc/lazy";
 import { invokeTauriCommand } from "./invokeTauriCommand";
 import { FontFamily } from "./types/tauri-types";
+import { debounce } from "lodash";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
@@ -88,11 +88,30 @@ const getInitialRepository = async (hash: string | undefined) => {
   }
 };
 
+const saveDisplayState = debounce((newState: Record<string, string>) => {
+  invokeTauriCommand("store_state", { newState }).catch((e) => {
+    console.warn("Failed to store display state:", e);
+  });
+}, 1000);
+
+const displayStateStorage = {
+  state: {} as Record<string, string>,
+  getItem(key: string) {
+    return this.state[key];
+  },
+  setItem(key: string, value: string) {
+    this.state[key] = value;
+    saveDisplayState(this.state);
+  },
+  reset(state: Record<string, string>) {
+    this.state = state;
+  }
+};
+
 const init = async (dispatch: Dispatch) => {
   document.addEventListener("contextmenu", (e) => e.preventDefault());
-  window.addEventListener("beforeunload", () => saveStateToEnvFile());
   const [config, environment] = await invokeTauriCommand("load_persist_data");
-  await loadStateToSessionStorage(environment);
+  displayStateStorage.reset(environment.state || {});
   dispatch(UPDATE_CONFIG(config));
   updateFont(config.fontFamily);
   updateFontSize(config.fontSize);
@@ -160,7 +179,7 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <CommandGroupProvider>
           <ContextMenuProvider>
-            <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+            <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
               <ConfirmDialogProvider>{content}</ConfirmDialogProvider>
             </PersistStateProvider>
           </ContextMenuProvider>
