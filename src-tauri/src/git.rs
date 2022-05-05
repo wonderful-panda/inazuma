@@ -1,4 +1,3 @@
-#[cfg(target_os = "windows")]
 use std::{path::Path, process::Output};
 use thiserror::Error;
 use tokio::process::Command;
@@ -75,9 +74,8 @@ pub async fn exec(
     });
     cmd.arg(command);
     cmd.args(args);
-    if cfg!(target_os = "windows") {
-        cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
-    }
+    #[cfg(target_os = "windows")]
+    cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
     debug!("{}, git {}, {:?}", repo_path.display(), command, args);
     return cmd.output().await;
 }
@@ -87,9 +85,8 @@ pub async fn find_repository_root() -> Result<Option<String>, GitError> {
     cmd.env("GIT_TERMINAL_PROMPT", "0");
     cmd.arg("rev-parse");
     cmd.arg("--show-toplevel");
-    if cfg!(target_os = "windows") {
-        cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
-    }
+    #[cfg(target_os = "windows")]
+    cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
     let ret = cmd
         .output()
         .await

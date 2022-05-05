@@ -91,9 +91,9 @@ pub async fn show_external_diff(
     );
     let mut cmd = Command::new(&program);
     cmd.args(&args);
-    if cfg!(target_os = "windows") {
-        cmd.creation_flags(0x00000008); // DETACHED_PROCESS
-    }
+    #[cfg(target_os = "windows")]
+    cmd.creation_flags(0x00000008); // DETACHED_PROCESS
+
     cmd.spawn()?;
     Ok(())
 }
