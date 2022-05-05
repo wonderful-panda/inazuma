@@ -45,6 +45,7 @@ pub async fn save_config(
         .map_err(|e| format!("Failed to save config, {}", e))
 }
 
+#[cfg(any(target_os = "windows", target_os = "macos"))]
 #[tauri::command]
 pub async fn show_folder_selector<T: Runtime>(window: Window<T>) -> Option<String> {
     FileDialogBuilder::new()
@@ -52,6 +53,15 @@ pub async fn show_folder_selector<T: Runtime>(window: Window<T>) -> Option<Strin
         .pick_folder()
         .map(|path| path.to_str().unwrap().replace("\\", "/").into())
 }
+
+#[cfg(target_os = "linux")]
+#[tauri::command]
+pub async fn show_folder_selector() -> Option<String> {
+    FileDialogBuilder::new()
+        .pick_folder()
+        .map(|path| path.to_str().unwrap().replace("\\", "/").into())
+}
+
 
 #[tauri::command]
 pub async fn fetch_history(
