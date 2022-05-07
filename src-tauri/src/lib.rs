@@ -12,14 +12,17 @@ use state::config::{ConfigState, ConfigStateMutex};
 use state::env::{EnvState, EnvStateMutex};
 use state::pty::PtyStateMutex;
 use state::repositories::RepositoriesStateMutex;
-use std::{error::Error, fs::create_dir};
+use std::{error::Error, fs::create_dir_all};
 use tauri::{generate_handler, App, Manager, RunEvent, Runtime, WindowEvent};
 
 fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
     let app_dir = app.path_resolver().app_dir().unwrap();
     if !app_dir.exists() {
-        if let Err(e) = create_dir(&app_dir) {
-            error!("Failed to create application directory, {}", e);
+        if let Err(e) = create_dir_all(&app_dir) {
+            error!(
+                "Failed to create application directory, {:?}, {}",
+                &app_dir, e
+            );
             return Err(e.into());
         }
     }
