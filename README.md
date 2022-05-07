@@ -2,7 +2,7 @@
 
 **NOT READY FOR USE**
 
-Git repository browser made by Electron and React
+Git repository browser made by Tauri and React
 
 - Home
   ![home](/image/home.png)
