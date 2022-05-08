@@ -15,7 +15,7 @@
     "lint": "eslint src/react/**/*.{ts,tsx}",
     "typecheck": "tsc -p src/react/tsconfig.json --noEmit",
     "build:tailwind": "tailwindcss -i ./src/react/index.css -o ./src/react/generated/tailwind.css",
-    "build:ts": "cross-env NODE_OPTIONS=\"--max_old_space_size=4096\" vite build",
+    "build:ts": "cross-env NODE_OPTIONS=\"--max_old_space_size=3072\" vite build",
     "build:frontend": "run-s prebuild:* generate-dts typecheck build:tailwind build:ts",
     "build:tauri": "tauri build",
     "build": "run-s build:frontend build:tauri",
