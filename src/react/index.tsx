@@ -1,16 +1,11 @@
 import "xterm/css/xterm.css";
+import "./install-polyfill";
 import { useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import Home from "./components/home";
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
-import {
-  loadStateToSessionStorage,
-  persistDataPromise,
-  saveStateToEnvFile,
-  STORAGE_PREFIX
-} from "./persistData";
 import { getCssVariable, setCssVariable } from "./cssvar";
 import store, { Dispatch, useSelector, watch } from "./store";
 import { Provider, useDispatch } from "react-redux";
@@ -21,14 +16,16 @@ import { Loading } from "./components/Loading";
 import { REPORT_ERROR } from "./store/misc";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
-import { dispatchBrowser } from "./dispatchBrowser";
 import { lazy } from "./components/hoc/lazy";
+import { invokeTauriCommand } from "./invokeTauriCommand";
+import { FontFamily } from "./types/tauri-types";
+import { debounce } from "lodash";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
 const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
 const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");
-const updateFont = (fontFamily: { standard?: string; monospace?: string }) => {
+const updateFont = (fontFamily: FontFamily) => {
   setCssVariable("--inazuma-standard-fontfamily", fontFamily.standard || defaultFontfamily);
   setCssVariable("--inazuma-monospace-fontfamily", fontFamily.monospace || monospaceFontfamily);
 };
@@ -81,31 +78,58 @@ const createMuiTheme = (baseFontSize: FontSize) =>
     }
   });
 
-const init = async (dispatch: Dispatch) => {
-  await loadStateToSessionStorage();
-  window.addEventListener("beforeunload", () => {
-    saveStateToEnvFile();
+const getInitialRepository = async (hash: string | undefined) => {
+  if (hash === "home") {
+    return undefined;
+  } else if (!hash) {
+    return await invokeTauriCommand("find_repository_root");
+  } else {
+    return hash;
+  }
+};
+
+const saveDisplayState = debounce((newState: Record<string, string>) => {
+  invokeTauriCommand("store_state", { newState }).catch((e) => {
+    console.warn("Failed to store display state:", e);
   });
-  const { config, environment } = await persistDataPromise;
+}, 1000);
+
+const displayStateStorage = {
+  state: {} as Record<string, string>,
+  getItem(key: string) {
+    return this.state[key];
+  },
+  setItem(key: string, value: string) {
+    this.state[key] = value;
+    saveDisplayState(this.state);
+  },
+  reset(state: Record<string, string>) {
+    this.state = state;
+  }
+};
+
+const init = async (dispatch: Dispatch) => {
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
+  const [config, environment] = await invokeTauriCommand("load_persist_data");
+  displayStateStorage.reset(environment.state || {});
   dispatch(UPDATE_CONFIG(config));
   updateFont(config.fontFamily);
   updateFontSize(config.fontSize);
   dispatch(RESET_RECENT_OPENED_REPOSITORIES(environment.recentOpened || []));
-  const initialRepository = window.location.hash
-    ? decodeURI(window.location.hash.slice(1))
-    : undefined;
-  window.location.hash = "";
+  const hash = window.location.hash ? decodeURI(window.location.hash.slice(1)) : undefined;
+  window.location.hash = "#home";
+  const initialRepository = await getInitialRepository(hash);
   watch(
     (state) => state.persist.config,
-    (newValue) => {
-      dispatchBrowser("resetConfig", newValue);
-      updateFont(newValue.fontFamily);
-      updateFontSize(newValue.fontSize);
+    (newConfig) => {
+      invokeTauriCommand("save_config", { newConfig });
+      updateFont(newConfig.fontFamily);
+      updateFontSize(newConfig.fontSize);
     }
   );
   watch(
     (state) => state.persist.env.recentOpenedRepositories,
-    (newValue) => dispatchBrowser("saveEnvironment", "recentOpened", newValue)
+    (newList) => invokeTauriCommand("store_recent_opened", { newList })
   );
   watch(
     (state) => state.repository.path,
@@ -116,7 +140,7 @@ const init = async (dispatch: Dispatch) => {
           window.location.hash = `#${encodeURI(newValue)}`;
         } else {
           document.title = "Inazuma";
-          window.location.hash = "";
+          window.location.hash = "#home";
         }
       }, 0);
     }
@@ -155,7 +179,7 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <CommandGroupProvider>
           <ContextMenuProvider>
-            <PersistStateProvider storage={sessionStorage} prefix={STORAGE_PREFIX}>
+            <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
               <ConfirmDialogProvider>{content}</ConfirmDialogProvider>
             </PersistStateProvider>
           </ContextMenuProvider>

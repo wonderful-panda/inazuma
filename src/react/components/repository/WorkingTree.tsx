@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { dispatchBrowser } from "@/dispatchBrowser";
 import { debounce } from "lodash";
 import * as monaco from "monaco-editor";
 import { FlexCard } from "../FlexCard";
+import { decodeBase64, decodeToString } from "@/strings";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
 import { Button, useTheme } from "@mui/material";
@@ -27,6 +27,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { useFixup, FIXUP_DESC } from "@/hooks/useFixup";
 import { REPORT_ERROR } from "@/store/misc";
 import { KeyDownTrapper } from "../KeyDownTrapper";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -40,6 +41,25 @@ const stagedActionCommands = [diffStaged, unstage];
 
 const getItemKey = (item: RowType) =>
   typeof item === "string" ? item : `${item.path}:${item.unstaged ? "U" : "S"}`;
+
+const getUdiff = async (repoPath: string, relPath: string, cached: boolean): Promise<Udiff> => {
+  const udiffBase64 = await invokeTauriCommand("get_workingtree_udiff_base64", {
+    repoPath,
+    relPath,
+    cached
+  });
+  const decoded = decodeToString(decodeBase64(udiffBase64));
+  if (decoded.text.length === 0) {
+    return { type: "nodiff" };
+  } else {
+    const index = decoded.text.search(/^@@/m);
+    if (index < 0) {
+      return { type: "binary" };
+    } else {
+      return { type: "text", content: decoded.text.slice(index) };
+    }
+  }
+};
 
 const GroupHeader: React.VFC<{
   type: "staged" | "unstaged";
@@ -170,11 +190,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
           setUdiff(undefined);
         } else {
           try {
-            const udiff = await dispatchBrowser("getWorkingTreeUdiff", {
-              repoPath,
-              relPath: data.path,
-              cached: !data.unstaged
-            });
+            const udiff = await getUdiff(repoPath, data.path, !data.unstaged);
             setUdiff(udiff);
           } catch (error) {
             dispatch(REPORT_ERROR({ error }));
@@ -195,10 +211,9 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
     if (!stat) {
       return [];
     }
-    return [
-      ...stat.unstagedFiles.map((f) => ({ ...f, unstaged: true })),
-      ...stat.untrackedFiles.map((f) => ({ path: f, statusCode: "?", unstaged: true }))
-    ].sort((a, b) => a.path.localeCompare(b.path));
+    return [...stat.unstagedFiles.map((f) => ({ ...f, unstaged: true }))].sort((a, b) =>
+      a.path.localeCompare(b.path)
+    );
   }, [stat]);
 
   const staged = useMemo<FileEntry[]>(() => {

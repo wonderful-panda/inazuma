@@ -1,4 +1,4 @@
-import { dispatchBrowser } from "@/dispatchBrowser";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { Dispatch, RootState } from "..";
 import { _SET_WORKING_TREE } from "../repository";
 import { withHandleError } from "./withHandleError";
@@ -10,7 +10,16 @@ const reloadWorkingTree = () => {
     if (!repoPath) {
       return;
     }
-    const value = await dispatchBrowser("getWorkingTree", { repoPath });
+    const stat = await invokeTauriCommand("get_workingtree_stat", {
+      repoPath
+    });
+    const value: WorkingTreeStat = {
+      id: "--",
+      author: "--",
+      summary: "<Working tree>",
+      date: new Date().getTime(),
+      ...stat
+    };
     dispatch(_SET_WORKING_TREE({ repoPath, value }));
   };
 };

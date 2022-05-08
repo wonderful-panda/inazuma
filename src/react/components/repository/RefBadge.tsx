@@ -35,16 +35,12 @@ const Remote: React.VFC<{ r: RemoteRef }> = ({ r }) => (
 
 export const RefBadge: React.VFC<{ r: Ref }> = ({ r }) => {
   switch (r.type) {
-    case "HEAD":
-      return <></>;
-    case "heads":
+    case "branch":
       return <Branch r={r} />;
-    case "tags":
+    case "tag":
       return <Tag r={r} />;
-    case "remotes":
+    case "remote":
       return <Remote r={r} />;
-    case "MERGE_HEAD":
-      return <></>;
     default:
       return assertNever(r);
   }

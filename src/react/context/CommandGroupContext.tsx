@@ -144,6 +144,7 @@ export const CommandGroupProvider: React.FC = ({ children }) => {
       const hotkey = getHotKeyString(e);
       const cmd = hotkeyMap[hotkey];
       if (cmd) {
+        e.preventDefault();
         console.log(`run ${cmd.name}`);
         cmd.handler();
       }

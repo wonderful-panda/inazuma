@@ -5,8 +5,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Dialog, DialogActionHandler } from "../Dialog";
 import { COMMIT } from "@/store/thunk/commit";
 import { CLOSE_DIALOG } from "@/store/repository";
-import { dispatchBrowser } from "@/dispatchBrowser";
 import { REPORT_ERROR } from "@/store/misc";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 export const CommitDialog: React.VFC = () => {
   const dispatch = useDispatch();
@@ -39,13 +39,14 @@ export const CommitDialog: React.VFC = () => {
       }
       try {
         // get commit message of HEAD and set it to TextArea.
-        const commitDetail = await dispatchBrowser("getLogDetail", { repoPath, sha: "HEAD" });
-        if (commitDetail.type === "commit") {
-          // always true
-          messageRef.current.value =
-            commitDetail.summary + (commitDetail.body ? "\n\n" + commitDetail.body : "");
-          handleChange();
-        }
+        const commitDetail = await invokeTauriCommand("get_commit_detail", {
+          repoPath,
+          revspec: "HEAD"
+        });
+        // always true
+        messageRef.current.value =
+          commitDetail.summary + (commitDetail.body ? "\n\n" + commitDetail.body : "");
+        handleChange();
       } catch (error) {
         dispatch(REPORT_ERROR({ error }));
       }
@@ -58,7 +59,7 @@ export const CommitDialog: React.VFC = () => {
     }
     const message = messageRef.current?.value || "";
     const options: CommitOptions = {
-      amend: amendRef.current.checked,
+      type: amendRef.current.checked ? "amend" : "normal",
       message
     };
     const ret = await dispatch(COMMIT(options));

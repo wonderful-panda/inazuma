@@ -7,7 +7,7 @@ import { REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
 import { OPEN_REPOSITORY } from "@/store/thunk/openRepository";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { Command } from "@/context/CommandGroupContext";
-import { dispatchBrowser } from "@/dispatchBrowser";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -17,12 +17,9 @@ const Home = () => {
     [dispatch]
   );
   const handleBrowseClick = useCallback(async () => {
-    const options: Electron.OpenDialogOptions = {
-      properties: ["openDirectory"]
-    };
-    const ret = await dispatchBrowser("showOpenDialog", options);
-    if (!ret.canceled) {
-      handleOpen(ret.filePaths[0]);
+    const ret = await invokeTauriCommand("show_folder_selector");
+    if (ret) {
+      handleOpen(ret);
     }
   }, [handleOpen]);
 

@@ -1,5 +1,6 @@
-interface Window extends RendererGlobals {}
-
+interface Window {
+  StringDecoder: typeof import("string_decoder").StringDecoder;
+}
 type ComponentRef<C> = C extends React.ForwardRefExoticComponent<infer P>
   ? P extends React.RefAttributes<infer T>
     ? T

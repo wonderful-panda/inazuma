@@ -1,4 +1,4 @@
-import { dispatchBrowser } from "@/dispatchBrowser";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { Dispatch, RootState } from "..";
 import { SHOW_WARNING } from "../misc";
 import { withHandleError } from "./withHandleError";
@@ -15,7 +15,7 @@ const showExternalDiff = (left: FileSpec, right: FileSpec) => {
       dispatch(SHOW_WARNING("External diff tool is not configured"));
       return;
     }
-    await dispatchBrowser("showExternalDiff", { repoPath, left, right });
+    await invokeTauriCommand("show_external_diff", { repoPath, left, right });
   };
 };
 

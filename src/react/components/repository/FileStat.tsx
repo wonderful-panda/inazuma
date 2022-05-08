@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React from "react";
 
 const getFileType = (item: FileEntry) => {
-  if (item.delta === undefined) {
+  if (!item.delta) {
     return "unknown";
   } else {
     return item.delta.type;

@@ -1,4 +1,4 @@
-import { dispatchBrowser } from "@/dispatchBrowser";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { Dispatch, RootState } from "..";
 import { RELOAD_WORKING_TREE } from "./reloadWorkingTree";
 import { withHandleError } from "./withHandleError";
@@ -10,7 +10,7 @@ const stage = (relPath: string) => {
     if (!repoPath) {
       return;
     }
-    await dispatchBrowser("addToIndex", { repoPath, relPath });
+    await invokeTauriCommand("stage", { repoPath, relPath });
     await dispatch(RELOAD_WORKING_TREE());
   };
 };
@@ -22,7 +22,7 @@ const unstage = (relPath: string) => {
     if (!repoPath) {
       return;
     }
-    await dispatchBrowser("removeFromIndex", { repoPath, relPath });
+    await invokeTauriCommand("unstage", { repoPath, relPath });
     await dispatch(RELOAD_WORKING_TREE());
   };
 };
