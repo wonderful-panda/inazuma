@@ -77,7 +77,9 @@ const CommitDiffContent: React.VFC<{
   ]);
   const [loading, setLoading] = useState(false);
   const itemSelector = useListItemSelector(files.length, setSelectedIndex);
-  useEffect(() => listRef.current?.scrollToItem(selectedIndex), [selectedIndex]);
+  useEffect(() => {
+    listRef.current?.scrollToItem(selectedIndex);
+  }, [selectedIndex]);
   const actionCommands = useMemo(() => [diffAgainst(commit1)], [commit1]);
   const handleRowDoubleClick = useFileListRowEventHandler(actionCommands[0], commit2);
   const handleSelectFile = useMemo(

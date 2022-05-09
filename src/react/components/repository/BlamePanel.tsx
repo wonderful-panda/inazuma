@@ -108,7 +108,9 @@ export const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path
   );
   const listRef = useRef<VirtualListMethods>(null);
 
-  useEffect(() => listRef.current?.scrollToItem(selectedItem.index), [selectedItem.index]);
+  useEffect(() => {
+    listRef.current?.scrollToItem(selectedItem.index);
+  }, [selectedItem.index]);
 
   return (
     <div className="flex-col-nowrap flex-1 px-2 pt-1">

@@ -10,9 +10,7 @@
     "noUnusedParameters": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
+    "jsx": "react-jsx",
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["./*"]

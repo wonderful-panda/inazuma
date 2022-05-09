@@ -176,10 +176,9 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
   const fixup = useFixup();
   const commit = useCallback(() => dispatch(BEGIN_COMMIT()), [dispatch]);
 
-  useEffect(
-    () => treeRef.current?.scrollToItem(treeModelState.selectedIndex),
-    [treeModelState.selectedIndex]
-  );
+  useEffect(() => {
+    treeRef.current?.scrollToItem(treeModelState.selectedIndex);
+  }, [treeModelState.selectedIndex]);
   const selectFile = useMemo(
     () =>
       debounce(async (data: RowType | undefined) => {

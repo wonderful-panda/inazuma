@@ -1,7 +1,7 @@
 import "xterm/css/xterm.css";
 import "./install-polyfill";
 import { useEffect, useMemo, useState } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Home from "./components/home";
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
@@ -189,9 +189,9 @@ const App = () => {
   );
 };
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("app")!);
+root.render(
   <Provider store={store}>
     <App />
-  </Provider>,
-  document.getElementById("app")
+  </Provider>
 );

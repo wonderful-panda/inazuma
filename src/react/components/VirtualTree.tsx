@@ -70,10 +70,9 @@ export const VirtualTree = <T extends unknown>({
   ...rest
 }: VirtualTreeProps<T>) => {
   const listRef = useRef<VirtualListMethods>(null);
-  useEffect(
-    () => listRef.current?.scrollToItem(treeModelState.selectedIndex),
-    [treeModelState.selectedIndex]
-  );
+  useEffect(() => {
+    listRef.current?.scrollToItem(treeModelState.selectedIndex);
+  }, [treeModelState.selectedIndex]);
 
   const toggleExpand = useCallback(
     (item: TreeItem<T>) => {
