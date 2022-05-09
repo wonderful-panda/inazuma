@@ -2,6 +2,7 @@
  * Type definitions needed by both browser and renderer
  */
 import type * as tt from "./react/types/tauri-types";
+import { ReactNode } from "react";
 
 declare global {
   type Commit = tt.Commit;
@@ -92,4 +93,6 @@ declare global {
     message: string;
     stack?: string;
   }
+
+  type ChildrenProp = { children: ReactNode };
 }

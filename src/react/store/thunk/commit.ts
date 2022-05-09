@@ -6,7 +6,7 @@ import { withHandleError } from "./withHandleError";
 
 const commit = (options: CommitOptions) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
-    if (options.type === "normal" && !options.message) {
+    if (options.commitType === "normal" && !options.message) {
       dispatch(SHOW_WARNING("Input commit message"));
       return false;
     }
@@ -16,7 +16,7 @@ const commit = (options: CommitOptions) => {
       return false;
     }
     const stat = await invokeTauriCommand("get_workingtree_stat", { repoPath });
-    if (options.type === "normal" && stat.stagedFiles.length === 0) {
+    if (options.commitType === "normal" && stat.stagedFiles.length === 0) {
       dispatch(SHOW_WARNING("Nothing to commit"));
       return false;
     }

@@ -14,7 +14,7 @@ export const ConfirmDialogContext = createContext<ConfirmDialogMethods>({
   show: () => Promise.resolve(false)
 });
 
-export const ConfirmDialogProvider: React.FC = ({ children }) => {
+export const ConfirmDialogProvider: React.FC<ChildrenProp> = ({ children }) => {
   const version = useRef(0);
   const [args, setArgs] = useState<ConfirmDialogArgs | undefined>(undefined);
   const [resolve_, setResolve] = useState<undefined | ((value: boolean) => void)>(undefined);

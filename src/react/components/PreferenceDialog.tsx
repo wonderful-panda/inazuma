@@ -11,7 +11,7 @@ import { forwardRef, useCallback, useImperativeHandle, useReducer, useRef, useSt
 import { DialogMethods } from "./Dialog";
 import { FullscreenDialog } from "./FullscreenDialog";
 
-const SectionContent: React.FC = ({ children }) => (
+const SectionContent: React.FC<ChildrenProp> = ({ children }) => (
   <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>
 );
 

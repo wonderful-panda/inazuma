@@ -103,7 +103,7 @@ export const CommandGroupContext = createContext({
   resume: () => {}
 } as CommandGroupMethods);
 
-export const CommandGroupProvider: React.FC = ({ children }) => {
+export const CommandGroupProvider: React.FC<ChildrenProp> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const methods = useMemo<CommandGroupMethods>(
     () => ({

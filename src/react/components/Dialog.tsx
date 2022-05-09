@@ -22,7 +22,7 @@ export interface DialogActionHandler {
   default?: boolean;
 }
 
-export interface DialogProps {
+export interface DialogProps extends ChildrenProp {
   title?: string;
   fullScreen?: boolean;
   opened: boolean;

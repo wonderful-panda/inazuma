@@ -24,7 +24,7 @@ const Home = () => {
   }, [handleOpen]);
 
   const removeRecentOpenedRepository = useCallback(
-    (path) => dispatch(REMOVE_RECENT_OPENED_REPOSITORY(path)),
+    (path: string) => dispatch(REMOVE_RECENT_OPENED_REPOSITORY(path)),
     [dispatch]
   );
   const openRecents = useMemo<Command[]>(

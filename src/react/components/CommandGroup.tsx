@@ -4,10 +4,12 @@ import { useCommandGroup } from "@/hooks/useCommandGroup";
 
 export const Cmd: React.VFC<Command> = () => <></>;
 
-export const CommandGroup: React.FC<{
-  name: string;
-  enabled?: boolean;
-}> = ({ name, enabled = true, children }) => {
+export const CommandGroup: React.FC<
+  {
+    name: string;
+    enabled?: boolean;
+  } & ChildrenProp
+> = ({ name, enabled = true, children }) => {
   const commands = useMemo(() => {
     const ret: Command[] = [];
     React.Children.forEach(children, (child) => {

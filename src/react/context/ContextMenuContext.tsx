@@ -17,7 +17,7 @@ interface State {
   menus: ActionItem[];
 }
 
-export const ContextMenuProvider: React.FC = ({ children }) => {
+export const ContextMenuProvider: React.FC<ChildrenProp> = ({ children }) => {
   const [state, setState] = useState<State | undefined>(undefined);
   const methods = useMemo<ContextMenuMethods>(
     () => ({

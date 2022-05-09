@@ -254,7 +254,7 @@ pub struct Blame {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
-#[serde(rename_all = "camelCase", deny_unknown_fields, tag = "type")]
+#[serde(rename_all = "camelCase", deny_unknown_fields, tag = "commitType")]
 pub enum CommitOptions {
     Normal { message: String },
     Amend { message: Option<String> },

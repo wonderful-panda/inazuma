@@ -243,7 +243,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
   }, [treeModelDispatch, unstaged, staged]);
 
   const handleRowDoubleClick = useCallback(
-    (_e, _index, { item }: TreeItemVM<RowType>) => {
+    (_e: unknown, _index: unknown, { item }: TreeItemVM<RowType>) => {
       if (typeof item.data === "string") {
         treeModelDispatch({ type: "toggleItem", payload: { item } });
       } else {

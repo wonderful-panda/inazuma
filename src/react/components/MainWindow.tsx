@@ -12,7 +12,7 @@ import { HIDE_ALERT } from "@/store/misc";
 import { CommandGroup, Cmd } from "./CommandGroup";
 import { IconActionItem } from "@/commands/types";
 
-export interface MainWindowProps {
+export interface MainWindowProps extends ChildrenProp {
   title: string;
   drawerItems?: readonly IconActionItem[];
   titleBarActions?: readonly IconActionItem[];

@@ -2,7 +2,7 @@ import { Slide, SlideProps } from "@mui/material";
 import { forwardRef } from "react";
 import { Dialog, DialogActionHandler } from "./Dialog";
 
-export interface FullscreenDialogProps {
+export interface FullscreenDialogProps extends ChildrenProp {
   title: string;
   opened: boolean;
   close: () => void;

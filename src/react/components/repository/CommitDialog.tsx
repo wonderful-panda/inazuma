@@ -59,7 +59,7 @@ export const CommitDialog: React.VFC = () => {
     }
     const message = messageRef.current?.value || "";
     const options: CommitOptions = {
-      type: amendRef.current.checked ? "amend" : "normal",
+      commitType: amendRef.current.checked ? "amend" : "normal",
       message
     };
     const ret = await dispatch(COMMIT(options));

@@ -13,11 +13,9 @@ export const PersistStateContext = createContext<PersistStateMethods>({
   useState: (_, initialValue) => useState(initialValue)
 });
 
-export const PersistStateProvider: React.FC<{ storage: PartialStorage; prefix?: string }> = ({
-  storage,
-  prefix,
-  children
-}) => {
+export const PersistStateProvider: React.FC<
+  { storage: PartialStorage; prefix?: string } & ChildrenProp
+> = ({ storage, prefix, children }) => {
   const handler: PersistStateMethods = useMemo(
     () => ({
       useState<T>(key: string, initialValue: T) {
