@@ -22,6 +22,7 @@ import { DialogMethods } from "./Dialog";
 import { FullscreenDialog } from "./FullscreenDialog";
 import { REPORT_ERROR } from "@/store/misc";
 import { useDispatch } from "@/store";
+import classNames from "classnames";
 
 const SectionContent: React.FC<ChildrenProp> = ({ children }) => (
   <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>
@@ -118,8 +119,9 @@ const FontSelector: React.FC<{
         />
       )}
       renderOption={(props, option) => (
-        <li {...props} style={{ fontFamily: option }}>
-          {option}
+        <li {...props} className={classNames("flex-row-nowrap pr-4", props.className)}>
+          <span className="flex-1">{option}</span>
+          <span style={{ fontFamily: option, color: "gray" }}>ABC</span>
         </li>
       )}
     />
