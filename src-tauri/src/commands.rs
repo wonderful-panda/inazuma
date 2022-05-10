@@ -24,15 +24,23 @@ pub async fn load_persist_data(
 }
 
 #[tauri::command]
-pub fn store_recent_opened(new_list: Vec<String>, env_state: State<'_, EnvStateMutex>) {
+pub async fn store_recent_opened(
+    new_list: Vec<String>,
+    env_state: State<'_, EnvStateMutex>,
+) -> Result<(), String> {
     let mut env = env_state.0.lock().unwrap();
-    env.env.recent_opened = new_list;
+    env.env.recent_opened = new_list.clone();
+    Ok(())
 }
 
 #[tauri::command]
-pub fn store_state(new_state: HashMap<String, String>, env_state: State<'_, EnvStateMutex>) {
+pub async fn store_state(
+    new_state: HashMap<String, String>,
+    env_state: State<'_, EnvStateMutex>,
+) -> Result<(), String> {
     let mut env = env_state.0.lock().unwrap();
-    env.env.state = new_state;
+    env.env.state = new_state.clone();
+    Ok(())
 }
 
 #[tauri::command]
@@ -208,7 +216,7 @@ pub async fn show_external_diff(
 }
 
 #[tauri::command]
-pub fn yank_text<T: Runtime>(text: &str, app_handle: AppHandle<T>) -> Result<(), String> {
+pub async fn yank_text<T: Runtime>(text: &str, app_handle: AppHandle<T>) -> Result<(), String> {
     app_handle
         .clipboard_manager()
         .write_text(text)
@@ -216,7 +224,7 @@ pub fn yank_text<T: Runtime>(text: &str, app_handle: AppHandle<T>) -> Result<(),
 }
 
 #[tauri::command]
-pub fn open_pty<T: Runtime>(
+pub async fn open_pty<T: Runtime>(
     command_line: &str,
     cwd: &Path,
     rows: u16,
@@ -245,20 +253,24 @@ pub fn open_pty<T: Runtime>(
 }
 
 #[tauri::command]
-pub fn write_pty(id: usize, data: &str, pty_state: State<'_, PtyStateMutex>) -> Result<(), String> {
+pub async fn write_pty(
+    id: usize,
+    data: &str,
+    pty_state: State<'_, PtyStateMutex>,
+) -> Result<(), String> {
     let pty = pty_state.0.lock().unwrap();
     pty.write(PtyId(id), data.as_bytes())
         .map_err(|e| format!("{}", e))
 }
 
 #[tauri::command]
-pub fn close_pty(id: usize, pty_state: State<'_, PtyStateMutex>) -> Result<(), String> {
+pub async fn close_pty(id: usize, pty_state: State<'_, PtyStateMutex>) -> Result<(), String> {
     let pty = pty_state.0.lock().unwrap();
     pty.kill(PtyId(id)).map_err(|e| format!("{}", e))
 }
 
 #[tauri::command]
-pub fn resize_pty(
+pub async fn resize_pty(
     id: usize,
     rows: u16,
     cols: u16,
