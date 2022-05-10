@@ -1,5 +1,7 @@
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { assertNever } from "@/util";
 import {
+  Autocomplete,
   FormControlLabel,
   FormLabel,
   Radio,
@@ -7,9 +9,19 @@ import {
   TextField,
   Typography
 } from "@mui/material";
-import { forwardRef, useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useReducer,
+  useRef,
+  useState
+} from "react";
 import { DialogMethods } from "./Dialog";
 import { FullscreenDialog } from "./FullscreenDialog";
+import { REPORT_ERROR } from "@/store/misc";
+import { useDispatch } from "@/store";
 
 const SectionContent: React.FC<ChildrenProp> = ({ children }) => (
   <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>
@@ -24,7 +36,7 @@ type Action =
         | "externalDiff"
         | "interactiveShell"
         | "recentListCount";
-      payload: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
+      payload: string | null | undefined;
     }
   | {
       type: "reset";
@@ -36,7 +48,7 @@ const reducer = (state: Config, action: Action) => {
     return action.payload;
   } else {
     const newState = { ...state };
-    const value = action.payload.target.value;
+    const value = action.payload || undefined;
     switch (action.type) {
       case "fontFamilyStandard":
         newState.fontFamily = { ...state.fontFamily, standard: value };
@@ -59,7 +71,7 @@ const reducer = (state: Config, action: Action) => {
         break;
       case "recentListCount":
         {
-          const intValue = parseInt(value);
+          const intValue = parseInt(value || "0");
           if (!isNaN(intValue) && intValue > 0) {
             newState.recentListCount = intValue;
           }
@@ -77,29 +89,81 @@ export interface PreferenceDialogProps {
   onConfigChange: (config: Config) => void;
 }
 
+const FontSelector: React.FC<{
+  label: string;
+  fontFamilies: string[] | "loading";
+  value: string | null | undefined;
+  onChange: (value: string | null | undefined) => void;
+}> = ({ label, value, fontFamilies, onChange }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <Autocomplete
+      open={open}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
+      loading={fontFamilies === "loading"}
+      options={fontFamilies === "loading" ? [] : fontFamilies}
+      value={value}
+      autoHighlight
+      onChange={(_e, value) => onChange(value)}
+      freeSolo
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          className="w-[32rem]"
+          label={label}
+          margin="dense"
+          variant="standard"
+          onChange={({ target }) => onChange(target.value)}
+        />
+      )}
+      renderOption={(props, option) => (
+        <li {...props} style={{ fontFamily: option }}>
+          {option}
+        </li>
+      )}
+    />
+  );
+};
+
 const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialogProps>(
   function PreferenceDialogContent(props, ref) {
+    const dispatchStore = useDispatch();
     const [state, dispatch] = useReducer(reducer, props.config);
     useImperativeHandle(ref, () => ({
       save: () => props.onConfigChange(state)
     }));
+    const [standardFonts, setStandardFonts] = useState<string[] | "loading">("loading");
+    const [monospaceFonts, setMonospaceFonts] = useState<string[] | "loading">("loading");
+    useEffect(() => {
+      invokeTauriCommand("get_system_fonts")
+        .then((fonts) => {
+          const standard = [...new Set(fonts.map((f) => f.family_name))].sort();
+          const monospace = [
+            ...new Set(fonts.filter((f) => f.monospace).map((f) => f.family_name))
+          ].sort();
+          setStandardFonts(standard);
+          setMonospaceFonts(monospace);
+        })
+        .catch((error) => {
+          dispatchStore(REPORT_ERROR({ error }));
+        });
+    }, [dispatchStore]);
     return (
       <div className="p-2">
         <Typography variant="h6" component="div" color="primary">
           Font
         </Typography>
         <SectionContent>
-          <TextField
+          <FontSelector
             label="Default font"
-            margin="dense"
-            variant="standard"
+            fontFamilies={standardFonts}
             value={state.fontFamily.standard}
             onChange={(payload) => dispatch({ type: "fontFamilyStandard", payload })}
           />
-          <TextField
+          <FontSelector
             label="Monospace font"
-            margin="dense"
-            variant="standard"
+            fontFamilies={monospaceFonts}
             value={state.fontFamily.monospace}
             onChange={(payload) => dispatch({ type: "fontFamilyMonospace", payload })}
           />
@@ -108,7 +172,7 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
             <RadioGroup
               row
               value={state.fontSize}
-              onChange={(payload) => dispatch({ type: "fontSize", payload })}
+              onChange={({ target }) => dispatch({ type: "fontSize", payload: target.value })}
             >
               <FormControlLabel value="x-small" control={<Radio />} label="x-small" />
               <FormControlLabel value="small" control={<Radio />} label="small" />
@@ -125,14 +189,14 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
             margin="dense"
             variant="standard"
             value={state.externalDiffTool}
-            onChange={(payload) => dispatch({ type: "externalDiff", payload })}
+            onChange={({ target }) => dispatch({ type: "externalDiff", payload: target.value })}
           />
           <TextField
             label="Interactive shell"
             margin="dense"
             variant="standard"
             value={state.interactiveShell}
-            onChange={(payload) => dispatch({ type: "interactiveShell", payload })}
+            onChange={({ target }) => dispatch({ type: "interactiveShell", payload: target.value })}
           />
         </SectionContent>
         <Typography variant="h6" component="div" color="primary">
@@ -146,7 +210,7 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
             variant="standard"
             style={{ maxWidth: "240px" }}
             value={state.recentListCount}
-            onChange={(payload) => dispatch({ type: "recentListCount", payload })}
+            onChange={({ target }) => dispatch({ type: "recentListCount", payload: target.value })}
           />
         </SectionContent>
       </div>

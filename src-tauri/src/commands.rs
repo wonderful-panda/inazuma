@@ -1,6 +1,7 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
+use font_kit::sources::fs::FsSource;
 use portable_pty::ExitStatus;
 use tauri::{api::dialog::blocking::FileDialogBuilder, Window};
 use tauri::{AppHandle, ClipboardManager, Runtime, State};
@@ -61,7 +62,6 @@ pub async fn show_folder_selector() -> Option<String> {
         .pick_folder()
         .map(|path| path.to_str().unwrap().replace("\\", "/").into())
 }
-
 
 #[tauri::command]
 pub async fn fetch_history(
@@ -272,4 +272,29 @@ pub fn resize_pty(
 #[tauri::command]
 pub async fn find_repository_root() -> Result<Option<String>, String> {
     Ok(git::find_repository_root().await?)
+}
+
+#[tauri::command]
+pub async fn get_system_fonts() -> Result<Vec<Font>, String> {
+    let source = FsSource::new();
+
+    let handles = source.all_fonts().map_err(|e| format!("{}", e))?;
+    let mut set: HashSet<Font> = HashSet::new();
+    for h in handles.iter() {
+        match h.load() {
+            Ok(font) => {
+                set.insert(Font {
+                    full_name: font.full_name(),
+                    family_name: font.family_name(),
+                    monospace: font.is_monospace(),
+                });
+            }
+            Err(e) => {
+                warn!("Failed to load font: {:?}, {}", h, e);
+            }
+        }
+    }
+    let mut vec: Vec<_> = set.drain().collect();
+    vec.sort_by(|a, b| a.full_name.cmp(&b.full_name));
+    Ok(vec)
 }

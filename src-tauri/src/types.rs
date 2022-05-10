@@ -260,6 +260,13 @@ pub enum CommitOptions {
     Amend { message: Option<String> },
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq, Eq, Hash)]
+pub struct Font {
+    pub full_name: String,
+    pub family_name: String,
+    pub monospace: bool,
+}
+
 #[derive(JsonSchema)]
 pub struct Root(
     Blame,
@@ -274,4 +281,5 @@ pub struct Root(
     LstreeEntry,
     Refs,
     WorkingTreeStat,
+    Font,
 );

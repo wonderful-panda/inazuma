@@ -66,6 +66,7 @@ pub fn run() {
             commands::get_changes_between,
             commands::get_commit_detail,
             commands::get_content_base64,
+            commands::get_system_fonts,
             commands::get_tree,
             commands::get_workingtree_stat,
             commands::get_workingtree_udiff_base64,

@@ -8,7 +8,8 @@ import {
   Refs,
   WorkingTreeStat,
   Blame,
-  LstreeEntry
+  LstreeEntry,
+  Font
 } from "../generated/tauri-types";
 
 export type BranchRef = Extract<Ref, { type: "branch" }>;
@@ -39,6 +40,7 @@ export type TauriCommands = {
   resize_pty: [{ id: number; rows: number; cols: number }];
   close_pty: [{ id: number }];
   find_repository_root: [never, string];
+  get_system_fonts: [never, Font[]];
 };
 
 export type TauriInvokeArgs<P> = P extends never ? [] : [P];
