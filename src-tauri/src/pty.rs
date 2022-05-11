@@ -4,7 +4,9 @@ use portable_pty::{
 use shell_words;
 use std::error::Error;
 use std::path::Path;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Condvar, Mutex};
+use std::thread;
+use std::time::Duration;
 use tokio;
 
 pub struct Pty {
@@ -42,28 +44,50 @@ impl Pty {
             pixel_height: 0,
         })?;
 
-        let mut cmd = CommandBuilder::new(&args[0]);
-        cmd.args(&args[1..]);
-        cmd.cwd(cwd);
-        let slave = pair.slave;
-        let child = slave.spawn_command(cmd)?;
-        let killer = child.clone_killer();
+        // spawn reader thread.
         let mut reader = pair.master.try_clone_reader()?;
-
-        *self.pty_master.lock().unwrap() = Some(pair.master);
-        *self.pty_killer.lock().unwrap() = Some(killer);
-
+        let wait1 = Arc::new((Mutex::new(false), Condvar::new()));
+        let wait2 = wait1.clone();
         tokio::task::spawn_blocking(move || {
             let mut buf = [0u8; 8162];
+            {
+                let (lock, cvar) = &*wait2;
+                let mut ready = lock.lock().unwrap();
+                *ready = true;
+                cvar.notify_one();
+            }
             while let Ok(len) = reader.read(&mut buf) {
                 if len == 0 {
                     break;
                 }
+                debug!("{}", String::from_utf8(buf[0..len].to_vec()).unwrap());
                 on_data(&buf[0..len]);
             }
             debug!("pty reader thread has finished");
         });
 
+        {
+            let (lock, cvar) = &*wait1;
+            let mut ready = lock.lock().unwrap();
+            while !*ready {
+                ready = cvar.wait(ready).unwrap();
+            }
+        }
+
+        *self.pty_master.lock().unwrap() = Some(pair.master);
+
+        thread::sleep(Duration::from_millis(100)); // dirty hack to avoid lose first output from command.
+
+        // spawn command
+        let mut cmd = CommandBuilder::new(&args[0]);
+        cmd.args(&args[1..]);
+        cmd.cwd(cwd);
+        let child = pair.slave.spawn_command(cmd)?;
+
+        let killer = child.clone_killer();
+        *self.pty_killer.lock().unwrap() = Some(killer);
+
+        // spawn thread to watch process end.
         let pty_master = self.pty_master.clone();
         let pty_killer = self.pty_killer.clone();
         let pty_child = Mutex::new(child);
