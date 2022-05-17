@@ -6,8 +6,8 @@ use std::{
     sync::Mutex,
 };
 
-use crate::types::{Environment, WindowState};
 use tauri::{PhysicalSize, Runtime, Size, Window};
+use types::{Environment, WindowState};
 
 pub struct EnvState {
     env_file_path: Option<PathBuf>,

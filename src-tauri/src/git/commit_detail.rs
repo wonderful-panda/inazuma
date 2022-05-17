@@ -1,7 +1,7 @@
 use super::{exec, GitError};
-use crate::types::*;
 use std::collections::HashMap;
 use std::path::Path;
+use types::*;
 
 /**
  * parse output generated with `--numstat --raw -z`

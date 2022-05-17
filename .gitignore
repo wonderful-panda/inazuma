@@ -4,6 +4,6 @@ dist
 out
 *.log
 src/react/generated
-src-tauri/target
+**/target
 **/*~
 

@@ -1,6 +1,6 @@
 use super::{exec, merge_heads, rev_parse, GitError};
-use crate::types::*;
 use std::path::Path;
+use types::*;
 
 fn parse_refs_output(output: &str) -> Result<Refs, GitError> {
     let mut refs = Refs {

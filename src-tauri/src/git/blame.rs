@@ -1,7 +1,7 @@
 use super::{exec, GitError};
-use crate::types::BlameEntry;
 use regex::Regex;
 use std::path::Path;
+use types::BlameEntry;
 
 pub fn parse_blame_output(output: &str) -> Vec<BlameEntry> {
     let header_regex = Regex::new(r"^([a-f0-9]{40}) \d+ (\d+) (\d+)$").unwrap();

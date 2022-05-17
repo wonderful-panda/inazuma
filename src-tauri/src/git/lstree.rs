@@ -1,7 +1,7 @@
 use super::{exec, GitError};
-use crate::types::*;
 use regex::Regex;
 use std::{collections::HashMap, path::Path};
+use types::*;
 
 enum EntryBase<'a> {
     Blob(&'a str),

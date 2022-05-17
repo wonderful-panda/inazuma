@@ -6,7 +6,7 @@ use std::{
     sync::Mutex,
 };
 
-use crate::types::Config;
+use types::Config;
 
 pub struct ConfigState {
     config_file_path: Option<PathBuf>,

@@ -6,7 +6,6 @@ pub mod commands;
 pub mod git;
 pub mod pty;
 pub mod state;
-pub mod types;
 
 use state::config::{ConfigState, ConfigStateMutex};
 use state::env::{EnvState, EnvStateMutex};

@@ -2,12 +2,13 @@ use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use tokio::{fs::create_dir_all, process::Command};
 
 use super::{rev_parse, GitError};
-use crate::{state::repositories::Repository, types::FileSpec};
+use crate::state::repositories::Repository;
 use regex::Regex;
 use std::{
     error::Error,
     path::{Path, PathBuf},
 };
+use types::FileSpec;
 
 use super::file::save_to;
 

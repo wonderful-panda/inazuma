@@ -10,8 +10,8 @@ use crate::state::pty::{PtyId, PtyStateMutex};
 use crate::{
     git,
     state::{config::ConfigStateMutex, env::EnvStateMutex, repositories::RepositoriesStateMutex},
-    types::*,
 };
+use types::*;
 
 #[tauri::command]
 pub async fn load_persist_data(

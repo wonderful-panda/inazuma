@@ -1,7 +1,7 @@
 use super::commit_detail::parse_numstat_row;
 use super::{exec, merge_heads, rev_parse, GitError};
-use crate::types::*;
 use std::path::Path;
+use types::*;
 
 pub async fn get_workingtree_stat(
     repo_path: &Path,

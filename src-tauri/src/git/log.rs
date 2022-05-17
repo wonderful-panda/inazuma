@@ -1,7 +1,7 @@
 use super::commit_detail::parse_numstat_row;
 use super::{exec, GitError};
-use crate::types::*;
 use std::path::Path;
+use types::*;
 
 /* LOG FORMAT
  *
