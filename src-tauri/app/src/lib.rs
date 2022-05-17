@@ -12,7 +12,10 @@ use state::env::{EnvState, EnvStateMutex};
 use state::pty::PtyStateMutex;
 use state::repositories::RepositoriesStateMutex;
 use std::{error::Error, fs::create_dir_all};
-use tauri::{generate_handler, App, Manager, RunEvent, Runtime, WindowEvent};
+use tauri::{
+    generate_handler, App, Manager, RunEvent, Runtime, WindowBuilder, WindowEvent, WindowUrl,
+};
+use types::WindowState;
 
 fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
     let app_dir = app.path_resolver().app_dir().unwrap();
@@ -38,12 +41,28 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
     if let Err(e) = env_state.load() {
         warn!("Failed to load env file, {}", e);
     };
-    if let Some(window) = app.get_window("main") {
-        env_state.restore_window_state(&window).unwrap_or_else(|e| {
-            println!("Failed to restore window state, {}", e);
-        });
-        if let Err(e) = window.show() {
-            error!("Failed to show main window, {}", e);
+    let WindowState {
+        width,
+        height,
+        maximized,
+    } = env_state.env.window_state;
+    let win = WindowBuilder::new(app, "main", WindowUrl::App("index.html".into()))
+        .title("Inazuma")
+        .resizable(true)
+        .fullscreen(false)
+        .inner_size(width.into(), height.into())
+        .maximized(maximized)
+        .visible(false)
+        .build();
+    match win {
+        Ok(win) => {
+            if let Err(e) = win.show() {
+                error!("Failed to show main window, {}", e);
+                return Err(e.into());
+            }
+        }
+        Err(e) => {
+            error!("Failed to create main window, {}", e);
             return Err(e.into());
         }
     }

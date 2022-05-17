@@ -48,16 +48,6 @@
       "active": false
     },
     "allowlist": {},
-    "windows": [
-      {
-        "title": "inazuma",
-        "width": 800,
-        "height": 600,
-        "resizable": true,
-        "fullscreen": false,
-        "visible": false
-      }
-    ],
     "security": {
       "csp": null
     }
