@@ -15,7 +15,7 @@ rust-version = "1.57"
 tauri-build = { version = "1.0.0-rc.5", features = [] }
 
 [dependencies.types]
-path = "./types"
+path = "../types"
 
 [dependencies]
 log = "0.4.16"
