@@ -310,3 +310,8 @@ pub async fn get_system_fonts() -> Result<Vec<Font>, String> {
     vec.sort_by(|a, b| a.full_name.cmp(&b.full_name));
     Ok(vec)
 }
+
+#[tauri::command]
+pub async fn set_window_title<T: Runtime>(title: &str, window: Window<T>) -> Result<(), String> {
+    window.set_title(title).map_err(|e| format!("{}", e))
+}

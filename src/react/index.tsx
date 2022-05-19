@@ -136,11 +136,13 @@ const init = async (dispatch: Dispatch) => {
     (newValue) => {
       setTimeout(() => {
         if (newValue) {
-          document.title = `Inazuma (${newValue})`;
+          const title = `Inazuma (${newValue})`;
           window.location.hash = `#${encodeURI(newValue)}`;
+          invokeTauriCommand("set_window_title", { title });
         } else {
-          document.title = "Inazuma";
+          const title = "Inazuma";
           window.location.hash = "#home";
+          invokeTauriCommand("set_window_title", { title });
         }
       }, 0);
     }
