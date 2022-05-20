@@ -18,7 +18,6 @@ import { ContextMenuProvider } from "./context/ContextMenuContext";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 import { lazy } from "./components/hoc/lazy";
 import { invokeTauriCommand } from "./invokeTauriCommand";
-import { FontFamily } from "./types/tauri-types";
 import { debounce } from "lodash";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });

@@ -28,7 +28,7 @@ export interface GraphFragment {
  * Color chooser for graph edges.
  */
 class ColorPallete {
-  _used: Dict<number>;
+  _used: Record<string, number>;
   _queue: string[];
   constructor(public colors: string[]) {
     this._queue = [...colors];

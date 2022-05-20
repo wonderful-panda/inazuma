@@ -7,18 +7,18 @@ import { useCallback } from "react";
 import { VirtualListEvents } from "../VirtualList";
 import { VirtualTree } from "../VirtualTree";
 
-export interface LsTreeProps extends VirtualListEvents<TreeItemVM<LstreeEntryData>> {
-  treeModelState: TreeModelState<LstreeEntryData>;
-  treeModelDispatch: TreeModelDispatch<LstreeEntryData>;
-  getRowClass?: (item: LstreeEntryData) => string | undefined;
+export interface LsTreeProps extends VirtualListEvents<TreeItemVM<LstreeData>> {
+  treeModelState: TreeModelState<LstreeData>;
+  treeModelDispatch: TreeModelDispatch<LstreeData>;
+  getRowClass?: (item: LstreeData) => string | undefined;
 }
 
-const getItemKey = (item: LstreeEntryData) => item.path;
+const getItemKey = (item: LstreeData) => item.path;
 
 const LsTreeRow: React.VFC<{
   item: LstreeEntry;
   index: number;
-  getRowClass?: (item: LstreeEntryData) => string | undefined;
+  getRowClass?: (item: LstreeData) => string | undefined;
 }> = ({ item, index, getRowClass }) => {
   const selectedIndex = useSelectedIndex();
   return (
@@ -49,7 +49,7 @@ export const LsTree: React.VFC<LsTreeProps> = ({
     [getRowClass]
   );
   return (
-    <VirtualTree<LstreeEntryData>
+    <VirtualTree<LstreeData>
       treeModelState={treeModelState}
       treeModelDispatch={treeModelDispatch}
       getItemKey={getItemKey}

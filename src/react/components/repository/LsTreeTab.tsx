@@ -42,7 +42,7 @@ const LsTreeWithFilter: React.VFC<{
     return filterTreeItems(entries, (data) => data.path.indexOf(filterText) >= 0);
   }, [entries, filterText]);
 
-  const [state, dispatch] = useTreeModel<LstreeEntryData>();
+  const [state, dispatch] = useTreeModel<LstreeData>();
   const { handleKeyDown, handleRowClick } = useTreeItemSelector(state, dispatch);
 
   useEffect(() => {
@@ -58,12 +58,12 @@ const LsTreeWithFilter: React.VFC<{
   }, [dispatch]);
 
   const getRowClass = useCallback(
-    (data: LstreeEntryData) => (data.path === blamePath ? "text-primary font-bold" : undefined),
+    (data: LstreeData) => (data.path === blamePath ? "text-primary font-bold" : undefined),
     [blamePath]
   );
 
   const handleRowDoubleClick = useCallback(
-    (event: React.MouseEvent, _index: number, { item }: TreeItemVM<LstreeEntryData>) => {
+    (event: React.MouseEvent, _index: number, { item }: TreeItemVM<LstreeData>) => {
       if (event.button === 0 && item.data.type === "blob") {
         onUpdateBlamePath(item.data.path);
       }
@@ -71,7 +71,7 @@ const LsTreeWithFilter: React.VFC<{
     [onUpdateBlamePath]
   );
 
-  const selectedData = useRef<LstreeEntryData | undefined>(undefined);
+  const selectedData = useRef<LstreeData | undefined>(undefined);
   useLayoutEffect(() => {
     selectedData.current = state.selectedItem?.item.data;
   }, [state.selectedItem]);

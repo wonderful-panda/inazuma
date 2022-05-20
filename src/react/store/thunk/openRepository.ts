@@ -6,7 +6,6 @@ import { HIDE_LOADING, SHOW_LOADING } from "../misc";
 import { ADD_RECENT_OPENED_REPOSITORY } from "../persist";
 import { _SET_LOG } from "../repository";
 import { withHandleError } from "./withHandleError";
-import { Refs as RawRefs, Ref } from "@/types/tauri-types";
 
 const fetchHistory = async (repoPath: string) => {
   const [commits, refs] = await invokeTauriCommand("fetch_history", {
