@@ -1,4 +1,3 @@
-import * as tt from "../generated/tauri-types";
 import { ReactNode } from "react";
 
 declare global {
@@ -18,23 +17,21 @@ declare global {
 
   type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-  type TauriInvoke = tt.TauriInvoke;
-
-  type Commit = tt.Commit;
-  type FileEntry = tt.FileEntry & {
+  type Commit = import("@backend/Commit").Commit;
+  type FileEntry = import("@backend/FileEntry").FileEntry & {
     unstaged?: boolean;
   };
-  type LstreeEntry = tt.LstreeEntry;
-  type LstreeData = tt.LstreeData;
-  type CommitDetail = tt.CommitDetail;
-  type CommitOptions = tt.CommitOptions;
-  type FileSpec = tt.FileSpec;
-  type RawRefs = tt.Refs;
-  type Ref = tt.Ref;
-  type FontSize = tt.FontSize;
-  type FontFamily = tt.FontFamily;
-  type Environment = tt.Environment;
-  type Config = tt.Config;
+  type LstreeEntry = import("@backend/LstreeEntry").LstreeEntry;
+  type LstreeData = import("@backend/LstreeData").LstreeData;
+  type CommitDetail = import("@backend/CommitDetail").CommitDetail;
+  type CommitOptions = import("@backend/CommitOptions").CommitOptions;
+  type FileSpec = import("@backend/FileSpec").FileSpec;
+  type RawRefs = import("@backend/Refs").Refs;
+  type Ref = import("@backend/Ref").Ref;
+  type FontSize = import("@backend/FontSize").FontSize;
+  type FontFamily = import("@backend/FontFamily").FontFamily;
+  type Environment = import("@backend/Environment").Environment;
+  type Config = import("@backend/Config").Config;
 
   type BranchRef = Extract<Ref, { type: "branch" }>;
   type TagRef = Extract<Ref, { type: "tag" }>;
@@ -54,9 +51,9 @@ declare global {
     parentIds: string[];
   }
 
-  type FileCommit = tt.Commit & tt.FileEntry;
+  type FileCommit = Commit & FileEntry;
 
-  type WorkingTreeStat = tt.Commit & {
+  type WorkingTreeStat = Commit & {
     unstagedFiles: FileEntry[];
     stagedFiles: FileEntry[];
   };

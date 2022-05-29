@@ -9,14 +9,20 @@ dayjs.extend(localizedFormat);
 
 export const timezone = dayjs.tz.guess() || "America/New_York";
 
-export function formatDate(v: number): string {
-  return dayjs(v).tz(timezone).format("L");
+export function formatDate(v: number | bigint): string {
+  return dayjs(typeof v === "number" ? v : Number(v))
+    .tz(timezone)
+    .format("L");
 }
 
-export function formatDateTime(v: number): string {
-  return dayjs(v).tz(timezone).format("L LT");
+export function formatDateTime(v: number | bigint): string {
+  return dayjs(typeof v === "number" ? v : Number(v))
+    .tz(timezone)
+    .format("L LT");
 }
 
-export function formatDateTimeLong(v: number): string {
-  return dayjs(v).tz(timezone).format("lll");
+export function formatDateTimeLong(v: number | bigint): string {
+  return dayjs(typeof v === "number" ? v : Number(v))
+    .tz(timezone)
+    .format("lll");
 }

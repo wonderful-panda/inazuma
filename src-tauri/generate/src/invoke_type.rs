@@ -1,4 +1,3 @@
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::error::Error;
@@ -6,9 +5,11 @@ use std::fs;
 use std::io::Read;
 use std::path::Path;
 use syn::visit::Visit;
+use ts_rs::TS;
 
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
-#[serde(tag = "kind", content = "content", deny_unknown_fields)]
+#[derive(Debug, Serialize, Deserialize, TS)]
+#[serde(tag = "kind", content = "content")]
+#[ts(export)]
 pub enum TsType {
     Ignored(String),
     Invalid(String),
@@ -24,6 +25,23 @@ pub enum TsType {
         value: Box<TsType>,
     },
     UserDefined(String),
+}
+
+#[derive(Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct TsArg {
+    pub name: String,
+    pub ty: TsType,
+}
+
+#[derive(Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct TsFunc {
+    pub name: String,
+    pub args: Vec<TsArg>,
+    pub ret: TsType,
 }
 
 fn is_tauricommand_attribute(attr: &syn::Attribute) -> bool {
@@ -125,21 +143,6 @@ fn build_ts_type(ty: &syn::Type) -> TsType {
         syn::Type::Paren(ty) => build_ts_type(&ty.elem),
         _ => TsType::Invalid(String::from("unsupported-node")),
     }
-}
-
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct TsArg {
-    pub name: String,
-    pub ty: TsType,
-}
-
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct TsFunc {
-    pub name: String,
-    pub args: Vec<TsArg>,
-    pub ret: TsType,
 }
 
 struct FnVisitor {

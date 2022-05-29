@@ -140,9 +140,9 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
     useEffect(() => {
       invokeTauriCommand("get_system_fonts")
         .then((fonts) => {
-          const standard = [...new Set(fonts.map((f) => f.family_name))].sort();
+          const standard = [...new Set(fonts.map((f) => f.familyName))].sort();
           const monospace = [
-            ...new Set(fonts.filter((f) => f.monospace).map((f) => f.family_name))
+            ...new Set(fonts.filter((f) => f.monospace).map((f) => f.familyName))
           ].sort();
           setStandardFonts(standard);
           setMonospaceFonts(monospace);

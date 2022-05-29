@@ -4,6 +4,7 @@ dist
 out
 *.log
 src/react/generated
+src-tauri/types/bindings
 **/target
 **/*~
 

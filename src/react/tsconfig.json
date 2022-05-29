@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "es6",
+    "target": "es2020",
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -13,9 +13,10 @@
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@backend/*": ["../../src-tauri/types/bindings/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", "../commonTypes.d.ts", "../remote.d.ts", "../../package.json"],
+  "include": ["**/*.ts", "**/*.tsx", "../../src-tauri/types/bindings/*.ts", "../../package.json"],
   "exclude": ["node_modules"]
 }
