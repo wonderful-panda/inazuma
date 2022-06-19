@@ -16,7 +16,7 @@ const fetchHistory = async (repoPath: string) => {
     commits.unshift({
       id: "--",
       author: "--",
-      date: BigInt(new Date().getDate()),
+      date: Date.now(),
       summary: "<Working tree>",
       parentIds: [refs.head, ...refs.mergeHeads]
     });

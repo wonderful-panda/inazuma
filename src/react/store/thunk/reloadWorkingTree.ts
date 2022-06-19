@@ -17,7 +17,7 @@ const reloadWorkingTree = () => {
       id: "--",
       author: "--",
       summary: "<Working tree>",
-      date: BigInt(new Date().getTime()),
+      date: Date.now(),
       ...stat
     };
     dispatch(_SET_WORKING_TREE({ repoPath, value }));

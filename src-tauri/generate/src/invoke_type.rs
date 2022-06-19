@@ -1,15 +1,11 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use std::io::Read;
 use std::path::Path;
 use syn::visit::Visit;
-use ts_rs::TS;
 
-#[derive(Debug, Serialize, Deserialize, TS)]
-#[serde(tag = "kind", content = "content")]
-#[ts(export)]
+#[derive(Debug)]
 pub enum TsType {
     Ignored(String),
     Invalid(String),
@@ -27,17 +23,30 @@ pub enum TsType {
     UserDefined(String),
 }
 
-#[derive(Debug, Serialize, Deserialize, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+impl TsType {
+    pub fn is_ignored(&self) -> bool {
+        if let TsType::Ignored(..) = self {
+            true
+        } else {
+            false
+        }
+    }
+    pub fn is_optional(&self) -> bool {
+        if let TsType::Optional(..) = self {
+            true
+        } else {
+            false
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct TsArg {
     pub name: String,
     pub ty: TsType,
 }
 
-#[derive(Debug, Serialize, Deserialize, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Debug)]
 pub struct TsFunc {
     pub name: String,
     pub args: Vec<TsArg>,
@@ -155,21 +164,38 @@ impl<'ast> syn::visit::Visit<'ast> for FnVisitor {
             return;
         }
         let name = node.sig.ident.to_string();
-        let mut args: Vec<TsArg> = Vec::new();
-        node.sig.inputs.iter().for_each(|ty| {
-            if let syn::FnArg::Typed(ty) = ty {
-                let ts_type = build_ts_type(&ty.ty);
-                if let syn::Pat::Ident(ref pat_ident) = *ty.pat {
-                    args.push(TsArg {
-                        name: pat_ident.ident.to_string(),
-                        ty: ts_type,
-                    });
+        let args = node
+            .sig
+            .inputs
+            .iter()
+            .filter_map(|ty| {
+                if let syn::FnArg::Typed(ty) = ty {
+                    if let syn::Pat::Ident(ref pat_ident) = *ty.pat {
+                        let ts_type = build_ts_type(&ty.ty);
+                        if ts_type.is_ignored() {
+                            None
+                        } else {
+                            Some(TsArg {
+                                name: pat_ident.ident.to_string(),
+                                ty: ts_type,
+                            })
+                        }
+                    } else {
+                        None
+                    }
+                } else {
+                    None
                 }
-            }
-        });
+            })
+            .collect::<Vec<_>>();
 
         let ret = if let syn::ReturnType::Type(_, ty) = &node.sig.output {
-            build_ts_type(ty)
+            let ret = build_ts_type(ty);
+            if ret.is_ignored() {
+                TsType::Void
+            } else {
+                ret
+            }
         } else {
             TsType::Void
         };

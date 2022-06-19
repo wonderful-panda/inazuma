@@ -1,16 +1,13 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use ts_rs::TS;
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct Config {
     pub font_family: FontFamily,
     pub font_size: FontSize,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub external_diff_tool: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub interactive_shell: Option<String>,
     pub recent_list_count: u32,
 }
@@ -27,13 +24,10 @@ impl Default for Config {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct FontFamily {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub standard: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub monospace: Option<String>,
 }
 
@@ -46,9 +40,8 @@ impl Default for FontFamily {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct Environment {
     #[serde(default)]
     pub recent_opened: Vec<String>,
@@ -68,9 +61,8 @@ impl Default for Environment {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct WindowState {
     pub width: u32,
     pub height: u32,
@@ -87,14 +79,11 @@ impl Default for WindowState {
     }
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[ts(export)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "kebab-case")]
 pub enum FontSize {
-    #[serde(rename = "medium")]
     Medium,
-    #[serde(rename = "small")]
     Small,
-    #[serde(rename = "x-small")]
     XSmall,
 }
 
@@ -104,9 +93,8 @@ impl Default for FontSize {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Commit {
     pub id: String,
     pub parent_ids: Vec<String>,
@@ -127,15 +115,12 @@ impl Commit {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct FileEntry {
     pub path: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub old_path: Option<String>,
     pub status_code: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub delta: Option<FileDelta>,
 }
 
@@ -160,25 +145,22 @@ impl FileEntry {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase", tag = "type")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields, tag = "type")]
 pub enum FileDelta {
     Binary,
     Text { insertions: u32, deletions: u32 },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct FileSpec {
     pub path: String,
     pub revspec: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CommitDetail {
     #[serde(flatten)]
     pub commit: Commit,
@@ -186,18 +168,16 @@ pub struct CommitDetail {
     pub files: Vec<FileEntry>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct WorkingTreeStat {
     pub unstaged_files: Vec<FileEntry>,
     pub staged_files: Vec<FileEntry>,
     pub parent_ids: Vec<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct FileLogEntry {
     #[serde(flatten)]
     pub commit: Commit,
@@ -205,22 +185,24 @@ pub struct FileLogEntry {
     pub entry: FileEntry,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase", tag = "type")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields, tag = "type")]
 pub enum Ref {
+    #[serde(rename_all = "camelCase")]
     Branch {
         id: String,
         fullname: String,
         name: String,
         current: bool,
     },
+    #[serde(rename_all = "camelCase")]
     Tag {
         id: String,
         fullname: String,
         name: String,
         tag_sha: String,
     },
+    #[serde(rename_all = "camelCase")]
     Remote {
         id: String,
         fullname: String,
@@ -229,68 +211,76 @@ pub enum Ref {
     },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Refs {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub head: Option<String>,
     pub merge_heads: Vec<String>,
     pub refs: Vec<Ref>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase", tag = "type", content = "path")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(
+    rename_all = "camelCase",
+    deny_unknown_fields,
+    tag = "type",
+    content = "path"
+)]
 pub enum LstreeData {
     Blob(String),
     Tree(String),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct LstreeEntry {
     pub data: LstreeData,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub children: Option<Vec<LstreeEntry>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct BlameEntry {
     pub id: String,
     pub line_no: Vec<u32>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Blame {
     pub blame_entries: Vec<BlameEntry>,
     pub commits: Vec<FileLogEntry>,
     pub content_base64: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase", tag = "commitType")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields, tag = "commitType")]
 pub enum CommitOptions {
-    Normal {
-        message: String,
-    },
-    Amend {
-        #[serde(skip_serializing_if = "Option::is_none")]
-        message: Option<String>,
-    },
+    Normal { message: String },
+    Amend { message: Option<String> },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq, Eq, Hash)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Font {
     pub full_name: String,
     pub family_name: String,
     pub monospace: bool,
 }
+
+#[derive(JsonSchema)]
+pub struct Root(
+    Blame,
+    BlameEntry,
+    Commit,
+    CommitDetail,
+    CommitOptions,
+    Config,
+    Environment,
+    FileLogEntry,
+    FileSpec,
+    LstreeEntry,
+    Refs,
+    WorkingTreeStat,
+    Font,
+);

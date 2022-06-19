@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import type * as backend from "@/generated/backend-types";
 
 declare global {
   interface Window {
@@ -6,8 +7,8 @@ declare global {
   }
   type ComponentRef<C> = C extends React.ForwardRefExoticComponent<infer P>
     ? P extends React.RefAttributes<infer T>
-      ? T
-      : never
+    ? T
+    : never
     : never;
 
   type Orientation = "landscape" | "portrait";
@@ -17,21 +18,21 @@ declare global {
 
   type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-  type Commit = import("@backend/Commit").Commit;
-  type FileEntry = import("@backend/FileEntry").FileEntry & {
+  type Commit = backend.Commit;
+  type FileEntry = backend.FileEntry & {
     unstaged?: boolean;
   };
-  type LstreeEntry = import("@backend/LstreeEntry").LstreeEntry;
-  type LstreeData = import("@backend/LstreeData").LstreeData;
-  type CommitDetail = import("@backend/CommitDetail").CommitDetail;
-  type CommitOptions = import("@backend/CommitOptions").CommitOptions;
-  type FileSpec = import("@backend/FileSpec").FileSpec;
-  type RawRefs = import("@backend/Refs").Refs;
-  type Ref = import("@backend/Ref").Ref;
-  type FontSize = import("@backend/FontSize").FontSize;
-  type FontFamily = import("@backend/FontFamily").FontFamily;
-  type Environment = import("@backend/Environment").Environment;
-  type Config = import("@backend/Config").Config;
+  type LstreeEntry = backend.LstreeEntry;
+  type LstreeData = backend.LstreeData;
+  type CommitDetail = backend.CommitDetail;
+  type CommitOptions = backend.CommitOptions;
+  type FileSpec = backend.FileSpec;
+  type RawRefs = backend.Refs;
+  type Ref = backend.Ref;
+  type FontSize = backend.FontSize;
+  type FontFamily = backend.FontFamily;
+  type Environment = backend.Environment;
+  type Config = backend.Config;
 
   type BranchRef = Extract<Ref, { type: "branch" }>;
   type TagRef = Extract<Ref, { type: "tag" }>;
@@ -60,11 +61,11 @@ declare global {
 
   type LogDetail =
     | ({
-        type: "commit";
-      } & CommitDetail)
+      type: "commit";
+    } & CommitDetail)
     | ({
-        type: "status";
-      } & WorkingTreeStat);
+      type: "status";
+    } & WorkingTreeStat);
 
   interface Blame {
     commits: ReadonlyArray<FileCommit>;
@@ -77,12 +78,12 @@ declare global {
 
   type Udiff =
     | {
-        type: "text";
-        content: string;
-      }
+      type: "text";
+      content: string;
+    }
     | {
-        type: "binary" | "nodiff";
-      };
+      type: "binary" | "nodiff";
+    };
 
   interface TextFile extends FileSpec {
     encoding: string;

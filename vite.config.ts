@@ -13,8 +13,7 @@ export default defineConfig({
   },
   resolve: {
     alias: [
-      { find: "@", replacement: path.resolve(__dirname, "./src/react") },
-      { find: "@backend", replacement: path.resolve(__dirname, "./src-tauri/types/bindings") }
+      { find: "@", replacement: path.resolve(__dirname, "./src/react") }
     ]
   }
 });
