@@ -111,7 +111,7 @@ const CommitDiffContent: React.VFC<{
                 ref={listRef}
                 commit={commit2}
                 files={files}
-                onRowClick={itemSelector.handleRowClick}
+                onRowMouseDown={itemSelector.handleRowMouseDown}
                 onRowDoubleClick={handleRowDoubleClick}
                 actionCommands={actionCommands}
               />

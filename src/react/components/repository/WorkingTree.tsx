@@ -72,17 +72,17 @@ const GroupHeader: React.VFC<{
     const action: IconActionItem =
       type === "unstaged"
         ? {
-            id: "StageAll",
-            label: "Stage all files",
-            icon: "mdi:plus",
-            handler: () => dispatch(STAGE("*"))
-          }
+          id: "StageAll",
+          label: "Stage all files",
+          icon: "mdi:plus",
+          handler: () => dispatch(STAGE("*"))
+        }
         : {
-            id: "UnstageAll",
-            label: "Unstage all files",
-            icon: "mdi:minus",
-            handler: () => dispatch(UNSTAGE("*"))
-          };
+          id: "UnstageAll",
+          label: "Unstage all files",
+          icon: "mdi:minus",
+          handler: () => dispatch(UNSTAGE("*"))
+        };
     return [action];
   }, [type, dispatch]);
 
@@ -171,7 +171,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
   const [udiff, setUdiff] = useState<Udiff | undefined>(undefined);
   const selectedRowDataRef = useRef<RowType | undefined>(undefined);
   const [treeModelState, treeModelDispatch] = useTreeModel<RowType>();
-  const { handleKeyDown, handleRowClick } = useTreeItemSelector(treeModelState, treeModelDispatch);
+  const { handleKeyDown, handleRowMouseDown } = useTreeItemSelector(treeModelState, treeModelDispatch);
 
   const fixup = useFixup();
   const commit = useCallback(() => dispatch(BEGIN_COMMIT()), [dispatch]);
@@ -294,7 +294,7 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
                   itemSize={itemSize}
                   getItemKey={getItemKey}
                   renderRow={renderRow}
-                  onRowClick={handleRowClick}
+                  onRowMouseDown={handleRowMouseDown}
                   onRowDoubleClick={handleRowDoubleClick}
                 />
               </SelectedIndexProvider>

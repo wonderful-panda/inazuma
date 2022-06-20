@@ -102,7 +102,7 @@ export const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path
     [blame]
   );
 
-  const { handleKeyDown, handleRowClick } = useListItemSelector(
+  const { handleKeyDown, handleRowMouseDown } = useListItemSelector(
     blame?.commits.length || 0,
     setSelectedIndex
   );
@@ -130,7 +130,7 @@ export const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path
                 ref={listRef}
                 commits={blame.commits}
                 refs={refs}
-                onRowClick={handleRowClick}
+                onRowMouseDown={handleRowMouseDown}
                 onRowContextMenu={handleRowContextMenu}
               />
             </KeyDownTrapper>

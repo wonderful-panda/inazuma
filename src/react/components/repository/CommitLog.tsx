@@ -50,9 +50,8 @@ const compareWithParent = (commits: readonly Commit[]): CommitCommand => ({
 
 const compareWithPinnedCommit = (pinnedCommit: Commit | undefined): CommitCommand => ({
   id: "CompareCommitWithPinnedCommit",
-  label: `Compare with Compare-BASE commit (${
-    pinnedCommit ? shortHash(pinnedCommit.id) : "NOT SELECTED"
-  })`,
+  label: `Compare with Compare-BASE commit (${pinnedCommit ? shortHash(pinnedCommit.id) : "NOT SELECTED"
+    })`,
   icon: "mdi:map-marker-distance",
   hidden: (commit) => commit.id === "--",
   disabled: (commit) => !pinnedCommit || pinnedCommit.id === commit.id,
@@ -163,7 +162,7 @@ const CommitLogInner: React.VFC<{
                     ref={listRef}
                     {...log}
                     actionCommands={actionCommands}
-                    onRowClick={itemSelector.handleRowClick}
+                    onRowMouseDown={itemSelector.handleRowMouseDown}
                     onRowContextMenu={handleContextMenu}
                   />
                 </KeyDownTrapper>

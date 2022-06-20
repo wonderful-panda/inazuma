@@ -15,6 +15,7 @@ const MemoizedVariableSizeList = memo(VariableSizeList);
 
 export interface VirtualListEvents<T> {
   onRowClick?: (event: React.MouseEvent, index: number, item: T) => void;
+  onRowMouseDown?: (event: React.MouseEvent, index: number, item: T) => void;
   onRowDoubleClick?: (event: React.MouseEvent, index: number, item: T) => void;
   onRowContextMenu?: (event: React.MouseEvent, index: number, item: T) => void;
 }
@@ -53,6 +54,7 @@ const VirtualListInner = <T extends unknown>(
     getItemKey,
     children,
     onRowClick,
+    onRowMouseDown,
     onRowDoubleClick,
     onRowContextMenu
   }: VirtualListProps<T>,
@@ -68,6 +70,7 @@ const VirtualListInner = <T extends unknown>(
     listRef.current?.resetAfterIndex?.(0);
   }, [itemSize]);
   const handleRowClick = useRowEventHandler(items, onRowClick);
+  const handleRowMouseDown = useRowEventHandler(items, onRowMouseDown);
   const handleRowDoubleClick = useRowEventHandler(items, onRowDoubleClick);
   const handleRowContextMenu = useRowEventHandler(items, onRowContextMenu);
   const renderRow = useCallback(
@@ -79,6 +82,7 @@ const VirtualListInner = <T extends unknown>(
           key={getItemKey(item)}
           style={style}
           onClick={handleRowClick}
+          onMouseDown={handleRowMouseDown}
           onDoubleClick={handleRowDoubleClick}
           onContextMenu={handleRowContextMenu}
         >
@@ -86,7 +90,7 @@ const VirtualListInner = <T extends unknown>(
         </div>
       );
     },
-    [items, getItemKey, handleRowClick, handleRowDoubleClick, handleRowContextMenu, children]
+    [items, getItemKey, handleRowClick, handleRowMouseDown, handleRowDoubleClick, handleRowContextMenu, children]
   );
   const itemKey = useCallback(
     (index: number, data: unknown) => {

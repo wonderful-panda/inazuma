@@ -82,7 +82,7 @@ export const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
   const commit = props.commit;
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const listRef = useRef<VirtualListMethods>(null);
-  const { handleKeyDown, handleRowClick } = useListItemSelector(
+  const { handleKeyDown, handleRowMouseDown } = useListItemSelector(
     commit?.files.length || 0,
     setSelectedIndex
   );
@@ -108,7 +108,7 @@ export const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
                     commit={commit}
                     files={commit.files}
                     actionCommands={actionCommands}
-                    onRowClick={handleRowClick}
+                    onRowMouseDown={handleRowMouseDown}
                     onRowDoubleClick={onRowDoubleClick}
                     onRowContextMenu={onRowContextMenu}
                   />

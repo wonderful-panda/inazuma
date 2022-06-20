@@ -9,7 +9,7 @@ export interface ListItemSelector {
   moveFirst: () => void;
   moveLast: () => void;
   handleKeyDown: (event: React.KeyboardEvent) => boolean;
-  handleRowClick: (event: React.MouseEvent, index: number) => void;
+  handleRowMouseDown: (event: React.MouseEvent, index: number) => void;
 }
 
 export const useListItemSelector = (
@@ -57,8 +57,10 @@ export const useListItemSelector = (
         return false;
       }
     };
-    const handleRowClick = (_event: React.MouseEvent, index: number) => {
-      setValue(index);
+    const handleRowMouseDown = (event: React.MouseEvent, index: number) => {
+      if (event.button === 0) {
+        setValue(index);
+      }
     };
     return {
       set: setValue,
@@ -67,7 +69,7 @@ export const useListItemSelector = (
       moveFirst,
       moveLast,
       handleKeyDown,
-      handleRowClick
+      handleRowMouseDown
     };
   }, [itemsCount, setValue, extraKeyHandlers]);
 };

@@ -43,7 +43,7 @@ const LsTreeWithFilter: React.VFC<{
   }, [entries, filterText]);
 
   const [state, dispatch] = useTreeModel<LstreeData>();
-  const { handleKeyDown, handleRowClick } = useTreeItemSelector(state, dispatch);
+  const { handleKeyDown, handleRowMouseDown } = useTreeItemSelector(state, dispatch);
 
   useEffect(() => {
     dispatch({ type: "reset", payload: { items: filteredEntries } });
@@ -111,7 +111,7 @@ const LsTreeWithFilter: React.VFC<{
           <LsTree
             treeModelState={state}
             treeModelDispatch={dispatch}
-            onRowClick={handleRowClick}
+            onRowMouseDown={handleRowMouseDown}
             onRowDoubleClick={handleRowDoubleClick}
             getRowClass={getRowClass}
           />
