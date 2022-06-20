@@ -7,8 +7,8 @@ declare global {
   }
   type ComponentRef<C> = C extends React.ForwardRefExoticComponent<infer P>
     ? P extends React.RefAttributes<infer T>
-    ? T
-    : never
+      ? T
+      : never
     : never;
 
   type Orientation = "landscape" | "portrait";
@@ -61,11 +61,11 @@ declare global {
 
   type LogDetail =
     | ({
-      type: "commit";
-    } & CommitDetail)
+        type: "commit";
+      } & CommitDetail)
     | ({
-      type: "status";
-    } & WorkingTreeStat);
+        type: "status";
+      } & WorkingTreeStat);
 
   interface Blame {
     commits: ReadonlyArray<FileCommit>;
@@ -78,12 +78,12 @@ declare global {
 
   type Udiff =
     | {
-      type: "text";
-      content: string;
-    }
+        type: "text";
+        content: string;
+      }
     | {
-      type: "binary" | "nodiff";
-    };
+        type: "binary" | "nodiff";
+      };
 
   interface TextFile extends FileSpec {
     encoding: string;

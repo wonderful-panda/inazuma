@@ -10,19 +10,13 @@ dayjs.extend(localizedFormat);
 export const timezone = dayjs.tz.guess() || "America/New_York";
 
 export function formatDate(v: number): string {
-  return dayjs(v)
-    .tz(timezone)
-    .format("L");
+  return dayjs(v).tz(timezone).format("L");
 }
 
 export function formatDateTime(v: number): string {
-  return dayjs(v)
-    .tz(timezone)
-    .format("L LT");
+  return dayjs(v).tz(timezone).format("L LT");
 }
 
 export function formatDateTimeLong(v: number): string {
-  return dayjs(v)
-    .tz(timezone)
-    .format("lll");
+  return dayjs(v).tz(timezone).format("lll");
 }

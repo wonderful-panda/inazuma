@@ -90,7 +90,15 @@ const VirtualListInner = <T extends unknown>(
         </div>
       );
     },
-    [items, getItemKey, handleRowClick, handleRowMouseDown, handleRowDoubleClick, handleRowContextMenu, children]
+    [
+      items,
+      getItemKey,
+      handleRowClick,
+      handleRowMouseDown,
+      handleRowDoubleClick,
+      handleRowContextMenu,
+      children
+    ]
   );
   const itemKey = useCallback(
     (index: number, data: unknown) => {
