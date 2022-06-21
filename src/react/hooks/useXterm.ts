@@ -65,11 +65,6 @@ export const useXterm = (options: { onExit?: () => void }) => {
       });
       term.onData((data) => invokeTauriCommand("write_pty", { id, data }));
       term.onResize(({ rows, cols }) => invokeTauriCommand("resize_pty", { id, rows, cols }));
-      term.onKey(({ domEvent }) => {
-        if (domEvent.code === "Escape") {
-          el.focus();
-        }
-      });
       term.focus();
       shell.current = { id, term, fitAddon };
     },
