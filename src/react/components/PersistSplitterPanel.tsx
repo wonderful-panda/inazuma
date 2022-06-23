@@ -10,7 +10,7 @@ export type PersistSplitterPanelProps = Omit<
   persistKey: string;
 };
 
-export const PersistSplitterPanel: React.VFC<PersistSplitterPanelProps> = ({
+export const PersistSplitterPanel: React.FC<PersistSplitterPanelProps> = ({
   initialRatio,
   initialDirection,
   persistKey,

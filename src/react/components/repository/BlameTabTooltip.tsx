@@ -5,7 +5,7 @@ export interface BlameTabTooltipProps {
   path: string;
 }
 
-const BlameTabTooltip: React.VFC<BlameTabTooltipProps> = ({ commit, path }) => {
+const BlameTabTooltip: React.FC<BlameTabTooltipProps> = ({ commit, path }) => {
   return (
     <>
       <TooltipTitle text="Blame" />

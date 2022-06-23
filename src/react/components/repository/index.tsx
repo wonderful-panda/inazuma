@@ -42,7 +42,7 @@ const renderTabTooltip: TabContainerProps<TabType>["renderTabTooltip"] = (tab) =
   }
 };
 
-const RepositoryPage: React.VFC = () => {
+const RepositoryPage: React.FC = () => {
   const dispatch = useDispatch();
   const repoPath = useSelector((state) => state.repository.path);
   const refs = useSelector((state) => state.repository.log?.refs);

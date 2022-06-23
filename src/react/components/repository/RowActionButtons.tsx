@@ -9,7 +9,7 @@ export interface RowActionItem extends IconActionItem {
   className?: string;
 }
 
-const RowActionButtons_: React.VFC<{
+const RowActionButtons_: React.FC<{
   size: number;
   actions?: readonly RowActionItem[];
 }> = ({ size, actions }) => {

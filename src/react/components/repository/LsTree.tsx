@@ -15,7 +15,7 @@ export interface LsTreeProps extends VirtualListEvents<TreeItemVM<LstreeData>> {
 
 const getItemKey = (item: LstreeData) => item.path;
 
-const LsTreeRow: React.VFC<{
+const LsTreeRow: React.FC<{
   item: LstreeEntry;
   index: number;
   getRowClass?: (item: LstreeData) => string | undefined;
@@ -34,7 +34,7 @@ const LsTreeRow: React.VFC<{
   );
 };
 
-export const LsTree: React.VFC<LsTreeProps> = ({
+export const LsTree: React.FC<LsTreeProps> = ({
   treeModelState,
   treeModelDispatch,
   getRowClass,

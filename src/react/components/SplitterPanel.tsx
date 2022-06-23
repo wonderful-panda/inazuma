@@ -48,7 +48,7 @@ const PanelInner = (
 );
 const Panel = forwardRef(PanelInner);
 
-export const SplitterPanel: React.VFC<SplitterPanelProps> = ({
+export const SplitterPanel: React.FC<SplitterPanelProps> = ({
   first,
   second,
   direction = "horiz",

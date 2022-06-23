@@ -37,7 +37,7 @@ const bg: Record<AlertType, string> = {
   info: "bg-info"
 };
 
-const Alert_: React.VFC<{
+const Alert_: React.FC<{
   open: boolean;
   onClose?: (e: React.SyntheticEvent | React.MouseEvent | Event, reason?: string) => void;
   message: string;

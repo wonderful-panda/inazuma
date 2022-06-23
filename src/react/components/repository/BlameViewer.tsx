@@ -123,7 +123,7 @@ const getHunkBorderLineNumbers = (blame: Blame) => {
   return lineNumbers;
 };
 
-const BlameViewer_: React.VFC<BlameViewerProps> = ({
+const BlameViewer_: React.FC<BlameViewerProps> = ({
   language,
   blame,
   selectedCommitId,

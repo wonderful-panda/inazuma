@@ -20,7 +20,7 @@ export interface FileCommitListRowProps {
   onContextMenu?: (event: React.MouseEvent) => void;
 }
 
-const FilePaths: React.VFC<{ file: FileEntry }> = ({ file }) =>
+const FilePaths: React.FC<{ file: FileEntry }> = ({ file }) =>
   file.oldPath ? (
     <div className="text-[0.9rem] font-mono flex-row-nowrap text-greytext whitespace-nowrap">
       <div className="mr-1 my-auto leading-4 font-bold px-0.5 py-0 text-background bg-greytext">
@@ -36,7 +36,7 @@ const FilePaths: React.VFC<{ file: FileEntry }> = ({ file }) =>
     <></>
   );
 
-const FileCommitListRow_: React.VFC<FileCommitListRowProps> = ({
+const FileCommitListRow_: React.FC<FileCommitListRowProps> = ({
   commit,
   refs,
   index,

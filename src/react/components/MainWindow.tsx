@@ -24,7 +24,7 @@ interface ApplicationDrawerProps {
   items: readonly IconActionItem[];
 }
 
-const ApplicationDrawerInner: React.VFC<ApplicationDrawerProps> = ({ opened, close, items }) => {
+const ApplicationDrawerInner: React.FC<ApplicationDrawerProps> = ({ opened, close, items }) => {
   return (
     <Drawer anchor="left" open={opened} onClose={close}>
       <Typography variant="h6" component="div">
@@ -44,7 +44,7 @@ const ApplicationDrawerInner: React.VFC<ApplicationDrawerProps> = ({ opened, clo
 };
 const ApplicationDrawer = memo(ApplicationDrawerInner);
 
-const Alert: React.VFC = () => {
+const Alert: React.FC = () => {
   const dispatch = useDispatch();
   const alert = useSelector((state) => state.misc.alert);
   const [open, setOpen] = useState(false);

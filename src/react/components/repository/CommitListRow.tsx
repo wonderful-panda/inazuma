@@ -46,7 +46,7 @@ const setCompareBaseAction = (
   }
 });
 
-const CommitListRow_: React.VFC<CommitListRowProps> = ({
+const CommitListRow_: React.FC<CommitListRowProps> = ({
   height,
   commit,
   graph,

@@ -5,7 +5,7 @@ export interface CommitDiffTabTooltipProps {
   commit2: Commit;
 }
 
-const CommitDiffTabTooltip: React.VFC<CommitDiffTabTooltipProps> = ({ commit1, commit2 }) => {
+const CommitDiffTabTooltip: React.FC<CommitDiffTabTooltipProps> = ({ commit1, commit2 }) => {
   return (
     <>
       <TooltipTitle text="Commit difference" />

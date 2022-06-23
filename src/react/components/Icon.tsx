@@ -11,4 +11,4 @@ export interface IconProps {
   className?: string;
 }
 
-export const Icon: React.VFC<IconProps> = (props) => <IconRaw {...props} />;
+export const Icon: React.FC<IconProps> = (props) => <IconRaw {...props} />;

@@ -9,7 +9,7 @@ const getFileType = (item: FileEntry) => {
   }
 };
 
-export const FileStat: React.VFC<{ file: FileEntry; className?: string }> = ({
+export const FileStat: React.FC<{ file: FileEntry; className?: string }> = ({
   file,
   className
 }) => {

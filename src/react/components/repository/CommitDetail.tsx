@@ -25,7 +25,7 @@ export interface CommitDetailProps {
 
 const actionCommands = [diffWithParent, showFileContent];
 
-const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => {
+const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
   const dispatch = useDispatch();
   const showSourceTree_ = useCallback(() => {
     if (commit) {
@@ -78,7 +78,7 @@ const CommitMetadataInner: React.VFC<CommitDetailProps> = ({ commit, refs }) => 
 };
 const CommitMetadata = memo(CommitMetadataInner);
 
-export const CommitDetail: React.VFC<CommitDetailProps> = (props) => {
+export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
   const commit = props.commit;
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const listRef = useRef<VirtualListMethods>(null);

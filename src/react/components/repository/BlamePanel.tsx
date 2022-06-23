@@ -20,7 +20,7 @@ export interface SecondPanelProps {
   onUpdateSelectedCommitId: (value: string | undefined) => void;
 }
 
-const SecondPanel: React.VFC<SecondPanelProps> = ({
+const SecondPanel: React.FC<SecondPanelProps> = ({
   blame,
   path,
   selectedCommitId,
@@ -74,7 +74,7 @@ export interface BlamePanelProps {
   refs: Refs | undefined;
 }
 
-export const BlamePanel: React.VFC<BlamePanelProps> = ({ persistKey, blame, path, sha, refs }) => {
+export const BlamePanel: React.FC<BlamePanelProps> = ({ persistKey, blame, path, sha, refs }) => {
   const handleRowContextMenu = useFileCommitContextMenu(path);
   const [selectedItem, setSelectedItem] = useState({
     index: -1,

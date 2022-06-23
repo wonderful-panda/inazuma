@@ -19,7 +19,7 @@ export interface MonacoDiffEditorProps {
 
 const emptyContent: DiffContent = { content: "", language: "plaintext" };
 
-const MonacoDiffEditor_: React.VFC<MonacoDiffEditorProps> = ({
+const MonacoDiffEditor_: React.FC<MonacoDiffEditorProps> = ({
   className,
   left = emptyContent,
   right = emptyContent,

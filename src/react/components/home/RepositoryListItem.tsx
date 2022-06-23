@@ -21,7 +21,7 @@ export interface RepositoryListItemProps {
   };
 }
 
-export const RepositoryListItem: React.VFC<RepositoryListItemProps> = ({
+export const RepositoryListItem: React.FC<RepositoryListItemProps> = ({
   itemId,
   icon,
   action,

@@ -8,7 +8,7 @@ import { CLOSE_DIALOG } from "@/store/repository";
 import { REPORT_ERROR } from "@/store/misc";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 
-export const CommitDialog: React.VFC = () => {
+export const CommitDialog: React.FC = () => {
   const dispatch = useDispatch();
   const repoPath = useSelector((state) => state.repository.path);
   const opened = useSelector((state) => state.repository.activeDialog === "commit");

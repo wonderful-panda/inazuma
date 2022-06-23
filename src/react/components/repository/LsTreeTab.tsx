@@ -22,7 +22,7 @@ export interface LsTreeTabProps {
   refs: Refs | undefined;
 }
 
-const LsTreeWithFilter: React.VFC<{
+const LsTreeWithFilter: React.FC<{
   entries: readonly LstreeEntry[];
   blamePath: string | undefined;
   onUpdateBlamePath: (value: string | undefined) => void;
@@ -121,7 +121,7 @@ const LsTreeWithFilter: React.VFC<{
   );
 };
 
-const LsTreeTab: React.VFC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
+const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
   const [entries, setEntries] = useState<LstreeEntry[]>([]);
   const [blamePath, setBlamePath] = useState<string | undefined>(undefined);
   const revspec = commit.id;

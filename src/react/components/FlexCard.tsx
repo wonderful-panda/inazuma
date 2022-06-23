@@ -7,7 +7,7 @@ export interface FlexCardProps {
   actions?: React.ReactNode;
 }
 
-const FlexCard_: React.VFC<FlexCardProps> = ({ title, content, actions }) => {
+const FlexCard_: React.FC<FlexCardProps> = ({ title, content, actions }) => {
   return (
     <Card className="flex-col-nowrap flex-1">
       <CardContent className="flex-col-nowrap flex-1 overflow-y-hidden p-4">

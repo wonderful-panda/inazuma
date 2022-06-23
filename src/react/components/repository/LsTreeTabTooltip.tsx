@@ -4,7 +4,7 @@ export interface LsTreeTabTooltipProps {
   commit: Commit;
 }
 
-const LsTreeTabTooltip: React.VFC<LsTreeTabTooltipProps> = ({ commit }) => {
+const LsTreeTabTooltip: React.FC<LsTreeTabTooltipProps> = ({ commit }) => {
   return (
     <>
       <TooltipTitle text="File tree" />

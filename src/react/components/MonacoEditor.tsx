@@ -11,7 +11,7 @@ export interface MonacoEditorProps {
   onEditorMounted?: (editor: IStandaloneCodeEditor) => void;
 }
 
-const MonacoEditor_: React.VFC<MonacoEditorProps> = ({
+const MonacoEditor_: React.FC<MonacoEditorProps> = ({
   className,
   language,
   options,

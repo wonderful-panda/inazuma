@@ -61,7 +61,7 @@ const getUdiff = async (repoPath: string, relPath: string, cached: boolean): Pro
   }
 };
 
-const GroupHeader: React.VFC<{
+const GroupHeader: React.FC<{
   type: "staged" | "unstaged";
   index: number;
   height: number;
@@ -72,17 +72,17 @@ const GroupHeader: React.VFC<{
     const action: IconActionItem =
       type === "unstaged"
         ? {
-          id: "StageAll",
-          label: "Stage all files",
-          icon: "mdi:plus",
-          handler: () => dispatch(STAGE("*"))
-        }
+            id: "StageAll",
+            label: "Stage all files",
+            icon: "mdi:plus",
+            handler: () => dispatch(STAGE("*"))
+          }
         : {
-          id: "UnstageAll",
-          label: "Unstage all files",
-          icon: "mdi:minus",
-          handler: () => dispatch(UNSTAGE("*"))
-        };
+            id: "UnstageAll",
+            label: "Unstage all files",
+            icon: "mdi:minus",
+            handler: () => dispatch(UNSTAGE("*"))
+          };
     return [action];
   }, [type, dispatch]);
 
@@ -112,7 +112,7 @@ const getUdiffContent = (udiff: Udiff | undefined): string => {
   }
 };
 
-const UdiffViewer: React.VFC<{ udiff: Udiff | undefined }> = ({ udiff }) => {
+const UdiffViewer: React.FC<{ udiff: Udiff | undefined }> = ({ udiff }) => {
   const theme = useTheme();
   const options = useMemo<monaco.editor.IEditorConstructionOptions>(
     () => ({
@@ -150,7 +150,7 @@ const UdiffViewer: React.VFC<{ udiff: Udiff | undefined }> = ({ udiff }) => {
   );
 };
 
-export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) => {
+export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) => {
   const dispatch = useDispatch();
 
   const repoPath = useSelector((state) => state.repository.path);
@@ -171,7 +171,10 @@ export const WorkingTree: React.VFC<WorkingTreeProps> = ({ stat, orientation }) 
   const [udiff, setUdiff] = useState<Udiff | undefined>(undefined);
   const selectedRowDataRef = useRef<RowType | undefined>(undefined);
   const [treeModelState, treeModelDispatch] = useTreeModel<RowType>();
-  const { handleKeyDown, handleRowMouseDown } = useTreeItemSelector(treeModelState, treeModelDispatch);
+  const { handleKeyDown, handleRowMouseDown } = useTreeItemSelector(
+    treeModelState,
+    treeModelDispatch
+  );
 
   const fixup = useFixup();
   const commit = useCallback(() => dispatch(BEGIN_COMMIT()), [dispatch]);

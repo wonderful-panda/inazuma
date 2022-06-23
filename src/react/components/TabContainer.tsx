@@ -16,11 +16,11 @@ const TabBar = styled("div")({
   }
 });
 
-export const TooltipTitle: React.VFC<{ text: string }> = ({ text }) => (
+export const TooltipTitle: React.FC<{ text: string }> = ({ text }) => (
   <div className="text-secondary font-semibold uppercase">{text}</div>
 );
 
-export const TooltipCommitDisplay: React.VFC<{ commit: Commit; className?: string }> = ({
+export const TooltipCommitDisplay: React.FC<{ commit: Commit; className?: string }> = ({
   commit,
   className
 }) => (
@@ -30,7 +30,7 @@ export const TooltipCommitDisplay: React.VFC<{ commit: Commit; className?: strin
   </div>
 );
 
-const TabButton: React.VFC<{
+const TabButton: React.FC<{
   text: string;
   tooltop: React.ReactChild;
   closable: boolean;

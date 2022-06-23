@@ -50,8 +50,9 @@ const compareWithParent = (commits: readonly Commit[]): CommitCommand => ({
 
 const compareWithPinnedCommit = (pinnedCommit: Commit | undefined): CommitCommand => ({
   id: "CompareCommitWithPinnedCommit",
-  label: `Compare with Compare-BASE commit (${pinnedCommit ? shortHash(pinnedCommit.id) : "NOT SELECTED"
-    })`,
+  label: `Compare with Compare-BASE commit (${
+    pinnedCommit ? shortHash(pinnedCommit.id) : "NOT SELECTED"
+  })`,
   icon: "mdi:map-marker-distance",
   hidden: (commit) => commit.id === "--",
   disabled: (commit) => !pinnedCommit || pinnedCommit.id === commit.id,
@@ -63,7 +64,7 @@ const compareWithPinnedCommit = (pinnedCommit: Commit | undefined): CommitComman
   }
 });
 
-const CommitLogInner: React.VFC<{
+const CommitLogInner: React.FC<{
   active: boolean;
   repoPath: string;
   log: CommitLogItems;
@@ -177,7 +178,7 @@ const CommitLogInner: React.VFC<{
   );
 };
 
-const CommitLog: React.VFC<{ active: boolean }> = ({ active }) => {
+const CommitLog: React.FC<{ active: boolean }> = ({ active }) => {
   const repoPath = useSelector((state) => state.repository.path);
   const log = useSelector((state) => state.repository.log);
   if (!repoPath || !log) {

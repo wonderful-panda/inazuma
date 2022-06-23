@@ -9,7 +9,7 @@ export interface BlameTabProps {
   refs: Refs | undefined;
 }
 
-const BlameTab: React.VFC<BlameTabProps> = ({ repoPath, path, commit, refs }) => {
+const BlameTab: React.FC<BlameTabProps> = ({ repoPath, path, commit, refs }) => {
   const sha = commit.id;
   const blame = useBlame(repoPath, path, sha);
   return blame?.blame ? (

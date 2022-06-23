@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import { Command } from "@/context/CommandGroupContext";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 
-export const Cmd: React.VFC<Command> = () => <></>;
+export const Cmd: React.FC<Command> = () => <></>;
 
 export const CommandGroup: React.FC<
   {

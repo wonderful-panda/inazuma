@@ -8,7 +8,7 @@ interface ConfirmDialogProps {
   onClose: (accepted: boolean) => void;
 }
 
-export const ConfirmDialog: React.VFC<ConfirmDialogProps> = ({
+export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   opened,
   title,
   content,

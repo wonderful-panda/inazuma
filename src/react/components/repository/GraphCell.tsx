@@ -13,7 +13,7 @@ type NodeLineProps = {
   stroke: string;
   strokeWidth?: number;
 };
-const NodeLine: React.VFC<NodeLineProps> = (props) => {
+const NodeLine: React.FC<NodeLineProps> = (props) => {
   const { graph, edge, width, height, mask, stroke, strokeWidth } = props;
   if (edge.index === graph.node.index) {
     return (
@@ -61,7 +61,7 @@ const actualColor = (id: string, color: string) => {
   return id === "--" ? WORK_COLOR : color;
 };
 
-const GraphCell_: React.VFC<Props> = ({ graph, height, head, maskIdPrefix }) => {
+const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   const node = graph.node;
   const width = GRID_WIDTH * graph.width;
   let radius: number;

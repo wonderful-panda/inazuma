@@ -62,7 +62,7 @@ const loadContents = (
   return Promise.all([left, right]);
 };
 
-const CommitDiffContent: React.VFC<{
+const CommitDiffContent: React.FC<{
   repoPath: string;
   files: FileEntry[];
   commit1: Commit;
@@ -139,7 +139,7 @@ const CommitDiffContent: React.VFC<{
   );
 };
 
-const CommitDiffTab: React.VFC<CommitDiffTabProps> = ({ repoPath, commit1, commit2 }) => {
+const CommitDiffTab: React.FC<CommitDiffTabProps> = ({ repoPath, commit1, commit2 }) => {
   const dispatch = useDispatch();
   const [files, setFiles] = useState<FileEntry[] | undefined>(undefined);
   useEffect(() => {

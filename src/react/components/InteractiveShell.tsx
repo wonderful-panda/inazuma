@@ -13,7 +13,7 @@ export interface InteractiveShellProps {
   fontSize?: number;
 }
 
-const InteractiveShellInner: React.VFC<
+const InteractiveShellInner: React.FC<
   InteractiveShellProps & { width: number; height: number }
 > = ({
   open,
@@ -71,7 +71,7 @@ const InteractiveShellInner: React.VFC<
   );
 };
 
-const InteractiveShell_: React.VFC<InteractiveShellProps> = (props) => {
+const InteractiveShell_: React.FC<InteractiveShellProps> = (props) => {
   return (
     <AutoSizer className="flex-1">
       {(size) => <InteractiveShellInner {...props} {...size} />}

@@ -13,7 +13,7 @@ export interface VirtualTreeProps<T> extends VirtualListEvents<TreeItemVM<T>> {
   onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
-const ExpandButton: React.VFC<{ expanded: boolean; size: number }> = ({ expanded, size }) => (
+const ExpandButton: React.FC<{ expanded: boolean; size: number }> = ({ expanded, size }) => (
   <svg
     width={size}
     height={size}

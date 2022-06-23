@@ -34,7 +34,7 @@ const useDiffContent = (tf: TextFile | undefined) =>
     [tf]
   );
 
-const DiffViewer_: React.VFC<DiffViewerProps> = ({ left, right }) => {
+const DiffViewer_: React.FC<DiffViewerProps> = ({ left, right }) => {
   const [editor, setEditor] = useState<IStandaloneDiffEditor | undefined>(undefined);
   const onEditorMounted = useCallback((editor: IStandaloneDiffEditor) => {
     setEditor(editor);

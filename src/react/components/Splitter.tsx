@@ -11,7 +11,7 @@ interface SplitterProps {
   onPositionChange: (position: number) => void;
 }
 
-const RotateButton: React.VFC<{
+const RotateButton: React.FC<{
   dragging: boolean;
   horiz: boolean;
   onClick: () => void;
@@ -36,7 +36,7 @@ const RotateButton: React.VFC<{
   </IconButton>
 );
 
-export const Splitter: React.VFC<SplitterProps> = ({
+export const Splitter: React.FC<SplitterProps> = ({
   horiz,
   thickness,
   allowDirectionChange,

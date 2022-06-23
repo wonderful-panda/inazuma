@@ -12,7 +12,7 @@ const Badge: React.FC<{ className?: string } & ChildrenProp> = ({ className, chi
   </span>
 );
 
-const Branch: React.VFC<{ r: BranchRef }> = ({ r }) => (
+const Branch: React.FC<{ r: BranchRef }> = ({ r }) => (
   <Badge
     className={classNames(
       "rounded-xl",
@@ -25,15 +25,15 @@ const Branch: React.VFC<{ r: BranchRef }> = ({ r }) => (
   </Badge>
 );
 
-const Tag: React.VFC<{ r: TagRef }> = ({ r }) => (
+const Tag: React.FC<{ r: TagRef }> = ({ r }) => (
   <Badge className="text-[cyan] border border-solid border-current">{r.name}</Badge>
 );
 
-const Remote: React.VFC<{ r: RemoteRef }> = ({ r }) => (
+const Remote: React.FC<{ r: RemoteRef }> = ({ r }) => (
   <Badge className="text-[grey] border border-solid border-current rounded-xl">{`${r.remote}/${r.name}`}</Badge>
 );
 
-export const RefBadge: React.VFC<{ r: Ref }> = ({ r }) => {
+export const RefBadge: React.FC<{ r: Ref }> = ({ r }) => {
   switch (r.type) {
     case "branch":
       return <Branch r={r} />;

@@ -17,7 +17,7 @@ export interface FileListRowProps {
   actionCommands?: readonly FileCommand[];
 }
 
-const OldPath: React.VFC<{ file: FileEntry }> = ({ file }) =>
+const OldPath: React.FC<{ file: FileEntry }> = ({ file }) =>
   file.oldPath ? (
     <>
       <div className="font-bold leading-4 mx-1 my-auto px-0.5 py-0 text-background bg-greytext">
@@ -29,7 +29,7 @@ const OldPath: React.VFC<{ file: FileEntry }> = ({ file }) =>
     <></>
   );
 
-const FileListRow_: React.VFC<FileListRowProps> = ({
+const FileListRow_: React.FC<FileListRowProps> = ({
   commit,
   file,
   index,
