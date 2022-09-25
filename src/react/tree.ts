@@ -1,6 +1,6 @@
 export interface TreeItem<T> {
   data: T;
-  children?: TreeItem<T>[] | null;
+  children?: TreeItem<T>[];
 }
 
 export function sortTreeInplace<T>(

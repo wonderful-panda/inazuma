@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import type * as backend from "@/generated/backend-types";
 
 declare global {
   interface Window {
@@ -18,21 +17,21 @@ declare global {
 
   type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
-  type Commit = backend.Commit;
-  type FileEntry = backend.FileEntry & {
+  type Commit = import("@backend/Commit").Commit;
+  type FileEntry = import("@backend/FileEntry").FileEntry & {
     unstaged?: boolean;
   };
-  type LstreeEntry = backend.LstreeEntry;
-  type LstreeData = backend.LstreeData;
-  type CommitDetail = backend.CommitDetail;
-  type CommitOptions = backend.CommitOptions;
-  type FileSpec = backend.FileSpec;
-  type RawRefs = backend.Refs;
-  type Ref = backend.Ref;
-  type FontSize = backend.FontSize;
-  type FontFamily = backend.FontFamily;
-  type Environment = backend.Environment;
-  type Config = backend.Config;
+  type LstreeEntry = import("@backend/LstreeEntry").LstreeEntry;
+  type LstreeData = import("@backend/LstreeData").LstreeData;
+  type CommitDetail = import("@backend/CommitDetail").CommitDetail;
+  type CommitOptions = import("@backend/CommitOptions").CommitOptions;
+  type FileSpec = import("@backend/FileSpec").FileSpec;
+  type RawRefs = import("@backend/Refs").Refs;
+  type Ref = import("@backend/Ref").Ref;
+  type FontSize = import("@backend/FontSize").FontSize;
+  type FontFamily = import("@backend/FontFamily").FontFamily;
+  type Environment = import("@backend/Environment").Environment;
+  type Config = import("@backend/Config").Config;
 
   type BranchRef = Extract<Ref, { type: "branch" }>;
   type TagRef = Extract<Ref, { type: "tag" }>;

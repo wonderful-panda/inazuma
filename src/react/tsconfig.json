@@ -13,17 +13,10 @@
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"],
+      "@backend/*": ["../../src-tauri/types/bindings/*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "../../package.json"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", "../../src-tauri/types/bindings/*.ts", "../../package.json"],
+  "exclude": ["node_modules"]
 }

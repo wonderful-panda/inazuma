@@ -7,8 +7,8 @@
   "scripts": {
     "clean": "rimraf node_modules/.cache dist/* src/react/generated/* src-tauri/target",
     "prebuild:iconbundle": "node build/create-iconbundle.js",
-    "generate-dts:bindings": "cargo run --manifest-path src-tauri/generate/Cargo.toml -- schema | json2ts -o src/react/generated/backend-types.d.ts",
-    "generate-dts:invoke": "cargo run --manifest-path src-tauri/generate/Cargo.toml -- invoke --src src-tauri/app/**/*.rs --template build/tauri-invoke.handlebars --out src/react/generated/tauri-invoke.d.ts",
+    "generate-dts:bindings": "ts-node build/generate-bindings.ts",
+    "generate-dts:invoke": "ts-node build/generate-invoke.ts",
     "generate-dts": "run-s generate-dts:*",
     "format": "prettier --write \"src/react/**/*.{ts,tsx,js}\"",
     "lint": "eslint src/react/**/*.{ts,tsx}",
@@ -79,7 +79,6 @@
     "fibers": "^5.0.1",
     "glob": "^8.0.1",
     "handlebars": "^4.7.7",
-    "json-schema-to-typescript": "^10.1.5",
     "npm-run-all": "^4.1.5",
     "postcss": "~8.4.13",
     "prettier": "^2.6.2",
