@@ -1,12 +1,11 @@
 import path from "path";
-import reactRefresh from "@vitejs/plugin-react-refresh";
-import reactJsx from "vite-react-jsx";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
   root: "./src/react",
   base: "./",
-  plugins: [reactJsx(), reactRefresh()],
+  plugins: [react()],
   build: {
     sourcemap: "inline",
     outDir: "../../dist"
