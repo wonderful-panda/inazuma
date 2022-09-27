@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { Typography } from "@mui/material";
-import React, { memo, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { FileStatusIcon } from "./FileStatusIcon";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { FileCommand, IconActionItem } from "@/commands/types";

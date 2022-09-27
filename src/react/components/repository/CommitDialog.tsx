@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "@/store";
 import { clamp } from "@/util";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogActionHandler } from "../Dialog";
 import { COMMIT } from "@/store/thunk/commit";
 import { CLOSE_DIALOG } from "@/store/repository";

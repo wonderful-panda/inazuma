@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import React from "react";
 
 export interface KeyDownTrapperProps extends ChildrenProp {
   onKeyDown: (e: React.KeyboardEvent) => void;

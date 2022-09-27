@@ -2,7 +2,7 @@ import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useFileCommitContextMenu } from "@/hooks/useContextMenu";
 import { useListItemSelector } from "@/hooks/useListItemSelector";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GitHash } from "../GitHash";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";

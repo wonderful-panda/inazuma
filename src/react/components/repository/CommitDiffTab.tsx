@@ -1,7 +1,7 @@
 import { useDispatch } from "@/store";
 import { shortHash } from "@/util";
 import { REPORT_ERROR } from "@/store/misc";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { FileList, useFileListRowEventHandler } from "./FileList";
 import { Loading } from "../Loading";

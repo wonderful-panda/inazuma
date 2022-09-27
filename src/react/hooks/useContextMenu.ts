@@ -6,7 +6,7 @@ import {
 } from "@/commands";
 import { ContextMenuContext } from "@/context/ContextMenuContext";
 import { useDispatch } from "@/store";
-import React, { useCallback, useContext } from "react";
+import { useCallback, useContext } from "react";
 
 export const useCommitContextMenu = (): ((
   event: React.MouseEvent | MouseEvent,
