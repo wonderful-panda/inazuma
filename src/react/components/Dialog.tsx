@@ -66,7 +66,6 @@ export const Dialog: React.FC<DialogProps> = ({
       classes={{ paper: className }}
       open={opened}
       onClose={close}
-      onKeyPress={handleEnter}
       TransitionComponent={TransitionComponent}
       transitionDuration={200}
     >
@@ -74,7 +73,9 @@ export const Dialog: React.FC<DialogProps> = ({
         <Icon icon="mdi:close" />
       </IconButton>
       {title && <DialogTitle className="px-5 py-3">{title}</DialogTitle>}
-      <DialogContent dividers>{children}</DialogContent>
+      <DialogContent dividers onKeyPress={handleEnter}>
+        {children}
+      </DialogContent>
       <DialogActions className="pr-4">
         {actions?.map((a, i) => (
           <Button
