@@ -1,6 +1,6 @@
 import IconButton from "@mui/material/IconButton";
 import { Icon } from "./Icon";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Drawer, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import { PreferenceDialog } from "./PreferenceDialog";
 import { AboutDialog } from "./AboutDialog";
@@ -67,7 +67,7 @@ const Alert: React.FC = () => {
 
 export const MainWindow: React.FC<MainWindowProps> = (props) => {
   const dispatch = useDispatch();
-  const loading = useSelector((state) => state.misc.loading);
+  const loading = useSelector((state) => state.misc.loading > 0);
   const [drawerOpened, setDrawerOpened] = useState(false);
   const openDrawer = useCallback(() => {
     setDrawerOpened(true);
@@ -110,8 +110,20 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
     ],
     [props.drawerItems, callbacks]
   );
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (loading) {
+        e.preventDefault();
+        return false;
+      }
+    },
+    [loading]
+  );
   return (
-    <div className="absolute left-0 right-0 top-0 bottom-0 flex box-border m-0">
+    <div
+      className="absolute left-0 right-0 top-0 bottom-0 flex box-border m-0"
+      onKeyDown={onKeyDown}
+    >
       <CommandGroup name="main">
         <Cmd name="Preference" hotkey="Ctrl+Shift+P" handler={callbacks.openPreference} />
         <Cmd name="About" hotkey="Ctrl+Shift+V" handler={callbacks.openAbout} />

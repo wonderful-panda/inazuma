@@ -1,7 +1,7 @@
 import { serializeError } from "@/util";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface State {
-  loading: boolean;
+  loading: number;
   showInteractiveShell: boolean;
   alert:
     | {
@@ -12,7 +12,7 @@ interface State {
 }
 
 const initialState: State = {
-  loading: false,
+  loading: 0,
   showInteractiveShell: false,
   alert: undefined
 };
@@ -22,10 +22,10 @@ const slice = createSlice({
   initialState,
   reducers: {
     showLoading: (state) => {
-      state.loading = true;
+      state.loading += 1;
     },
     hideLoading: (state) => {
-      state.loading = false;
+      state.loading -= 1;
     },
     showAlert: (state, { payload }: PayloadAction<{ type: AlertType; message: string }>) => {
       state.alert = payload;
