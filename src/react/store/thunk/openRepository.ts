@@ -2,10 +2,10 @@ import { Grapher, GraphFragment } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { toSlashedPath } from "@/util";
 import { Dispatch, RootState } from "..";
-import { HIDE_LOADING, SHOW_LOADING } from "../misc";
 import { ADD_RECENT_OPENED_REPOSITORY } from "../persist";
 import { _SET_LOG } from "../repository";
 import { withHandleError } from "./withHandleError";
+import { withLoading } from "./withLoading";
 
 const fetchHistory = async (repoPath: string) => {
   const [commits, refs] = await invokeTauriCommand("fetch_history", {
@@ -26,42 +26,32 @@ const fetchHistory = async (repoPath: string) => {
 
 const openRepository = (realPath: string) => {
   return async (dispatch: Dispatch) => {
-    try {
-      dispatch(SHOW_LOADING());
-      const path = toSlashedPath(realPath);
-      const { commits, refs } = await fetchHistory(path);
-      const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
-      const graph: Record<string, GraphFragment> = {};
-      commits.forEach((c) => {
-        graph[c.id] = grapher.proceed(c);
-      });
-      dispatch(ADD_RECENT_OPENED_REPOSITORY(path));
-      dispatch(_SET_LOG({ path, commits, refs: makeRefs(refs), graph, keepTabs: false }));
-    } finally {
-      dispatch(HIDE_LOADING());
-    }
+    const path = toSlashedPath(realPath);
+    const { commits, refs } = await fetchHistory(path);
+    const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
+    const graph: Record<string, GraphFragment> = {};
+    commits.forEach((c) => {
+      graph[c.id] = grapher.proceed(c);
+    });
+    dispatch(ADD_RECENT_OPENED_REPOSITORY(path));
+    dispatch(_SET_LOG({ path, commits, refs: makeRefs(refs), graph, keepTabs: false }));
   };
 };
 
 const reloadRepository = () => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
-    try {
-      const state = getState();
-      const path = state.repository.path;
-      if (!path) {
-        return;
-      }
-      dispatch(SHOW_LOADING());
-      const { commits, refs } = await fetchHistory(path);
-      const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
-      const graph: Record<string, GraphFragment> = {};
-      commits.forEach((c) => {
-        graph[c.id] = grapher.proceed(c);
-      });
-      dispatch(_SET_LOG({ path, commits, refs: makeRefs(refs), graph, keepTabs: true }));
-    } finally {
-      dispatch(HIDE_LOADING());
+    const state = getState();
+    const path = state.repository.path;
+    if (!path) {
+      return;
     }
+    const { commits, refs } = await fetchHistory(path);
+    const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
+    const graph: Record<string, GraphFragment> = {};
+    commits.forEach((c) => {
+      graph[c.id] = grapher.proceed(c);
+    });
+    dispatch(_SET_LOG({ path, commits, refs: makeRefs(refs), graph, keepTabs: true }));
   };
 };
 
@@ -110,5 +100,5 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
   return refs;
 };
 
-export const OPEN_REPOSITORY = withHandleError(openRepository);
-export const RELOAD_REPOSITORY = withHandleError(reloadRepository);
+export const OPEN_REPOSITORY = withLoading(withHandleError(openRepository));
+export const RELOAD_REPOSITORY = withLoading(withHandleError(reloadRepository));
