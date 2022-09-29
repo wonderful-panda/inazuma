@@ -3,6 +3,7 @@ import { Dispatch, RootState } from "..";
 import { SHOW_WARNING } from "../misc";
 import { RELOAD_REPOSITORY } from "./openRepository";
 import { withHandleError } from "./withHandleError";
+import { withLoading } from "./withLoading";
 
 const commit = (options: CommitOptions) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
@@ -30,4 +31,4 @@ const commit = (options: CommitOptions) => {
   };
 };
 
-export const COMMIT = withHandleError(commit);
+export const COMMIT = withLoading(withHandleError(commit));
