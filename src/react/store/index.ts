@@ -48,7 +48,7 @@ export const watch = <T extends unknown>(
   const unwatch = () => {
     const index = watchers.indexOf(watcher);
     if (0 <= index) {
-      delete watchers[index];
+      watchers.splice(index, 1);
     }
   };
   return unwatch;
