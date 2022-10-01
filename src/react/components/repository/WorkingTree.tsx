@@ -9,6 +9,7 @@ import { Button, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "@/store";
 import { STAGE, UNSTAGE } from "@/store/thunk/staging";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
+import { FIXUP } from "@/store/thunk/commit";
 import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
 import { TreeItem } from "@/tree";
 import { VirtualTree, VirtualTreeProps } from "../VirtualTree";
@@ -24,7 +25,6 @@ import { IconActionItem } from "@/commands/types";
 import { RowActionButtons } from "./RowActionButtons";
 import { MonacoEditor } from "../MonacoEditor";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { useFixup, FIXUP_DESC } from "@/hooks/useFixup";
 import { REPORT_ERROR } from "@/store/misc";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
@@ -176,8 +176,8 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     treeModelDispatch
   );
 
-  const fixup = useFixup();
   const commit = useCallback(() => dispatch(BEGIN_COMMIT()), [dispatch]);
+  const fixup = useCallback(() => dispatch(FIXUP()), [dispatch]);
 
   useEffect(() => {
     treeRef.current?.scrollToItem(treeModelState.selectedIndex);
@@ -306,7 +306,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
           actions={
             <>
               <Button
-                title={FIXUP_DESC}
+                title="Meld staged changes into last commit without changing message"
                 disabled={staged.length === 0}
                 onClick={fixup}
                 color="inherit"
