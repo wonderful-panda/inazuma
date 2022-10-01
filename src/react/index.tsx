@@ -15,7 +15,6 @@ import { OPEN_REPOSITORY } from "./store/thunk/openRepository";
 import { Loading } from "./components/Loading";
 import { REPORT_ERROR } from "./store/misc";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
-import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 import { lazy } from "./components/hoc/lazy";
 import { invokeTauriCommand } from "./invokeTauriCommand";
 import { debounce } from "lodash";
@@ -181,7 +180,7 @@ const App = () => {
         <CommandGroupProvider>
           <ContextMenuProvider>
             <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
-              <ConfirmDialogProvider>{content}</ConfirmDialogProvider>
+              {content}
             </PersistStateProvider>
           </ContextMenuProvider>
         </CommandGroupProvider>

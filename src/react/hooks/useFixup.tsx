@@ -1,20 +1,21 @@
 import { COMMIT } from "@/store/thunk/commit";
 import { useCallback } from "react";
 import { useDispatch } from "@/store";
-import { useConfirmDialog } from "./useConfirmDialog";
+import { SHOW_CONFIRM_DIALOG } from "@/store/thunk/confirmDialog";
 
 export const FIXUP_DESC = "Meld staged changes into last commit without changing message";
 
 export const useFixup = () => {
   const dispatch = useDispatch();
-  const confirm = useConfirmDialog();
   return useCallback(async () => {
-    const ret = await confirm.show({
-      title: "Fixup",
-      content: <span className="text-xl">{FIXUP_DESC}</span>
-    });
+    const ret = await dispatch(
+      SHOW_CONFIRM_DIALOG({
+        title: "Fixup",
+        content: FIXUP_DESC
+      })
+    );
     if (ret) {
       dispatch(COMMIT({ commitType: "amend" }));
     }
-  }, [dispatch, confirm]);
+  }, [dispatch]);
 };

@@ -11,6 +11,7 @@ import { Alert as RawAlert } from "./Alert";
 import { HIDE_ALERT } from "@/store/misc";
 import { CommandGroup, Cmd } from "./CommandGroup";
 import { IconActionItem } from "@/commands/types";
+import { ConnectedConfirmDialog } from "./ConnectedConfirmDialog";
 
 export interface MainWindowProps extends ChildrenProp {
   title: string;
@@ -154,6 +155,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
       <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={onConfigChange} />
       <AboutDialog ref={aboutDialogRef} />
       <Loading open={loading} />
+      <ConnectedConfirmDialog />
       <Alert />
     </div>
   );

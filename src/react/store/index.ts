@@ -7,12 +7,14 @@ import {
 import repositoryReducer from "./repository";
 import persistReducer from "./persist";
 import miscReducer from "./misc";
+import confirmDialogReducer from "./confirmDialog";
 
 const store = configureStore({
   reducer: {
     repository: repositoryReducer,
     persist: persistReducer,
-    misc: miscReducer
+    misc: miscReducer,
+    confirmDialog: confirmDialogReducer
   }
 });
 
