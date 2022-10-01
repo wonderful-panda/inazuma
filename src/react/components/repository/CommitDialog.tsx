@@ -91,6 +91,7 @@ export const CommitDialog: React.FC = () => {
     <Dialog
       className="w-[60rem] max-w-none"
       title="Commit"
+      draggable
       opened={opened}
       close={close}
       actions={actions}

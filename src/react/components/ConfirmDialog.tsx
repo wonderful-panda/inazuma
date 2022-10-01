@@ -33,6 +33,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       title={title}
       className="min-w-[32%] max-w-[60%] px-0"
       opened={opened}
+      draggable
       actions={actions}
       close={handleCancel}
     >

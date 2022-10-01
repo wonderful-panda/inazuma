@@ -4,11 +4,25 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton
+  IconButton,
+  Paper,
+  PaperProps
 } from "@mui/material";
+import Draggable from "react-draggable";
 import { Icon } from "./Icon";
 import { useEffect, useMemo } from "react";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
+import classNames from "classnames";
+
+const DRAGGABLE_ELEMENT_CLASS = "dialog-draggable-handle";
+
+const PaperComponent = (props: PaperProps) => {
+  return (
+    <Draggable handle={"." + DRAGGABLE_ELEMENT_CLASS} cancel={'[class*="MuiDialogContent-root"]'}>
+      <Paper {...props} />
+    </Draggable>
+  );
+};
 
 export interface DialogMethods {
   open: () => void;
@@ -25,6 +39,7 @@ export interface DialogActionHandler {
 export interface DialogProps extends ChildrenProp {
   title?: string;
   fullScreen?: boolean;
+  draggable?: boolean;
   opened: boolean;
   close: () => void;
   TransitionComponent?: React.ComponentProps<typeof RawDialog>["TransitionComponent"];
@@ -37,6 +52,7 @@ export const Dialog: React.FC<DialogProps> = ({
   opened,
   close,
   fullScreen = false,
+  draggable = false,
   TransitionComponent,
   className,
   actions,
@@ -68,11 +84,18 @@ export const Dialog: React.FC<DialogProps> = ({
       onClose={close}
       TransitionComponent={TransitionComponent}
       transitionDuration={200}
+      PaperComponent={draggable ? PaperComponent : undefined}
     >
       <IconButton className="absolute top-1 right-1" onClick={close} size="large">
         <Icon icon="mdi:close" />
       </IconButton>
-      {title && <DialogTitle className="px-5 py-3">{title}</DialogTitle>}
+      {(title || draggable) && (
+        <DialogTitle
+          className={classNames("px-5 py-3", draggable && "cursor-move " + DRAGGABLE_ELEMENT_CLASS)}
+        >
+          {title}
+        </DialogTitle>
+      )}
       <DialogContent dividers onKeyPress={handleEnter}>
         {children}
       </DialogContent>
