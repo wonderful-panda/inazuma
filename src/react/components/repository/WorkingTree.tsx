@@ -7,7 +7,7 @@ import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
 import { Button, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "@/store";
-import { STAGE, UNSTAGE } from "@/store/thunk/staging";
+import { STAGE, UNSTAGE } from "@/store/thunk/workingtree";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
 import { FIXUP } from "@/store/thunk/commit";
 import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
@@ -20,7 +20,7 @@ import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import classNames from "classnames";
 import { executeFileCommand } from "@/commands";
 import { diffStaged, diffUnstaged } from "@/commands/diff";
-import { stage, unstage } from "@/commands/staging";
+import { stage, unstage, restore } from "@/commands/workingtree";
 import { IconActionItem } from "@/commands/types";
 import { RowActionButtons } from "./RowActionButtons";
 import { MonacoEditor } from "../MonacoEditor";
@@ -36,7 +36,7 @@ export interface WorkingTreeProps {
 
 type RowType = FileEntry | "staged" | "unstaged";
 
-const unstagedActionCommands = [diffUnstaged, stage];
+const unstagedActionCommands = [restore, diffUnstaged, stage];
 const stagedActionCommands = [diffStaged, unstage];
 
 const getItemKey = (item: RowType) =>

@@ -1,4 +1,4 @@
-import { STAGE, UNSTAGE } from "@/store/thunk/staging";
+import { RESTORE, STAGE, UNSTAGE } from "@/store/thunk/workingtree";
 import { FileCommand } from "./types";
 
 export const stage: FileCommand = {
@@ -22,5 +22,17 @@ export const unstage: FileCommand = {
   },
   handler(dispatch, _, file) {
     dispatch(UNSTAGE(file.path));
+  }
+};
+
+export const restore: FileCommand = {
+  id: "Restore",
+  label: "Restore(discard unstaged changes)",
+  icon: "mdi:undo",
+  hidden: (commit, file) => {
+    return commit.id !== "--" || !file.unstaged || file.statusCode === "?";
+  },
+  handler(dispatch, _, file) {
+    dispatch(RESTORE(file.path));
   }
 };

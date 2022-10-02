@@ -95,6 +95,7 @@ pub fn run() {
             commands::store_recent_opened,
             commands::store_state,
             commands::unstage,
+            commands::restore,
             commands::show_external_diff,
             commands::yank_text,
             commands::open_pty,

@@ -3,7 +3,7 @@ import { browseSourceTree } from "./browseSourceTree";
 import { copyFullHash, copyShortHash } from "./copyHash";
 import { diffStaged, diffUnstaged, diffWithLocal, diffWithParent } from "./diff";
 import { showFileContent } from "./showFileContent";
-import { stage, unstage } from "./staging";
+import { stage, unstage } from "./workingtree";
 import { ActionItem, CommitCommand, FileCommand } from "./types";
 
 export const commitCommands = [copyFullHash, copyShortHash, browseSourceTree];

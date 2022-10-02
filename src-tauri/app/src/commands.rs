@@ -170,6 +170,11 @@ pub async fn unstage(repo_path: &Path, rel_path: &str) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub async fn restore(repo_path: &Path, rel_path: &str) -> Result<(), String> {
+    Ok(git::workingtree::restore(repo_path, rel_path).await?)
+}
+
+#[tauri::command]
 pub async fn commit(repo_path: &Path, options: CommitOptions) -> Result<(), String> {
     match options {
         CommitOptions::Normal { message } => {

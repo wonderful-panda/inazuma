@@ -28,7 +28,8 @@ const icons: Record<string, string[]> = {
     "minus",
     "plus",
     "reload",
-    "content-save"
+    "content-save",
+    "undo"
   ],
   octicon: [
     "diff-added-16",

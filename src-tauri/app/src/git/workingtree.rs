@@ -20,3 +20,10 @@ pub async fn unstage(repo_path: &Path, rel_path: &str) -> Result<(), GitError> {
     }
     Ok(())
 }
+
+pub async fn restore(repo_path: &Path, rel_path: &str) -> Result<(), GitError> {
+    let args = vec!["--worktree", "--", rel_path];
+    let output = exec(repo_path, "restore", &args, &[]).await?;
+    GitError::assert_process_output("restore", &output)?;
+    Ok(())
+}
