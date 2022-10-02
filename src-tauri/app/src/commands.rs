@@ -161,12 +161,12 @@ pub async fn get_workingtree_udiff_base64(
 
 #[tauri::command]
 pub async fn stage(repo_path: &Path, rel_path: &str) -> Result<(), String> {
-    Ok(git::index::stage(repo_path, rel_path).await?)
+    Ok(git::workingtree::stage(repo_path, rel_path).await?)
 }
 
 #[tauri::command]
 pub async fn unstage(repo_path: &Path, rel_path: &str) -> Result<(), String> {
-    Ok(git::index::unstage(repo_path, rel_path).await?)
+    Ok(git::workingtree::unstage(repo_path, rel_path).await?)
 }
 
 #[tauri::command]

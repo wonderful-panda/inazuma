@@ -8,13 +8,13 @@ pub mod commit_detail;
 pub mod diff;
 pub mod external_diff;
 pub mod file;
-pub mod index;
 pub mod log;
 pub mod lstree;
 pub mod merge_heads;
 pub mod refs;
 pub mod rev_parse;
 pub mod status;
+pub mod workingtree;
 
 #[derive(Error, Debug)]
 pub enum GitError {
