@@ -86,7 +86,7 @@ export const Dialog: React.FC<DialogProps> = ({
       transitionDuration={200}
       PaperComponent={draggable ? PaperComponent : undefined}
     >
-      <IconButton className="absolute top-1 right-1" onClick={close} size="large">
+      <IconButton className="absolute top-1 right-1" onClick={close} size="medium">
         <Icon icon="mdi:close" />
       </IconButton>
       {(title || draggable) && (
