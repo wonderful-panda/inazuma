@@ -9,7 +9,7 @@ const beginCommit = () => {
     if (!repoPath) {
       return;
     }
-    dispatch(OPEN_DIALOG({ dialog: "commit" }));
+    dispatch(OPEN_DIALOG({ type: "Commit" }));
   };
 };
 

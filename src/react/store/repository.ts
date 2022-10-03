@@ -24,6 +24,8 @@ export interface CommitLogItems {
   graph: Record<string, GraphFragment>;
 }
 
+type DialogProps = { type: "Commit" };
+
 interface State {
   path: string | undefined;
   log: CommitLogItems | undefined;
@@ -35,7 +37,7 @@ interface State {
         currentIndex: number;
       }
     | undefined;
-  activeDialog: "commit" | undefined;
+  activeDialog: DialogProps | undefined;
 }
 
 const initialState: State = {
@@ -149,8 +151,8 @@ const selectPreviousTab = ({ tab }: State) => {
   tab.currentIndex = 1 <= tab.currentIndex ? tab.currentIndex - 1 : tab.tabs.length - 1;
 };
 
-const openDialog = (state: State, { payload }: PayloadAction<{ dialog: "commit" }>) => {
-  state.activeDialog = payload.dialog;
+const openDialog = (state: State, { payload }: PayloadAction<DialogProps>) => {
+  state.activeDialog = payload;
 };
 
 const closeDialog = (state: State) => {

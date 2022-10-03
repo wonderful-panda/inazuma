@@ -11,7 +11,7 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 export const CommitDialog: React.FC = () => {
   const dispatch = useDispatch();
   const repoPath = useSelector((state) => state.repository.path);
-  const opened = useSelector((state) => state.repository.activeDialog === "commit");
+  const opened = useSelector((state) => state.repository.activeDialog?.type === "Commit");
   const messageRef = useRef<HTMLInputElement>(null);
   const amendRef = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState(6);
