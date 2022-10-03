@@ -65,8 +65,10 @@ impl EnvState {
         self.env.window_state.maximized = maximized;
         if !maximized {
             let PhysicalSize { width, height } = window.inner_size()?;
-            self.env.window_state.width = width;
-            self.env.window_state.height = height;
+            if 0 < width && 0 < height {
+                self.env.window_state.width = width;
+                self.env.window_state.height = height;
+            }
         }
         Ok(())
     }

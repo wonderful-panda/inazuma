@@ -42,10 +42,15 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
         warn!("Failed to load env file, {}", e);
     };
     let WindowState {
-        width,
-        height,
+        mut width,
+        mut height,
         maximized,
     } = env_state.env.window_state;
+    if width == 0 || height == 0 {
+        let def = WindowState::default();
+        width = def.width;
+        height = def.height;
+    }
     let win = WindowBuilder::new(app, "main", WindowUrl::App("index.html".into()))
         .title("Inazuma")
         .resizable(true)
