@@ -3,7 +3,7 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { toSlashedPath } from "@/util";
 import { Dispatch, RootState } from "..";
 import { ADD_RECENT_OPENED_REPOSITORY } from "../persist";
-import { _SET_LOG } from "../repository";
+import { _CLOSE_REPOSITORY, _SET_LOG } from "../repository";
 import { withHandleError } from "./withHandleError";
 import { withLoading } from "./withLoading";
 
@@ -25,7 +25,8 @@ const fetchHistory = async (repoPath: string) => {
 };
 
 const openRepository = (realPath: string) => {
-  return async (dispatch: Dispatch) => {
+  return async (dispatch: Dispatch, getState: () => RootState) => {
+    const currentPath = getState().repository.path;
     const path = toSlashedPath(realPath);
     const { commits, refs } = await fetchHistory(path);
     const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
@@ -33,6 +34,10 @@ const openRepository = (realPath: string) => {
     commits.forEach((c) => {
       graph[c.id] = grapher.proceed(c);
     });
+    if (currentPath) {
+      await invokeTauriCommand("close_repository", { repoPath: path });
+    }
+    await invokeTauriCommand("open_repository", { repoPath: path });
     dispatch(ADD_RECENT_OPENED_REPOSITORY(path));
     dispatch(_SET_LOG({ path, commits, refs: makeRefs(refs), graph, keepTabs: false }));
   };
@@ -52,6 +57,18 @@ const reloadRepository = () => {
       graph[c.id] = grapher.proceed(c);
     });
     dispatch(_SET_LOG({ path, commits, refs: makeRefs(refs), graph, keepTabs: true }));
+  };
+};
+
+const closeRepository = () => {
+  return async (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const repoPath = state.repository.path;
+    if (!repoPath) {
+      return;
+    }
+    dispatch(_CLOSE_REPOSITORY());
+    await invokeTauriCommand("close_repository", { repoPath });
   };
 };
 
@@ -102,3 +119,4 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
 
 export const OPEN_REPOSITORY = withLoading(withHandleError(openRepository));
 export const RELOAD_REPOSITORY = withLoading(withHandleError(reloadRepository));
+export const CLOSE_REPOSITORY = withHandleError(closeRepository);

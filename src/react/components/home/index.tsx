@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { MainWindow } from "@/components/MainWindow";
 import { useDispatch, useSelector } from "@/store";
 import { REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
-import { OPEN_REPOSITORY } from "@/store/thunk/openRepository";
+import { OPEN_REPOSITORY } from "@/store/thunk/repository";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { Command } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";

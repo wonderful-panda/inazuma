@@ -83,6 +83,8 @@ pub fn run() {
         .manage(PtyStateMutex::new())
         .manage(RepositoriesStateMutex::new())
         .invoke_handler(generate_handler![
+            commands::open_repository,
+            commands::close_repository,
             commands::fetch_history,
             commands::commit,
             commands::get_blame,

@@ -181,7 +181,7 @@ export const {
   setLog: _SET_LOG,
   setWorkingTree: _SET_WORKING_TREE,
   setCommitDetail: _SET_COMMIT_DETAIL,
-  closeRepository: CLOSE_REPOSITORY,
+  closeRepository: _CLOSE_REPOSITORY,
   addTab: ADD_TAB,
   removeTab: REMOVE_TAB,
   selectTab: SELECT_TAB,

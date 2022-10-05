@@ -2,14 +2,13 @@ import { IconActionItem } from "@/commands/types";
 import { useDispatch, useSelector } from "@/store";
 import { HIDE_INTERACTIVE_SHELL, TOGGLE_INTERACTIVE_SHELL } from "@/store/misc";
 import {
-  CLOSE_REPOSITORY,
   REMOVE_TAB,
   SELECT_NEXT_TAB,
   SELECT_PREVIOUS_TAB,
   SELECT_TAB,
   TabType
 } from "@/store/repository";
-import { RELOAD_REPOSITORY } from "@/store/thunk/openRepository";
+import { CLOSE_REPOSITORY, RELOAD_REPOSITORY } from "@/store/thunk/repository";
 import { assertNever } from "@/util";
 import { useCallback, useMemo } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";

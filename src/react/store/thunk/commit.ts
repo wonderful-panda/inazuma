@@ -2,7 +2,7 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { Dispatch, RootState } from "..";
 import { SHOW_WARNING } from "../misc";
 import { SHOW_CONFIRM_DIALOG } from "./confirmDialog";
-import { RELOAD_REPOSITORY } from "./openRepository";
+import { RELOAD_REPOSITORY } from "./repository";
 import { withHandleError } from "./withHandleError";
 import { withLoading } from "./withLoading";
 

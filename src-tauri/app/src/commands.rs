@@ -72,6 +72,22 @@ pub async fn show_folder_selector() -> Option<String> {
 }
 
 #[tauri::command]
+pub async fn open_repository(
+    repo_path: &Path,
+    repo_state: State<'_, RepositoriesStateMutex>,
+) -> Result<(), String> {
+    let mut repositories = repo_state.0.lock().unwrap();
+    repositories.get_or_insert(repo_path.to_path_buf());
+    Ok(())
+}
+
+#[tauri::command]
+#[allow(unused_variables)]
+pub async fn close_repository(repo_path: &Path) -> Result<(), String> {
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn fetch_history(
     repo_path: &Path,
     max_count: u32,

@@ -11,7 +11,7 @@ import store, { Dispatch, useSelector, watch } from "./store";
 import { Provider, useDispatch } from "react-redux";
 import { RESET_RECENT_OPENED_REPOSITORIES, UPDATE_CONFIG } from "./store/persist";
 import { CommandGroupProvider } from "./context/CommandGroupContext";
-import { OPEN_REPOSITORY } from "./store/thunk/openRepository";
+import { OPEN_REPOSITORY } from "./store/thunk/repository";
 import { Loading } from "./components/Loading";
 import { REPORT_ERROR } from "./store/misc";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
