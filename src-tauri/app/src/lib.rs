@@ -3,7 +3,6 @@ extern crate log;
 extern crate env_logger;
 
 pub mod commands;
-pub mod fs_watcher;
 pub mod git;
 pub mod pty;
 pub mod state;
@@ -12,10 +11,14 @@ use state::config::{ConfigState, ConfigStateMutex};
 use state::env::{EnvState, EnvStateMutex};
 use state::pty::PtyStateMutex;
 use state::repositories::RepositoriesStateMutex;
+use state::stager::StagerStateMutex;
+use std::sync::{Arc, Condvar, Mutex};
 use std::{error::Error, fs::create_dir_all};
 use tauri::{
-    generate_handler, App, Manager, RunEvent, Runtime, WindowBuilder, WindowEvent, WindowUrl,
+    generate_handler, App, AppHandle, Manager, RunEvent, Runtime, WindowBuilder, WindowEvent,
+    WindowUrl,
 };
+use tokio::spawn;
 use types::WindowState;
 
 fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
@@ -42,6 +45,14 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
     if let Err(e) = env_state.load() {
         warn!("Failed to load env file, {}", e);
     };
+    let app_handle = app.app_handle();
+    spawn(async move {
+        let state = app_handle.state::<StagerStateMutex>();
+        let mut stager = state.0.lock().await;
+        if let Err(e) = stager.wakeup_watcher() {
+            warn!("Failed to awake watcher, {}", e);
+        }
+    });
     let WindowState {
         mut width,
         mut height,
@@ -83,6 +94,7 @@ pub fn run() {
         .manage(ConfigStateMutex::new())
         .manage(PtyStateMutex::new())
         .manage(RepositoriesStateMutex::new())
+        .manage(StagerStateMutex::new())
         .invoke_handler(generate_handler![
             commands::open_repository,
             commands::close_repository,
@@ -138,9 +150,29 @@ pub fn run() {
             if let Err(e) = env_state.save() {
                 warn!("Failed to write env file, {}", e);
             }
-            let repositories_state = app_handle.state::<RepositoriesStateMutex>();
-            let mut repositories_state = repositories_state.0.lock().unwrap();
-            repositories_state.dispose();
+
+            let wait1 = Arc::new((Mutex::new(false), Condvar::new()));
+            let wait2 = Arc::clone(&wait1);
+            let app_handle_clone = AppHandle::clone(&app_handle);
+            spawn(async move {
+                let state = app_handle_clone.state::<StagerStateMutex>();
+                let mut stager = state.0.lock().await;
+                stager.dispose().await;
+
+                let state = app_handle_clone.state::<RepositoriesStateMutex>();
+                let mut repositories = state.0.lock().await;
+                repositories.dispose();
+
+                let (m, cond) = &*wait1;
+                let mut finished = m.lock().unwrap();
+                *finished = true;
+                cond.notify_one();
+            });
+            let (m, cond) = &*wait2;
+            let mut finished = m.lock().unwrap();
+            while !*finished {
+                finished = cond.wait(finished).unwrap();
+            }
         }
         _ => {}
     })

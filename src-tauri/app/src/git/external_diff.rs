@@ -20,7 +20,7 @@ fn random_name(length: usize) -> String {
         .collect()
 }
 
-async fn prepare_diff_file(
+pub async fn prepare_diff_file(
     repo: &Repository,
     file: &FileSpec,
 ) -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
@@ -32,8 +32,8 @@ async fn prepare_diff_file(
             .file_name()
             .and_then(|s| s.to_str())
             .unwrap();
-        repo.temp_dir
-            .join(format!("STAGED-{}-{}", random_name(6), filename))
+        repo.stage_file_dir
+            .join(format!("{}__{}", random_name(6), filename))
     } else {
         let regex = Regex::new("^[0-9a-f]{8,40}$").expect("Invalid regex");
         let revspec = if regex.is_match(&file.revspec) {
@@ -70,18 +70,14 @@ fn replace_or_push(args: &mut Vec<String>, value: &str, new_value: &str) {
 pub async fn show_external_diff(
     repo: &Repository,
     command_line: &str,
-    left: &FileSpec,
-    right: &FileSpec,
+    left: &Path,
+    right: &Path,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     if command_line.len() == 0 {
         return Ok(());
     }
     let mut args = shell_words::split(command_line)?;
     let program = args.remove(0);
-    let (left, right) = tokio::try_join!(
-        prepare_diff_file(repo, left),
-        prepare_diff_file(repo, right)
-    )?;
     replace_or_push(&mut args, "${left}", left.to_str().unwrap());
     replace_or_push(&mut args, "${right}", right.to_str().unwrap());
     debug!(

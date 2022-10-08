@@ -7,6 +7,7 @@ use tauri::{api::dialog::blocking::FileDialogBuilder, Window};
 use tauri::{AppHandle, ClipboardManager, Runtime, State};
 
 use crate::state::pty::{PtyId, PtyStateMutex};
+use crate::state::stager::StagerStateMutex;
 use crate::{
     git,
     state::{config::ConfigStateMutex, env::EnvStateMutex, repositories::RepositoriesStateMutex},
@@ -75,15 +76,27 @@ pub async fn show_folder_selector() -> Option<String> {
 pub async fn open_repository(
     repo_path: &Path,
     repo_state: State<'_, RepositoriesStateMutex>,
+    stager_state: State<'_, StagerStateMutex>,
 ) -> Result<(), String> {
-    let mut repositories = repo_state.0.lock().unwrap();
-    repositories.get_or_insert(repo_path.to_path_buf());
+    let mut repositories = repo_state.0.lock().await;
+    let repo = repositories.get_or_insert(repo_path);
+    let mut stager = stager_state.0.lock().await;
+    stager.watch(repo).map_err(|e| format!("{}", e))?;
     Ok(())
 }
 
 #[tauri::command]
 #[allow(unused_variables)]
-pub async fn close_repository(repo_path: &Path) -> Result<(), String> {
+pub async fn close_repository(
+    repo_path: &Path,
+    repo_state: State<'_, RepositoriesStateMutex>,
+    stager_state: State<'_, StagerStateMutex>,
+) -> Result<(), String> {
+    let repositories = repo_state.0.lock().await;
+    if let Some(repo) = repositories.get(repo_path) {
+        let mut stager = stager_state.0.lock().await;
+        stager.unwatch(repo).map_err(|e| format!("{}", e))?;
+    }
     Ok(())
 }
 
@@ -217,6 +230,7 @@ pub async fn show_external_diff(
     right: FileSpec,
     config_state: State<'_, ConfigStateMutex>,
     repo_state: State<'_, RepositoriesStateMutex>,
+    stager_state: State<'_, StagerStateMutex>,
 ) -> Result<(), String> {
     let command_line = {
         let config = config_state.0.lock().unwrap();
@@ -227,12 +241,32 @@ pub async fn show_external_diff(
         }
     };
     let repo = {
-        let mut repositories = repo_state.0.lock().unwrap();
-        repositories.get_or_insert(repo_path.to_path_buf()).clone()
+        let repositories = repo_state.0.lock().await;
+        repositories
+            .get(repo_path)
+            .ok_or_else(|| "Repository is not opened".to_owned())?
+            .clone()
     };
-    git::external_diff::show_external_diff(&repo, &command_line, &left, &right)
+    let (left_path, right_path) = tokio::try_join!(
+        git::external_diff::prepare_diff_file(&repo, &left),
+        git::external_diff::prepare_diff_file(&repo, &right),
+    )
+    .map_err(|e| format!("{}", e))?;
+
+    git::external_diff::show_external_diff(&repo, &command_line, &left_path, &right_path)
         .await
         .map_err(|e| format!("{}", e))?;
+
+    let stager = stager_state.0.lock().await;
+    stager
+        .try_register_temp_stage_file(&repo, &left, &left_path)
+        .await
+        .map_err(|e| format!("Failed to watch stage file, {}", e))?;
+
+    stager
+        .try_register_temp_stage_file(&repo, &right, &right_path)
+        .await
+        .map_err(|e| format!("Failed to watch stage file, {}", e))?;
     Ok(())
 }
 
