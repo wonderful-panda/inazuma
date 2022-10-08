@@ -28,7 +28,7 @@ async fn prepare_diff_file(
         return Ok(repo.path.join(&file.path));
     }
     let abs_path = if file.revspec.eq("STAGED") {
-        let filename = Path::new(&repo.path)
+        let filename = Path::new(&file.path)
             .file_name()
             .and_then(|s| s.to_str())
             .unwrap();
