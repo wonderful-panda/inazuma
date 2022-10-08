@@ -3,6 +3,7 @@ extern crate log;
 extern crate env_logger;
 
 pub mod commands;
+pub mod fs_watcher;
 pub mod git;
 pub mod pty;
 pub mod state;

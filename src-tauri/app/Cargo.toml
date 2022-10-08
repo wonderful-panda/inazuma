@@ -34,6 +34,7 @@ portable-pty = "0.7.0"
 shell-words = "1.1"
 rand = "0.8"
 font-kit = "0.11.0"
+notify = { version = "5.0.0", default-features = false, feature= ["macos_kqueue"] }
 
 [features]
 # by default Tauri runs in production mode
