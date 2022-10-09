@@ -1,10 +1,13 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::error::Error;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::Duration;
 use tokio::spawn;
 use tokio::sync::mpsc;
+use tokio::sync::mpsc::Receiver;
 use tokio::sync::Mutex;
+use tokio_stream::StreamExt;
 use types::FileSpec;
 
 use crate::git;
@@ -17,43 +20,83 @@ pub struct TempStageFile {
     pub repo_path: PathBuf,
     pub head: String,
     pub rel_path: String,
+    pub temp_path: PathBuf,
 }
 pub struct StagerState {
     watcher: Option<Box<dyn Watcher + Send + Sync>>,
     watch_files: Arc<Mutex<HashMap<String, TempStageFile>>>,
 }
 
-async fn watch_callback(watch_files: &Arc<Mutex<HashMap<String, TempStageFile>>>, e: Event) {
-    match e.kind {
-        EventKind::Create(..) | EventKind::Modify(..) => {
-            let watch_files = watch_files.lock().await;
-            let mut targets = HashMap::<PathBuf, TempStageFile>::new();
-            for path in e.paths {
-                let file_name = path.file_name().unwrap().to_str().unwrap();
-                if let Some(f) = watch_files.get(file_name) {
-                    targets.entry(path.clone()).or_insert(f.clone());
-                }
+async fn update_index(f: &TempStageFile) -> Result<(), String> {
+    match git::rev_parse::rev_parse(&f.repo_path, "HEAD").await? {
+        Some(head) => {
+            if head.eq(&f.head) {
+                git::workingtree::update_index(&f.repo_path, &f.rel_path, &f.temp_path)
+                    .await
+                    .map_err(|e| format!("{}", e))?;
+                Ok(())
+            } else {
+                Err(format!(
+                    "Skip update-index because HEAD has been changed, {:?}",
+                    f.rel_path
+                ))
             }
-            drop(watch_files);
-            for (path, f) in targets {
-                if let Ok(Some(head)) = git::rev_parse::rev_parse(&f.repo_path, "HEAD").await {
-                    if !head.eq(&f.head) {
-                        warn!(
-                            "Skip update-index because HEAD has been changed, {:?}",
-                            path
-                        );
-                        continue;
-                    }
-                    if let Err(e) =
-                        git::workingtree::update_index(&f.repo_path, &f.rel_path, &path).await
-                    {
-                        error!("{}", e);
-                    }
+        }
+        _ => Err(format!(
+            "Skip update-index because HEAD has been changed, {:?}",
+            f.rel_path,
+        )),
+    }
+}
+
+fn handle_event(
+    watch_files: Arc<Mutex<HashMap<String, TempStageFile>>>,
+    mut rx: Receiver<Result<Event, NotifyError>>,
+) {
+    let (inner_tx, inner_rx) = mpsc::channel::<TempStageFile>(100);
+    let chunk_stream = tokio_stream::wrappers::ReceiverStream::new(inner_rx)
+        .chunks_timeout(100, Duration::from_millis(500));
+
+    spawn(async move {
+        tokio::pin!(chunk_stream);
+        while let Some(res) = chunk_stream.next().await {
+            let mut set = HashSet::<PathBuf>::new();
+            for f in res {
+                if set.contains(&f.temp_path) {
+                    continue;
+                }
+                set.insert(f.temp_path.clone());
+                if let Err(e) = update_index(&f).await {
+                    warn!("{}", e);
                 }
             }
         }
-        _ => {}
-    }
+        println!("Finish watching");
+    });
+
+    spawn(async move {
+        while let Some(res) = rx.recv().await {
+            match res {
+                Ok(Event {
+                    kind: EventKind::Create(..) | EventKind::Modify(..),
+                    paths,
+                    ..
+                }) => {
+                    let watch_files = watch_files.lock().await;
+                    for path in paths {
+                        let file_name = path.file_name().unwrap().to_str().unwrap();
+                        if let Some(f) = watch_files.get(file_name) {
+                            if let Err(e) = inner_tx.send(f.clone()).await {
+                                error!("stager: Failed to send to chunk channel, {}", e);
+                            }
+                        }
+                    }
+                }
+                Err(e) => error!("stager: Failed to receive from watcher channel, {}", e),
+                _ => {}
+            }
+        }
+    });
 }
 
 impl StagerState {
@@ -69,20 +112,11 @@ impl StagerState {
             warn!("Watcher is already awakened");
             return Ok(());
         }
-        let (tx, mut rx) = mpsc::channel::<Result<Event, NotifyError>>(100);
+        let (tx, rx) = mpsc::channel::<Result<Event, NotifyError>>(100);
         let watch_files_clone = Arc::clone(&self.watch_files);
-        spawn(async move {
-            while let Some(res) = rx.recv().await {
-                match res {
-                    Ok(e) => watch_callback(&watch_files_clone, e).await,
-                    Err(e) => println!("Error: {:?}", e),
-                }
-            }
-            println!("Finish watching");
-        });
+        handle_event(watch_files_clone, rx);
 
         let watcher = notify::recommended_watcher(move |res| {
-            println!("{:?}", res);
             tx.blocking_send(res).expect("Failed to send event");
         })?;
         self.watcher = Some(Box::new(watcher));
@@ -111,18 +145,20 @@ impl StagerState {
 
     pub async fn register_temp_stage_file(
         &self,
-        repo_path: &Path,
-        rel_path: &str,
-        head: &str,
-        temp_name: &str,
+        repo_path: PathBuf,
+        rel_path: String,
+        head: String,
+        temp_path: PathBuf,
     ) {
         let mut watch_files = self.watch_files.lock().await;
+        let temp_name = temp_path.file_name().unwrap().to_str().unwrap().to_owned();
         watch_files.insert(
-            temp_name.to_owned(),
+            temp_name,
             TempStageFile {
-                repo_path: repo_path.to_owned(),
-                head: head.to_owned(),
-                rel_path: rel_path.to_owned(),
+                repo_path,
+                head,
+                rel_path,
+                temp_path,
             },
         );
     }
@@ -131,16 +167,14 @@ impl StagerState {
         &self,
         repo: &Repository,
         file: &FileSpec,
-        temp_path: &Path,
+        temp_path: PathBuf,
     ) -> Result<bool, Box<dyn Error>> {
         if !file.revspec.eq("STAGED") {
             return Ok(false);
         }
         let head = git::rev_parse::rev_parse(&repo.path, "HEAD").await?;
         if let Some(head) = head {
-            println!("{}", head);
-            let temp_name = temp_path.file_name().unwrap().to_str().unwrap();
-            self.register_temp_stage_file(&repo.path, &file.path, &head, temp_name)
+            self.register_temp_stage_file(repo.path.clone(), file.path.clone(), head, temp_path)
                 .await;
             Ok(true)
         } else {

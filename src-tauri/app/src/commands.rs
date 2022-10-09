@@ -259,12 +259,12 @@ pub async fn show_external_diff(
 
     let stager = stager_state.0.lock().await;
     stager
-        .try_register_temp_stage_file(&repo, &left, &left_path)
+        .try_register_temp_stage_file(&repo, &left, left_path)
         .await
         .map_err(|e| format!("Failed to watch stage file, {}", e))?;
 
     stager
-        .try_register_temp_stage_file(&repo, &right, &right_path)
+        .try_register_temp_stage_file(&repo, &right, right_path)
         .await
         .map_err(|e| format!("Failed to watch stage file, {}", e))?;
     Ok(())
