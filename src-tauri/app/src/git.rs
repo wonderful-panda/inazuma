@@ -1,5 +1,7 @@
+use std::process::Stdio;
 use std::{path::Path, process::Output};
 use thiserror::Error;
+use tokio::io::AsyncWriteExt;
 use tokio::process::Command;
 
 pub mod blame;
@@ -63,6 +65,26 @@ pub async fn exec(
     args: &[&str],
     configs: &[&str],
 ) -> std::io::Result<Output> {
+    exec_internal(repo_path, command, args, configs, None).await
+}
+
+pub async fn exec_with_stdin(
+    repo_path: &Path,
+    command: &str,
+    args: &[&str],
+    configs: &[&str],
+    stdin_content: &[u8],
+) -> std::io::Result<Output> {
+    exec_internal(repo_path, command, args, configs, Some(stdin_content)).await
+}
+
+async fn exec_internal(
+    repo_path: &Path,
+    command: &str,
+    args: &[&str],
+    configs: &[&str],
+    stdin_content: Option<&[u8]>,
+) -> std::io::Result<Output> {
     let mut cmd = Command::new("git");
     cmd.env("GIT_TERMINAL_PROMPT", "0")
         .arg("-C")
@@ -74,10 +96,21 @@ pub async fn exec(
     });
     cmd.arg(command);
     cmd.args(args);
+    cmd.stdin(Stdio::piped());
+    cmd.stdout(Stdio::piped());
+    cmd.stderr(Stdio::piped());
     #[cfg(target_os = "windows")]
     cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
     debug!("{}, git {}, {:?}", repo_path.display(), command, args);
-    return cmd.output().await;
+    let mut proc = cmd.spawn()?;
+    if let Some(stdin_content) = stdin_content {
+        if let Some(stdin) = &mut proc.stdin {
+            stdin.write_all(stdin_content).await?;
+            stdin.shutdown().await?;
+        }
+    }
+    let output = proc.wait_with_output().await?;
+    Ok(output)
 }
 
 pub async fn find_repository_root() -> Result<Option<String>, GitError> {

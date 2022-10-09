@@ -27,11 +27,27 @@ async fn watch_callback(watch_files: &Arc<Mutex<HashMap<String, TempStageFile>>>
     match e.kind {
         EventKind::Create(..) | EventKind::Modify(..) => {
             let watch_files = watch_files.lock().await;
+            let mut targets = HashMap::<PathBuf, TempStageFile>::new();
             for path in e.paths {
                 let file_name = path.file_name().unwrap().to_str().unwrap();
                 if let Some(f) = watch_files.get(file_name) {
-                    if let Ok(Some(head)) = git::rev_parse::rev_parse(&f.repo_path, "HEAD").await {
-                        println!("{}, {:?}, {}", path.to_string_lossy(), f, head);
+                    targets.entry(path.clone()).or_insert(f.clone());
+                }
+            }
+            drop(watch_files);
+            for (path, f) in targets {
+                if let Ok(Some(head)) = git::rev_parse::rev_parse(&f.repo_path, "HEAD").await {
+                    if !head.eq(&f.head) {
+                        warn!(
+                            "Skip update-index because HEAD has been changed, {:?}",
+                            path
+                        );
+                        continue;
+                    }
+                    if let Err(e) =
+                        git::workingtree::update_index(&f.repo_path, &f.rel_path, &path).await
+                    {
+                        error!("{}", e);
                     }
                 }
             }
