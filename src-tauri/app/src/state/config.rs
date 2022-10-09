@@ -3,9 +3,9 @@ use std::{
     fs::{write, File},
     io::BufReader,
     path::PathBuf,
-    sync::Mutex,
 };
 
+use tokio::sync::Mutex;
 use types::Config;
 
 pub struct ConfigState {

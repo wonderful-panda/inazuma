@@ -37,32 +37,38 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
     if let Err(e) = config_state.load() {
         warn!("Failed to load config file, {}", e);
     };
-    let state = app.state::<ConfigStateMutex>();
-    *state.0.lock().unwrap() = config_state;
 
     let env_path = app_dir.join(".environment.json");
     let mut env_state = EnvState::from_path(env_path);
     if let Err(e) = env_state.load() {
         warn!("Failed to load env file, {}", e);
     };
+    let WindowState {
+        mut width,
+        mut height,
+        maximized,
+    } = env_state.env.window_state;
+
     let app_handle = app.app_handle();
     spawn(async move {
+        let state = app_handle.state::<ConfigStateMutex>();
+        *state.0.lock().await = config_state;
+
+        let state = app_handle.state::<EnvStateMutex>();
+        *state.0.lock().await = env_state;
+
         let state = app_handle.state::<StagerStateMutex>();
         let mut stager = state.0.lock().await;
         if let Err(e) = stager.wakeup_watcher() {
             warn!("Failed to awake watcher, {}", e);
         }
     });
-    let WindowState {
-        mut width,
-        mut height,
-        maximized,
-    } = env_state.env.window_state;
     if width == 0 || height == 0 {
         let def = WindowState::default();
         width = def.width;
         height = def.height;
     }
+
     let win = WindowBuilder::new(app, "main", WindowUrl::App("index.html".into()))
         .title("Inazuma")
         .resizable(true)
@@ -83,8 +89,6 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
             return Err(e.into());
         }
     }
-    let state = app.state::<EnvStateMutex>();
-    *state.0.lock().unwrap() = env_state;
     Ok(())
 }
 
@@ -136,25 +140,28 @@ pub fn run() {
             ..
         } => {
             if label.eq("main") {
-                let window = app_handle.get_window("main").unwrap();
-                let mutex = app_handle.state::<EnvStateMutex>();
-                let mut env_state = mutex.0.lock().unwrap();
-                if let Err(e) = env_state.store_window_state(&window) {
-                    warn!("Failed to store window state. {}", e);
-                }
+                let app_handle_clone = AppHandle::clone(&app_handle);
+                spawn(async move {
+                    let window = app_handle_clone.get_window("main").unwrap();
+                    let mutex = app_handle_clone.state::<EnvStateMutex>();
+                    let mut env_state = mutex.0.lock().await;
+                    if let Err(e) = env_state.store_window_state(&window) {
+                        warn!("Failed to store window state. {}", e);
+                    }
+                });
             }
         }
         RunEvent::Exit { .. } => {
-            let env_state = app_handle.state::<EnvStateMutex>();
-            let env_state = env_state.0.lock().unwrap();
-            if let Err(e) = env_state.save() {
-                warn!("Failed to write env file, {}", e);
-            }
-
             let wait1 = Arc::new((Mutex::new(false), Condvar::new()));
             let wait2 = Arc::clone(&wait1);
             let app_handle_clone = AppHandle::clone(&app_handle);
             spawn(async move {
+                let env_state = app_handle_clone.state::<EnvStateMutex>();
+                let env_state = env_state.0.lock().await;
+                if let Err(e) = env_state.save() {
+                    warn!("Failed to write env file, {}", e);
+                }
+
                 let state = app_handle_clone.state::<StagerStateMutex>();
                 let mut stager = state.0.lock().await;
                 stager.dispose().await;

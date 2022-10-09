@@ -19,8 +19,8 @@ pub async fn load_persist_data(
     config_state: State<'_, ConfigStateMutex>,
     env_state: State<'_, EnvStateMutex>,
 ) -> Result<(Config, Environment), String> {
-    let config = config_state.0.lock().unwrap();
-    let env = env_state.0.lock().unwrap();
+    let config = config_state.0.lock().await;
+    let env = env_state.0.lock().await;
     Ok((config.config.clone(), env.env.clone()))
 }
 
@@ -29,7 +29,7 @@ pub async fn store_recent_opened(
     new_list: Vec<String>,
     env_state: State<'_, EnvStateMutex>,
 ) -> Result<(), String> {
-    let mut env = env_state.0.lock().unwrap();
+    let mut env = env_state.0.lock().await;
     env.env.recent_opened = new_list.clone();
     Ok(())
 }
@@ -39,7 +39,7 @@ pub async fn store_state(
     new_state: HashMap<String, String>,
     env_state: State<'_, EnvStateMutex>,
 ) -> Result<(), String> {
-    let mut env = env_state.0.lock().unwrap();
+    let mut env = env_state.0.lock().await;
     env.env.state = new_state.clone();
     Ok(())
 }
@@ -49,7 +49,7 @@ pub async fn save_config(
     new_config: Config,
     config_state: State<'_, ConfigStateMutex>,
 ) -> Result<(), String> {
-    let mut config = config_state.0.lock().unwrap();
+    let mut config = config_state.0.lock().await;
     config
         .save(new_config)
         .map_err(|e| format!("Failed to save config, {}", e))
@@ -233,7 +233,7 @@ pub async fn show_external_diff(
     stager_state: State<'_, StagerStateMutex>,
 ) -> Result<(), String> {
     let command_line = {
-        let config = config_state.0.lock().unwrap();
+        let config = config_state.0.lock().await;
         if let Some(ref command_line) = config.config.external_diff_tool {
             command_line.clone()
         } else {

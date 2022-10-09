@@ -3,10 +3,10 @@ use std::{
     fs::{write, File},
     io::BufReader,
     path::PathBuf,
-    sync::Mutex,
 };
 
 use tauri::{PhysicalSize, Runtime, Size, Window};
+use tokio::sync::Mutex;
 use types::{Environment, WindowState};
 
 pub struct EnvState {

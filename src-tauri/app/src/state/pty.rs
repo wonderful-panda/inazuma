@@ -1,9 +1,4 @@
-use std::{
-    collections::HashMap,
-    error::Error,
-    path::Path,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, error::Error, path::Path, sync::Arc, sync::Mutex};
 
 use portable_pty::ExitStatus;
 
