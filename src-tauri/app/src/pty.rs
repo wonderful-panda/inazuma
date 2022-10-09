@@ -82,7 +82,7 @@ impl Pty {
         let mut cmd = CommandBuilder::new(&args[0]);
         cmd.args(&args[1..]);
         cmd.cwd(cwd);
-        let child = pair.slave.spawn_command(cmd)?;
+        let mut child = pair.slave.spawn_command(cmd)?;
 
         let killer = child.clone_killer();
         *self.pty_killer.lock().unwrap() = Some(killer);
@@ -90,18 +90,12 @@ impl Pty {
         // spawn thread to watch process end.
         let pty_master = self.pty_master.clone();
         let pty_killer = self.pty_killer.clone();
-        let pty_child = Mutex::new(child);
         tokio::task::spawn_blocking(move || {
-            let mut child = pty_child.lock().unwrap();
             let exit_code = child.wait().unwrap();
             debug!("pty closed: {:?}", exit_code);
             on_exit(exit_code);
-            if let Some(master) = pty_master.lock().unwrap().take() {
-                drop(master);
-            }
-            if let Some(killer) = pty_killer.lock().unwrap().take() {
-                drop(killer);
-            }
+            drop(pty_master.lock().unwrap().take());
+            drop(pty_killer.lock().unwrap().take());
         });
         Ok(())
     }
