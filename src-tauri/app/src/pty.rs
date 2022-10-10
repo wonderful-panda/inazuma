@@ -4,10 +4,12 @@ use portable_pty::{
 use shell_words;
 use std::error::Error;
 use std::path::Path;
-use std::sync::{Arc, Condvar, Mutex};
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 use tokio;
+
+use crate::sync::get_sync;
 
 pub struct Pty {
     pty_master: Arc<Mutex<Option<Box<dyn MasterPty + Send>>>>,
@@ -46,16 +48,10 @@ impl Pty {
 
         // spawn reader thread.
         let mut reader = pair.master.try_clone_reader()?;
-        let wait1 = Arc::new((Mutex::new(false), Condvar::new()));
-        let wait2 = wait1.clone();
+        let (mut wait, mut notify) = get_sync();
         tokio::task::spawn_blocking(move || {
             let mut buf = [0u8; 8162];
-            {
-                let (lock, cvar) = &*wait2;
-                let mut ready = lock.lock().unwrap();
-                *ready = true;
-                cvar.notify_one();
-            }
+            notify.notify();
             while let Ok(len) = reader.read(&mut buf) {
                 if len == 0 {
                     break;
@@ -65,15 +61,7 @@ impl Pty {
             }
             debug!("pty reader thread has finished");
         });
-
-        {
-            let (lock, cvar) = &*wait1;
-            let mut ready = lock.lock().unwrap();
-            while !*ready {
-                ready = cvar.wait(ready).unwrap();
-            }
-        }
-
+        wait.wait();
         *self.pty_master.lock().unwrap() = Some(pair.master);
 
         thread::sleep(Duration::from_millis(100)); // dirty hack to avoid lose first output from command.

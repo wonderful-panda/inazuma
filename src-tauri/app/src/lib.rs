@@ -6,14 +6,15 @@ pub mod commands;
 pub mod git;
 pub mod pty;
 pub mod state;
+pub mod sync;
 
 use state::config::{ConfigState, ConfigStateMutex};
 use state::env::{EnvState, EnvStateMutex};
 use state::pty::PtyStateMutex;
 use state::repositories::RepositoriesStateMutex;
 use state::stager::StagerStateMutex;
-use std::sync::{Arc, Condvar, Mutex};
 use std::{error::Error, fs::create_dir_all};
+use sync::get_sync;
 use tauri::{
     generate_handler, App, AppHandle, Manager, RunEvent, Runtime, WindowBuilder, WindowEvent,
     WindowUrl,
@@ -49,6 +50,7 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
         maximized,
     } = env_state.env.window_state;
 
+    let (mut wait, mut notify) = get_sync();
     let app_handle = app.app_handle();
     spawn(async move {
         let state = app_handle.state::<ConfigStateMutex>();
@@ -62,12 +64,15 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
         if let Err(e) = stager.wakeup_watcher() {
             warn!("Failed to awake watcher, {}", e);
         }
+        notify.notify();
     });
     if width == 0 || height == 0 {
         let def = WindowState::default();
         width = def.width;
         height = def.height;
     }
+
+    wait.wait();
 
     let win = WindowBuilder::new(app, "main", WindowUrl::App("index.html".into()))
         .title("Inazuma")
@@ -152,8 +157,7 @@ pub fn run() {
             }
         }
         RunEvent::Exit { .. } => {
-            let wait1 = Arc::new((Mutex::new(false), Condvar::new()));
-            let wait2 = Arc::clone(&wait1);
+            let (mut wait, mut notify) = get_sync();
             let app_handle_clone = AppHandle::clone(&app_handle);
             spawn(async move {
                 let env_state = app_handle_clone.state::<EnvStateMutex>();
@@ -170,16 +174,9 @@ pub fn run() {
                 let mut repositories = state.0.lock().await;
                 repositories.dispose();
 
-                let (m, cond) = &*wait1;
-                let mut finished = m.lock().unwrap();
-                *finished = true;
-                cond.notify_one();
+                notify.notify();
             });
-            let (m, cond) = &*wait2;
-            let mut finished = m.lock().unwrap();
-            while !*finished {
-                finished = cond.wait(finished).unwrap();
-            }
+            wait.wait();
         }
         _ => {}
     })
