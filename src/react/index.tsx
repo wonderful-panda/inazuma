@@ -11,13 +11,14 @@ import store, { Dispatch, useSelector, watch } from "./store";
 import { Provider, useDispatch } from "react-redux";
 import { RESET_RECENT_OPENED_REPOSITORIES, UPDATE_CONFIG } from "./store/persist";
 import { CommandGroupProvider } from "./context/CommandGroupContext";
-import { OPEN_REPOSITORY } from "./store/thunk/repository";
+import { OPEN_REPOSITORY, RELOAD_REPOSITORY } from "./store/thunk/repository";
 import { Loading } from "./components/Loading";
 import { REPORT_ERROR } from "./store/misc";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
 import { lazy } from "./components/hoc/lazy";
 import { invokeTauriCommand } from "./invokeTauriCommand";
 import { debounce } from "lodash";
+import { listen } from "@tauri-apps/api/event";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
@@ -114,6 +115,8 @@ const init = async (dispatch: Dispatch) => {
   updateFont(config.fontFamily);
   updateFontSize(config.fontSize);
   dispatch(RESET_RECENT_OPENED_REPOSITORIES(environment.recentOpened || []));
+  const unlisten = await listen<null>("request_reload", () => dispatch(RELOAD_REPOSITORY()));
+  window.addEventListener("unload", unlisten);
   const hash = window.location.hash ? decodeURI(window.location.hash.slice(1)) : undefined;
   window.location.hash = "#home";
   const initialRepository = await getInitialRepository(hash);

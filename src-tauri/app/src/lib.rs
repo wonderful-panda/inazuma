@@ -61,7 +61,7 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
 
         let state = app_handle.state::<StagerStateMutex>();
         let mut stager = state.0.lock().await;
-        if let Err(e) = stager.wakeup_watcher() {
+        if let Err(e) = stager.wakeup_watcher(app_handle.clone()) {
             warn!("Failed to awake watcher, {}", e);
         }
         notify.notify();

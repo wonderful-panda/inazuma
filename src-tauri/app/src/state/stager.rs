@@ -3,6 +3,7 @@ use std::error::Error;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
+use tauri::{AppHandle, Manager, Runtime};
 use tokio::spawn;
 use tokio::sync::mpsc;
 use tokio::sync::mpsc::Receiver;
@@ -49,7 +50,8 @@ async fn update_index(f: &TempStageFile) -> Result<(), String> {
     }
 }
 
-fn handle_event(
+fn handle_event<R: Runtime>(
+    app_handle: AppHandle<R>,
     watch_files: Arc<Mutex<HashMap<String, TempStageFile>>>,
     mut rx: Receiver<Result<Event, NotifyError>>,
 ) {
@@ -60,14 +62,16 @@ fn handle_event(
     spawn(async move {
         tokio::pin!(chunk_stream);
         while let Some(res) = chunk_stream.next().await {
-            let mut set = HashSet::<PathBuf>::new();
-            for f in res {
-                if set.contains(&f.temp_path) {
-                    continue;
-                }
-                set.insert(f.temp_path.clone());
+            let mut seen = HashSet::<&PathBuf>::new();
+            for f in res.iter().filter(|f| seen.insert(&f.temp_path)) {
                 if let Err(e) = update_index(&f).await {
                     warn!("{}", e);
+                } else {
+                    if let Some(win) = app_handle.get_window("main") {
+                        if let Err(e) = win.emit("request_reload", ()) {
+                            error!("Failed to emit event: request_reload, {}", e);
+                        }
+                    }
                 }
             }
         }
@@ -107,14 +111,17 @@ impl StagerState {
         }
     }
 
-    pub fn wakeup_watcher(&mut self) -> Result<(), Box<dyn Error>> {
+    pub fn wakeup_watcher<R: Runtime>(
+        &mut self,
+        app_handle: AppHandle<R>,
+    ) -> Result<(), Box<dyn Error>> {
         if self.watcher.is_some() {
             warn!("Watcher is already awakened");
             return Ok(());
         }
         let (tx, rx) = mpsc::channel::<Result<Event, NotifyError>>(100);
         let watch_files_clone = Arc::clone(&self.watch_files);
-        handle_event(watch_files_clone, rx);
+        handle_event(app_handle, watch_files_clone, rx);
 
         let watcher = notify::recommended_watcher(move |res| {
             tx.blocking_send(res).expect("Failed to send event");
