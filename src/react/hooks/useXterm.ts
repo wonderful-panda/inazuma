@@ -20,6 +20,7 @@ export interface InteractiveShellOptions {
 export const useXterm = (options: { onExit?: () => void }) => {
   const shell = useRef<Shell>();
   const onExitRef = useRef<() => void>();
+  const closePtyRef = useRef<() => Promise<void>>();
   const unlistenPtyData = useRef<() => void>();
   const unlistenPtyExit = useRef<() => void>();
 
@@ -33,6 +34,8 @@ export const useXterm = (options: { onExit?: () => void }) => {
     shell.current?.fitAddon.dispose();
     shell.current?.term.dispose();
     shell.current = undefined;
+    closePtyRef.current?.();
+    closePtyRef.current = undefined;
   }, []);
 
   const open = useCallback(
@@ -56,6 +59,7 @@ export const useXterm = (options: { onExit?: () => void }) => {
         rows: term.rows,
         cols: term.cols
       });
+      closePtyRef.current = () => invokeTauriCommand("close_pty", { id });
       unlistenPtyData.current = await listen<string>(`pty-data:${id}`, ({ payload }) =>
         term.write(payload)
       );
