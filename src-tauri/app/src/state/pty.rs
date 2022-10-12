@@ -42,8 +42,7 @@ impl PtyState {
             map.lock().unwrap().remove(&id.0);
             on_exit(id, result);
         };
-        let mut pty = Pty::new();
-        pty.open(command_line, cwd, rows, cols, on_data_, on_exit_)?;
+        let pty = Pty::open(command_line, cwd, rows, cols, on_data_, on_exit_)?;
         self.map.lock().unwrap().insert(id.0, pty);
         Ok(id)
     }
