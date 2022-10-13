@@ -1,4 +1,5 @@
-use std::{collections::HashMap, error::Error, path::Path, sync::Arc, sync::Mutex};
+use std::{collections::HashMap, error::Error, path::Path, sync::Arc};
+use tokio::{spawn, sync::Mutex};
 
 use portable_pty::ExitStatus;
 
@@ -20,9 +21,9 @@ impl PtyState {
         }
     }
 
-    pub fn open<
+    pub async fn open<
         F1: Fn(PtyId, &[u8]) + Send + 'static,
-        F2: Fn(PtyId, ExitStatus) + Send + 'static,
+        F2: FnOnce(PtyId, ExitStatus) + Send + 'static,
     >(
         &mut self,
         command_line: &str,
@@ -39,31 +40,33 @@ impl PtyState {
             on_data(id, data);
         };
         let on_exit_ = move |result: ExitStatus| {
-            map.lock().unwrap().remove(&id.0);
+            spawn(async move {
+                map.lock().await.remove(&id.0);
+            });
             on_exit(id, result);
         };
         let pty = Pty::open(command_line, cwd, rows, cols, on_data_, on_exit_)?;
-        self.map.lock().unwrap().insert(id.0, pty);
+        self.map.lock().await.insert(id.0, pty);
         Ok(id)
     }
 
-    pub fn write(&self, id: PtyId, data: &[u8]) -> Result<(), Box<dyn Error>> {
-        if let Some(pty) = self.map.lock().unwrap().get(&id.0) {
-            pty.write(data)?;
+    pub async fn write(&self, id: PtyId, data: String) -> Result<(), Box<dyn Error>> {
+        if let Some(pty) = self.map.lock().await.get(&id.0) {
+            pty.write(data).await?;
         }
         Ok(())
     }
 
-    pub fn resize(&self, id: PtyId, rows: u16, cols: u16) -> Result<(), Box<dyn Error>> {
-        if let Some(pty) = self.map.lock().unwrap().get(&id.0) {
-            pty.resize(rows, cols)?;
+    pub async fn resize(&self, id: PtyId, rows: u16, cols: u16) -> Result<(), Box<dyn Error>> {
+        if let Some(pty) = self.map.lock().await.get(&id.0) {
+            pty.resize(rows, cols).await?;
         }
         Ok(())
     }
 
-    pub fn kill(&self, id: PtyId) -> Result<(), Box<dyn Error>> {
-        if let Some(pty) = self.map.lock().unwrap().get(&id.0) {
-            pty.kill()?;
+    pub async fn kill(&self, id: PtyId) -> Result<(), Box<dyn Error>> {
+        if let Some(pty) = self.map.lock().await.get(&id.0) {
+            pty.kill().await?;
         }
         Ok(())
     }

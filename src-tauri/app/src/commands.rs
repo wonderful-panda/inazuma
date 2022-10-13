@@ -300,9 +300,10 @@ pub async fn open_pty<T: Runtime>(
             warn!("Failed to emit pty-exit event, {}", e);
         }
     };
-    let mut pty = pty_state.0.lock().unwrap();
+    let mut pty = pty_state.0.lock().await;
     let id = pty
         .open(command_line, cwd, rows, cols, on_data, on_exit)
+        .await
         .map_err(|e| format!("{}", e))?;
     return Ok(id.0);
 }
@@ -310,18 +311,19 @@ pub async fn open_pty<T: Runtime>(
 #[tauri::command]
 pub async fn write_pty(
     id: usize,
-    data: &str,
+    data: String,
     pty_state: State<'_, PtyStateMutex>,
 ) -> Result<(), String> {
-    let pty = pty_state.0.lock().unwrap();
-    pty.write(PtyId(id), data.as_bytes())
+    let pty = pty_state.0.lock().await;
+    pty.write(PtyId(id), data)
+        .await
         .map_err(|e| format!("{}", e))
 }
 
 #[tauri::command]
 pub async fn close_pty(id: usize, pty_state: State<'_, PtyStateMutex>) -> Result<(), String> {
-    let pty = pty_state.0.lock().unwrap();
-    pty.kill(PtyId(id)).map_err(|e| format!("{}", e))
+    let pty = pty_state.0.lock().await;
+    pty.kill(PtyId(id)).await.map_err(|e| format!("{}", e))
 }
 
 #[tauri::command]
@@ -331,8 +333,9 @@ pub async fn resize_pty(
     cols: u16,
     pty_state: State<'_, PtyStateMutex>,
 ) -> Result<(), String> {
-    let pty = pty_state.0.lock().unwrap();
+    let pty = pty_state.0.lock().await;
     pty.resize(PtyId(id), rows, cols)
+        .await
         .map_err(|e| format!("{}", e))
 }
 
