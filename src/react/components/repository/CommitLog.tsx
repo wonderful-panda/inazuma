@@ -24,6 +24,7 @@ import { KeyDownTrapper } from "../KeyDownTrapper";
 import { PinnedCommitContext, SetPinnedCommitContext } from "./CommitListRow";
 import { useStateWithRef } from "@/hooks/useStateWithRef";
 import { shortHash } from "@/util";
+import { CommitLogSideBar } from "./CommitLogSideBar";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -139,6 +140,16 @@ const CommitLogInner: React.FC<{
     [loadedId, commitDetail, dispatch]
   );
   const handleContextMenu = useCommitContextMenu();
+
+  const handleSideBarItemClick = useCallback(
+    (r: Ref) => {
+      const index = log.commits.findIndex((c) => c.id === r.id);
+      if (0 <= index) {
+        setSelectedIndex(index);
+      }
+    },
+    [log.commits, setSelectedIndex]
+  );
   return (
     <>
       <CommandGroup name="CommitLog" enabled={active}>
@@ -146,34 +157,37 @@ const CommitLogInner: React.FC<{
         <Cmd name="PrevCommit" hotkey="Ctrl+P" handler={itemSelector.movePrevious} />
         <Cmd name="ShowLsTree" hotkey="Ctrl+L" handler={showLsTreeTab} />
       </CommandGroup>
-      <PersistSplitterPanel
-        persistKey="repository/CommitLog"
-        initialDirection="horiz"
-        initialRatio={0.7}
-        splitterThickness={5}
-        allowDirectionChange
-        firstPanelMinSize="20%"
-        secondPanelMinSize="20%"
-        first={
-          <SelectedIndexProvider value={selectedIndex}>
-            <PinnedCommitContext.Provider value={pinnedCommit}>
-              <SetPinnedCommitContext.Provider value={setPinnedCommit}>
-                <KeyDownTrapper className="m-2" onKeyDown={itemSelector.handleKeyDown}>
-                  <CommitList
-                    ref={listRef}
-                    {...log}
-                    actionCommands={actionCommands}
-                    onRowMouseDown={itemSelector.handleRowMouseDown}
-                    onRowContextMenu={handleContextMenu}
-                  />
-                </KeyDownTrapper>
-              </SetPinnedCommitContext.Provider>
-            </PinnedCommitContext.Provider>
-          </SelectedIndexProvider>
-        }
-        second={detail}
-      />
-      <CommitDialog />
+      <div className="flex-row-nowrap flex-1">
+        <CommitLogSideBar refs={log.refs} onItemClick={handleSideBarItemClick} />
+        <PersistSplitterPanel
+          persistKey="repository/CommitLog"
+          initialDirection="horiz"
+          initialRatio={0.7}
+          splitterThickness={5}
+          allowDirectionChange
+          firstPanelMinSize="20%"
+          secondPanelMinSize="20%"
+          first={
+            <SelectedIndexProvider value={selectedIndex}>
+              <PinnedCommitContext.Provider value={pinnedCommit}>
+                <SetPinnedCommitContext.Provider value={setPinnedCommit}>
+                  <KeyDownTrapper className="m-2" onKeyDown={itemSelector.handleKeyDown}>
+                    <CommitList
+                      ref={listRef}
+                      {...log}
+                      actionCommands={actionCommands}
+                      onRowMouseDown={itemSelector.handleRowMouseDown}
+                      onRowContextMenu={handleContextMenu}
+                    />
+                  </KeyDownTrapper>
+                </SetPinnedCommitContext.Provider>
+              </PinnedCommitContext.Provider>
+            </SelectedIndexProvider>
+          }
+          second={detail}
+        />
+        <CommitDialog />
+      </div>
     </>
   );
 };
