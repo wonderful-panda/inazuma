@@ -55,7 +55,7 @@ module.exports = {
           textOverflow: "ellipsis"
         }
       };
-      ["row", "col", "row-reverese", "col-reverse"].forEach((direction) => {
+      ["row", "col", "row-reverse", "col-reverse"].forEach((direction) => {
         ["nowrap", "wrap", "wrap-reverse"].forEach((wrap) => {
           const className = `.flex-${direction}-${wrap}`;
           const style = {
