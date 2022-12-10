@@ -187,7 +187,8 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
         </Typography>
         <SectionContent>
           <TextField
-            label="External diff tool"
+            /* eslint-disable-next-line no-template-curly-in-string */
+            label="External diff tool (${left} and ${right} will be replaced with file path)"
             margin="dense"
             variant="standard"
             value={state.externalDiffTool}
