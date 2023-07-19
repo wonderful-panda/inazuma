@@ -6,15 +6,15 @@ import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { Loading } from "../Loading";
 import { LsTree } from "./LsTree";
-import { IconButton, TextField } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { Icon } from "../Icon";
-import { debounce } from "lodash";
 import { useTreeItemSelector } from "@/hooks/useTreeItemSelector";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { BlamePanel } from "./BlamePanel";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useBlame } from "@/hooks/useBlame";
+import PathFilter from "./PathFilter";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -28,13 +28,6 @@ const LsTreeWithFilter: React.FC<{
   onUpdateBlamePath: (value: string | undefined) => void;
 }> = ({ entries, blamePath, onUpdateBlamePath }) => {
   const [filterText, setFilterText] = useState("");
-  const onFilterTextChange = useMemo(
-    () =>
-      debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-        setFilterText(e.target.value);
-      }, 500),
-    []
-  );
   const filteredEntries = useMemo(() => {
     if (!filterText) {
       return entries;
@@ -92,13 +85,7 @@ const LsTreeWithFilter: React.FC<{
   return (
     <div className="flex-col-nowrap flex-1 m-1">
       <div className="flex-row-nowrap items-end mb-4 mr-2">
-        <Icon icon="mdi:filter" className="text-2xl m-1" />
-        <TextField
-          label="Filter by path"
-          className="flex-1 whitespace-nowrap overflow-hidden"
-          variant="standard"
-          onChange={onFilterTextChange}
-        />
+        <PathFilter onFilterTextChange={setFilterText} className="flex-1" />
         <IconButton size="small" onClick={expandAll} title="Expand all">
           <Icon icon="mdi:chevron-down" className="text-2xl" />
         </IconButton>

@@ -28,6 +28,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { REPORT_ERROR } from "@/store/misc";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import PathFilter from "./PathFilter";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -209,21 +210,26 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     selectedRowDataRef.current = treeModelState.selectedItem?.item.data;
   }, [treeModelState.selectedItem]);
 
+  const [filterText, setFilterText] = useState("");
+
   const unstaged = useMemo<FileEntry[]>(() => {
     if (!stat) {
       return [];
     }
-    return [...stat.unstagedFiles.map((f) => ({ ...f, unstaged: true }))].sort((a, b) =>
-      a.path.localeCompare(b.path)
-    );
-  }, [stat]);
+    return stat.unstagedFiles
+      .filter((f) => f.path.indexOf(filterText) >= 0)
+      .map((f) => ({ ...f, unstaged: true }))
+      .sort((a, b) => a.path.localeCompare(b.path));
+  }, [stat, filterText]);
 
   const staged = useMemo<FileEntry[]>(() => {
     if (!stat) {
       return [];
     }
-    return [...stat.stagedFiles].sort((a, b) => a.path.localeCompare(b.path));
-  }, [stat]);
+    return stat.stagedFiles
+      .filter((f) => f.path.indexOf(filterText) >= 0)
+      .sort((a, b) => a.path.localeCompare(b.path));
+  }, [stat, filterText]);
 
   useEffect(() => {
     const items: TreeItem<RowType>[] = [];
@@ -296,19 +302,22 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         <FlexCard
           title="Changes"
           content={
-            <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
-              <SelectedIndexProvider value={treeModelState.selectedIndex}>
-                <VirtualTree<RowType>
-                  treeModelState={treeModelState}
-                  treeModelDispatch={treeModelDispatch}
-                  itemSize={itemSize}
-                  getItemKey={getItemKey}
-                  renderRow={renderRow}
-                  onRowMouseDown={handleRowMouseDown}
-                  onRowDoubleClick={handleRowDoubleClick}
-                />
-              </SelectedIndexProvider>
-            </KeyDownTrapper>
+            <div className="flex-1 flex-col-nowrap">
+              <PathFilter onFilterTextChange={setFilterText} className="m-2" />
+              <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
+                <SelectedIndexProvider value={treeModelState.selectedIndex}>
+                  <VirtualTree<RowType>
+                    treeModelState={treeModelState}
+                    treeModelDispatch={treeModelDispatch}
+                    itemSize={itemSize}
+                    getItemKey={getItemKey}
+                    renderRow={renderRow}
+                    onRowMouseDown={handleRowMouseDown}
+                    onRowDoubleClick={handleRowDoubleClick}
+                  />
+                </SelectedIndexProvider>
+              </KeyDownTrapper>
+            </div>
           }
           actions={
             <>
