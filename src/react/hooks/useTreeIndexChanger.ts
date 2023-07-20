@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useListIndexChanger, ListItemSelector } from "./useListIndexChanger";
 import { TreeModelDispatch, TreeModelState } from "./useTreeModel";
 
-export const useTreeItemSelector = <T>(
+export const useTreeIndexChanger = <T>(
   treeModelState: TreeModelState<T>,
   treeModelDispatch: TreeModelDispatch<T>
 ): ListItemSelector => {

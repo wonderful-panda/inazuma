@@ -15,7 +15,7 @@ import { TreeItem } from "@/tree";
 import { VirtualTree, VirtualTreeProps } from "../VirtualTree";
 import { FileListRow } from "./FileListRow";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { useTreeItemSelector } from "@/hooks/useTreeItemSelector";
+import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import classNames from "classnames";
 import { executeFileCommand } from "@/commands";
@@ -172,7 +172,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
   const [udiff, setUdiff] = useState<Udiff | undefined>(undefined);
   const selectedRowDataRef = useRef<RowType | undefined>(undefined);
   const [treeModelState, treeModelDispatch] = useTreeModel<RowType>();
-  const { handleKeyDown, handleRowMouseDown } = useTreeItemSelector(
+  const { handleKeyDown, handleRowMouseDown } = useTreeIndexChanger(
     treeModelState,
     treeModelDispatch
   );

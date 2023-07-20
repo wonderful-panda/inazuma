@@ -8,7 +8,7 @@ import { Loading } from "../Loading";
 import { LsTree } from "./LsTree";
 import { IconButton } from "@mui/material";
 import { Icon } from "../Icon";
-import { useTreeItemSelector } from "@/hooks/useTreeItemSelector";
+import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { BlamePanel } from "./BlamePanel";
 import { KeyDownTrapper } from "../KeyDownTrapper";
@@ -36,7 +36,7 @@ const LsTreeWithFilter: React.FC<{
   }, [entries, filterText]);
 
   const [state, dispatch] = useTreeModel<LstreeData>();
-  const { handleKeyDown, handleRowMouseDown } = useTreeItemSelector(state, dispatch);
+  const { handleKeyDown, handleRowMouseDown } = useTreeIndexChanger(state, dispatch);
 
   useEffect(() => {
     dispatch({ type: "reset", payload: { items: filteredEntries } });
