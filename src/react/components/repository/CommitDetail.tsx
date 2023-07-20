@@ -11,7 +11,7 @@ import { FileList, useFileListRowEventHandler } from "./FileList";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
 import { diffWithParent } from "@/commands/diff";
 import { useDispatch } from "@/store";
-import { useListItemSelector } from "@/hooks/useListItemSelector";
+import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { VirtualListMethods } from "../VirtualList";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { showFileContent } from "@/commands/showFileContent";
@@ -95,7 +95,7 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
     setSelectedFile
   );
   const listRef = useRef<VirtualListMethods>(null);
-  const { handleKeyDown, handleRowMouseDown } = useListItemSelector(
+  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
     commit?.files.length || 0,
     setSelectedIndex
   );

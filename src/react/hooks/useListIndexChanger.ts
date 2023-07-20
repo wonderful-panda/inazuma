@@ -12,7 +12,7 @@ export interface ListItemSelector {
   handleRowMouseDown: (event: React.MouseEvent, index: number) => void;
 }
 
-export const useListItemSelector = (
+export const useListIndexChanger = (
   itemsCount: number,
   setValue: SetState<number>,
   extraKeyHandlers?: Record<string, () => void>

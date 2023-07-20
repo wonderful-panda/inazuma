@@ -1,6 +1,6 @@
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useFileCommitContextMenu } from "@/hooks/useContextMenu";
-import { useListItemSelector } from "@/hooks/useListItemSelector";
+import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GitHash } from "../GitHash";
@@ -102,7 +102,7 @@ export const BlamePanel: React.FC<BlamePanelProps> = ({ persistKey, blame, path,
     [blame]
   );
 
-  const { handleKeyDown, handleRowMouseDown } = useListItemSelector(
+  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
     blame?.commits.length || 0,
     setSelectedIndex
   );

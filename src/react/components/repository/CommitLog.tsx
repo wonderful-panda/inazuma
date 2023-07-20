@@ -7,7 +7,7 @@ import { debounce } from "lodash";
 import { useDispatch, useSelector } from "@/store";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { CommitLogItems } from "@/store/repository";
-import { useListItemSelector } from "@/hooks/useListItemSelector";
+import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { useCommitContextMenu } from "@/hooks/useContextMenu";
 import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
@@ -80,7 +80,10 @@ const CommitLogInner: React.FC<{
 
   const [pinnedCommit, setPinnedCommit] = useState<Commit | undefined>(undefined);
 
-  const itemSelector = useListItemSelector(log.commits.length, setSelectedIndex);
+  const { moveNext, movePrevious, handleKeyDown, handleRowMouseDown } = useListIndexChanger(
+    log.commits.length,
+    setSelectedIndex
+  );
   const listRef = useRef<VirtualListMethods>(null);
   useEffect(() => {
     listRef.current?.scrollToItem(selectedIndex);
@@ -153,8 +156,8 @@ const CommitLogInner: React.FC<{
   return (
     <>
       <CommandGroup name="CommitLog" enabled={active}>
-        <Cmd name="NextCommit" hotkey="Ctrl+N" handler={itemSelector.moveNext} />
-        <Cmd name="PrevCommit" hotkey="Ctrl+P" handler={itemSelector.movePrevious} />
+        <Cmd name="NextCommit" hotkey="Ctrl+N" handler={moveNext} />
+        <Cmd name="PrevCommit" hotkey="Ctrl+P" handler={movePrevious} />
         <Cmd name="ShowLsTree" hotkey="Ctrl+L" handler={showLsTreeTab} />
       </CommandGroup>
       <div className="flex-row-nowrap flex-1">
@@ -171,12 +174,12 @@ const CommitLogInner: React.FC<{
             <SelectedIndexProvider value={selectedIndex}>
               <PinnedCommitContext.Provider value={pinnedCommit}>
                 <SetPinnedCommitContext.Provider value={setPinnedCommit}>
-                  <KeyDownTrapper className="m-2" onKeyDown={itemSelector.handleKeyDown}>
+                  <KeyDownTrapper className="m-2" onKeyDown={handleKeyDown}>
                     <CommitList
                       ref={listRef}
                       {...log}
                       actionCommands={actionCommands}
-                      onRowMouseDown={itemSelector.handleRowMouseDown}
+                      onRowMouseDown={handleRowMouseDown}
                       onRowContextMenu={handleContextMenu}
                     />
                   </KeyDownTrapper>

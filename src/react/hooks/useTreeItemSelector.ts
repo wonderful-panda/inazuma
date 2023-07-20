@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useListItemSelector, ListItemSelector } from "./useListItemSelector";
+import { useListIndexChanger, ListItemSelector } from "./useListIndexChanger";
 import { TreeModelDispatch, TreeModelState } from "./useTreeModel";
 
 export const useTreeItemSelector = <T>(
@@ -19,7 +19,7 @@ export const useTreeItemSelector = <T>(
     }),
     [treeModelDispatch]
   );
-  return useListItemSelector(
+  return useListIndexChanger(
     treeModelState.visibleItems.length,
     setSelectedIndex,
     extraKeyHandlers

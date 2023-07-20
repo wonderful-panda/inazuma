@@ -8,7 +8,7 @@ import { Loading } from "../Loading";
 import { FlexCard } from "../FlexCard";
 import { VirtualListMethods } from "../VirtualList";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { useListItemSelector } from "@/hooks/useListItemSelector";
+import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { diffAgainst } from "@/commands/diff";
 import { DiffViewer } from "./DiffViewer";
 import { debounce } from "lodash";
@@ -76,7 +76,7 @@ const CommitDiffContent: React.FC<{
     undefined
   ]);
   const [loading, setLoading] = useState(false);
-  const itemSelector = useListItemSelector(files.length, setSelectedIndex);
+  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(files.length, setSelectedIndex);
   useEffect(() => {
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
@@ -106,12 +106,12 @@ const CommitDiffContent: React.FC<{
         title={`Changes ${shortHash(commit1.id)} - ${shortHash(commit2.id)}`}
         content={
           <SelectedIndexProvider value={selectedIndex}>
-            <KeyDownTrapper className="m-1 p-1" onKeyDown={itemSelector.handleKeyDown}>
+            <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
               <FileList
                 ref={listRef}
                 commit={commit2}
                 files={files}
-                onRowMouseDown={itemSelector.handleRowMouseDown}
+                onRowMouseDown={handleRowMouseDown}
                 onRowDoubleClick={handleRowDoubleClick}
                 actionCommands={actionCommands}
               />
