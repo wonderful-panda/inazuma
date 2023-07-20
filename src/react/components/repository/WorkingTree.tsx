@@ -226,6 +226,14 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
   }, [stat]);
 
   useEffect(() => {
+    const items: TreeItem<RowType>[] = [];
+    items.push({ data: "unstaged", children: [] });
+    items.push({ data: "staged", children: [] });
+    treeModelDispatch({ type: "reset", payload: { items } });
+    treeModelDispatch({ type: "expandAll" });
+  }, [treeModelDispatch]);
+
+  useEffect(() => {
     const rootItems: TreeItem<RowType>[] = [];
     if (unstaged.length > 0) {
       rootItems.push({ data: "unstaged", children: unstaged.map((data) => ({ data })) });
@@ -234,7 +242,6 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
       rootItems.push({ data: "staged", children: staged.map((data) => ({ data })) });
     }
     treeModelDispatch({ type: "reset", payload: { items: rootItems } });
-    treeModelDispatch({ type: "expandAll" });
     if (selectedRowDataRef.current) {
       const key = getItemKey(selectedRowDataRef.current);
       treeModelDispatch({
