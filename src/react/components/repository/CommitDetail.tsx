@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "../Icon";
 import { GitHash } from "../GitHash";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
@@ -16,6 +16,8 @@ import { VirtualListMethods } from "../VirtualList";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { showFileContent } from "@/commands/showFileContent";
 import { KeyDownTrapper } from "../KeyDownTrapper";
+import { useListIndexOfItem } from "@/hooks/useListIndexOfItem";
+import PathFilter from "./PathFilter";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -80,7 +82,18 @@ const CommitMetadata = memo(CommitMetadataInner);
 
 export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
   const commit = props.commit;
-  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [filterText, setFilterText] = useState("");
+  const visibleFiles = useMemo(
+    () => (commit ? commit.files.filter((f) => f.path.indexOf(filterText) >= 0) : []),
+    [commit, filterText]
+  );
+  const [selectedFile, setSelectedFile] = useState<FileEntry | undefined>(undefined);
+  useEffect(() => setSelectedFile(undefined), [commit]);
+  const [selectedIndex, setSelectedIndex] = useListIndexOfItem(
+    visibleFiles || [],
+    selectedFile,
+    setSelectedFile
+  );
   const listRef = useRef<VirtualListMethods>(null);
   const { handleKeyDown, handleRowMouseDown } = useListItemSelector(
     commit?.files.length || 0,
@@ -101,19 +114,22 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
           title={commit && "Changes"}
           content={
             commit && (
-              <SelectedIndexProvider value={selectedIndex}>
-                <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
-                  <FileList
-                    ref={listRef}
-                    commit={commit}
-                    files={commit.files}
-                    actionCommands={actionCommands}
-                    onRowMouseDown={handleRowMouseDown}
-                    onRowDoubleClick={onRowDoubleClick}
-                    onRowContextMenu={onRowContextMenu}
-                  />
-                </KeyDownTrapper>
-              </SelectedIndexProvider>
+              <div className="flex-1 flex-col-nowrap">
+                <PathFilter onFilterTextChange={setFilterText} className="m-2" />
+                <SelectedIndexProvider value={selectedIndex}>
+                  <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
+                    <FileList
+                      ref={listRef}
+                      commit={commit}
+                      files={visibleFiles}
+                      actionCommands={actionCommands}
+                      onRowMouseDown={handleRowMouseDown}
+                      onRowDoubleClick={onRowDoubleClick}
+                      onRowContextMenu={onRowContextMenu}
+                    />
+                  </KeyDownTrapper>
+                </SelectedIndexProvider>
+              </div>
             )
           }
         />
