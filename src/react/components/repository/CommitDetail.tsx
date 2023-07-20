@@ -16,7 +16,7 @@ import { VirtualListMethods } from "../VirtualList";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { showFileContent } from "@/commands/showFileContent";
 import { KeyDownTrapper } from "../KeyDownTrapper";
-import { useListIndexOfItem } from "@/hooks/useListIndexOfItem";
+import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
 import PathFilter from "./PathFilter";
 
 export interface CommitDetailProps {
@@ -87,13 +87,8 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
     () => (commit ? commit.files.filter((f) => f.path.indexOf(filterText) >= 0) : []),
     [commit, filterText]
   );
-  const [selectedFile, setSelectedFile] = useState<FileEntry | undefined>(undefined);
-  useEffect(() => setSelectedFile(undefined), [commit]);
-  const [selectedIndex, setSelectedIndex] = useListIndexOfItem(
-    visibleFiles || [],
-    selectedFile,
-    setSelectedFile
-  );
+  const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(visibleFiles || []);
+  useEffect(() => setSelectedIndex(-1), [commit]);
   const listRef = useRef<VirtualListMethods>(null);
   const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
     commit?.files.length || 0,
