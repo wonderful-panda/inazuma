@@ -91,7 +91,7 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
   useEffect(() => setSelectedIndex(-1), [commit]);
   const listRef = useRef<VirtualListMethods>(null);
   const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
-    commit?.files.length || 0,
+    visibleFiles.length || 0,
     setSelectedIndex
   );
   useEffect(() => listRef.current?.scrollToItem(selectedIndex), [selectedIndex]);

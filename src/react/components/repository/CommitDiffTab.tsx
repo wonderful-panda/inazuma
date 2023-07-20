@@ -15,6 +15,8 @@ import { debounce } from "lodash";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { decodeBase64, decodeToString } from "@/strings";
+import PathFilter from "./PathFilter";
+import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
 
 export interface CommitDiffTabProps {
   repoPath: string;
@@ -70,13 +72,21 @@ const CommitDiffContent: React.FC<{
 }> = ({ repoPath, commit1, commit2, files }) => {
   const dispatch = useDispatch();
   const listRef = useRef<VirtualListMethods>(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(files);
+  const [filterText, setFilterText] = useState("");
+  const visibleFiles = useMemo(
+    () => files.filter((f) => f.path.indexOf(filterText) >= 0),
+    [files, filterText]
+  );
   const [content, setContent] = useState<[TextFile | undefined, TextFile | undefined]>([
     undefined,
     undefined
   ]);
   const [loading, setLoading] = useState(false);
-  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(files.length, setSelectedIndex);
+  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
+    visibleFiles.length,
+    setSelectedIndex
+  );
   useEffect(() => {
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
@@ -105,18 +115,21 @@ const CommitDiffContent: React.FC<{
       <FlexCard
         title={`Changes ${shortHash(commit1.id)} - ${shortHash(commit2.id)}`}
         content={
-          <SelectedIndexProvider value={selectedIndex}>
-            <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
-              <FileList
-                ref={listRef}
-                commit={commit2}
-                files={files}
-                onRowMouseDown={handleRowMouseDown}
-                onRowDoubleClick={handleRowDoubleClick}
-                actionCommands={actionCommands}
-              />
-            </KeyDownTrapper>
-          </SelectedIndexProvider>
+          <div className="flex-1 flex-col-nowrap">
+            <PathFilter onFilterTextChange={setFilterText} className="m-2" />
+            <SelectedIndexProvider value={selectedIndex}>
+              <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
+                <FileList
+                  ref={listRef}
+                  commit={commit2}
+                  files={visibleFiles}
+                  onRowMouseDown={handleRowMouseDown}
+                  onRowDoubleClick={handleRowDoubleClick}
+                  actionCommands={actionCommands}
+                />
+              </KeyDownTrapper>
+            </SelectedIndexProvider>
+          </div>
         }
       />
     </div>
