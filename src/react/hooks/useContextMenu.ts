@@ -31,14 +31,25 @@ export const useCommitContextMenu = (): ((
 export const useFileContextMenu = (
   commit: Commit | undefined
 ): ((event: React.MouseEvent | MouseEvent, index: number, item: FileEntry) => void) => {
+  return useFileContextMenuT<FileEntry>(commit, (item) => item);
+};
+
+export const useFileContextMenuT = <T>(
+  commit: Commit | undefined,
+  getFile: (item: T) => FileEntry | undefined
+): ((event: React.MouseEvent | MouseEvent, index: number, item: T) => void) => {
   const dispatch = useDispatch();
   const { show } = useContext(ContextMenuContext);
   const onFileContextMenu = useCallback(
-    (event: React.MouseEvent | MouseEvent, _index: number, item: FileEntry) => {
+    (event: React.MouseEvent | MouseEvent, _index: number, item: T) => {
       if (!commit) {
         return;
       }
-      const menus = fileCommandsToActions(dispatch, fileCommands, commit, item);
+      const file = getFile(item);
+      if (!file) {
+        return;
+      }
+      const menus = fileCommandsToActions(dispatch, fileCommands, commit, file);
       show(event, menus);
     },
     [commit, show, dispatch]

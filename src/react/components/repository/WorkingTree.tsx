@@ -29,6 +29,7 @@ import { REPORT_ERROR } from "@/store/misc";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import PathFilter from "./PathFilter";
+import { useFileContextMenuT } from "@/hooks/useContextMenu";
 import { copyRelativePath } from "@/commands/copyRelativePath";
 
 export interface WorkingTreeProps {
@@ -271,6 +272,11 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     },
     [treeModelDispatch, dispatch, stat]
   );
+
+  const handleRowContextMenu = useFileContextMenuT<TreeItemVM<RowType>>(stat, (vm) => {
+    return typeof vm.item.data === "string" ? undefined : vm.item.data;
+  });
+
   const renderRow = useCallback<VirtualTreeProps<RowType>["renderRow"]>(
     (item, index) => {
       if (typeof item.data === "string") {
@@ -315,6 +321,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
                     renderRow={renderRow}
                     onRowMouseDown={handleRowMouseDown}
                     onRowDoubleClick={handleRowDoubleClick}
+                    onRowContextMenu={handleRowContextMenu}
                   />
                 </SelectedIndexProvider>
               </KeyDownTrapper>
