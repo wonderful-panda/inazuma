@@ -29,6 +29,7 @@ import { REPORT_ERROR } from "@/store/misc";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import PathFilter from "./PathFilter";
+import { copyRelativePath } from "@/commands/copyRelativePath";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -37,8 +38,8 @@ export interface WorkingTreeProps {
 
 type RowType = FileEntry | "staged" | "unstaged";
 
-const unstagedActionCommands = [restore, diffUnstaged, stage];
-const stagedActionCommands = [diffStaged, unstage];
+const unstagedActionCommands = [copyRelativePath, restore, diffUnstaged, stage];
+const stagedActionCommands = [copyRelativePath, diffStaged, unstage];
 
 const getItemKey = (item: RowType) =>
   typeof item === "string" ? item : `${item.path}:${item.unstaged ? "U" : "S"}`;

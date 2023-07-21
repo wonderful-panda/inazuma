@@ -5,10 +5,12 @@ import { diffStaged, diffUnstaged, diffWithLocal, diffWithParent } from "./diff"
 import { showFileContent } from "./showFileContent";
 import { stage, unstage } from "./workingtree";
 import { ActionItem, CommitCommand, FileCommand } from "./types";
+import { copyRelativePath } from "./copyRelativePath";
 
 export const commitCommands = [copyFullHash, copyShortHash, browseSourceTree];
 
 export const fileCommands = [
+  copyRelativePath,
   stage,
   unstage,
   diffWithParent,

@@ -18,6 +18,7 @@ import { showFileContent } from "@/commands/showFileContent";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
 import PathFilter from "./PathFilter";
+import { copyRelativePath } from "@/commands/copyRelativePath";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -25,7 +26,7 @@ export interface CommitDetailProps {
   orientation: Orientation;
 }
 
-const actionCommands = [diffWithParent, showFileContent];
+const actionCommands = [copyRelativePath, diffWithParent, showFileContent];
 
 const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
   const dispatch = useDispatch();
