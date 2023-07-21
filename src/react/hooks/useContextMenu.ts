@@ -52,7 +52,7 @@ export const useFileContextMenuT = <T>(
       const menus = fileCommandsToActions(dispatch, fileCommands, commit, file);
       show(event, menus);
     },
-    [commit, show, dispatch]
+    [commit, show, dispatch, getFile]
   );
   return onFileContextMenu;
 };

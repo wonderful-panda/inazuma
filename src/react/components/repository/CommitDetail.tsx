@@ -89,7 +89,7 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
     [commit, filterText]
   );
   const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(visibleFiles || []);
-  useEffect(() => setSelectedIndex(-1), [commit]);
+  useEffect(() => setSelectedIndex(-1), [commit, setSelectedIndex]);
   const listRef = useRef<VirtualListMethods>(null);
   const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
     visibleFiles.length || 0,
