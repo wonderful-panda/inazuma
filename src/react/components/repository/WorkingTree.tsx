@@ -273,9 +273,10 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     [treeModelDispatch, dispatch, stat]
   );
 
-  const handleRowContextMenu = useFileContextMenuT<TreeItemVM<RowType>>(stat, (vm) => {
-    return typeof vm.item.data === "string" ? undefined : vm.item.data;
-  });
+  const handleRowContextMenu = useFileContextMenuT<TreeItemVM<RowType>>(
+    stat,
+    useCallback((vm) => (typeof vm.item.data === "string" ? undefined : vm.item.data), [])
+  );
 
   const renderRow = useCallback<VirtualTreeProps<RowType>["renderRow"]>(
     (item, index) => {
