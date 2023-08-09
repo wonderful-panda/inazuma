@@ -20,7 +20,7 @@ pub async fn get_workingtree_stat(
 pub async fn get_untracked_files(repo_path: &Path) -> Result<Vec<String>, GitError> {
     let args = vec!["-z", "--others", "--exclude-standard"];
     let output = exec(repo_path, "ls-files", &args, &[]).await?;
-    GitError::assert_process_output("diff", &output)?;
+    GitError::assert_process_output("ls-files", &output)?;
     let stdout = std::str::from_utf8(&output.stdout).unwrap();
     let paths: Vec<String> = stdout
         .split("\0")
