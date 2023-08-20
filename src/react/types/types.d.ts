@@ -54,6 +54,7 @@ declare global {
   type FileCommit = Commit & FileEntry;
 
   type WorkingTreeStat = Commit & {
+    unmergedFiles: FileEntry[];
     unstagedFiles: FileEntry[];
     stagedFiles: FileEntry[];
   };

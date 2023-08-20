@@ -36,14 +36,16 @@ export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
   orientation: Orientation;
 }
-
-type RowType = FileEntry | "staged" | "unstaged";
+type GroupHeaderType = "staged" | "unstaged" | "conflict";
+type RowType = FileEntry | GroupHeaderType;
 
 const unstagedActionCommands = [copyRelativePath, restore, diffUnstaged, stage];
 const stagedActionCommands = [copyRelativePath, diffStaged, unstage];
 
 const getItemKey = (item: RowType) =>
-  typeof item === "string" ? item : `${item.path}:${item.unstaged ? "U" : "S"}`;
+  typeof item === "string"
+    ? item
+    : `${item.path}:${item.statusCode == "U" ? "C" : item.unstaged ? "U" : "S"}`;
 
 const getUdiff = async (repoPath: string, relPath: string, cached: boolean): Promise<Udiff> => {
   const udiffBase64 = await invokeTauriCommand("get_workingtree_udiff_base64", {
@@ -65,28 +67,34 @@ const getUdiff = async (repoPath: string, relPath: string, cached: boolean): Pro
 };
 
 const GroupHeader: React.FC<{
-  type: "staged" | "unstaged";
+  type: GroupHeaderType;
   index: number;
   height: number;
 }> = ({ type, index, height }) => {
   const dispatch = useDispatch();
   const selectedIndex = useSelectedIndex();
-  const headerActions = useMemo(() => {
-    const action: IconActionItem =
-      type === "unstaged"
-        ? {
-            id: "StageAll",
-            label: "Stage all files",
-            icon: "mdi:plus",
-            handler: () => dispatch(STAGE("*"))
-          }
-        : {
-            id: "UnstageAll",
-            label: "Unstage all files",
-            icon: "mdi:minus",
-            handler: () => dispatch(UNSTAGE("*"))
-          };
-    return [action];
+  const headerActions = useMemo<IconActionItem[]>(() => {
+    if (type === "unstaged") {
+      return [
+        {
+          id: "StageAll",
+          label: "Stage all files",
+          icon: "mdi:plus",
+          handler: () => dispatch(STAGE("*"))
+        }
+      ];
+    } else if (type === "staged") {
+      return [
+        {
+          id: "UnstageAll",
+          label: "Unstage all files",
+          icon: "mdi:minus",
+          handler: () => dispatch(UNSTAGE("*"))
+        }
+      ];
+    } else {
+      return [];
+    }
   }, [type, dispatch]);
 
   return (
@@ -153,6 +161,13 @@ const UdiffViewer: React.FC<{ udiff: Udiff | undefined }> = ({ udiff }) => {
   );
 };
 
+const filesToItems = (files: readonly FileEntry[], filterText: string) => {
+  return files
+    .filter((f) => f.path.indexOf(filterText) >= 0)
+    .sort((a, b) => a.path.localeCompare(b.path))
+    .map((data) => ({ data }));
+};
+
 export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) => {
   const dispatch = useDispatch();
 
@@ -214,27 +229,30 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
 
   const [filterText, setFilterText] = useState("");
 
-  const unstaged = useMemo<FileEntry[]>(() => {
+  const unmerged = useMemo(() => {
     if (!stat) {
       return [];
     }
-    return stat.unstagedFiles
-      .filter((f) => f.path.indexOf(filterText) >= 0)
-      .map((f) => ({ ...f, unstaged: true }))
-      .sort((a, b) => a.path.localeCompare(b.path));
+    return filesToItems(stat.unmergedFiles, filterText);
   }, [stat, filterText]);
 
-  const staged = useMemo<FileEntry[]>(() => {
+  const unstaged = useMemo(() => {
     if (!stat) {
       return [];
     }
-    return stat.stagedFiles
-      .filter((f) => f.path.indexOf(filterText) >= 0)
-      .sort((a, b) => a.path.localeCompare(b.path));
+    return filesToItems(stat.unstagedFiles, filterText);
+  }, [stat, filterText]);
+
+  const staged = useMemo(() => {
+    if (!stat) {
+      return [];
+    }
+    return filesToItems(stat.stagedFiles, filterText);
   }, [stat, filterText]);
 
   useEffect(() => {
     const items: TreeItem<RowType>[] = [];
+    items.push({ data: "conflict", children: [] });
     items.push({ data: "unstaged", children: [] });
     items.push({ data: "staged", children: [] });
     treeModelDispatch({ type: "reset", payload: { items } });
@@ -243,11 +261,14 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
 
   useEffect(() => {
     const rootItems: TreeItem<RowType>[] = [];
+    if (unmerged.length > 0) {
+      rootItems.push({ data: "conflict", children: unmerged });
+    }
     if (unstaged.length > 0) {
-      rootItems.push({ data: "unstaged", children: unstaged.map((data) => ({ data })) });
+      rootItems.push({ data: "unstaged", children: unstaged });
     }
     if (staged.length > 0) {
-      rootItems.push({ data: "staged", children: staged.map((data) => ({ data })) });
+      rootItems.push({ data: "staged", children: staged });
     }
     treeModelDispatch({ type: "reset", payload: { items: rootItems } });
     if (selectedRowDataRef.current) {
@@ -257,7 +278,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         payload: (v) => getItemKey(v.item.data) === key
       });
     }
-  }, [treeModelDispatch, unstaged, staged]);
+  }, [treeModelDispatch, unmerged, unstaged, staged]);
 
   const handleRowDoubleClick = useCallback(
     (_e: unknown, _index: unknown, { item }: TreeItemVM<RowType>) => {
