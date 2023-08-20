@@ -18,6 +18,7 @@
     "build:ts": "cross-env NODE_OPTIONS=\"--max_old_space_size=3072\" vite build",
     "build:frontend": "run-s prebuild:* generate-dts check:ts build:tailwind build:ts",
     "build:tauri": "tauri build",
+    "test:tauri": "cargo test --manifest-path src-tauri/app/Cargo.toml",
     "build": "run-s build:frontend build:tauri",
     "watch:ts": "vite",
     "watch:frontend": "run-p \"build:tailwind -w\" \"check:ts -w\" watch:ts",
