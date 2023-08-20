@@ -1,4 +1,4 @@
-use super::commit_detail::parse_numstat_row;
+use super::commit_detail::parse_raw_numstat_rows;
 use super::{exec, GitError};
 use std::path::Path;
 use types::*;
@@ -19,7 +19,7 @@ pub async fn get_changes_between(
     let output = exec(repo_path, "diff", &args, &[]).await?;
     GitError::assert_process_output("diff", &output)?;
     let stdout = std::str::from_utf8(&output.stdout).unwrap();
-    parse_numstat_row(stdout)
+    parse_raw_numstat_rows(stdout)
 }
 
 pub async fn get_workingtree_udiff(

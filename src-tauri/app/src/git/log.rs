@@ -1,4 +1,4 @@
-use super::commit_detail::parse_numstat_row;
+use super::commit_detail::parse_raw_numstat_rows;
 use super::{exec, GitError};
 use std::path::Path;
 use types::*;
@@ -148,7 +148,7 @@ pub fn parse_filelog_output(output: &str) -> Result<Vec<FileLogEntry>, GitError>
             _ => {
                 // stat line
                 let commit = Commit::new(id, parents, author, date, summary);
-                let entry = parse_numstat_row(line)?.remove(0);
+                let entry = parse_raw_numstat_rows(line)?.remove(0);
                 entries.push(FileLogEntry { commit, entry });
                 id = "";
                 parents = "";

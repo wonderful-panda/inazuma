@@ -20,7 +20,7 @@ use types::*;
  *
  *    insertions/deletions are inserted/deleted line count, or "-" when it is binary.
  */
-pub fn parse_numstat_row(text: &str) -> Result<Vec<FileEntry>, GitError> {
+pub fn parse_raw_numstat_rows(text: &str) -> Result<Vec<FileEntry>, GitError> {
     let mut files: HashMap<&str, FileEntry> = HashMap::new();
     let mut ret: Vec<FileEntry> = Vec::new();
     let mut tokens: Vec<&str> = text.split("\0").filter(|v| v.len() > 0).collect();
@@ -181,7 +181,7 @@ fn parse_commit_detail_output(output: &str) -> Result<CommitDetail, GitError> {
                 if line.len() == 0 || line.starts_with("\0") {
                     continue;
                 }
-                files = parse_numstat_row(line)?;
+                files = parse_raw_numstat_rows(line)?;
                 break;
             }
         }

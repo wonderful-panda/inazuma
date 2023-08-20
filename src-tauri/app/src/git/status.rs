@@ -1,4 +1,4 @@
-use super::commit_detail::parse_numstat_row;
+use super::commit_detail::parse_raw_numstat_rows;
 use super::{exec, merge_heads, rev_parse, GitError};
 use std::path::Path;
 use types::*;
@@ -106,7 +106,7 @@ pub async fn get_workingtree_stat(
     let output = exec(repo_path, "diff", &args, &[]).await?;
     GitError::assert_process_output("diff", &output)?;
     let stdout = std::str::from_utf8(&output.stdout).unwrap();
-    parse_numstat_row(stdout)
+    parse_raw_numstat_rows(stdout)
 }
 
 pub async fn get_untracked_files(repo_path: &Path) -> Result<Vec<String>, GitError> {
