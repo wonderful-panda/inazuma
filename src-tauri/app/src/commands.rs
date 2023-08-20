@@ -140,6 +140,15 @@ pub async fn get_workingtree_stat(repo_path: &Path) -> Result<WorkingTreeStat, S
 }
 
 #[tauri::command]
+pub async fn get_workingtree_stat2(repo_path: &Path) -> Result<WorkingTreeStat2, String> {
+    let (files, parent_ids) = tokio::try_join!(
+        git::status::status(repo_path),
+        git::status::get_workingtree_parents(repo_path)
+    )?;
+    Ok(WorkingTreeStat2 { files, parent_ids })
+}
+
+#[tauri::command]
 pub async fn get_blame(repo_path: &Path, rel_path: &str, revspec: &str) -> Result<Blame, String> {
     let (blame_entries, commits, content) = tokio::try_join!(
         git::blame::blame(repo_path, rel_path, revspec),

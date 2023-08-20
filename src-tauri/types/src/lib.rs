@@ -157,6 +157,66 @@ impl FileEntry {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct WorkingTreeFileEntry {
+    pub path: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub old_path: Option<String>,
+    pub status_code: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unmerged_state: Option<String>,
+    pub unstaged: bool,
+}
+
+impl WorkingTreeFileEntry {
+    pub fn ordinal(path: &str, status_code: &str, unstaged: bool) -> WorkingTreeFileEntry {
+        WorkingTreeFileEntry {
+            path: path.to_owned(),
+            old_path: None,
+            status_code: status_code.to_owned(),
+            unmerged_state: None,
+            unstaged,
+        }
+    }
+
+    pub fn renamed_or_copied(
+        path: &str,
+        status_code: &str,
+        old_path: &str,
+        unstaged: bool,
+    ) -> WorkingTreeFileEntry {
+        WorkingTreeFileEntry {
+            path: path.to_owned(),
+            old_path: Some(old_path.to_owned()),
+            status_code: status_code.to_owned(),
+            unmerged_state: None,
+            unstaged,
+        }
+    }
+
+    pub fn unmerged(path: &str, unmerged_state: &str) -> WorkingTreeFileEntry {
+        WorkingTreeFileEntry {
+            path: path.to_owned(),
+            old_path: None,
+            status_code: "U".to_owned(),
+            unmerged_state: Some(unmerged_state.to_owned()),
+            unstaged: true,
+        }
+    }
+
+    pub fn untracked(path: &str) -> WorkingTreeFileEntry {
+        WorkingTreeFileEntry {
+            path: path.to_owned(),
+            old_path: None,
+            status_code: "?".to_owned(),
+            unmerged_state: None,
+            unstaged: true,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
 #[serde(rename_all = "camelCase", tag = "type")]
 #[ts(export)]
 pub enum FileDelta {
@@ -188,6 +248,14 @@ pub struct CommitDetail {
 pub struct WorkingTreeStat {
     pub unstaged_files: Vec<FileEntry>,
     pub staged_files: Vec<FileEntry>,
+    pub parent_ids: Vec<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct WorkingTreeStat2 {
+    pub files: Vec<WorkingTreeFileEntry>,
     pub parent_ids: Vec<String>,
 }
 

@@ -116,6 +116,7 @@ pub fn run() {
             commands::get_system_fonts,
             commands::get_tree,
             commands::get_workingtree_stat,
+            commands::get_workingtree_stat2,
             commands::get_workingtree_udiff_base64,
             commands::load_persist_data,
             commands::save_config,
