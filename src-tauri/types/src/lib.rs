@@ -147,15 +147,10 @@ impl FileEntry {
         old_path: Option<&str>,
         delta: Option<FileDelta>,
     ) -> FileEntry {
-        let old_path = if let Some(ref v) = old_path {
-            Some(v.to_string())
-        } else {
-            None
-        };
         FileEntry {
             path: path.to_string(),
             status_code: status_code.to_string(),
-            old_path,
+            old_path: old_path.map(|v| v.to_string()),
             delta,
         }
     }
