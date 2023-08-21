@@ -1,7 +1,7 @@
 import { Dispatch } from "@/store";
 import { browseSourceTree } from "./browseSourceTree";
 import { copyFullHash, copyShortHash } from "./copyHash";
-import { diffStaged, diffUnstaged, diffWithLocal, diffWithParent } from "./diff";
+import { diffUnstaged, diffWithLocal, diffWithParent, diffWithParent2 } from "./diff";
 import { showFileContent } from "./showFileContent";
 import { stage, unstage } from "./workingtree";
 import { ActionItem, CommitCommand, FileCommand } from "./types";
@@ -14,8 +14,8 @@ export const fileCommands = [
   stage,
   unstage,
   diffWithParent,
+  diffWithParent2,
   diffWithLocal,
-  diffStaged,
   diffUnstaged,
   showFileContent
 ];

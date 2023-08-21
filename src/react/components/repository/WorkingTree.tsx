@@ -19,7 +19,7 @@ import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import classNames from "classnames";
 import { executeFileCommand } from "@/commands";
-import { diffStaged, diffUnstaged } from "@/commands/diff";
+import { diffUnstaged, diffWithParent, diffWithParent2 } from "@/commands/diff";
 import { stage, unstage, restore } from "@/commands/workingtree";
 import { IconActionItem } from "@/commands/types";
 import { RowActionButtons } from "./RowActionButtons";
@@ -39,8 +39,15 @@ export interface WorkingTreeProps {
 type GroupHeaderType = "staged" | "unstaged" | "conflict";
 type RowType = FileEntry | GroupHeaderType;
 
-const unstagedActionCommands = [copyRelativePath, restore, diffUnstaged, stage];
-const stagedActionCommands = [copyRelativePath, diffStaged, unstage];
+const actionCommands = [
+  copyRelativePath,
+  restore,
+  diffUnstaged,
+  diffWithParent,
+  diffWithParent2,
+  stage,
+  unstage
+];
 
 const getItemKey = (item: RowType) =>
   typeof item === "string"
@@ -286,7 +293,8 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         treeModelDispatch({ type: "toggleItem", payload: { item } });
       } else {
         if (stat) {
-          const command = item.data.unstaged ? diffUnstaged : diffStaged;
+          const { unstaged, statusCode } = item.data;
+          const command = unstaged && statusCode !== "U" ? diffUnstaged : diffWithParent;
           executeFileCommand(command, dispatch, stat, item.data);
         }
       }
@@ -313,7 +321,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
             file={item.data}
             height={rowHeight}
             index={index}
-            actionCommands={item.data.unstaged ? unstagedActionCommands : stagedActionCommands}
+            actionCommands={actionCommands}
           />
         );
       }
