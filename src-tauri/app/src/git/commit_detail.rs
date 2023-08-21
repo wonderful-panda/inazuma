@@ -208,3 +208,34 @@ pub async fn get_commit_detail(repo_path: &Path, revspec: &str) -> Result<Commit
     let stdout = std::str::from_utf8(&output.stdout).unwrap();
     parse_commit_detail_output(stdout)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn text_delta(insertions: u32, deletions: u32) -> Option<FileDelta> {
+        Some(FileDelta::Text {
+            insertions,
+            deletions,
+        })
+    }
+
+    #[test]
+    fn test_parse_raw_numstat() {
+        const OUTPUT: &str = "\
+        :100644 100644 55ee501 85acac2 M\0src/a.ts\0\
+        :100644 100644 01023a8 95d7d82 A\0src/b.ts\0\
+        :100644 100644 f40d040 9db3489 R90\0old.ts\0new.ts\0\
+        5\t8\tsrc/a.ts\0\
+        5\t0\tsrc/b.ts\0\
+        2\t2\t\0old.ts\0new.ts\0\
+        ";
+        let expected = vec![
+            FileEntry::new("src/a.ts", "M", None, text_delta(5, 8)),
+            FileEntry::new("src/b.ts", "A", None, text_delta(5, 0)),
+            FileEntry::new("new.ts", "R90", Some("old.ts"), text_delta(2, 2)),
+        ];
+        let actual = parse_raw_numstat_rows(OUTPUT).unwrap();
+        assert_eq!(expected, actual);
+    }
+}
