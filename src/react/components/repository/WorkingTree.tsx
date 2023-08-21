@@ -52,7 +52,7 @@ const actionCommands = [
 const getItemKey = (item: RowType) =>
   typeof item === "string"
     ? item
-    : `${item.path}:${item.statusCode == "U" ? "C" : item.unstaged ? "U" : "S"}`;
+    : `${item.path}:${item.statusCode === "U" ? "C" : item.unstaged ? "U" : "S"}`;
 
 const getUdiff = async (repoPath: string, relPath: string, cached: boolean): Promise<Udiff> => {
   const udiffBase64 = await invokeTauriCommand("get_workingtree_udiff_base64", {
