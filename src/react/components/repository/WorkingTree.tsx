@@ -111,7 +111,7 @@ const GroupHeader: React.FC<{
       style={{ height }}
     >
       <span className="flex-1">{type}</span>
-      <RowActionButtons actions={headerActions} size={height * 0.8} />
+      <RowActionButtons actions={headerActions} size={height} />
     </div>
   );
 };

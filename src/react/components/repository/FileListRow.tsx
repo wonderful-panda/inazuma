@@ -70,7 +70,7 @@ const FileListRow_: React.FC<FileListRowProps> = ({
           <OldPath file={file} />
         </Typography>
       </div>
-      <RowActionButtons actions={actions} size={height * 0.6} />
+      <RowActionButtons actions={actions} size={height * 0.7} />
     </div>
   );
 };

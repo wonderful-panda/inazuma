@@ -102,7 +102,7 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
           )}
         </div>
       </div>
-      <RowActionButtons actions={actions} size={height * 0.6} />
+      <RowActionButtons actions={actions} size={height * 0.7} />
     </div>
   );
 };
