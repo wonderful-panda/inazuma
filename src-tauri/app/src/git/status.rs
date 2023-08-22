@@ -1,5 +1,6 @@
-use super::commit_detail::parse_raw_numstat_rows;
+use super::commit_detail::{parse_numstat_tokens, parse_raw_numstat_rows};
 use super::{exec, merge_heads, rev_parse, GitError};
+use std::collections::HashMap;
 use std::path::Path;
 use types::*;
 
@@ -107,6 +108,25 @@ pub async fn get_workingtree_stat(
     GitError::assert_process_output("diff", &output)?;
     let stdout = std::str::from_utf8(&output.stdout).unwrap();
     parse_raw_numstat_rows(stdout)
+}
+
+pub async fn get_workingtree_delta(
+    repo_path: &Path,
+    cached: bool,
+) -> Result<HashMap<String, FileDelta>, GitError> {
+    let mut args = vec!["--numstat", "--find-renames", "-z"];
+    if cached {
+        args.push("--cached");
+    }
+    let output = exec(repo_path, "diff", &args, &[]).await?;
+    GitError::assert_process_output("diff", &output)?;
+    let stdout = std::str::from_utf8(&output.stdout).unwrap();
+    let tokens = stdout
+        .split("\0")
+        .filter(|v| v.len() > 0)
+        .collect::<Vec<_>>();
+    let delta = parse_numstat_tokens(&tokens)?;
+    Ok(delta.into_iter().collect())
 }
 
 pub async fn get_untracked_files(repo_path: &Path) -> Result<Vec<String>, GitError> {

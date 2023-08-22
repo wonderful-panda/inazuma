@@ -167,6 +167,8 @@ pub struct WorkingTreeFileEntry {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unmerged_state: Option<String>,
     pub unstaged: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub delta: Option<FileDelta>,
 }
 
 impl WorkingTreeFileEntry {
@@ -177,6 +179,7 @@ impl WorkingTreeFileEntry {
             status_code: status_code.to_owned(),
             unmerged_state: None,
             unstaged,
+            delta: None,
         }
     }
 
@@ -192,6 +195,7 @@ impl WorkingTreeFileEntry {
             status_code: status_code.to_owned(),
             unmerged_state: None,
             unstaged,
+            delta: None,
         }
     }
 
@@ -202,6 +206,7 @@ impl WorkingTreeFileEntry {
             status_code: "U".to_owned(),
             unmerged_state: Some(unmerged_state.to_owned()),
             unstaged: true,
+            delta: None,
         }
     }
 
@@ -212,6 +217,7 @@ impl WorkingTreeFileEntry {
             status_code: "?".to_owned(),
             unmerged_state: None,
             unstaged: true,
+            delta: None,
         }
     }
 }

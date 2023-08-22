@@ -141,10 +141,19 @@ pub async fn get_workingtree_stat(repo_path: &Path) -> Result<WorkingTreeStat, S
 
 #[tauri::command]
 pub async fn get_workingtree_stat2(repo_path: &Path) -> Result<WorkingTreeStat2, String> {
-    let (files, parent_ids) = tokio::try_join!(
+    let (mut files, parent_ids, mut staged_delta, mut unstaged_delta) = tokio::try_join!(
         git::status::status(repo_path),
-        git::status::get_workingtree_parents(repo_path)
+        git::status::get_workingtree_parents(repo_path),
+        git::status::get_workingtree_delta(repo_path, true),
+        git::status::get_workingtree_delta(repo_path, false),
     )?;
+    for mut file in files.iter_mut() {
+        if file.unstaged {
+            file.delta = unstaged_delta.remove(&file.path);
+        } else {
+            file.delta = staged_delta.remove(&file.path);
+        };
+    }
     Ok(WorkingTreeStat2 { files, parent_ids })
 }
 
