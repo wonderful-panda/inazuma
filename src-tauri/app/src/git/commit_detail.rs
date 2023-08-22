@@ -3,6 +3,80 @@ use std::collections::HashMap;
 use std::path::Path;
 use types::*;
 
+pub fn parse_raw_tokens<'a>(
+    tokens: &'a [&'a str],
+) -> Result<(Vec<(String, FileEntry)>, &'a [&'a str]), GitError> {
+    let mut i = 0;
+    let mut ret: Vec<(String, FileEntry)> = Vec::new();
+    while i < tokens.len() {
+        let token = tokens[i];
+        if token.starts_with(":") {
+            // RAW OUTPUT
+            let status_code = token.split(" ").nth(4).unwrap();
+            let status = &status_code[0..1];
+            match status {
+                "M" | "A" | "D" | "T" | "U" => {
+                    i += 1;
+                    let path: &str = tokens[i];
+                    let file = FileEntry::new(path, status_code, None, None);
+                    ret.push((path.to_owned(), file));
+                }
+                "R" | "C" => {
+                    i += 1;
+                    let old_path = tokens[i];
+                    i += 1;
+                    let path = tokens[i];
+                    let file = FileEntry::new(path, status_code, Some(&old_path), None);
+                    ret.push((path.to_owned(), file));
+                }
+                _ => {
+                    return Err(GitError::UnexpectedOutput {
+                        command: String::from("numstat"),
+                        text: format!("unknown status code: {}", token),
+                    });
+                }
+            }
+        } else {
+            // NUMSTAT
+            break;
+        }
+        i += 1;
+    }
+    Ok((ret, &tokens[i..]))
+}
+
+pub fn parse_numstat_tokens(tokens: &[&str]) -> Result<Vec<(String, FileDelta)>, GitError> {
+    let mut i = 0;
+    let mut ret: Vec<(String, FileDelta)> = Vec::new();
+    while i < tokens.len() {
+        let token = tokens[i];
+        // NUMSTAT
+        let values = token.split("\t").collect::<Vec<_>>();
+        if values.len() != 3 {
+            return Err(GitError::UnexpectedOutput {
+                command: String::from("numstat"),
+                text: format!("unknown numstat output: {}", token),
+            });
+        }
+        let path = if values[2].len() > 0 {
+            values[2]
+        } else {
+            i += 2;
+            tokens[i]
+        };
+        let delta = match (values[0].parse::<u32>(), values[1].parse::<u32>()) {
+            (Ok(insertions), Ok(deletions)) => FileDelta::Text {
+                insertions,
+                deletions,
+            },
+            _ => FileDelta::Binary,
+        };
+        ret.push((path.to_owned(), delta));
+        i += 1;
+    }
+    Ok(ret)
+}
+
 /**
  * parse output generated with `--numstat --raw -z`
  *
@@ -21,65 +95,19 @@ use types::*;
  *    insertions/deletions are inserted/deleted line count, or "-" when it is binary.
  */
 pub fn parse_raw_numstat_rows(text: &str) -> Result<Vec<FileEntry>, GitError> {
-    let mut files: HashMap<&str, FileEntry> = HashMap::new();
     let mut ret: Vec<FileEntry> = Vec::new();
-    let mut tokens: Vec<&str> = text.split("\0").filter(|v| v.len() > 0).collect();
-    tokens.reverse();
-    while !tokens.is_empty() {
-        let token = tokens.pop().unwrap();
-        if token.starts_with(":") {
-            // RAW OUTPUT
-            let status_code = token.split(" ").collect::<Vec<_>>()[4];
-            let status = status_code.chars().nth(0).unwrap();
-            match status {
-                'M' | 'A' | 'D' | 'T' | 'U' => {
-                    let path: &str = tokens.pop().unwrap();
-                    files.insert(path, FileEntry::new(&path, &status_code, None, None));
-                }
-                'R' | 'C' => {
-                    let old_path = tokens.pop().unwrap();
-                    let path = tokens.pop().unwrap();
-                    files.insert(
-                        path,
-                        FileEntry::new(&path, &status_code, Some(&old_path), None),
-                    );
-                }
-                _ => {
-                    return Err(GitError::UnexpectedOutput {
-                        command: String::from("numstat"),
-                        text: format!("unknown status code: {}", token),
-                    });
-                }
-            }
-        } else {
-            // NUMSTAT
-            let values = token.split("\t").collect::<Vec<_>>();
-            if values.len() != 3 {
-                return Err(GitError::UnexpectedOutput {
-                    command: String::from("numstat"),
-                    text: format!("unknown numstat output: {}", token),
-                });
-            }
-            let path = if values[2].len() > 0 {
-                values[2]
-            } else {
-                tokens.pop();
-                tokens.pop().unwrap()
-            };
-            if let Some(mut file) = files.remove(path) {
-                match (values[0].parse::<u32>(), values[1].parse::<u32>()) {
-                    (Ok(insertions), Ok(deletions)) => {
-                        file.delta = Some(FileDelta::Text {
-                            insertions,
-                            deletions,
-                        });
-                    }
-                    _ => {
-                        file.delta = Some(FileDelta::Binary);
-                    }
-                }
-                ret.push(file);
-            }
+    let tokens: Vec<&str> = text.split("\0").filter(|v| v.len() > 0).collect();
+    // parse raw rows
+    let (files, rest) = parse_raw_tokens(&tokens)?;
+    // parse numstat rows
+    let numstat = parse_numstat_tokens(rest)?;
+
+    // merge raw and numstat
+    let mut files = files.into_iter().collect::<HashMap<String, FileEntry>>();
+    for (path, delta) in numstat {
+        if let Some(mut file) = files.remove(&path) {
+            file.delta = Some(delta);
+            ret.push(file);
         }
     }
     Ok(ret)
