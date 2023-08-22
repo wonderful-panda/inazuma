@@ -128,10 +128,9 @@ pub async fn get_workingtree_stat(repo_path: &Path) -> Result<WorkingTreeStat, S
         git::status::get_workingtree_delta(repo_path, false),
     )?;
     for mut file in files.iter_mut() {
-        if file.unstaged {
-            file.delta = unstaged_delta.remove(&file.path);
-        } else {
-            file.delta = staged_delta.remove(&file.path);
+        file.delta = match file.kind {
+            WorkingTreeFileKind::Staged => staged_delta.remove(&file.path),
+            _ => unstaged_delta.remove(&file.path),
         };
     }
     Ok(WorkingTreeStat { files, parent_ids })

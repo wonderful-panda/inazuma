@@ -6,7 +6,7 @@ export const stage: FileCommand = {
   label: "Stage selected file",
   icon: "mdi:plus",
   hidden: (commit, file) => {
-    return commit.id !== "--" || !file.unstaged;
+    return commit.id !== "--" || file.kind?.type === "staged";
   },
   handler(dispatch, _, file) {
     dispatch(STAGE(file.path));
@@ -18,7 +18,7 @@ export const unstage: FileCommand = {
   label: "Unstage selected file",
   icon: "mdi:minus",
   hidden: (commit, file) => {
-    return commit.id !== "--" || !!file.unstaged;
+    return commit.id !== "--" || file.kind?.type !== "staged";
   },
   handler(dispatch, _, file) {
     dispatch(UNSTAGE(file.path));
@@ -30,7 +30,7 @@ export const restore: FileCommand = {
   label: "Restore(discard unstaged changes)",
   icon: "mdi:undo",
   hidden: (commit, file) => {
-    return commit.id !== "--" || !file.unstaged || ["?", "U"].indexOf(file.statusCode) >= 0;
+    return commit.id !== "--" || file.kind?.type !== "unstaged" || file.statusCode == "?";
   },
   handler(dispatch, _, file) {
     dispatch(RESTORE(file.path));

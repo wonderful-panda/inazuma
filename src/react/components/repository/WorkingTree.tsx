@@ -37,7 +37,7 @@ export interface WorkingTreeProps {
   orientation: Orientation;
 }
 type GroupHeaderType = "staged" | "unstaged" | "conflict";
-type RowType = FileEntry | GroupHeaderType;
+type RowType = WorkingTreeFileEntry | GroupHeaderType;
 
 const actionCommands = [
   copyRelativePath,
@@ -50,9 +50,7 @@ const actionCommands = [
 ];
 
 const getItemKey = (item: RowType) =>
-  typeof item === "string"
-    ? item
-    : `${item.path}:${item.statusCode === "U" ? "C" : item.unstaged ? "U" : "S"}`;
+  typeof item === "string" ? item : `${item.path}:${item.kind.type}`;
 
 const getUdiff = async (repoPath: string, relPath: string, cached: boolean): Promise<Udiff> => {
   const udiffBase64 = await invokeTauriCommand("get_workingtree_udiff_base64", {
@@ -168,7 +166,7 @@ const UdiffViewer: React.FC<{ udiff: Udiff | undefined }> = ({ udiff }) => {
   );
 };
 
-const filesToItems = (files: readonly FileEntry[], filterText: string) => {
+const filesToItems = (files: readonly WorkingTreeFileEntry[], filterText: string) => {
   return files
     .filter((f) => f.path.indexOf(filterText) >= 0)
     .sort((a, b) => a.path.localeCompare(b.path))
@@ -217,7 +215,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
           setUdiff(undefined);
         } else {
           try {
-            const udiff = await getUdiff(repoPath, data.path, !data.unstaged);
+            const udiff = await getUdiff(repoPath, data.path, data.kind.type === "staged");
             setUdiff(udiff);
           } catch (error) {
             dispatch(REPORT_ERROR({ error }));
@@ -293,8 +291,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         treeModelDispatch({ type: "toggleItem", payload: { item } });
       } else {
         if (stat) {
-          const { unstaged, statusCode } = item.data;
-          const command = unstaged && statusCode !== "U" ? diffUnstaged : diffWithParent;
+          const command = item.data.kind.type === "unstaged" ? diffUnstaged : diffWithParent;
           executeFileCommand(command, dispatch, stat, item.data);
         }
       }

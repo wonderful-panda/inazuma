@@ -9,7 +9,7 @@ const $localPath = (_: Commit, __: FileEntry, localPath: string) => localPath;
 const $nthParent = (index: number) => (commit: Commit) => commit.parentIds[index];
 const $targetRevspec = (commit: Commit, file: FileEntry) => {
   if (commit.id === "--") {
-    return file.unstaged ? "UNSTAGED" : "STAGED";
+    return file.kind?.type === "staged" ? "STAGED" : "UNSTAGED";
   } else {
     return commit.id;
   }
@@ -37,13 +37,13 @@ const createDiffCommand = (opt: DiffCommandOption): FileCommand => {
     icon: "octicon:git-compare-16",
     hidden: (commit, file) => {
       if (commit.id === "--") {
-        if (!opt.allowUnmerged && file.statusCode === "U") {
+        if (!opt.allowUnmerged && file.kind?.type === "unmerged") {
           return true;
         }
-        if (!opt.allowUnstaged && file.statusCode !== "U" && file.unstaged) {
+        if (!opt.allowUnstaged && file.kind?.type === "unstaged") {
           return true;
         }
-        if (!opt.allowStaged && file.statusCode !== "U" && !file.unstaged) {
+        if (!opt.allowStaged && file.kind?.type === "staged") {
           return true;
         }
       } else {

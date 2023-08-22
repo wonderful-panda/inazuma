@@ -18,7 +18,7 @@ const commit = (options: CommitOptions) => {
       return false;
     }
     const stat = await invokeTauriCommand("get_workingtree_stat", { repoPath });
-    if (options.commitType === "normal" && stat.files.every((f) => f.unstaged)) {
+    if (options.commitType === "normal" && stat.files.every((f) => f.kind.type !== "staged")) {
       dispatch(SHOW_WARNING("Nothing to commit"));
       return false;
     }

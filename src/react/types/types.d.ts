@@ -18,9 +18,11 @@ declare global {
   type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
   type Commit = import("@backend/Commit").Commit;
+  type WorkingTreeFileKind = import("@backend/WorkingTreeFileKind").WorkingTreeFileKind;
   type FileEntry = import("@backend/FileEntry").FileEntry & {
-    unstaged?: boolean;
+    kind?: WorkingTreeFileKind;
   };
+  type WorkingTreeFileEntry = import("@backend/WorkingTreeFileEntry").WorkingTreeFileEntry;
   type LstreeEntry = import("@backend/LstreeEntry").LstreeEntry;
   type LstreeData = import("@backend/LstreeData").LstreeData;
   type CommitDetail = import("@backend/CommitDetail").CommitDetail;
@@ -54,9 +56,9 @@ declare global {
   type FileCommit = Commit & FileEntry;
 
   type WorkingTreeStat = Commit & {
-    unmergedFiles: FileEntry[];
-    unstagedFiles: FileEntry[];
-    stagedFiles: FileEntry[];
+    unmergedFiles: WorkingTreeFileEntry[];
+    unstagedFiles: WorkingTreeFileEntry[];
+    stagedFiles: WorkingTreeFileEntry[];
   };
 
   type LogDetail =

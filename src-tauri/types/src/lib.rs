@@ -157,16 +157,23 @@ impl FileEntry {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase", tag = "type")]
+#[ts(export)]
+pub enum WorkingTreeFileKind {
+    Unstaged,
+    Staged,
+    Unmerged { conflict_type: String },
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct WorkingTreeFileEntry {
+    pub kind: WorkingTreeFileKind,
     pub path: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub old_path: Option<String>,
     pub status_code: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub unmerged_state: Option<String>,
-    pub unstaged: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub delta: Option<FileDelta>,
 }
@@ -174,11 +181,14 @@ pub struct WorkingTreeFileEntry {
 impl WorkingTreeFileEntry {
     pub fn ordinal(path: &str, status_code: &str, unstaged: bool) -> WorkingTreeFileEntry {
         WorkingTreeFileEntry {
+            kind: if unstaged {
+                WorkingTreeFileKind::Unstaged
+            } else {
+                WorkingTreeFileKind::Staged
+            },
             path: path.to_owned(),
             old_path: None,
             status_code: status_code.to_owned(),
-            unmerged_state: None,
-            unstaged,
             delta: None,
         }
     }
@@ -190,33 +200,36 @@ impl WorkingTreeFileEntry {
         unstaged: bool,
     ) -> WorkingTreeFileEntry {
         WorkingTreeFileEntry {
+            kind: if unstaged {
+                WorkingTreeFileKind::Unstaged
+            } else {
+                WorkingTreeFileKind::Staged
+            },
             path: path.to_owned(),
             old_path: Some(old_path.to_owned()),
             status_code: status_code.to_owned(),
-            unmerged_state: None,
-            unstaged,
             delta: None,
         }
     }
 
-    pub fn unmerged(path: &str, unmerged_state: &str) -> WorkingTreeFileEntry {
+    pub fn unmerged(path: &str, conflict_type: &str) -> WorkingTreeFileEntry {
         WorkingTreeFileEntry {
+            kind: WorkingTreeFileKind::Unmerged {
+                conflict_type: conflict_type.to_owned(),
+            },
             path: path.to_owned(),
             old_path: None,
             status_code: "U".to_owned(),
-            unmerged_state: Some(unmerged_state.to_owned()),
-            unstaged: true,
             delta: None,
         }
     }
 
     pub fn untracked(path: &str) -> WorkingTreeFileEntry {
         WorkingTreeFileEntry {
+            kind: WorkingTreeFileKind::Unstaged,
             path: path.to_owned(),
             old_path: None,
             status_code: "?".to_owned(),
-            unmerged_state: None,
-            unstaged: true,
             delta: None,
         }
     }

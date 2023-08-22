@@ -13,17 +13,13 @@ const reloadWorkingTree = () => {
     const stat = await invokeTauriCommand("get_workingtree_stat", {
       repoPath
     });
-    const unmergedFiles: FileEntry[] = [];
-    const unstagedFiles: FileEntry[] = [];
-    const stagedFiles: FileEntry[] = [];
+    const files: Record<WorkingTreeFileKind["type"], WorkingTreeFileEntry[]> = {
+      unmerged: [],
+      unstaged: [],
+      staged: []
+    };
     for (const file of stat.files) {
-      if (file.statusCode === "U") {
-        unmergedFiles.push(file);
-      } else if (file.unstaged) {
-        unstagedFiles.push(file);
-      } else {
-        stagedFiles.push(file);
-      }
+      files[file.kind.type].push(file);
     }
     const value: WorkingTreeStat = {
       id: "--",
@@ -31,9 +27,9 @@ const reloadWorkingTree = () => {
       summary: "<Working tree>",
       date: Date.now(),
       parentIds: stat.parentIds,
-      unmergedFiles,
-      unstagedFiles,
-      stagedFiles
+      unmergedFiles: files["unmerged"],
+      unstagedFiles: files["unstaged"],
+      stagedFiles: files["staged"]
     };
     dispatch(_SET_WORKING_TREE({ repoPath, value }));
   };
