@@ -18,11 +18,11 @@ const commit = (options: CommitOptions) => {
       return false;
     }
     const stat = await invokeTauriCommand("get_workingtree_stat", { repoPath });
-    if (options.commitType === "normal" && stat.stagedFiles.length === 0) {
+    if (options.commitType === "normal" && stat.files.every((f) => f.unstaged)) {
       dispatch(SHOW_WARNING("Nothing to commit"));
       return false;
     }
-    if (stat.stagedFiles.find((f) => f.statusCode === "U")) {
+    if (stat.files.some((f) => f.statusCode === "U")) {
       dispatch(SHOW_WARNING("One or more files are still unmerged"));
       return false;
     }

@@ -10,7 +10,7 @@ const reloadWorkingTree = () => {
     if (!repoPath) {
       return;
     }
-    const stat = await invokeTauriCommand("get_workingtree_stat2", {
+    const stat = await invokeTauriCommand("get_workingtree_stat", {
       repoPath
     });
     const unmergedFiles: FileEntry[] = [];

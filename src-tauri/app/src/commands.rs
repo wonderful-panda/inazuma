@@ -121,26 +121,6 @@ pub async fn get_commit_detail(repo_path: &Path, revspec: &str) -> Result<Commit
 
 #[tauri::command]
 pub async fn get_workingtree_stat(repo_path: &Path) -> Result<WorkingTreeStat, String> {
-    let (untracked_files, mut unstaged_files, staged_files, parent_ids) = tokio::try_join!(
-        git::status::get_untracked_files(repo_path),
-        git::status::get_workingtree_stat(repo_path, false),
-        git::status::get_workingtree_stat(repo_path, true),
-        git::status::get_workingtree_parents(repo_path)
-    )?;
-    let untracked_files = untracked_files
-        .iter()
-        .map(|f| FileEntry::new(f, "?", None, None));
-
-    unstaged_files.extend(untracked_files);
-    Ok(WorkingTreeStat {
-        unstaged_files,
-        staged_files,
-        parent_ids,
-    })
-}
-
-#[tauri::command]
-pub async fn get_workingtree_stat2(repo_path: &Path) -> Result<WorkingTreeStat2, String> {
     let (mut files, parent_ids, mut staged_delta, mut unstaged_delta) = tokio::try_join!(
         git::status::status(repo_path),
         git::status::get_workingtree_parents(repo_path),
@@ -154,7 +134,7 @@ pub async fn get_workingtree_stat2(repo_path: &Path) -> Result<WorkingTreeStat2,
             file.delta = staged_delta.remove(&file.path);
         };
     }
-    Ok(WorkingTreeStat2 { files, parent_ids })
+    Ok(WorkingTreeStat { files, parent_ids })
 }
 
 #[tauri::command]

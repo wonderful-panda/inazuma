@@ -252,15 +252,6 @@ pub struct CommitDetail {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct WorkingTreeStat {
-    pub unstaged_files: Vec<FileEntry>,
-    pub staged_files: Vec<FileEntry>,
-    pub parent_ids: Vec<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(export)]
-pub struct WorkingTreeStat2 {
     pub files: Vec<WorkingTreeFileEntry>,
     pub parent_ids: Vec<String>,
 }

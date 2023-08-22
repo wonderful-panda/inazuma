@@ -1,4 +1,4 @@
-use super::commit_detail::{parse_numstat_tokens, parse_raw_numstat_rows};
+use super::commit_detail::parse_numstat_tokens;
 use super::{exec, merge_heads, rev_parse, GitError};
 use std::collections::HashMap;
 use std::path::Path;
@@ -96,20 +96,6 @@ pub async fn status(repo_path: &Path) -> Result<Vec<WorkingTreeFileEntry>, GitEr
     parse_status_row(stdout)
 }
 
-pub async fn get_workingtree_stat(
-    repo_path: &Path,
-    cached: bool,
-) -> Result<Vec<FileEntry>, GitError> {
-    let mut args = vec!["--raw", "--numstat", "--find-renames", "-z"];
-    if cached {
-        args.push("--cached");
-    }
-    let output = exec(repo_path, "diff", &args, &[]).await?;
-    GitError::assert_process_output("diff", &output)?;
-    let stdout = std::str::from_utf8(&output.stdout).unwrap();
-    parse_raw_numstat_rows(stdout)
-}
-
 pub async fn get_workingtree_delta(
     repo_path: &Path,
     cached: bool,
@@ -127,19 +113,6 @@ pub async fn get_workingtree_delta(
         .collect::<Vec<_>>();
     let delta = parse_numstat_tokens(&tokens)?;
     Ok(delta.into_iter().collect())
-}
-
-pub async fn get_untracked_files(repo_path: &Path) -> Result<Vec<String>, GitError> {
-    let args = vec!["-z", "--others", "--exclude-standard"];
-    let output = exec(repo_path, "ls-files", &args, &[]).await?;
-    GitError::assert_process_output("ls-files", &output)?;
-    let stdout = std::str::from_utf8(&output.stdout).unwrap();
-    let paths: Vec<String> = stdout
-        .split("\0")
-        .filter(|v| v.len() > 0)
-        .map(|v| v.to_string())
-        .collect();
-    Ok(paths)
 }
 
 pub async fn get_workingtree_parents(repo_path: &Path) -> Result<Vec<String>, GitError> {
