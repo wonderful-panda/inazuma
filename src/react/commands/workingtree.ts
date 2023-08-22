@@ -30,7 +30,7 @@ export const restore: FileCommand = {
   label: "Restore(discard unstaged changes)",
   icon: "mdi:undo",
   hidden: (commit, file) => {
-    return commit.id !== "--" || file.kind?.type !== "unstaged" || file.statusCode == "?";
+    return commit.id !== "--" || file.kind?.type !== "unstaged" || file.statusCode === "?";
   },
   handler(dispatch, _, file) {
     dispatch(RESTORE(file.path));

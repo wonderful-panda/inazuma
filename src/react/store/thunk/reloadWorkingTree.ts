@@ -27,9 +27,9 @@ const reloadWorkingTree = () => {
       summary: "<Working tree>",
       date: Date.now(),
       parentIds: stat.parentIds,
-      unmergedFiles: files["unmerged"],
-      unstagedFiles: files["unstaged"],
-      stagedFiles: files["staged"]
+      unmergedFiles: files.unmerged,
+      unstagedFiles: files.unstaged,
+      stagedFiles: files.staged
     };
     dispatch(_SET_WORKING_TREE({ repoPath, value }));
   };
