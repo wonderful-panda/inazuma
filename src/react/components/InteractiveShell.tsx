@@ -7,7 +7,7 @@ import { useXterm } from "@/hooks/useXterm";
 export interface InteractiveShellProps {
   open: boolean;
   commandLine: string;
-  hide: () => {};
+  hide: () => void;
   repoPath: string;
   fontFamily?: string;
   fontSize?: number;

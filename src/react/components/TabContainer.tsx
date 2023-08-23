@@ -85,7 +85,7 @@ export type TabProps<Type, Payload> = {
   id: string;
   title: string;
   closable: boolean;
-} & (Payload extends null ? {} : { payload: Payload });
+} & (Payload extends null ? unknown : { payload: Payload });
 
 export type TabDefinition<T> = {
   [K in keyof T]: TabProps<K, T[K]>;
@@ -100,7 +100,7 @@ export interface TabContainerProps<T> {
   closeTab: (index: number) => void;
 }
 
-const TabPage = <T extends unknown>(p: {
+const TabPage = <T,>(p: {
   active: boolean;
   tab: TabDefinition<T>;
   renderContent: (tab: TabDefinition<T>, active: boolean) => React.ReactNode;
@@ -120,7 +120,7 @@ const TabPage = <T extends unknown>(p: {
   }
 };
 
-export const TabContainer = <T extends unknown = Record<string, any>>(p: TabContainerProps<T>) => {
+export const TabContainer = <T = Record<string, any>,>(p: TabContainerProps<T>) => {
   const tabBarRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = tabBarRef.current?.querySelector(`.${CURRENT_TABBUTTON_CLASS}`);

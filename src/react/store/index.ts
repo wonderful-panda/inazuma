@@ -30,7 +30,7 @@ export interface Watcher<T> {
 
 const watchers: Array<(state: RootState) => void> = [];
 
-export const watch = <T extends unknown>(
+export const watch = <T>(
   selector: (state: RootState) => T,
   handler: (value: T, oldValue: T | undefined) => void
 ): (() => void) => {

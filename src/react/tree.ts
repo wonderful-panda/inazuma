@@ -15,7 +15,7 @@ export function sortTreeInplace<T>(
   });
 }
 
-export const filterTreeItems = <T extends unknown>(
+export const filterTreeItems = <T>(
   items: readonly TreeItem<T>[],
   predicate: (item: T) => boolean
 ): TreeItem<T>[] => {
@@ -23,7 +23,7 @@ export const filterTreeItems = <T extends unknown>(
     .map((item) => filterTreeItem(item, predicate))
     .filter((item) => !!item) as TreeItem<T>[];
 };
-export const filterTreeItem = <T extends unknown>(
+export const filterTreeItem = <T>(
   item: TreeItem<T>,
   predicate: (item: T) => boolean
 ): TreeItem<T> | null => {

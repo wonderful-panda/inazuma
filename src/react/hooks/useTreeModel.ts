@@ -47,7 +47,7 @@ const initialState: TreeModelState<any> = {
   selectedItem: undefined
 };
 
-const getBacktrackToRootItem = <D extends unknown>(itemVm: TreeItemVM<D>): TreeItemVM<D>[] => {
+const getBacktrackToRootItem = <D>(itemVm: TreeItemVM<D>): TreeItemVM<D>[] => {
   let cur: TreeItemVM<D> | undefined = itemVm;
   const ret: TreeItemVM<D>[] = [];
   while (cur !== undefined) {
@@ -258,7 +258,7 @@ const collapseOrSelectParent = <T>(state: TreeModelState<T>): TreeModelState<T> 
   }
 };
 
-const reducer = <T extends unknown>(state: TreeModelState<T>, action: Action<T>) => {
+const reducer = <T>(state: TreeModelState<T>, action: Action<T>) => {
   switch (action.type) {
     case "reset":
       return reset(state, action.payload);

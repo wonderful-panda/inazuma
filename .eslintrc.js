@@ -6,12 +6,14 @@ module.exports = {
     es6: true
   },
   extends: [
+    "eslint:recommended",
     "standard",
-    "standard-jsx",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
   ],
-  plugins: ["@typescript-eslint/eslint-plugin"],
+  plugins: ["@typescript-eslint", "react"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2017,
@@ -20,36 +22,19 @@ module.exports = {
       jsx: true
     }
   },
+  settings: {
+    react: {
+      version: "detect"
+    }
+  },
   rules: {
-    // disable rules which don't work in TypeScript
-    "no-undef": "off",
-    "no-unused-vars": "off",
-    "space-infix-ops": "off",
-    "no-useless-constructor": "off",
-    "no-extra-parens": "off",
-    "no-redeclare": "off",
-    "import/export": "off",
-    "func-call-spacing": "off",
-    "no-use-before-define": "off",
-
-    // disable rules which conflict with Prettier
-    indent: "off",
-    semi: "off",
-    quotes: "off",
-    "space-before-function-paren": "off",
-    "react/jsx-curly-newline": "off",
-    "react/jsx-indent": "off",
-    "react/jsx-indent-props": "off",
-    "multiline-ternary": "off",
-    "generator-star-spacing": "off",
-    "yield-star-spacing": "off",
-
-    // other code style
     yoda: "off",
     "linebreak-style": ["error", "unix"],
 
-    // jsx
-    "jsx-quotes": ["error", "prefer-double"],
+    // disable rules which don't work in TypeScript
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
 
     // react
     "react/jsx-handler-names": "off",

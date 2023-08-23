@@ -30,7 +30,7 @@ export interface VirtualListMethods {
   scrollToItem: (index: number) => void;
 }
 
-const useRowEventHandler = <T extends unknown>(
+const useRowEventHandler = <T,>(
   items: readonly T[],
   handler?: (event: React.MouseEvent, index: number, item: T) => void
 ) => {
@@ -47,7 +47,7 @@ const useRowEventHandler = <T extends unknown>(
   }, [items, handler]);
 };
 
-const VirtualListInner = <T extends unknown>(
+const VirtualListInner = <T,>(
   {
     itemSize,
     items,

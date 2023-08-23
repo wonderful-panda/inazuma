@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Loading } from "../Loading";
 
-const preloadedFactory = <T extends unknown>(factory: () => T): (() => T) => {
+const preloadedFactory = <T,>(factory: () => T): (() => T) => {
   const value = factory();
   return () => value;
 };
 
-export const lazy = <P extends {}>(
+export const lazy = <P extends object>(
   factory: () => Promise<{ default: React.ComponentType<P> }>,
   options?: { preload: boolean }
 ): React.ComponentType<P> => {

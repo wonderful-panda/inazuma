@@ -60,7 +60,7 @@ const VirtualTreeRowInner = (props: {
 };
 const VirtualTreeRow = memo(VirtualTreeRowInner);
 
-export const VirtualTree = <T extends unknown>({
+export const VirtualTree = <T,>({
   treeModelState,
   treeModelDispatch,
   itemSize,
