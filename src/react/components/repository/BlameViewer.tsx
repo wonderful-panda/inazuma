@@ -93,10 +93,13 @@ const selectedCommitDecorationOptions: IModelDecorationOptions = {
 };
 
 const createEditorOptions = (blame: Blame, fontSize: number): IEditorConstructionOptions => {
-  const dateMap: Record<string, string> = blame.commits.reduce((prev, cur) => {
-    prev[cur.id] = formatDate(cur.date);
-    return prev;
-  }, {} as Record<string, string>);
+  const dateMap: Record<string, string> = blame.commits.reduce(
+    (prev, cur) => {
+      prev[cur.id] = formatDate(cur.date);
+      return prev;
+    },
+    {} as Record<string, string>
+  );
   return {
     readOnly: true,
     folding: false,

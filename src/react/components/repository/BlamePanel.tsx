@@ -30,10 +30,13 @@ const SecondPanel: React.FC<SecondPanelProps> = ({
   const language = getLangIdFromPath(path);
   const [hoveredCommit, setHoveredCommit] = useState<Commit | undefined>(undefined);
   const commits = useMemo(() => {
-    return blame.commits.reduce((prev, cur) => {
-      prev[cur.id] = cur;
-      return prev;
-    }, {} as Record<string, FileCommit>);
+    return blame.commits.reduce(
+      (prev, cur) => {
+        prev[cur.id] = cur;
+        return prev;
+      },
+      {} as Record<string, FileCommit>
+    );
   }, [blame]);
   const onHoveredCommitIdChanged = useCallback(
     (value: string | undefined) => {
