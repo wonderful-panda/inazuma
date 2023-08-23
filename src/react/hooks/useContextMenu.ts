@@ -28,10 +28,12 @@ export const useCommitContextMenu = (): ((
   return onCommitContextMenu;
 };
 
+const itself = <T>(item: T) => item;
+
 export const useFileContextMenu = (
   commit: Commit | undefined
 ): ((event: React.MouseEvent | MouseEvent, index: number, item: FileEntry) => void) => {
-  return useFileContextMenuT<FileEntry>(commit, (item) => item);
+  return useFileContextMenuT<FileEntry>(commit, itself);
 };
 
 export const useFileContextMenuT = <T>(
