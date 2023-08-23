@@ -120,17 +120,34 @@ pub async fn get_commit_detail(repo_path: &Path, revspec: &str) -> Result<Commit
 }
 
 #[tauri::command]
-pub async fn get_workingtree_stat(repo_path: &Path) -> Result<WorkingTreeStat, String> {
-    let (mut files, parent_ids, mut staged_delta, mut unstaged_delta) = tokio::try_join!(
+pub async fn get_workingtree_stat<'a>(repo_path: &'a Path) -> Result<WorkingTreeStat, String> {
+    let (mut files, parent_ids) = tokio::try_join!(
         git::status::status(repo_path),
         git::status::get_workingtree_parents(repo_path),
-        git::status::get_workingtree_delta(repo_path, true),
-        git::status::get_workingtree_delta(repo_path, false),
     )?;
-    for mut file in files.iter_mut() {
-        file.delta = match file.kind {
-            WorkingTreeFileKind::Staged => staged_delta.remove(&file.path),
-            _ => unstaged_delta.remove(&file.path),
+    let staged_files_exists = files.iter().any(|f| f.kind == WorkingTreeFileKind::Staged);
+    let unstaged_files_exists = files.iter().any(|f| f.kind != WorkingTreeFileKind::Staged);
+
+    let get_numstat_if_needed = |repo_path: &'a Path, cached: bool, needed: bool| async move {
+        if needed {
+            git::status::get_numstat(repo_path, cached)
+                .await
+                .map(|vec| vec.into_iter().collect::<HashMap<_, _>>())
+        } else {
+            Ok(HashMap::new())
+        }
+    };
+
+    let (mut staged_numstat, mut unstaged_numstat) = tokio::try_join!(
+        get_numstat_if_needed(repo_path, true, staged_files_exists),
+        get_numstat_if_needed(repo_path, false, unstaged_files_exists),
+    )?;
+
+    for file in files.iter_mut() {
+        file.delta = if file.kind == WorkingTreeFileKind::Staged {
+            staged_numstat.remove(&file.path)
+        } else {
+            unstaged_numstat.remove(&file.path)
         };
     }
     Ok(WorkingTreeStat { files, parent_ids })

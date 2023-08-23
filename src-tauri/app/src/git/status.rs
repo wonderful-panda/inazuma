@@ -1,6 +1,5 @@
 use super::commit_detail::parse_numstat_tokens;
 use super::{exec, merge_heads, rev_parse, GitError};
-use std::collections::HashMap;
 use std::path::Path;
 use types::*;
 
@@ -96,10 +95,10 @@ pub async fn status(repo_path: &Path) -> Result<Vec<WorkingTreeFileEntry>, GitEr
     parse_status_row(stdout)
 }
 
-pub async fn get_workingtree_delta(
+pub async fn get_numstat(
     repo_path: &Path,
     cached: bool,
-) -> Result<HashMap<String, FileDelta>, GitError> {
+) -> Result<Vec<(String, FileDelta)>, GitError> {
     let mut args = vec!["--numstat", "--find-renames", "-z"];
     if cached {
         args.push("--cached");
@@ -112,7 +111,7 @@ pub async fn get_workingtree_delta(
         .filter(|v| v.len() > 0)
         .collect::<Vec<_>>();
     let delta = parse_numstat_tokens(&tokens)?;
-    Ok(delta.into_iter().collect())
+    Ok(delta)
 }
 
 pub async fn get_workingtree_parents(repo_path: &Path) -> Result<Vec<String>, GitError> {
