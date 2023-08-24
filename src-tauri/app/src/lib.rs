@@ -23,7 +23,7 @@ use tokio::spawn;
 use types::WindowState;
 
 fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
-    let app_dir = app.path_resolver().app_dir().unwrap();
+    let app_dir = app.path_resolver().app_config_dir().unwrap();
     if !app_dir.exists() {
         if let Err(e) = create_dir_all(&app_dir) {
             error!(
