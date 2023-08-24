@@ -61,7 +61,7 @@ impl Pty {
         let mut child = slave.spawn_command(cmd)?;
 
         let mut killer = child.clone_killer();
-        let mut writer = master.try_clone_writer()?;
+        let mut writer = master.take_writer()?;
 
         spawn(async move {
             while let Some(m) = rx.recv().await {

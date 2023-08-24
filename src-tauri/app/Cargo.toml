@@ -26,16 +26,16 @@ serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.4.1", features = ["clipboard", "dialog"] }
 thiserror = "1.0"
 schemars = "0.8"
-tokio = { version = "1.24", features = ["full"] }
-tokio-stream = "0.1.10"
+tokio = { version = "1.32", features = ["full"] }
+tokio-stream = "0.1.14"
 regex = "1.5"
 base64 = "0.13"
 sha1_smol = { version = "1.0", features = ["std"] }
-portable-pty = "0.7.0"
+portable-pty = "0.8.1"
 shell-words = "1.1"
 rand = "0.8"
 font-kit = "0.11.0"
-notify = { version = "5.0.0", default-features = false, features = ["macos_fsevent"] }
+notify = { version = "6.1.1", default-features = false, features = ["macos_fsevent"] }
 
 [features]
 # by default Tauri runs in production mode
