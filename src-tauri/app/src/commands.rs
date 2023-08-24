@@ -158,7 +158,7 @@ pub async fn get_blame(repo_path: &Path, rel_path: &str, revspec: &str) -> Resul
     let (blame_entries, commits, content) = tokio::try_join!(
         git::blame::blame(repo_path, rel_path, revspec),
         git::log::filelog(repo_path, rel_path, 1000, &[]),
-        git::file::get_content(repo_path, rel_path, revspec)
+        git::file::get_content(repo_path, rel_path, revspec, false)
     )?;
     let content_base64 = base64::encode(&content);
     Ok(Blame {
@@ -174,7 +174,7 @@ pub async fn get_content_base64(
     rel_path: &str,
     revspec: &str,
 ) -> Result<String, String> {
-    let content = git::file::get_content(repo_path, rel_path, revspec).await?;
+    let content = git::file::get_content(repo_path, rel_path, revspec, true).await?;
     Ok(base64::encode(&content))
 }
 

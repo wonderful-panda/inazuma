@@ -53,7 +53,7 @@ pub async fn prepare_diff_file(
         }
         abs_path
     };
-    save_to(&repo.path, &file.path, &file.revspec, &abs_path).await?;
+    save_to(&repo.path, &file.path, &file.revspec, &abs_path, true).await?;
     Ok(abs_path)
 }
 
