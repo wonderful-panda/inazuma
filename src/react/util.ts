@@ -7,7 +7,7 @@ export const assertNever = (_: never): never => {
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-export const shortHash = (value: string) => value.slice(0, 8);
+export const shortHash = (value: string) => value.slice(0, 7);
 
 export const getFileName = (fullpath: string): string => {
   const p = fullpath.lastIndexOf("/");
