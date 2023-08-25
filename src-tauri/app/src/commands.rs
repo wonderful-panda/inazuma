@@ -126,7 +126,9 @@ pub async fn get_workingtree_stat<'a>(repo_path: &'a Path) -> Result<WorkingTree
         git::status::get_workingtree_parents(repo_path),
     )?;
     let staged_files_exists = files.iter().any(|f| f.kind == WorkingTreeFileKind::Staged);
-    let unstaged_files_exists = files.iter().any(|f| f.kind != WorkingTreeFileKind::Staged);
+    let unstaged_files_exists = files
+        .iter()
+        .any(|f| f.kind == WorkingTreeFileKind::Unstaged);
 
     let get_numstat_if_needed = |repo_path: &'a Path, cached: bool, needed: bool| async move {
         if needed {
@@ -144,10 +146,10 @@ pub async fn get_workingtree_stat<'a>(repo_path: &'a Path) -> Result<WorkingTree
     )?;
 
     for file in files.iter_mut() {
-        file.delta = if file.kind == WorkingTreeFileKind::Staged {
-            staged_numstat.remove(&file.path)
-        } else {
-            unstaged_numstat.remove(&file.path)
+        file.delta = match file.kind {
+            WorkingTreeFileKind::Staged => staged_numstat.remove(&file.path),
+            WorkingTreeFileKind::Unstaged => unstaged_numstat.remove(&file.path),
+            _ => None,
         };
     }
     Ok(WorkingTreeStat { files, parent_ids })

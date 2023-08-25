@@ -1,12 +1,14 @@
 import classNames from "classnames";
 import React from "react";
 
-const getFileType = (item: FileEntry) => {
-  if (!item.delta) {
-    return "unknown";
-  } else {
-    return item.delta.type;
-  }
+const conflictTypes: Record<string, string> = {
+  UU: "both modified",
+  AA: "both added",
+  DD: "both deleted",
+  AU: "added by us",
+  UA: "added by them",
+  DU: "deleted by us",
+  UD: "deleted by them"
 };
 
 export const FileStat: React.FC<{ file: FileEntry; className?: string }> = ({
@@ -15,7 +17,11 @@ export const FileStat: React.FC<{ file: FileEntry; className?: string }> = ({
 }) => {
   return (
     <div className={classNames("flex-row-nowrap items-center font-mono", className)}>
-      <span className="font-bold text-greytext mr-1 uppercase">{getFileType(file)}</span>
+      <span className="font-bold text-greytext mr-1 uppercase">
+        {file.kind?.type === "unmerged"
+          ? `conflict (${conflictTypes[file.kind.conflict_type]})`
+          : file.delta?.type || "unknown"}
+      </span>
       {file.delta?.type === "text" && (
         <>
           <span className="mr-1 text-[lightgreen]">+{file.delta.insertions}</span>
