@@ -6,6 +6,7 @@ use portable_pty::ExitStatus;
 use tauri::{api::dialog::blocking::FileDialogBuilder, Window};
 use tauri::{AppHandle, ClipboardManager, Runtime, State};
 
+use crate::git::build_command_line;
 use crate::state::pty::{PtyId, PtyStateMutex};
 use crate::state::stager::StagerStateMutex;
 use crate::{
@@ -303,6 +304,17 @@ pub async fn open_pty<T: Runtime>(
     pty_state: State<'_, PtyStateMutex>,
     window: Window<T>,
 ) -> Result<usize, String> {
+    open_pty_internal(command_line, cwd, rows, cols, pty_state, window).await
+}
+
+async fn open_pty_internal<T: Runtime>(
+    command_line: &str,
+    cwd: &Path,
+    rows: u16,
+    cols: u16,
+    pty_state: State<'_, PtyStateMutex>,
+    window: Window<T>,
+) -> Result<usize, String> {
     let win1 = window.clone();
     let on_data = move |id: PtyId, data: &[u8]| {
         let data = String::from_utf8(data.to_vec()).unwrap();
@@ -353,6 +365,20 @@ pub async fn resize_pty(
     pty.resize(PtyId(id), rows, cols)
         .await
         .map_err(|e| format!("{}", e))
+}
+
+#[tauri::command]
+pub async fn exect_git_with_pty<T: Runtime>(
+    repo_path: &Path,
+    command: &str,
+    args: Vec<&str>,
+    rows: u16,
+    cols: u16,
+    pty_state: State<'_, PtyStateMutex>,
+    window: Window<T>,
+) -> Result<usize, String> {
+    let command_line = build_command_line(repo_path, command, &args[..]);
+    open_pty_internal(&command_line, repo_path, rows, cols, pty_state, window).await
 }
 
 #[tauri::command]

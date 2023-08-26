@@ -59,6 +59,27 @@ impl From<GitError> for String {
     }
 }
 
+pub fn build_command_line(repo_path: &Path, command: &str, args: &[&str]) -> String {
+    let git_dir = repo_path.join(".git");
+    let mut command_line = format!(
+        "git {} -C \"{}\" --git_dir \"{}\" ",
+        command,
+        repo_path.to_str().unwrap(),
+        git_dir.to_str().unwrap()
+    );
+    for &a in args.iter() {
+        command_line.push_str(" ");
+        if a.contains(" ") {
+            command_line.push_str("\"");
+            command_line.push_str(a);
+            command_line.push_str("\"");
+        } else {
+            command_line.push_str(a);
+        }
+    }
+    command_line
+}
+
 pub async fn exec(
     repo_path: &Path,
     command: &str,
