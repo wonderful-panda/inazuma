@@ -149,6 +149,7 @@ const CommitLogInner: React.FC<{
       const index = log.commits.findIndex((c) => c.id === r.id);
       if (0 <= index) {
         setSelectedIndex(index);
+        listRef.current?.scrollToItem(index);
       }
     },
     [log.commits, setSelectedIndex]
