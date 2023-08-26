@@ -25,6 +25,8 @@ import { PinnedCommitContext, SetPinnedCommitContext } from "./CommitListRow";
 import { useStateWithRef } from "@/hooks/useStateWithRef";
 import { shortHash } from "@/util";
 import { CommitLogSideBar } from "./CommitLogSideBar";
+import { NewBranchDialog } from "./NewBranchDialog";
+import { createBranch } from "@/commands/createBranch";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -91,6 +93,7 @@ const CommitLogInner: React.FC<{
 
   const actionCommands = useMemo<CommitCommand[]>(
     () => [
+      createBranch,
       browseSourceTree,
       beginCommit,
       compareWithParent(log.commits),
@@ -191,6 +194,7 @@ const CommitLogInner: React.FC<{
           second={detail}
         />
         <CommitDialog />
+        <NewBranchDialog />
       </div>
     </>
   );

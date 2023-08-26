@@ -24,7 +24,7 @@ export interface CommitLogItems {
   graph: Record<string, GraphFragment>;
 }
 
-type DialogProps = { type: "Commit" };
+type DialogProps = { type: "Commit" } | { type: "NewBranch"; commitId: string };
 
 interface State {
   path: string | undefined;

@@ -6,8 +6,9 @@ import { showFileContent } from "./showFileContent";
 import { stage, unstage } from "./workingtree";
 import { ActionItem, CommitCommand, FileCommand } from "./types";
 import { copyRelativePath } from "./copyRelativePath";
+import { createBranch } from "./createBranch";
 
-export const commitCommands = [copyFullHash, copyShortHash, browseSourceTree];
+export const commitCommands = [copyFullHash, copyShortHash, browseSourceTree, createBranch];
 
 export const fileCommands = [
   copyRelativePath,

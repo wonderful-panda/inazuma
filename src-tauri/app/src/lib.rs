@@ -109,6 +109,7 @@ pub fn run() {
             commands::close_repository,
             commands::fetch_history,
             commands::commit,
+            commands::create_branch,
             commands::get_blame,
             commands::get_changes_between,
             commands::get_commit_detail,

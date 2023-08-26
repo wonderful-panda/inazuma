@@ -241,6 +241,11 @@ pub async fn commit(repo_path: &Path, options: CommitOptions) -> Result<(), Stri
 }
 
 #[tauri::command]
+pub async fn create_branch(repo_path: &Path, options: CreateBranchOptions) -> Result<(), String> {
+    Ok(git::branch::create_branch(repo_path, &options).await?)
+}
+
+#[tauri::command]
 pub async fn show_external_diff(
     repo_path: &Path,
     left: FileSpec,

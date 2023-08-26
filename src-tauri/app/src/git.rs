@@ -5,6 +5,7 @@ use tokio::io::AsyncWriteExt;
 use tokio::process::Command;
 
 pub mod blame;
+pub mod branch;
 pub mod commit;
 pub mod commit_detail;
 pub mod diff;

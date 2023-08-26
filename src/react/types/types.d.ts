@@ -27,6 +27,7 @@ declare global {
   type LstreeData = import("@backend/LstreeData").LstreeData;
   type CommitDetail = import("@backend/CommitDetail").CommitDetail;
   type CommitOptions = import("@backend/CommitOptions").CommitOptions;
+  type CreateBranchOptions = import("@backend/CreateBranchOptions").CreateBranchOptions;
   type FileSpec = import("@backend/FileSpec").FileSpec;
   type RawRefs = import("@backend/Refs").Refs;
   type Ref = import("@backend/Ref").Ref;

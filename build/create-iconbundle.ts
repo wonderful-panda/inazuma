@@ -39,6 +39,7 @@ const icons: Record<string, string[]> = {
     "diff-removed-16",
     "diff-renamed-16",
     "file-code-16",
+    "git-branch-16",
     "git-compare-16"
   ],
   carbon: ["drag-horizontal", "drag-vertical"]
