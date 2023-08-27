@@ -17,6 +17,7 @@ pub mod merge_heads;
 pub mod refs;
 pub mod rev_parse;
 pub mod status;
+pub mod switch;
 pub mod workingtree;
 
 #[derive(Error, Debug)]

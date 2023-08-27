@@ -3,7 +3,7 @@ import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Dialog, DialogActionHandler } from "../Dialog";
 import { CLOSE_DIALOG } from "@/store/repository";
-import { CREATE_BRANCH } from "@/store/thunk/createBranch";
+import { CREATE_BRANCH } from "@/store/thunk/branch";
 
 export const NewBranchDialog: React.FC = () => {
   const dispatch = useDispatch();
@@ -14,7 +14,7 @@ export const NewBranchDialog: React.FC = () => {
   );
   const opened = !!commitId;
   const branchNameRef = useRef<HTMLInputElement>(null);
-  const checkoutRef = useRef<HTMLInputElement>(null);
+  const switchRef = useRef<HTMLInputElement>(null);
   const close = useCallback(() => dispatch(CLOSE_DIALOG()), [dispatch]);
 
   useEffect(() => {
@@ -28,8 +28,8 @@ export const NewBranchDialog: React.FC = () => {
       return;
     }
     const branchName = branchNameRef.current.value;
-    const checkout = checkoutRef.current?.checked || false;
-    const ret = await dispatch(CREATE_BRANCH({ branchName, checkout, commitId }));
+    const switchBranch = switchRef.current?.checked || false;
+    const ret = await dispatch(CREATE_BRANCH({ branchName, switch: switchBranch, commitId }));
     if (ret !== "failed") {
       dispatch(CLOSE_DIALOG());
     }
@@ -72,8 +72,8 @@ export const NewBranchDialog: React.FC = () => {
         onKeyDown={handleKeyDown}
       />
       <FormControlLabel
-        control={<Checkbox inputRef={checkoutRef} />}
-        label="Checkout created branch"
+        control={<Checkbox inputRef={switchRef} />}
+        label="Switch to created branch"
       />
     </Dialog>
   );

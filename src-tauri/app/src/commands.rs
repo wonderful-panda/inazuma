@@ -246,6 +246,11 @@ pub async fn create_branch(repo_path: &Path, options: CreateBranchOptions) -> Re
 }
 
 #[tauri::command]
+pub async fn switch(repo_path: &Path, options: SwitchOptions) -> Result<(), String> {
+    Ok(git::switch::switch(repo_path, &options).await?)
+}
+
+#[tauri::command]
 pub async fn show_external_diff(
     repo_path: &Path,
     left: FileSpec,

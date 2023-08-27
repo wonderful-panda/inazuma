@@ -367,9 +367,26 @@ pub struct CreateBranchOptions {
     pub commit_id: String,
     pub branch_name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub checkout: Option<bool>,
+    pub switch: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub force: Option<bool>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct SwitchCreateOptions {
+    pub commit_id: String,
+    pub force: Option<bool>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct SwitchOptions {
+    pub branch_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub create: Option<SwitchCreateOptions>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, TS)]

@@ -33,6 +33,7 @@ const icons: Record<string, string[]> = {
     "undo"
   ],
   octicon: [
+    "check-circle-16",
     "diff-added-16",
     "diff-ignored-16",
     "diff-modified-16",

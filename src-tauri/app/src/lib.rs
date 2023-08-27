@@ -124,6 +124,7 @@ pub fn run() {
             commands::stage,
             commands::store_recent_opened,
             commands::store_state,
+            commands::switch,
             commands::unstage,
             commands::restore,
             commands::show_external_diff,

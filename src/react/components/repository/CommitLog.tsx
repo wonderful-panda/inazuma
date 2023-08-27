@@ -27,6 +27,7 @@ import { shortHash } from "@/util";
 import { CommitLogSideBar } from "./CommitLogSideBar";
 import { NewBranchDialog } from "./NewBranchDialog";
 import { createBranch } from "@/commands/createBranch";
+import { SWITCH_BRANCH_WITH_CONFIRM } from "@/store/thunk/branch";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -157,6 +158,12 @@ const CommitLogInner: React.FC<{
     },
     [log.commits, setSelectedIndex]
   );
+  const handleSwitchBranchButtonClick = useCallback(
+    (r: BranchRef) => {
+      dispatch(SWITCH_BRANCH_WITH_CONFIRM({ branchName: r.name }));
+    },
+    [dispatch]
+  );
   return (
     <>
       <CommandGroup name="CommitLog" enabled={active}>
@@ -165,7 +172,11 @@ const CommitLogInner: React.FC<{
         <Cmd name="ShowLsTree" hotkey="Ctrl+L" handler={showLsTreeTab} />
       </CommandGroup>
       <div className="flex-row-nowrap flex-1">
-        <CommitLogSideBar refs={log.refs} onItemClick={handleSideBarItemClick} />
+        <CommitLogSideBar
+          refs={log.refs}
+          onItemClick={handleSideBarItemClick}
+          onSwitchButtonClick={handleSwitchBranchButtonClick}
+        />
         <PersistSplitterPanel
           persistKey="repository/CommitLog"
           initialDirection="horiz"

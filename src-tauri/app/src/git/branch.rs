@@ -1,41 +1,31 @@
-use types::CreateBranchOptions;
+use types::{CreateBranchOptions, SwitchCreateOptions, SwitchOptions};
 
-use super::{exec, GitError};
+use super::{exec, switch, GitError};
 use std::path::Path;
 
 pub async fn create_branch(
     repo_path: &Path,
     options: &CreateBranchOptions,
 ) -> Result<(), GitError> {
-    if options.checkout.is_some_and(|v| v) {
-        return checkout_new_branch(repo_path, options).await;
-    }
-    let mut args: Vec<&str> = Vec::new();
-    if options.force.is_some_and(|v| v) {
-        args.push("-f");
-    }
-    args.push(&options.branch_name);
-    args.push(&options.commit_id);
-    let output = exec(repo_path, "branch", &args, &[]).await?;
-    GitError::assert_process_output("branch", &output)?;
-    Ok(())
-}
-
-async fn checkout_new_branch(
-    repo_path: &Path,
-    options: &CreateBranchOptions,
-) -> Result<(), GitError> {
-    assert!(options.checkout.is_some_and(|v| v));
-    let args = vec![
+    if options.switch.is_some_and(|v| v) {
+        let options = Clone::clone(options);
+        let options = SwitchOptions {
+            branch_name: options.branch_name,
+            create: Some(SwitchCreateOptions {
+                commit_id: options.commit_id,
+                force: options.force,
+            }),
+        };
+        switch::switch(repo_path, &options).await
+    } else {
+        let mut args: Vec<&str> = Vec::new();
         if options.force.is_some_and(|v| v) {
-            "-B"
-        } else {
-            "-b"
-        },
-        &options.branch_name,
-        &options.commit_id,
-    ];
-    let output = exec(repo_path, "checkout", &args, &[]).await?;
-    GitError::assert_process_output("branch", &output)?;
-    Ok(())
+            args.push("-f");
+        }
+        args.push(&options.branch_name);
+        args.push(&options.commit_id);
+        let output = exec(repo_path, "branch", &args, &[]).await?;
+        GitError::assert_process_output("branch", &output)?;
+        Ok(())
+    }
 }
