@@ -1,4 +1,4 @@
-use types::{CreateBranchOptions, SwitchCreateOptions, SwitchOptions};
+use types::{CreateBranchOptions, DeleteBranchOptions, SwitchCreateOptions, SwitchOptions};
 
 use super::{exec, switch, GitError};
 use std::path::Path;
@@ -28,4 +28,20 @@ pub async fn create_branch(
         GitError::assert_process_output("branch", &output)?;
         Ok(())
     }
+}
+
+pub async fn delete_branch(
+    repo_path: &Path,
+    options: &DeleteBranchOptions,
+) -> Result<(), GitError> {
+    let mut args: Vec<&str> = Vec::new();
+    args.push(if options.force.is_some_and(|v| v) {
+        "-D"
+    } else {
+        "-d"
+    });
+    args.push(&options.branch_name);
+    let output = exec(repo_path, "branch", &args, &[]).await?;
+    GitError::assert_process_output("branch", &output)?;
+    Ok(())
 }

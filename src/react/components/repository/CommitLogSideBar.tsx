@@ -2,6 +2,9 @@ import { Collapse, IconButton, List, ListItem, ListItemButton, ListItemText } fr
 import React, { useCallback, useMemo, useState } from "react";
 import { Icon } from "../Icon";
 import classNames from "classnames";
+import { SWITCH_BRANCH_WITH_CONFIRM } from "@/store/thunk/branch";
+import { useDispatch } from "@/store";
+import { OPEN_DIALOG } from "@/store/thunk/dialog";
 
 const HeaderItem: React.FC<{ text: string; expanded: boolean; onClick: () => void }> = ({
   text,
@@ -34,41 +37,56 @@ const CollapsibleList: React.FC<{ headerText: string; children: React.ReactNode 
   );
 };
 
-const SwitchBranchButton: React.FC<{
+const BranchActionButtons: React.FC<{
   r: BranchRef;
-  onClick?: (e: React.MouseEvent<HTMLElement>) => void;
-}> = ({ r, onClick }) => (
-  <IconButton
-    size="small"
-    edge="end"
-    title="Switch to this branch"
-    disabled={r.current}
-    className={classNames("group-hover:block", {
-      "text-secondary": r.current,
-      hidden: !r.current
-    })}
-    data-fullname={r.fullname}
-    onClick={onClick}
-  >
-    <Icon icon="octicon:check-circle-16" />
-  </IconButton>
+  switchAction?: (e: React.MouseEvent<HTMLElement>) => void;
+  deleteAction?: (e: React.MouseEvent<HTMLElement>) => void;
+}> = ({ r, switchAction, deleteAction }) => (
+  <div className="flex-row-nowrap">
+    <IconButton
+      size="small"
+      edge="end"
+      title="Delete this branch"
+      disabled={r.current}
+      className={classNames("hidden", { "group-hover:block": !r.current })}
+      data-fullname={r.fullname}
+      onClick={deleteAction}
+    >
+      <Icon icon="mdi:delete" />
+    </IconButton>
+    <IconButton
+      size="small"
+      edge="end"
+      title="Switch to this branch"
+      disabled={r.current}
+      className={classNames("group-hover:block", {
+        "text-secondary": r.current,
+        hidden: !r.current
+      })}
+      data-fullname={r.fullname}
+      onClick={switchAction}
+    >
+      <Icon icon="octicon:check-circle-16" />
+    </IconButton>
+  </div>
 );
 
 const RefListItem: React.FC<{
   r: Ref;
   onClick: (e: React.MouseEvent<HTMLElement>) => void;
   primaryTextClass?: string;
-  secondaryAction?: React.ReactNode;
-}> = ({ r, onClick, primaryTextClass, secondaryAction }) => (
-  <ListItem className="flex flex-1 group" disablePadding secondaryAction={secondaryAction}>
+  rowActions?: React.ReactNode;
+}> = ({ r, onClick, primaryTextClass, rowActions }) => (
+  <ListItem className="flex flex-1 group" disablePadding>
     <ListItemButton className="px-2 py-1" data-fullname={r.fullname} dense onClick={onClick}>
       <ListItemText
         title={r.name}
         classes={{
-          primary: classNames("ellipsis mr-8", primaryTextClass)
+          primary: "ellipsis mr-2 " + primaryTextClass
         }}
         primary={r.name}
       />
+      {rowActions}
     </ListItemButton>
   </ListItem>
 );
@@ -76,8 +94,8 @@ const RefListItem: React.FC<{
 export const CommitLogSideBar: React.FC<{
   refs: Refs;
   onItemClick: (r: Ref) => void;
-  onSwitchButtonClick: (r: BranchRef) => void;
-}> = ({ refs, onItemClick, onSwitchButtonClick }) => {
+}> = ({ refs, onItemClick }) => {
+  const dispatch = useDispatch();
   const refMap = useMemo(() => {
     const ret = {} as Record<string, Ref>;
     refs.branches.forEach((b) => (ret[b.fullname] = b));
@@ -93,15 +111,28 @@ export const CommitLogSideBar: React.FC<{
     },
     [onItemClick, refMap]
   );
-  const handleSwitchButtonClick = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
+  const switchAction = useCallback(
+    async (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation();
       const fullname = e.currentTarget.dataset.fullname as string;
       const r = refMap[fullname];
       if (r && r.type === "branch") {
-        onSwitchButtonClick(r);
+        await dispatch(SWITCH_BRANCH_WITH_CONFIRM({ branchName: r.name }));
       }
     },
-    [onSwitchButtonClick, refMap]
+    [dispatch, refMap]
+  );
+
+  const deleteAction = useCallback(
+    async (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation();
+      const fullname = e.currentTarget.dataset.fullname as string;
+      const r = refMap[fullname];
+      if (r && r.type === "branch") {
+        await dispatch(OPEN_DIALOG({ type: "DeleteBranch", branchName: r.name }));
+      }
+    },
+    [dispatch, refMap]
   );
 
   return (
@@ -114,7 +145,7 @@ export const CommitLogSideBar: React.FC<{
               r={r}
               onClick={handleListItemClick}
               primaryTextClass={r.current ? "text-secondary" : ""}
-              secondaryAction={<SwitchBranchButton r={r} onClick={handleSwitchButtonClick} />}
+              rowActions={<BranchActionButtons {...{ r, switchAction, deleteAction }} />}
             />
           ))}
         </CollapsibleList>

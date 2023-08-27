@@ -36,6 +36,19 @@ const createBranch = (options: CreateBranchOptions) => {
   };
 };
 
+const deleteBranch = (options: DeleteBranchOptions) => {
+  return async (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const repoPath = state.repository.path;
+    if (!repoPath) {
+      return false;
+    }
+    await invokeTauriCommand("delete_branch", { repoPath, options });
+    await dispatch(RELOAD_REPOSITORY());
+    return true;
+  };
+};
+
 const switchBranch = (options: SwitchOptions) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
@@ -80,5 +93,6 @@ const switchBranchWithConfirm = (options: SwitchOptions) => {
 
 export const BEGIN_CREATE_BRANCH = withHandleError(beginCreateBranch);
 export const CREATE_BRANCH = withLoading(withHandleError(createBranch));
+export const DELETE_BRANCH = withLoading(withHandleError(deleteBranch));
 export const SWITCH_BRANCH = withLoading(withHandleError(switchBranch));
 export const SWITCH_BRANCH_WITH_CONFIRM = withHandleError(switchBranchWithConfirm);

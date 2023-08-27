@@ -28,6 +28,7 @@ declare global {
   type CommitDetail = import("@backend/CommitDetail").CommitDetail;
   type CommitOptions = import("@backend/CommitOptions").CommitOptions;
   type CreateBranchOptions = import("@backend/CreateBranchOptions").CreateBranchOptions;
+  type DeleteBranchOptions = import("@backend/DeleteBranchOptions").DeleteBranchOptions;
   type SwitchOptions = import("@backend/SwitchOptions").SwitchOptions;
   type FileSpec = import("@backend/FileSpec").FileSpec;
   type RawRefs = import("@backend/Refs").Refs;

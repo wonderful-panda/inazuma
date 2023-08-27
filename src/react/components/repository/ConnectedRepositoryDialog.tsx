@@ -5,6 +5,7 @@ import { CommitDialogBody } from "./CommitDialogBody";
 import { NewBranchDialogBody } from "./NewBranchDialogBody";
 import { assertNever } from "@/util";
 import { CLOSE_DIALOG } from "@/store/thunk/dialog";
+import { DeleteBranchDialogBody } from "./DeleteBranchDialogBody";
 
 export const ConnectedRepositoryDialog: React.FC = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,8 @@ export const ConnectedRepositoryDialog: React.FC = () => {
         return <CommitDialogBody />;
       case "NewBranch":
         return <NewBranchDialogBody commitId={dialog.commitId} />;
+      case "DeleteBranch":
+        return <DeleteBranchDialogBody branchName={dialog.branchName} />;
       default:
         return assertNever(dialog);
     }

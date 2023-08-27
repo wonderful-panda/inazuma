@@ -17,6 +17,7 @@ const icons: Record<string, string[]> = {
     "cog",
     "console",
     "content-copy",
+    "delete",
     "file-tree",
     "filter",
     "folder-search-outline",
