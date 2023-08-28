@@ -7,6 +7,7 @@ import { COMMIT } from "@/store/thunk/commit";
 import { CLOSE_DIALOG } from "@/store/repository";
 import { REPORT_ERROR } from "@/store/misc";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { DialogBody } from "../DialogBody";
 
 export const CommitDialog: React.FC = () => {
   const dispatch = useDispatch();
@@ -88,29 +89,24 @@ export const CommitDialog: React.FC = () => {
     [invokeCommit]
   );
   return (
-    <Dialog
-      className="w-[60rem] max-w-none"
-      title="Commit"
-      draggable
-      opened={opened}
-      close={close}
-      actions={actions}
-    >
-      <TextField
-        inputRef={messageRef}
-        className="h-auto w-full"
-        rows={rows}
-        multiline
-        label="Commit message"
-        InputLabelProps={{ shrink: true }}
-        placeholder="Input commit message"
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-      />
-      <FormControlLabel
-        control={<Checkbox inputRef={amendRef} onChange={handleAmendChange} />}
-        label="amend last commit"
-      />
+    <Dialog className="w-[60rem] max-w-none" draggable opened={opened}>
+      <DialogBody title="Commit" draggable close={close} actions={actions}>
+        <TextField
+          inputRef={messageRef}
+          className="h-auto w-full"
+          rows={rows}
+          multiline
+          label="Commit message"
+          InputLabelProps={{ shrink: true }}
+          placeholder="Input commit message"
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+        />
+        <FormControlLabel
+          control={<Checkbox inputRef={amendRef} onChange={handleAmendChange} />}
+          label="amend last commit"
+        />
+      </DialogBody>
     </Dialog>
   );
 };

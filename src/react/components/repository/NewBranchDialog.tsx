@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Dialog, DialogActionHandler } from "../Dialog";
 import { CLOSE_DIALOG } from "@/store/repository";
 import { CREATE_BRANCH } from "@/store/thunk/branch";
+import { DialogBody } from "../DialogBody";
 
 export const NewBranchDialog: React.FC = () => {
   const dispatch = useDispatch();
@@ -55,26 +56,21 @@ export const NewBranchDialog: React.FC = () => {
     [invokeNewBranch]
   );
   return (
-    <Dialog
-      className="w-[40rem] max-w-none"
-      title="Create branch"
-      draggable
-      opened={opened}
-      close={close}
-      actions={actions}
-    >
-      <TextField
-        inputRef={branchNameRef}
-        className="h-auto w-full"
-        label="New branch name"
-        InputLabelProps={{ shrink: true }}
-        placeholder="New branch name"
-        onKeyDown={handleKeyDown}
-      />
-      <FormControlLabel
-        control={<Checkbox inputRef={switchRef} />}
-        label="Switch to created branch"
-      />
+    <Dialog className="w-[40rem] max-w-none" draggable opened={opened}>
+      <DialogBody title="Create branch" draggable close={close} actions={actions}>
+        <TextField
+          inputRef={branchNameRef}
+          className="h-auto w-full"
+          label="New branch name"
+          InputLabelProps={{ shrink: true }}
+          placeholder="New branch name"
+          onKeyDown={handleKeyDown}
+        />
+        <FormControlLabel
+          control={<Checkbox inputRef={switchRef} />}
+          label="Switch to created branch"
+        />
+      </DialogBody>
     </Dialog>
   );
 };

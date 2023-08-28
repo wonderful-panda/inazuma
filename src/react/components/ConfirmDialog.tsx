@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Dialog, DialogActionHandler } from "./Dialog";
+import { DialogBody } from "./DialogBody";
 
 interface ConfirmDialogProps {
   opened: boolean;
@@ -29,15 +30,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     [onClose]
   );
   return (
-    <Dialog
-      title={title}
-      className="min-w-[32%] max-w-[60%] px-0"
-      opened={opened}
-      draggable
-      actions={actions}
-      close={handleCancel}
-    >
-      <div className="py-2 pl-2 pr-8">{content}</div>
+    <Dialog className="min-w-[32%] max-w-[60%] px-0" opened={opened} draggable>
+      <DialogBody title={title} actions={actions} close={handleCancel} draggable>
+        <div className="py-2 pl-2 pr-8">{content}</div>
+      </DialogBody>
     </Dialog>
   );
 };
