@@ -78,7 +78,7 @@ export const CommitDialog: React.FC = () => {
     ],
     [invokeCommit]
   );
-  const handleKeyPress = useCallback(
+  const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       e.stopPropagation();
       if (e.ctrlKey && e.code === "Enter") {
@@ -105,7 +105,7 @@ export const CommitDialog: React.FC = () => {
         InputLabelProps={{ shrink: true }}
         placeholder="Input commit message"
         onChange={handleChange}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyDown}
       />
       <FormControlLabel
         control={<Checkbox inputRef={amendRef} onChange={handleAmendChange} />}

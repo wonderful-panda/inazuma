@@ -108,7 +108,7 @@ export const Dialog: React.FC<DialogProps> = ({
           {title}
         </DialogTitle>
       )}
-      <DialogContent dividers onKeyPress={handleEnter}>
+      <DialogContent dividers onKeyDown={handleEnter}>
         {children}
       </DialogContent>
       <DialogActions className="pr-4">
