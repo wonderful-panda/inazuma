@@ -6,7 +6,7 @@ import { withLoading } from "./withLoading";
 
 import { OPEN_DIALOG } from "../repository";
 import { SHOW_CONFIRM_DIALOG } from "./confirmDialog";
-import { HIDE_LOADING, SHOW_LOADING } from "../misc";
+import { HIDE_LOADING, SHOW_LOADING, SHOW_WARNING } from "../misc";
 
 const beginCreateBranch = (commitId: string) => {
   return async (dispatch: Dispatch, getState: () => RootState): Promise<void> => {
@@ -26,6 +26,10 @@ const createBranch = (options: CreateBranchOptions) => {
     if (!repoPath) {
       return false;
     }
+    if (!options.branchName) {
+      dispatch(SHOW_WARNING("Branch name is not specified"));
+      return false;
+    }
     await invokeTauriCommand("create_branch", { repoPath, options });
     await dispatch(RELOAD_REPOSITORY());
     return true;
@@ -37,6 +41,10 @@ const switchBranch = (options: SwitchOptions) => {
     const state = getState();
     const repoPath = state.repository.path;
     if (!repoPath) {
+      return false;
+    }
+    if (!options.branchName) {
+      dispatch(SHOW_WARNING("Branch name is not specified"));
       return false;
     }
     try {
