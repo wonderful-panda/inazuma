@@ -4,7 +4,7 @@ import { _CLOSE_CONFIRM_DIALOG, _SET_CONFIRM_DIALOG } from "../confirmDialog";
 let currentVersion = 0;
 const showConfirmDialog = ({ title, content }: { title?: string; content: string }) => {
   return async (dispatch: Dispatch) => {
-    const version = (currentVersion & 0xfffe) + 1;
+    const version = (currentVersion & 0xff) + 1;
     currentVersion = version;
     return new Promise<boolean>((resolve) => {
       dispatch(

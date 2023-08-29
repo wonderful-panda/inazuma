@@ -10,7 +10,6 @@ import { DeleteBranchDialogBody } from "./DeleteBranchDialogBody";
 export const ConnectedRepositoryDialog: React.FC = () => {
   const dispatch = useDispatch();
   const dialog = useSelector((state) => state.repository.activeDialog);
-  const dialogOpened = useSelector((state) => state.repository.dialogOpened);
   const close = useCallback(() => dispatch(CLOSE_DIALOG()), [dispatch]);
 
   const children = useMemo(() => {
@@ -30,7 +29,7 @@ export const ConnectedRepositoryDialog: React.FC = () => {
   }, [dialog]);
 
   return (
-    <Dialog className="max-w-none" draggable opened={dialogOpened} close={close}>
+    <Dialog className="max-w-none" draggable opened={!!dialog?.opened} close={close}>
       {children}
     </Dialog>
   );

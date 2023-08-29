@@ -24,10 +24,15 @@ export interface CommitLogItems {
   graph: Record<string, GraphFragment>;
 }
 
-export type DialogProps =
+export type DialogParam =
   | { type: "Commit" }
   | { type: "NewBranch"; commitId: string }
   | { type: "DeleteBranch"; branchName: string };
+
+export type DialogState = DialogParam & {
+  opened: boolean;
+  version: number;
+};
 
 interface State {
   path: string | undefined;
@@ -40,9 +45,8 @@ interface State {
         currentIndex: number;
       }
     | undefined;
-  activeDialog: DialogProps | undefined;
-  dialogOpened: boolean;
-  dialogVersion: number;
+  activeDialog: DialogState | undefined;
+  currentDialogVersion: number;
 }
 
 const initialState: State = {
@@ -52,8 +56,7 @@ const initialState: State = {
   commitDetail: undefined,
   tab: undefined,
   activeDialog: undefined,
-  dialogOpened: false,
-  dialogVersion: 0
+  currentDialogVersion: 0
 };
 
 const setLog = (
@@ -158,20 +161,20 @@ const selectPreviousTab = ({ tab }: State) => {
   tab.currentIndex = 1 <= tab.currentIndex ? tab.currentIndex - 1 : tab.tabs.length - 1;
 };
 
-const openDialog = (state: State, { payload }: PayloadAction<DialogProps>) => {
-  state.activeDialog = payload;
-  state.dialogOpened = true;
-  state.dialogVersion += 1;
+const openDialog = (state: State, { payload }: PayloadAction<DialogParam>) => {
+  state.currentDialogVersion = (state.currentDialogVersion & 0xff) + 1;
+  state.activeDialog = { ...payload, opened: true, version: state.currentDialogVersion };
 };
 
 const closeDialog = (state: State) => {
-  state.dialogOpened = false;
+  if (state.activeDialog) {
+    state.activeDialog.opened = false;
+  }
 };
 
 const clearDialog = (state: State, { payload }: PayloadAction<number>) => {
-  if (state.dialogVersion === payload) {
+  if (state.activeDialog?.version === payload) {
     state.activeDialog = undefined;
-    state.dialogOpened = false;
   }
 };
 

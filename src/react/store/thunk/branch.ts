@@ -15,7 +15,7 @@ const beginCreateBranch = (commitId: string) => {
     if (!repoPath) {
       return;
     }
-    dispatch(OPEN_DIALOG({ type: "NewBranch", commitId }));
+    await dispatch(OPEN_DIALOG({ type: "NewBranch", commitId }));
   };
 };
 
