@@ -76,7 +76,12 @@ export const CommitDialogBody: React.FC = () => {
     [invokeCommit]
   );
   return (
-    <DialogBody className="w-[50rem]" title="Commit" actions={actions} defaultActionKey="Alt+Enter">
+    <DialogBody
+      className="w-[50rem]"
+      title="Commit"
+      actions={actions}
+      defaultActionKey="Ctrl+Enter"
+    >
       <TextField
         inputRef={messageRef}
         className="h-auto w-full"
