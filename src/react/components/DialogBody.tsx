@@ -40,6 +40,7 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
         const key = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}Enter`;
         if (key === defaultActionKey) {
           e.stopPropagation();
+          e.preventDefault();
           defaultAction.onClick();
         }
       }
