@@ -1,6 +1,6 @@
 import { Button, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Icon } from "./Icon";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import classNames from "classnames";
 import { DialogActionHandler, useDialogContext } from "./Dialog";
 
@@ -24,7 +24,7 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
 }) => {
   const defaultButtonRef = useRef<HTMLButtonElement>(null);
   const composingRef = useRef(false);
-  const ctx = useDialogContext();
+  const { close, draggable } = useDialogContext();
   const handleCompositionStart = useCallback(() => (composingRef.current = true), []);
   const handleCompositionEnd = useCallback(() => (composingRef.current = false), []);
   const handleEnter = useCallback(
@@ -41,28 +41,41 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
         if (key === defaultActionKey) {
           e.stopPropagation();
           e.preventDefault();
-          defaultAction.onClick();
+          defaultAction.onClick(close);
         }
       }
     },
-    [actions, defaultActionKey]
+    [actions, defaultActionKey, close]
   );
   useEffect(() => {
     if (defaultButtonRef.current && focusDefaultButton) {
       defaultButtonRef.current.focus({ focusVisible: true } as any);
     }
   }, [focusDefaultButton]);
+  const buttons = useMemo(
+    () =>
+      actions?.map((a, i) => (
+        <Button
+          key={i}
+          ref={a.default ? defaultButtonRef : undefined}
+          className="text-xl"
+          size="large"
+          onClick={() => a.onClick(close)}
+          color={a.color || "inherit"}
+        >
+          {a.text}
+        </Button>
+      )),
+    [actions, close]
+  );
   return (
     <div className={className}>
-      <IconButton className="absolute top-1 right-1" onClick={ctx.close} size="medium">
+      <IconButton className="absolute top-1 right-1" onClick={close} size="medium">
         <Icon icon="mdi:close" />
       </IconButton>
-      {(title || ctx.draggable) && (
+      {(title || draggable) && (
         <DialogTitle
-          className={classNames(
-            "px-5 py-3",
-            ctx.draggable && "cursor-move " + DRAGGABLE_ELEMENT_CLASS
-          )}
+          className={classNames("px-5 py-3", draggable && "cursor-move " + DRAGGABLE_ELEMENT_CLASS)}
         >
           {title}
         </DialogTitle>
@@ -76,23 +89,12 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
         {children}
       </DialogContent>
       <DialogActions className="pr-4">
-        {actions?.map((a, i) => (
-          <Button
-            key={i}
-            ref={a.default ? defaultButtonRef : undefined}
-            className="text-xl"
-            size="large"
-            onClick={a.onClick}
-            color={a.color || "inherit"}
-          >
-            {a.text}
-          </Button>
-        ))}
+        {buttons}
         <Button
           key="__cancel__"
           className="text-xl mr-2"
           size="large"
-          onClick={ctx.close}
+          onClick={close}
           color="inherit"
         >
           Cancel

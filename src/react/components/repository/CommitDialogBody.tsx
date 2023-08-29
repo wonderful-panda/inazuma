@@ -7,7 +7,6 @@ import { COMMIT } from "@/store/thunk/commit";
 import { REPORT_ERROR } from "@/store/misc";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DialogBody } from "../DialogBody";
-import { CLOSE_DIALOG } from "@/store/thunk/dialog";
 
 export const CommitDialogBody: React.FC = () => {
   const dispatch = useDispatch();
@@ -50,20 +49,23 @@ export const CommitDialogBody: React.FC = () => {
     },
     [dispatch, repoPath, handleChange]
   );
-  const invokeCommit = useCallback(async () => {
-    if (!amendRef.current) {
-      return;
-    }
-    const message = messageRef.current?.value || "";
-    const options: CommitOptions = {
-      commitType: amendRef.current.checked ? "amend" : "normal",
-      message
-    };
-    const ret = await dispatch(COMMIT(options));
-    if (ret !== "failed" && ret) {
-      dispatch(CLOSE_DIALOG());
-    }
-  }, [dispatch]);
+  const invokeCommit = useCallback(
+    async (close: () => void) => {
+      if (!amendRef.current) {
+        return;
+      }
+      const message = messageRef.current?.value || "";
+      const options: CommitOptions = {
+        commitType: amendRef.current.checked ? "amend" : "normal",
+        message
+      };
+      const ret = await dispatch(COMMIT(options));
+      if (ret !== "failed" && ret) {
+        close();
+      }
+    },
+    [dispatch]
+  );
   const actions = useMemo<DialogActionHandler[]>(
     () => [
       {

@@ -21,7 +21,7 @@ export interface DialogMethods {
 export interface DialogActionHandler {
   text: string;
   color?: React.ComponentProps<typeof Button>["color"];
-  onClick: () => void;
+  onClick: (close: () => void) => void;
   default?: boolean;
 }
 
