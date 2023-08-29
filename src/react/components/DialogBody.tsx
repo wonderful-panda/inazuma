@@ -1,6 +1,6 @@
 import { Button, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Icon } from "./Icon";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import classNames from "classnames";
 import { DialogActionHandler, useDialogContext } from "./Dialog";
 
@@ -23,25 +23,29 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
   defaultActionKey
 }) => {
   const defaultButtonRef = useRef<HTMLButtonElement>(null);
+  const composingRef = useRef(false);
   const ctx = useDialogContext();
-  const handleEnter = useMemo(() => {
-    if (!defaultActionKey) {
-      return undefined;
-    }
-    const defaultAction = actions?.find((a) => a.default);
-    if (!defaultAction) {
-      return undefined;
-    }
-    return (e: React.KeyboardEvent) => {
-      if (e.code === "Enter" && !e.shiftKey) {
+  const handleCompositionStart = useCallback(() => (composingRef.current = true), []);
+  const handleCompositionEnd = useCallback(() => (composingRef.current = false), []);
+  const handleEnter = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!defaultActionKey) {
+        return;
+      }
+      const defaultAction = actions?.find((a) => a.default);
+      if (!defaultAction) {
+        return;
+      }
+      if (e.code === "Enter" && !e.shiftKey && !composingRef.current) {
         const key = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}Enter`;
         if (key === defaultActionKey) {
           e.stopPropagation();
           defaultAction.onClick();
         }
       }
-    };
-  }, [actions, defaultActionKey]);
+    },
+    [actions, defaultActionKey]
+  );
   useEffect(() => {
     if (defaultButtonRef.current && focusDefaultButton) {
       defaultButtonRef.current.focus({ focusVisible: true } as any);
@@ -62,7 +66,12 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
           {title}
         </DialogTitle>
       )}
-      <DialogContent dividers onKeyDownCapture={handleEnter}>
+      <DialogContent
+        dividers
+        onKeyDownCapture={handleEnter}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
+      >
         {children}
       </DialogContent>
       <DialogActions className="pr-4">
