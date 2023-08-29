@@ -13,7 +13,6 @@ import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { browseSourceTree } from "@/commands/browseSourceTree";
-import { CommitDialog } from "./CommitDialog";
 import { CommitCommand } from "@/commands/types";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
 import { SHOW_COMMIT_DIFF } from "@/store/thunk/showCommitDiff";
@@ -25,9 +24,9 @@ import { PinnedCommitContext, SetPinnedCommitContext } from "./CommitListRow";
 import { useStateWithRef } from "@/hooks/useStateWithRef";
 import { shortHash } from "@/util";
 import { CommitLogSideBar } from "./CommitLogSideBar";
-import { NewBranchDialog } from "./NewBranchDialog";
 import { createBranch } from "@/commands/createBranch";
 import { SWITCH_BRANCH_WITH_CONFIRM } from "@/store/thunk/branch";
+import { ConnectedRepositoryDialog } from "./ConnectedRepositoryDialog";
 
 const beginCommit: CommitCommand = {
   id: "Commit",
@@ -204,8 +203,7 @@ const CommitLogInner: React.FC<{
           }
           second={detail}
         />
-        <CommitDialog />
-        <NewBranchDialog />
+        <ConnectedRepositoryDialog />
       </div>
     </>
   );

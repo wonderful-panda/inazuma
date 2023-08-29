@@ -30,8 +30,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     [onClose]
   );
   return (
-    <Dialog className="min-w-[32%] max-w-[60%] px-0" opened={opened} draggable>
-      <DialogBody title={title} actions={actions} close={handleCancel} draggable>
+    <Dialog className="min-w-[32%] max-w-[60%] px-0" opened={opened} close={handleCancel} draggable>
+      <DialogBody title={title} actions={actions} focusDefaultButton>
         <div className="py-2 pl-2 pr-8">{content}</div>
       </DialogBody>
     </Dialog>

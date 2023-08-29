@@ -1,66 +1,72 @@
 import { Button, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Icon } from "./Icon";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import classNames from "classnames";
+import { DialogActionHandler, useDialogContext } from "./Dialog";
 
 const DRAGGABLE_ELEMENT_CLASS = "dialog-draggable-handle";
 
-export interface DialogMethods {
-  open: () => void;
-  close: () => void;
-}
-
-export interface DialogActionHandler {
-  text: string;
-  color?: React.ComponentProps<typeof Button>["color"];
-  onClick: () => void;
-  default?: boolean;
-}
-
-export interface DialogWindowProps extends ChildrenProp {
+export interface DialogBodyProps extends ChildrenProp {
   title?: string;
-  draggable?: boolean;
-  close: () => void;
+  className?: string;
   actions?: readonly DialogActionHandler[];
+  focusDefaultButton?: boolean;
+  defaultActionKey?: "Enter" | "Alt+Enter";
 }
 
-export const DialogBody: React.FC<DialogWindowProps> = ({
+export const DialogBody: React.FC<DialogBodyProps> = ({
   title,
-  close,
-  draggable = false,
+  className,
   actions,
-  children
+  children,
+  focusDefaultButton,
+  defaultActionKey
 }) => {
+  const defaultButtonRef = useRef<HTMLButtonElement>(null);
+  const ctx = useDialogContext();
   const handleEnter = useMemo(() => {
+    if (!defaultActionKey) {
+      return;
+    }
     const defaultAction = actions?.find((a) => a.default);
     if (!defaultAction) {
       return undefined;
     }
     return (e: React.KeyboardEvent) => {
-      if (e.code === "Enter") {
+      if (e.code === "Enter" && (defaultActionKey === "Enter" || e.altKey)) {
+        e.stopPropagation();
         defaultAction.onClick();
       }
     };
-  }, [actions]);
+  }, [actions, defaultActionKey]);
+  useEffect(() => {
+    if (defaultButtonRef.current && focusDefaultButton) {
+      defaultButtonRef.current.focus({ focusVisible: true } as any);
+    }
+  }, [focusDefaultButton]);
   return (
-    <>
-      <IconButton className="absolute top-1 right-1" onClick={close} size="medium">
+    <div className={className}>
+      <IconButton className="absolute top-1 right-1" onClick={ctx.close} size="medium">
         <Icon icon="mdi:close" />
       </IconButton>
-      {(title || draggable) && (
+      {(title || ctx.draggable) && (
         <DialogTitle
-          className={classNames("px-5 py-3", draggable && "cursor-move " + DRAGGABLE_ELEMENT_CLASS)}
+          className={classNames(
+            "px-5 py-3",
+            ctx.draggable && "cursor-move " + DRAGGABLE_ELEMENT_CLASS
+          )}
         >
           {title}
         </DialogTitle>
       )}
-      <DialogContent dividers onKeyDown={handleEnter}>
+      <DialogContent dividers onKeyDownCapture={handleEnter}>
         {children}
       </DialogContent>
       <DialogActions className="pr-4">
         {actions?.map((a, i) => (
           <Button
             key={i}
+            ref={a.default ? defaultButtonRef : undefined}
             className="text-xl"
             size="large"
             onClick={a.onClick}
@@ -73,12 +79,12 @@ export const DialogBody: React.FC<DialogWindowProps> = ({
           key="__cancel__"
           className="text-xl mr-2"
           size="large"
-          onClick={close}
+          onClick={ctx.close}
           color="inherit"
         >
           Cancel
         </Button>
       </DialogActions>
-    </>
+    </div>
   );
 };

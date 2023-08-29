@@ -1,28 +1,21 @@
-import { useDispatch, useSelector } from "@/store";
+import { useDispatch } from "@/store";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { Dialog, DialogActionHandler } from "../Dialog";
+import { DialogActionHandler } from "../Dialog";
 import { CLOSE_DIALOG } from "@/store/repository";
 import { CREATE_BRANCH } from "@/store/thunk/branch";
 import { DialogBody } from "../DialogBody";
 
-export const NewBranchDialog: React.FC = () => {
+export const NewBranchDialogBody: React.FC<{
+  commitId: string;
+}> = ({ commitId }) => {
   const dispatch = useDispatch();
-  const commitId = useSelector((state) =>
-    state.repository.activeDialog?.type === "NewBranch"
-      ? state.repository.activeDialog.commitId
-      : undefined
-  );
-  const opened = !!commitId;
   const branchNameRef = useRef<HTMLInputElement>(null);
   const switchRef = useRef<HTMLInputElement>(null);
-  const close = useCallback(() => dispatch(CLOSE_DIALOG()), [dispatch]);
 
   useEffect(() => {
-    if (opened) {
-      setTimeout(() => branchNameRef.current?.focus(), 0);
-    }
-  }, [opened]);
+    setTimeout(() => branchNameRef.current?.focus(), 0);
+  }, []);
 
   const invokeNewBranch = useCallback(async () => {
     if (!commitId || !branchNameRef.current) {
@@ -31,7 +24,7 @@ export const NewBranchDialog: React.FC = () => {
     const branchName = branchNameRef.current.value;
     const switchBranch = switchRef.current?.checked || false;
     const ret = await dispatch(CREATE_BRANCH({ branchName, switch: switchBranch, commitId }));
-    if (ret !== "failed") {
+    if (ret !== "failed" && ret) {
       dispatch(CLOSE_DIALOG());
     }
   }, [dispatch, commitId]);
@@ -56,21 +49,19 @@ export const NewBranchDialog: React.FC = () => {
     [invokeNewBranch]
   );
   return (
-    <Dialog className="w-[40rem] max-w-none" draggable opened={opened}>
-      <DialogBody title="Create branch" draggable close={close} actions={actions}>
-        <TextField
-          inputRef={branchNameRef}
-          className="h-auto w-full"
-          label="New branch name"
-          InputLabelProps={{ shrink: true }}
-          placeholder="New branch name"
-          onKeyDown={handleKeyDown}
-        />
-        <FormControlLabel
-          control={<Checkbox inputRef={switchRef} />}
-          label="Switch to created branch"
-        />
-      </DialogBody>
-    </Dialog>
+    <DialogBody title="Create branch" actions={actions} defaultActionKey="Enter">
+      <TextField
+        inputRef={branchNameRef}
+        className="h-auto w-full"
+        label="New branch name"
+        InputLabelProps={{ shrink: true }}
+        placeholder="New branch name"
+        onKeyDown={handleKeyDown}
+      />
+      <FormControlLabel
+        control={<Checkbox inputRef={switchRef} />}
+        label="Switch to created branch"
+      />
+    </DialogBody>
   );
 };

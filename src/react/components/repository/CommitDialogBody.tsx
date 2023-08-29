@@ -2,28 +2,23 @@ import { useDispatch, useSelector } from "@/store";
 import { clamp } from "@/util";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Dialog, DialogActionHandler } from "../Dialog";
+import { DialogActionHandler } from "../Dialog";
 import { COMMIT } from "@/store/thunk/commit";
-import { CLOSE_DIALOG } from "@/store/repository";
 import { REPORT_ERROR } from "@/store/misc";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DialogBody } from "../DialogBody";
 
-export const CommitDialog: React.FC = () => {
+export const CommitDialogBody: React.FC = () => {
   const dispatch = useDispatch();
   const repoPath = useSelector((state) => state.repository.path);
-  const opened = useSelector((state) => state.repository.activeDialog?.type === "Commit");
   const messageRef = useRef<HTMLInputElement>(null);
   const amendRef = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState(6);
-  const close = useCallback(() => dispatch(CLOSE_DIALOG()), [dispatch]);
 
   useEffect(() => {
-    if (opened) {
-      setRows(6);
-      setTimeout(() => messageRef.current?.focus(), 0);
-    }
-  }, [opened]);
+    setRows(6);
+    setTimeout(() => messageRef.current?.focus(), 0);
+  }, []);
 
   const handleChange = useCallback(() => {
     if (messageRef.current) {
@@ -65,9 +60,9 @@ export const CommitDialog: React.FC = () => {
     };
     const ret = await dispatch(COMMIT(options));
     if (ret !== "failed" && ret) {
-      dispatch(CLOSE_DIALOG());
+      close();
     }
-  }, [dispatch]);
+  }, [dispatch, close]);
   const actions = useMemo<DialogActionHandler[]>(
     () => [
       {
@@ -89,24 +84,22 @@ export const CommitDialog: React.FC = () => {
     [invokeCommit]
   );
   return (
-    <Dialog className="w-[60rem] max-w-none" draggable opened={opened}>
-      <DialogBody title="Commit" draggable close={close} actions={actions}>
-        <TextField
-          inputRef={messageRef}
-          className="h-auto w-full"
-          rows={rows}
-          multiline
-          label="Commit message"
-          InputLabelProps={{ shrink: true }}
-          placeholder="Input commit message"
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-        />
-        <FormControlLabel
-          control={<Checkbox inputRef={amendRef} onChange={handleAmendChange} />}
-          label="amend last commit"
-        />
-      </DialogBody>
-    </Dialog>
+    <DialogBody className="w-[50rem]" title="Commit" actions={actions} defaultActionKey="Alt+Enter">
+      <TextField
+        inputRef={messageRef}
+        className="h-auto w-full"
+        rows={rows}
+        multiline
+        label="Commit message"
+        InputLabelProps={{ shrink: true }}
+        placeholder="Input commit message"
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+      />
+      <FormControlLabel
+        control={<Checkbox inputRef={amendRef} onChange={handleAmendChange} />}
+        label="amend last commit"
+      />
+    </DialogBody>
   );
 };
