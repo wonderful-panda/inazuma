@@ -4,9 +4,9 @@ import { RELOAD_REPOSITORY } from "./repository";
 import { withHandleError } from "./withHandleError";
 import { withLoading } from "./withLoading";
 
-import { OPEN_DIALOG } from "../repository";
 import { SHOW_CONFIRM_DIALOG } from "./confirmDialog";
 import { HIDE_LOADING, SHOW_LOADING, SHOW_WARNING } from "../misc";
+import { OPEN_DIALOG } from "./dialog";
 
 const beginCreateBranch = (commitId: string) => {
   return async (dispatch: Dispatch, getState: () => RootState): Promise<void> => {

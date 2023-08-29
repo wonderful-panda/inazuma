@@ -11,7 +11,7 @@ export interface DialogBodyProps extends ChildrenProp {
   className?: string;
   actions?: readonly DialogActionHandler[];
   focusDefaultButton?: boolean;
-  defaultActionKey?: "Enter" | "Alt+Enter";
+  defaultActionKey?: "Enter" | "Alt+Enter" | "Ctrl+Enter";
 }
 
 export const DialogBody: React.FC<DialogBodyProps> = ({
@@ -26,16 +26,19 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
   const ctx = useDialogContext();
   const handleEnter = useMemo(() => {
     if (!defaultActionKey) {
-      return;
+      return undefined;
     }
     const defaultAction = actions?.find((a) => a.default);
     if (!defaultAction) {
       return undefined;
     }
     return (e: React.KeyboardEvent) => {
-      if (e.code === "Enter" && (defaultActionKey === "Enter" || e.altKey)) {
-        e.stopPropagation();
-        defaultAction.onClick();
+      if (e.code === "Enter" && !e.shiftKey) {
+        const key = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}Enter`;
+        if (key === defaultActionKey) {
+          e.stopPropagation();
+          defaultAction.onClick();
+        }
       }
     };
   }, [actions, defaultActionKey]);

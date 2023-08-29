@@ -7,6 +7,7 @@ import { COMMIT } from "@/store/thunk/commit";
 import { REPORT_ERROR } from "@/store/misc";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DialogBody } from "../DialogBody";
+import { CLOSE_DIALOG } from "@/store/thunk/dialog";
 
 export const CommitDialogBody: React.FC = () => {
   const dispatch = useDispatch();
@@ -60,9 +61,9 @@ export const CommitDialogBody: React.FC = () => {
     };
     const ret = await dispatch(COMMIT(options));
     if (ret !== "failed" && ret) {
-      close();
+      dispatch(CLOSE_DIALOG());
     }
-  }, [dispatch, close]);
+  }, [dispatch]);
   const actions = useMemo<DialogActionHandler[]>(
     () => [
       {
@@ -72,15 +73,6 @@ export const CommitDialogBody: React.FC = () => {
         onClick: invokeCommit
       }
     ],
-    [invokeCommit]
-  );
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      e.stopPropagation();
-      if (e.ctrlKey && e.code === "Enter") {
-        invokeCommit();
-      }
-    },
     [invokeCommit]
   );
   return (
@@ -94,7 +86,6 @@ export const CommitDialogBody: React.FC = () => {
         InputLabelProps={{ shrink: true }}
         placeholder="Input commit message"
         onChange={handleChange}
-        onKeyDown={handleKeyDown}
       />
       <FormControlLabel
         control={<Checkbox inputRef={amendRef} onChange={handleAmendChange} />}

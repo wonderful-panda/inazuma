@@ -2,9 +2,9 @@ import { useDispatch } from "@/store";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { DialogActionHandler } from "../Dialog";
-import { CLOSE_DIALOG } from "@/store/repository";
 import { CREATE_BRANCH } from "@/store/thunk/branch";
 import { DialogBody } from "../DialogBody";
+import { CLOSE_DIALOG } from "@/store/thunk/dialog";
 
 export const NewBranchDialogBody: React.FC<{
   commitId: string;

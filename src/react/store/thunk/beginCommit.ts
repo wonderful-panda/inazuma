@@ -1,5 +1,5 @@
 import { Dispatch, RootState } from "..";
-import { OPEN_DIALOG } from "../repository";
+import { OPEN_DIALOG } from "./dialog";
 import { withHandleError } from "./withHandleError";
 
 const beginCommit = () => {

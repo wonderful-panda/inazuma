@@ -24,7 +24,7 @@ export interface CommitLogItems {
   graph: Record<string, GraphFragment>;
 }
 
-type DialogProps = { type: "Commit" } | { type: "NewBranch"; commitId: string };
+export type DialogProps = { type: "Commit" } | { type: "NewBranch"; commitId: string };
 
 interface State {
   path: string | undefined;
@@ -38,6 +38,8 @@ interface State {
       }
     | undefined;
   activeDialog: DialogProps | undefined;
+  dialogOpened: boolean;
+  dialogVersion: number;
 }
 
 const initialState: State = {
@@ -46,7 +48,9 @@ const initialState: State = {
   workingTree: undefined,
   commitDetail: undefined,
   tab: undefined,
-  activeDialog: undefined
+  activeDialog: undefined,
+  dialogOpened: false,
+  dialogVersion: 0
 };
 
 const setLog = (
@@ -153,10 +157,19 @@ const selectPreviousTab = ({ tab }: State) => {
 
 const openDialog = (state: State, { payload }: PayloadAction<DialogProps>) => {
   state.activeDialog = payload;
+  state.dialogOpened = true;
+  state.dialogVersion += 1;
 };
 
 const closeDialog = (state: State) => {
-  state.activeDialog = undefined;
+  state.dialogOpened = false;
+};
+
+const clearDialog = (state: State, { payload }: PayloadAction<number>) => {
+  if (state.dialogVersion === payload) {
+    state.activeDialog = undefined;
+    state.dialogOpened = false;
+  }
 };
 
 const slice = createSlice({
@@ -173,7 +186,8 @@ const slice = createSlice({
     selectNextTab,
     selectPreviousTab,
     openDialog,
-    closeDialog
+    closeDialog,
+    clearDialog
   }
 });
 
@@ -187,8 +201,9 @@ export const {
   selectTab: SELECT_TAB,
   selectNextTab: SELECT_NEXT_TAB,
   selectPreviousTab: SELECT_PREVIOUS_TAB,
-  openDialog: OPEN_DIALOG,
-  closeDialog: CLOSE_DIALOG
+  openDialog: _OPEN_DIALOG,
+  closeDialog: _CLOSE_DIALOG,
+  clearDialog: _CLEAR_DIALOG
 } = slice.actions;
 
 export default slice.reducer;
