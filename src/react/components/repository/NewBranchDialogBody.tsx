@@ -11,6 +11,7 @@ export const NewBranchDialogBody: React.FC<{
   const dispatch = useDispatch();
   const branchNameRef = useRef<HTMLInputElement>(null);
   const switchRef = useRef<HTMLInputElement>(null);
+  const forceRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setTimeout(() => branchNameRef.current?.focus(), 0);
@@ -23,7 +24,10 @@ export const NewBranchDialogBody: React.FC<{
       }
       const branchName = branchNameRef.current.value;
       const switchBranch = switchRef.current?.checked || false;
-      const ret = await dispatch(CREATE_BRANCH({ branchName, switch: switchBranch, commitId }));
+      const force = forceRef.current?.checked || false;
+      const ret = await dispatch(
+        CREATE_BRANCH({ branchName, switch: switchBranch, commitId, force })
+      );
       if (ret !== "failed" && ret) {
         close();
       }
@@ -53,6 +57,10 @@ export const NewBranchDialogBody: React.FC<{
       <FormControlLabel
         control={<Checkbox inputRef={switchRef} />}
         label="Switch to created branch"
+      />
+      <FormControlLabel
+        control={<Checkbox inputRef={forceRef} />}
+        label="Move branch if exists (force)"
       />
     </DialogBody>
   );
