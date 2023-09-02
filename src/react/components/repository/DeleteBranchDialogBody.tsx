@@ -30,7 +30,7 @@ export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branc
         }
       }
     ],
-    [branchName]
+    [branchName, dispatch]
   );
   return (
     <DialogBody
