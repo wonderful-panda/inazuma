@@ -32,6 +32,7 @@ type DiffCommandOption = {
 
 const createDiffCommand = (opt: DiffCommandOption): FileCommand => {
   return {
+    type: "file",
     id: opt.id,
     label: opt.label,
     icon: "octicon:git-compare-16",

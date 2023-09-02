@@ -43,7 +43,11 @@ export const executeCommand = (
   if (command.hidden?.(commit, file) || command.disabled?.(commit, file)) {
     return false;
   }
-  command.handler(dispatch, commit, file, localPath || file.path);
+  if (command.type === "file") {
+    command.handler(dispatch, commit, file, localPath || file.path);
+  } else {
+    command.handler(dispatch, commit);
+  }
   return true;
 };
 

@@ -2,6 +2,7 @@ import { RESTORE, STAGE, UNSTAGE } from "@/store/thunk/workingtree";
 import { FileCommand } from "./types";
 
 export const stage: FileCommand = {
+  type: "file",
   id: "Stage",
   label: "Stage selected file",
   icon: "mdi:plus",
@@ -14,6 +15,7 @@ export const stage: FileCommand = {
 };
 
 export const unstage: FileCommand = {
+  type: "file",
   id: "Unstage",
   label: "Unstage selected file",
   icon: "mdi:minus",
@@ -26,6 +28,7 @@ export const unstage: FileCommand = {
 };
 
 export const restore: FileCommand = {
+  type: "file",
   id: "Restore",
   label: "Restore(discard unstaged changes)",
   icon: "mdi:undo",

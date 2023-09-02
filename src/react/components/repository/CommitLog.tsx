@@ -28,6 +28,7 @@ import { createBranch } from "@/commands/createBranch";
 import { ConnectedRepositoryDialog } from "./ConnectedRepositoryDialog";
 
 const beginCommit: CommitCommand = {
+  type: "commit",
   id: "Commit",
   label: "Commit",
   icon: "mdi:content-save",
@@ -36,6 +37,7 @@ const beginCommit: CommitCommand = {
 };
 
 const compareWithParent = (commits: readonly Commit[]): CommitCommand => ({
+  type: "commit",
   id: "CompareCommitWithParent",
   label: "Compare with parent",
   icon: "octicon:git-compare-16",
@@ -51,6 +53,7 @@ const compareWithParent = (commits: readonly Commit[]): CommitCommand => ({
 });
 
 const compareWithPinnedCommit = (pinnedCommit: Commit | undefined): CommitCommand => ({
+  type: "commit",
   id: "CompareCommitWithPinnedCommit",
   label: `Compare with Compare-BASE commit (${
     pinnedCommit ? shortHash(pinnedCommit.id) : "NOT SELECTED"

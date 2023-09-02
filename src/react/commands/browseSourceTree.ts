@@ -2,6 +2,7 @@ import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { CommitCommand } from "./types";
 
 export const browseSourceTree: CommitCommand = {
+  type: "commit",
   id: "BrowseSourceTree",
   label: "Browse source tree",
   icon: "mdi:file-tree",

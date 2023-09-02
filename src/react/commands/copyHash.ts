@@ -4,6 +4,7 @@ import { shortHash } from "@/util";
 import { CommitCommand } from "./types";
 
 export const copyFullHash: CommitCommand = {
+  type: "commit",
   id: "CopyFullHash",
   label: "Copy full hash",
   hidden: (commit) => commit.id === "--",
@@ -14,6 +15,7 @@ export const copyFullHash: CommitCommand = {
 };
 
 export const copyShortHash: CommitCommand = {
+  type: "commit",
   id: "CopyShortHash",
   label: "Copy short hash",
   hidden: (commit) => commit.id === "--",

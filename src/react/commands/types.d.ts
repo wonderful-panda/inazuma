@@ -2,6 +2,7 @@ import { Dispatch } from "@/store";
 import { IconName } from "@/types/IconName";
 
 export interface CommitCommand {
+  type: "commit";
   id: string;
   label: string;
   icon?: IconName;
@@ -11,6 +12,7 @@ export interface CommitCommand {
 }
 
 export interface FileCommand {
+  type: "file";
   id: string;
   label: string;
   icon?: IconName;
