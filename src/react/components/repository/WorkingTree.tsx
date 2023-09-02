@@ -19,8 +19,6 @@ import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import classNames from "classnames";
 import { executeFileCommand } from "@/commands";
-import { diffUnstaged, diffWithParent, diffWithParent2 } from "@/commands/diff";
-import { stage, unstage, restore } from "@/commands/workingtree";
 import { IconActionItem } from "@/commands/types";
 import { RowActionButtons } from "./RowActionButtons";
 import { MonacoEditor } from "../MonacoEditor";
@@ -30,7 +28,13 @@ import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import PathFilter from "./PathFilter";
 import { useFileContextMenuT } from "@/hooks/useContextMenu";
-import { copyRelativePath } from "@/commands/copyRelativePath";
+import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
+import { useRestoreCommand, useStageCommand, useUnstageCommand } from "@/commands/workingtree";
+import {
+  useDiffUnstagedCommand,
+  useDiffWithParent2Command,
+  useDiffWithParentCommand
+} from "@/commands/diff";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -38,16 +42,6 @@ export interface WorkingTreeProps {
 }
 type GroupHeaderType = "staged" | "unstaged" | "conflict";
 type RowType = WorkingTreeFileEntry | GroupHeaderType;
-
-const actionCommands = [
-  copyRelativePath,
-  restore,
-  diffUnstaged,
-  diffWithParent,
-  diffWithParent2,
-  stage,
-  unstage
-];
 
 const getItemKey = (item: RowType) =>
   typeof item === "string" ? item : `${item.path}:${item.kind.type}`;
@@ -199,6 +193,27 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     treeModelDispatch
   );
 
+  const copyRelativePath = useCopyRelativePathCommand();
+  const restore = useRestoreCommand();
+  const diffUnstaged = useDiffUnstagedCommand();
+  const diffWithParent = useDiffWithParentCommand();
+  const diffWithParent2 = useDiffWithParent2Command();
+  const stage = useStageCommand();
+  const unstage = useUnstageCommand();
+
+  const actionCommands = useMemo(
+    () => [
+      copyRelativePath,
+      restore,
+      diffUnstaged,
+      diffWithParent,
+      diffWithParent2,
+      stage,
+      unstage
+    ],
+    [copyRelativePath, restore, diffUnstaged, diffWithParent, diffWithParent2, stage, unstage]
+  );
+
   const commit = useCallback(() => dispatch(BEGIN_COMMIT()), [dispatch]);
   const fixup = useCallback(() => dispatch(FIXUP()), [dispatch]);
 
@@ -296,7 +311,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         }
       }
     },
-    [treeModelDispatch, dispatch, stat]
+    [treeModelDispatch, dispatch, diffUnstaged, diffWithParent, stat]
   );
 
   const handleRowContextMenu = useFileContextMenuT<TreeItemVM<RowType>>(
@@ -323,7 +338,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         );
       }
     },
-    [stat, rowHeight, headerRowHeight]
+    [stat, rowHeight, headerRowHeight, actionCommands]
   );
 
   return (

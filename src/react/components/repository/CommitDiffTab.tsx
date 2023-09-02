@@ -9,14 +9,14 @@ import { FlexCard } from "../FlexCard";
 import { VirtualListMethods } from "../VirtualList";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
-import { diffAgainst } from "@/commands/diff";
-import { DiffViewer } from "./DiffViewer";
 import { debounce } from "lodash";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { decodeBase64, decodeToString } from "@/strings";
 import PathFilter from "./PathFilter";
 import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
+import { useDiffAgainstCommand } from "@/commands/diff";
+import { DiffViewer } from "./DiffViewer";
 
 export interface CommitDiffTabProps {
   repoPath: string;
@@ -90,7 +90,8 @@ const CommitDiffContent: React.FC<{
   useEffect(() => {
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
-  const actionCommands = useMemo(() => [diffAgainst(commit1)], [commit1]);
+  const diffAgainst = useDiffAgainstCommand(commit1);
+  const actionCommands = useMemo(() => [diffAgainst], [diffAgainst]);
   const handleRowDoubleClick = useFileListRowEventHandler(actionCommands[0], commit2);
   const handleSelectFile = useMemo(
     () =>

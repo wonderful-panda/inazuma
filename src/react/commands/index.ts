@@ -1,25 +1,62 @@
 import { Dispatch } from "@/store";
-import { browseSourceTree } from "./browseSourceTree";
-import { copyFullHash, copyShortHash } from "./copyHash";
-import { diffUnstaged, diffWithLocal, diffWithParent, diffWithParent2 } from "./diff";
-import { showFileContent } from "./showFileContent";
-import { stage, unstage } from "./workingtree";
+import { useBrowseSourceTreeCommand } from "./browseSourceTree";
+import { useCopyFullHashCommand, useCopyShortHashCommand } from "./copyHash";
 import { ActionItem, CommitCommand, FileCommand } from "./types";
-import { copyRelativePath } from "./copyRelativePath";
-import { createBranch } from "./createBranch";
+import { useCreateBranchCommand } from "./createBranch";
+import { useMemo } from "react";
+import { useCopyRelativePathCommand } from "./copyRelativePath";
+import {
+  useDiffUnstagedCommand,
+  useDiffWithLocalCommand,
+  useDiffWithParent2Command,
+  useDiffWithParentCommand
+} from "./diff";
+import { useStageCommand, useUnstageCommand } from "./workingtree";
+import { useShowFileContentCommand } from "./showFileContent";
 
-export const commitCommands = [copyFullHash, copyShortHash, browseSourceTree, createBranch];
+export const useCommitCommands = () => {
+  const copyFullHash = useCopyFullHashCommand();
+  const copyShortHash = useCopyShortHashCommand();
+  const browseSourceTree = useBrowseSourceTreeCommand();
+  const createBranch = useCreateBranchCommand();
+  return useMemo(
+    () => [copyFullHash, copyShortHash, browseSourceTree, createBranch],
+    [copyFullHash, copyShortHash, browseSourceTree, createBranch]
+  );
+};
 
-export const fileCommands = [
-  copyRelativePath,
-  stage,
-  unstage,
-  diffWithParent,
-  diffWithParent2,
-  diffWithLocal,
-  diffUnstaged,
-  showFileContent
-];
+export const useFileCommands = () => {
+  const stage = useStageCommand();
+  const unstage = useUnstageCommand();
+  const copyRelativePath = useCopyRelativePathCommand();
+  const diffWithParent = useDiffWithParentCommand();
+  const diffWithParent2 = useDiffWithParent2Command();
+  const diffWithLocal = useDiffWithLocalCommand();
+  const diffUnstaged = useDiffUnstagedCommand();
+  const showFileContent = useShowFileContentCommand();
+  return useMemo(
+    () => [
+      copyRelativePath,
+      stage,
+      unstage,
+      diffWithParent,
+      diffWithParent2,
+      diffWithLocal,
+      diffUnstaged,
+      showFileContent
+    ],
+    [
+      copyRelativePath,
+      stage,
+      unstage,
+      diffWithParent,
+      diffWithParent2,
+      diffWithLocal,
+      diffUnstaged,
+      showFileContent
+    ]
+  );
+};
 
 export const executeCommitCommand = (
   command: CommitCommand,

@@ -12,7 +12,7 @@ import { useCommitContextMenu } from "@/hooks/useContextMenu";
 import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
-import { browseSourceTree } from "@/commands/browseSourceTree";
+import { useBrowseSourceTreeCommand } from "@/commands/browseSourceTree";
 import { CommitCommand } from "@/commands/types";
 import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
 import { SHOW_COMMIT_DIFF } from "@/store/thunk/showCommitDiff";
@@ -24,17 +24,21 @@ import { PinnedCommitContext, SetPinnedCommitContext } from "./CommitListRow";
 import { useStateWithRef } from "@/hooks/useStateWithRef";
 import { shortHash } from "@/util";
 import { CommitLogSideBar } from "./CommitLogSideBar";
-import { createBranch } from "@/commands/createBranch";
+import { useCreateBranchCommand } from "@/commands/createBranch";
 import { ConnectedRepositoryDialog } from "./ConnectedRepositoryDialog";
 
-const beginCommit: CommitCommand = {
-  type: "commit",
-  id: "Commit",
-  label: "Commit",
-  icon: "mdi:content-save",
-  hidden: (commit) => commit.id !== "--",
-  handler: (dispatch) => dispatch(BEGIN_COMMIT())
-};
+const useBeginCommitCommand = () =>
+  useMemo<CommitCommand>(
+    () => ({
+      type: "commit",
+      id: "Commit",
+      label: "Commit",
+      icon: "mdi:content-save",
+      hidden: (commit) => commit.id !== "--",
+      handler: (dispatch) => dispatch(BEGIN_COMMIT())
+    }),
+    []
+  );
 
 const compareWithParent = (commits: readonly Commit[]): CommitCommand => ({
   type: "commit",
@@ -93,16 +97,18 @@ const CommitLogInner: React.FC<{
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
 
-  const actionCommands = useMemo<CommitCommand[]>(
-    () => [
+  const createBranch = useCreateBranchCommand();
+  const browseSourceTree = useBrowseSourceTreeCommand();
+  const beginCommit = useBeginCommitCommand();
+  const actionCommands = useMemo<CommitCommand[]>(() => {
+    return [
       createBranch,
       browseSourceTree,
       beginCommit,
       compareWithParent(log.commits),
       compareWithPinnedCommit(pinnedCommit)
-    ],
-    [log.commits, pinnedCommit]
-  );
+    ];
+  }, [log.commits, pinnedCommit, createBranch, browseSourceTree, beginCommit]);
   const selectLog = useMemo(
     () =>
       debounce(async (index: number) => {
