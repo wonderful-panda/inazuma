@@ -2,6 +2,7 @@ import { SHOW_EXTERNAL_DIFF } from "@/store/thunk/showExternalDiff";
 import { shortHash } from "@/util";
 import { FileCommand } from "./types";
 import { useMemo } from "react";
+import { useDispatch } from "@/store";
 
 const $path = (_: Commit, file: FileEntry) => file.path;
 const $oldPathOrPath = (_: Commit, file: FileEntry) => file.oldPath || file.path;
@@ -31,8 +32,9 @@ type DiffCommandOption = {
   rightRevspec: (commit: Commit, file: FileEntry) => string;
 };
 
-const useDiffCommand = (opt: DiffCommandOption) =>
-  useMemo<FileCommand>(() => {
+const useDiffCommand = (opt: DiffCommandOption) => {
+  const dispatch = useDispatch();
+  return useMemo<FileCommand>(() => {
     return {
       type: "file",
       id: opt.id,
@@ -60,7 +62,7 @@ const useDiffCommand = (opt: DiffCommandOption) =>
         return false;
       },
       disabled: (_, file) => opt.disabledStatusCodes.indexOf(file.statusCode) >= 0,
-      handler: (dispatch, commit, file, localPath) => {
+      handler: (commit, file, localPath) => {
         const leftPath = opt.leftPath(commit, file, localPath);
         const rightPath = opt.rightPath(commit, file, localPath);
         const leftRevspec = opt.leftRevspec(commit, file);
@@ -73,7 +75,8 @@ const useDiffCommand = (opt: DiffCommandOption) =>
         );
       }
     };
-  }, [opt]);
+  }, [opt, dispatch]);
+};
 
 const diffWithParentOpt = {
   id: "DiffWithParent",

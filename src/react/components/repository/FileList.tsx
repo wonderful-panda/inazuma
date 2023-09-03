@@ -2,7 +2,6 @@ import { forwardRef, useCallback } from "react";
 import { FileListRow } from "./FileListRow";
 import { VirtualList, VirtualListEvents, VirtualListMethods } from "../VirtualList";
 import { FileCommand } from "@/commands/types";
-import { useDispatch } from "@/store";
 import { executeFileCommand } from "@/commands";
 import { useTheme } from "@mui/material";
 
@@ -15,15 +14,14 @@ export interface FileListProps extends VirtualListEvents<FileEntry> {
 const getFileListKey = (item: FileEntry) => `${item.path}:${item.statusCode}`;
 
 export const useFileListRowEventHandler = (command: FileCommand, commit: Commit | undefined) => {
-  const dispatch = useDispatch();
   return useCallback(
     (_e: unknown, _index: number, item: FileEntry) => {
       if (!commit) {
         return;
       }
-      executeFileCommand(command, dispatch, commit, item);
+      executeFileCommand(command, commit, item);
     },
-    [commit, command, dispatch]
+    [commit, command]
   );
 };
 

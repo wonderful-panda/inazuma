@@ -10,7 +10,6 @@ import { Icon } from "@iconify/react";
 import { CommitCommand } from "@/commands/types";
 import { RowActionButtons, RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
-import { useDispatch } from "@/store";
 
 export const PinnedCommitContext = createContext<Commit | undefined>(undefined);
 
@@ -62,16 +61,15 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
   const selected = selectedIndex === index;
   const pinned = pinnedCommit?.id === commit.id;
   const workingTree = commit.id === "--";
-  const dispatch = useDispatch();
   const actions = useMemo(() => {
-    const ret = commitCommandsToActions(dispatch, actionCommands, commit).filter(
+    const ret = commitCommandsToActions(actionCommands, commit).filter(
       (a) => a.icon
     ) as RowActionItem[];
     if (!workingTree) {
       ret.push(setCompareBaseAction(commit, pinned, setPinnedCommit));
     }
     return ret;
-  }, [dispatch, actionCommands, commit, pinned, setPinnedCommit, workingTree]);
+  }, [actionCommands, commit, pinned, setPinnedCommit, workingTree]);
   return (
     <div
       className={classNames(

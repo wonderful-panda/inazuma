@@ -1,9 +1,11 @@
 import { RESTORE, STAGE, UNSTAGE } from "@/store/thunk/workingtree";
 import { FileCommand } from "./types";
 import { useMemo } from "react";
+import { useDispatch } from "@/store";
 
-export const useStageCommand = () =>
-  useMemo<FileCommand>(
+export const useStageCommand = () => {
+  const dispatch = useDispatch();
+  return useMemo<FileCommand>(
     () => ({
       type: "file",
       id: "Stage",
@@ -12,15 +14,17 @@ export const useStageCommand = () =>
       hidden: (commit, file) => {
         return commit.id !== "--" || file.kind?.type === "staged";
       },
-      handler(dispatch, _, file) {
+      handler(_, file) {
         dispatch(STAGE(file.path));
       }
     }),
-    []
+    [dispatch]
   );
+};
 
-export const useUnstageCommand = () =>
-  useMemo<FileCommand>(
+export const useUnstageCommand = () => {
+  const dispatch = useDispatch();
+  return useMemo<FileCommand>(
     () => ({
       type: "file",
       id: "Unstage",
@@ -29,15 +33,17 @@ export const useUnstageCommand = () =>
       hidden: (commit, file) => {
         return commit.id !== "--" || file.kind?.type !== "staged";
       },
-      handler(dispatch, _, file) {
+      handler(_, file) {
         dispatch(UNSTAGE(file.path));
       }
     }),
-    []
+    [dispatch]
   );
+};
 
-export const useRestoreCommand = () =>
-  useMemo<FileCommand>(
+export const useRestoreCommand = () => {
+  const dispatch = useDispatch();
+  return useMemo<FileCommand>(
     () => ({
       type: "file",
       id: "Restore",
@@ -46,9 +52,10 @@ export const useRestoreCommand = () =>
       hidden: (commit, file) => {
         return commit.id !== "--" || file.kind?.type !== "unstaged" || file.statusCode === "?";
       },
-      handler(dispatch, _, file) {
+      handler(_, file) {
         dispatch(RESTORE(file.path));
       }
     }),
-    []
+    [dispatch]
   );
+};

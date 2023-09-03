@@ -5,7 +5,6 @@ import {
   useFileCommands
 } from "@/commands";
 import { ContextMenuContext } from "@/context/ContextMenuContext";
-import { useDispatch } from "@/store";
 import { useCallback, useContext } from "react";
 
 export const useCommitContextMenu = (): ((
@@ -13,7 +12,6 @@ export const useCommitContextMenu = (): ((
   index: number,
   item: Commit
 ) => void) => {
-  const dispatch = useDispatch();
   const { show } = useContext(ContextMenuContext);
   const commitCommands = useCommitCommands();
   const onCommitContextMenu = useCallback(
@@ -21,10 +19,10 @@ export const useCommitContextMenu = (): ((
       if (!commit) {
         return;
       }
-      const menus = commitCommandsToActions(dispatch, commitCommands, commit);
+      const menus = commitCommandsToActions(commitCommands, commit);
       show(event, menus);
     },
-    [show, dispatch, commitCommands]
+    [show, commitCommands]
   );
   return onCommitContextMenu;
 };
@@ -41,7 +39,6 @@ export const useFileContextMenuT = <T>(
   commit: Commit | undefined,
   getFile: (item: T) => FileEntry | undefined
 ): ((event: React.MouseEvent | MouseEvent, index: number, item: T) => void) => {
-  const dispatch = useDispatch();
   const { show } = useContext(ContextMenuContext);
   const fileCommands = useFileCommands();
   const onFileContextMenu = useCallback(
@@ -53,10 +50,10 @@ export const useFileContextMenuT = <T>(
       if (!file) {
         return;
       }
-      const menus = fileCommandsToActions(dispatch, fileCommands, commit, file);
+      const menus = fileCommandsToActions(fileCommands, commit, file);
       show(event, menus);
     },
-    [commit, show, dispatch, getFile, fileCommands]
+    [commit, show, getFile, fileCommands]
   );
   return onFileContextMenu;
 };
@@ -64,19 +61,18 @@ export const useFileContextMenuT = <T>(
 export const useFileCommitContextMenu = (
   localPath: string
 ): ((event: React.MouseEvent | MouseEvent, index: number, item: FileCommit) => void) => {
-  const dispatch = useDispatch();
   const { show } = useContext(ContextMenuContext);
   const commitCommands = useCommitCommands();
   const fileCommands = useFileCommands();
   const onFileContextMenu = useCallback(
     (event: React.MouseEvent | MouseEvent, _index: number, item: FileCommit) => {
       const menus = [
-        ...commitCommandsToActions(dispatch, commitCommands, item),
-        ...fileCommandsToActions(dispatch, fileCommands, item, item, localPath)
+        ...commitCommandsToActions(commitCommands, item),
+        ...fileCommandsToActions(fileCommands, item, item, localPath)
       ];
       show(event, menus);
     },
-    [show, localPath, dispatch, commitCommands, fileCommands]
+    [show, localPath, commitCommands, fileCommands]
   );
   return onFileContextMenu;
 };

@@ -307,11 +307,11 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
       } else {
         if (stat) {
           const command = item.data.kind.type === "unstaged" ? diffUnstaged : diffWithParent;
-          executeFileCommand(command, dispatch, stat, item.data);
+          executeFileCommand(command, stat, item.data);
         }
       }
     },
-    [treeModelDispatch, dispatch, diffUnstaged, diffWithParent, stat]
+    [treeModelDispatch, diffUnstaged, diffWithParent, stat]
   );
 
   const handleRowContextMenu = useFileContextMenuT<TreeItemVM<RowType>>(

@@ -6,7 +6,7 @@ export interface CommitCommand {
   id: string;
   label: string;
   icon?: IconName;
-  handler(dispatch: Dispatch, commit: Commit): void;
+  handler(commit: Commit): void;
   hidden?(commit: Commit): boolean;
   disabled?(commit: Commit): boolean;
 }
@@ -16,7 +16,7 @@ export interface FileCommand {
   id: string;
   label: string;
   icon?: IconName;
-  handler(dispatch: Dispatch, commit: Commit, file: FileEntry, localPath: string): void;
+  handler(commit: Commit, file: FileEntry, localPath: string): void;
   hidden?(commit: Commit, file: FileEntry): boolean;
   disabled?(commit: Commit, file: FileEntry): boolean;
 }

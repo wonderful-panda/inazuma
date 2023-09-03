@@ -27,51 +27,65 @@ import { CommitLogSideBar } from "./CommitLogSideBar";
 import { useCreateBranchCommand } from "@/commands/createBranch";
 import { ConnectedRepositoryDialog } from "./ConnectedRepositoryDialog";
 
-const useBeginCommitCommand = () =>
-  useMemo<CommitCommand>(
+const useBeginCommitCommand = () => {
+  const dispatch = useDispatch();
+  return useMemo<CommitCommand>(
     () => ({
       type: "commit",
       id: "Commit",
       label: "Commit",
       icon: "mdi:content-save",
       hidden: (commit) => commit.id !== "--",
-      handler: (dispatch) => dispatch(BEGIN_COMMIT())
+      handler: () => dispatch(BEGIN_COMMIT())
     }),
-    []
+    [dispatch]
   );
+};
 
-const compareWithParent = (commits: readonly Commit[]): CommitCommand => ({
-  type: "commit",
-  id: "CompareCommitWithParent",
-  label: "Compare with parent",
-  icon: "octicon:git-compare-16",
-  hidden: (commit) => commit.id === "--" || commit.parentIds.length === 0,
-  handler: (dispatch, commit) => {
-    const baseCommit = commits.find((c) => c.id === commit.parentIds[0]);
-    if (!baseCommit) {
-      dispatch(SHOW_WARNING("Parent commit is not found"));
-      return;
-    }
-    dispatch(SHOW_COMMIT_DIFF(baseCommit, commit));
-  }
-});
+const useCompareWithParentCommand = (commits: readonly Commit[]) => {
+  const dispatch = useDispatch();
+  return useMemo<CommitCommand>(
+    () => ({
+      type: "commit",
+      id: "CompareCommitWithParent",
+      label: "Compare with parent",
+      icon: "octicon:git-compare-16",
+      hidden: (commit) => commit.id === "--" || commit.parentIds.length === 0,
+      handler: (commit) => {
+        const baseCommit = commits.find((c) => c.id === commit.parentIds[0]);
+        if (!baseCommit) {
+          dispatch(SHOW_WARNING("Parent commit is not found"));
+          return;
+        }
+        dispatch(SHOW_COMMIT_DIFF(baseCommit, commit));
+      }
+    }),
+    [dispatch, commits]
+  );
+};
 
-const compareWithPinnedCommit = (pinnedCommit: Commit | undefined): CommitCommand => ({
-  type: "commit",
-  id: "CompareCommitWithPinnedCommit",
-  label: `Compare with Compare-BASE commit (${
-    pinnedCommit ? shortHash(pinnedCommit.id) : "NOT SELECTED"
-  })`,
-  icon: "mdi:map-marker-distance",
-  hidden: (commit) => commit.id === "--",
-  disabled: (commit) => !pinnedCommit || pinnedCommit.id === commit.id,
-  handler: (dispatch, commit) => {
-    if (!pinnedCommit) {
-      return;
-    }
-    dispatch(SHOW_COMMIT_DIFF(pinnedCommit, commit));
-  }
-});
+const useCompareWithPinnedCommitCommand = (pinnedCommit: Commit | undefined) => {
+  const dispatch = useDispatch();
+  return useMemo<CommitCommand>(
+    () => ({
+      type: "commit",
+      id: "CompareCommitWithPinnedCommit",
+      label: `Compare with Compare-BASE commit (${
+        pinnedCommit ? shortHash(pinnedCommit.id) : "NOT SELECTED"
+      })`,
+      icon: "mdi:map-marker-distance",
+      hidden: (commit) => commit.id === "--",
+      disabled: (commit) => !pinnedCommit || pinnedCommit.id === commit.id,
+      handler: (commit) => {
+        if (!pinnedCommit) {
+          return;
+        }
+        dispatch(SHOW_COMMIT_DIFF(pinnedCommit, commit));
+      }
+    }),
+    [dispatch, pinnedCommit]
+  );
+};
 
 const CommitLogInner: React.FC<{
   active: boolean;
@@ -100,15 +114,17 @@ const CommitLogInner: React.FC<{
   const createBranch = useCreateBranchCommand();
   const browseSourceTree = useBrowseSourceTreeCommand();
   const beginCommit = useBeginCommitCommand();
+  const compareWithParent = useCompareWithParentCommand(log.commits);
+  const compareWithPinnedCommit = useCompareWithPinnedCommitCommand(pinnedCommit);
   const actionCommands = useMemo<CommitCommand[]>(() => {
     return [
       createBranch,
       browseSourceTree,
       beginCommit,
-      compareWithParent(log.commits),
-      compareWithPinnedCommit(pinnedCommit)
+      compareWithParent,
+      compareWithPinnedCommit
     ];
-  }, [log.commits, pinnedCommit, createBranch, browseSourceTree, beginCommit]);
+  }, [createBranch, browseSourceTree, beginCommit, compareWithParent, compareWithPinnedCommit]);
   const selectLog = useMemo(
     () =>
       debounce(async (index: number) => {

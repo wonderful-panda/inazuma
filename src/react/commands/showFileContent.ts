@@ -1,9 +1,11 @@
 import { SHOW_FILE_CONTENT } from "@/store/thunk/showFileContent";
 import { FileCommand } from "./types";
 import { useMemo } from "react";
+import { useDispatch } from "@/store";
 
-export const useShowFileContentCommand = () =>
-  useMemo<FileCommand>(
+export const useShowFileContentCommand = () => {
+  const dispatch = useDispatch();
+  return useMemo<FileCommand>(
     () => ({
       type: "file",
       id: "showFileContent",
@@ -15,9 +17,10 @@ export const useShowFileContentCommand = () =>
         }
         return false;
       },
-      handler(dispatch, commit, file) {
+      handler(commit, file) {
         dispatch(SHOW_FILE_CONTENT(commit, file));
       }
     }),
-    []
+    [dispatch]
   );
+};
