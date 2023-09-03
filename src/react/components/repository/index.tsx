@@ -21,6 +21,7 @@ import BlameTabTooltip from "./BlameTabTooltip";
 import LsTreeTabTooltip from "./LsTreeTabTooltip";
 import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
 import { lazy } from "../hoc/lazy";
+import { useConfigValue } from "@/state/root";
 
 const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
 const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
@@ -47,8 +48,7 @@ const RepositoryPage: React.FC = () => {
   const refs = useSelector((state) => state.repository.log?.refs);
   const tab = useSelector((state) => state.repository.tab);
   const showInteractiveShell = useSelector((state) => state.misc.showInteractiveShell);
-  const monospace = useSelector((state) => state.persist.config.fontFamily.monospace || undefined);
-  const interactiveShell = useSelector((state) => state.persist.config.interactiveShell);
+  const config = useConfigValue();
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
       if (!repoPath || !tab) {
@@ -94,7 +94,7 @@ const RepositoryPage: React.FC = () => {
     ],
     [callbacks]
   );
-  const interactiveShellConfigured = !!interactiveShell;
+  const interactiveShellConfigured = !!config.interactiveShell;
   const titleBarActions: IconActionItem[] = useMemo(
     () => [
       {
@@ -130,7 +130,7 @@ const RepositoryPage: React.FC = () => {
         persistKey="repository"
         initialDirection="horiz"
         initialRatio={0.7}
-        showSecondPanel={showInteractiveShell && !!interactiveShell}
+        showSecondPanel={showInteractiveShell && !!config.interactiveShell}
         allowDirectionChange
         firstPanelMinSize="20%"
         secondPanelMinSize="20%"
@@ -146,11 +146,11 @@ const RepositoryPage: React.FC = () => {
         }
         second={
           <InteractiveShell
-            open={showInteractiveShell && !!interactiveShell}
-            commandLine={interactiveShell!}
+            open={showInteractiveShell && !!config.interactiveShell}
+            commandLine={config.interactiveShell!}
             repoPath={repoPath}
             hide={callbacks.hideInteractiveShell}
-            fontFamily={monospace}
+            fontFamily={config.fontFamily.monospace}
           />
         }
       />

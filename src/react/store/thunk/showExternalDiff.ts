@@ -3,14 +3,17 @@ import { Dispatch, RootState } from "..";
 import { SHOW_WARNING } from "../misc";
 import { withHandleError } from "./withHandleError";
 
-const showExternalDiff = (left: FileSpec, right: FileSpec) => {
+const showExternalDiff = (
+  left: FileSpec,
+  right: FileSpec,
+  externalDiffTool: string | undefined
+) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const repoPath = state.repository.path;
     if (!repoPath) {
       return;
     }
-    const externalDiffTool = state.persist.config.externalDiffTool;
     if (!externalDiffTool) {
       dispatch(SHOW_WARNING("External diff tool is not configured"));
       return;

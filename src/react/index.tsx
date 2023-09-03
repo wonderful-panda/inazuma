@@ -9,7 +9,6 @@ import { PersistStateProvider } from "./context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
 import store, { Dispatch, useSelector, watch } from "./store";
 import { Provider, useDispatch } from "react-redux";
-import { RESET_RECENT_OPENED_REPOSITORIES, UPDATE_CONFIG } from "./store/persist";
 import { CommandGroupProvider } from "./context/CommandGroupContext";
 import { OPEN_REPOSITORY, RELOAD_REPOSITORY } from "./store/thunk/repository";
 import { Loading } from "./components/Loading";
@@ -19,6 +18,13 @@ import { lazy } from "./components/hoc/lazy";
 import { invokeTauriCommand } from "./invokeTauriCommand";
 import { debounce } from "lodash";
 import { listen } from "@tauri-apps/api/event";
+import {
+  useAddRecentOpenedRepository,
+  useConfig,
+  registerConfigWatcher,
+  registerRecentOpenedRepositoriesWatcher,
+  useSetRecentOpenedRepositories
+} from "./state/root";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
@@ -107,31 +113,22 @@ const displayStateStorage = {
   }
 };
 
-const init = async (dispatch: Dispatch) => {
+const init = async (
+  dispatch: Dispatch,
+  setConfig: (value: Config) => void,
+  setRecentOpened: (value: string[]) => void,
+  addRecentOpened: (repoPath: string) => void
+) => {
   document.addEventListener("contextmenu", (e) => e.preventDefault());
   const [config, environment] = await invokeTauriCommand("load_persist_data");
   displayStateStorage.reset(environment.state || {});
-  dispatch(UPDATE_CONFIG(config));
-  updateFont(config.fontFamily);
-  updateFontSize(config.fontSize);
-  dispatch(RESET_RECENT_OPENED_REPOSITORIES(environment.recentOpened || []));
+  setConfig(config);
+  setRecentOpened(environment.recentOpened || []);
   const unlisten = await listen<null>("request_reload", () => dispatch(RELOAD_REPOSITORY()));
   window.addEventListener("unload", unlisten);
   const hash = window.location.hash ? decodeURI(window.location.hash.slice(1)) : undefined;
   window.location.hash = "#home";
   const initialRepository = await getInitialRepository(hash);
-  watch(
-    (state) => state.persist.config,
-    (newConfig) => {
-      invokeTauriCommand("save_config", { newConfig });
-      updateFont(newConfig.fontFamily);
-      updateFontSize(newConfig.fontSize);
-    }
-  );
-  watch(
-    (state) => state.persist.env.recentOpenedRepositories,
-    (newList) => invokeTauriCommand("store_recent_opened", { newList })
-  );
   watch(
     (state) => state.repository.path,
     (newValue) => {
@@ -149,24 +146,38 @@ const init = async (dispatch: Dispatch) => {
     }
   );
   if (initialRepository) {
-    await dispatch(OPEN_REPOSITORY(initialRepository));
+    await dispatch(OPEN_REPOSITORY(initialRepository, addRecentOpened));
   }
 };
 
 const App = () => {
   const dispatch = useDispatch();
-  const fontSize = useSelector((state) => state.persist.config.fontSize);
+  const [config, setConfig] = useConfig();
+  const setRecentOpened = useSetRecentOpenedRepositories();
+  const addRecentOpened = useAddRecentOpenedRepository();
   const repoPath = useSelector((state) => state.repository.path);
-  const theme = useMemo(() => createMuiTheme(fontSize), [fontSize]);
+  const theme = useMemo(() => createMuiTheme(config.fontSize), [config.fontSize]);
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
-    init(dispatch)
+    const unwatch1 = registerConfigWatcher((value) => {
+      invokeTauriCommand("save_config", { newConfig: value });
+      updateFont(value.fontFamily);
+      updateFontSize(value.fontSize);
+    });
+    const unwatch2 = registerRecentOpenedRepositoriesWatcher((value) =>
+      invokeTauriCommand("store_recent_opened", { newList: value })
+    );
+    init(dispatch, setConfig, setRecentOpened, addRecentOpened)
       .catch((error) => {
         dispatch(REPORT_ERROR({ error }));
       })
       .finally(() => {
         setInitializing(false);
       });
+    return () => {
+      unwatch1();
+      unwatch2();
+    };
   }, [dispatch]);
   const content = useMemo(() => {
     if (initializing) {

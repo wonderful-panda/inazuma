@@ -6,12 +6,12 @@ import { PreferenceDialog } from "./PreferenceDialog";
 import { AboutDialog } from "./AboutDialog";
 import { Loading } from "./Loading";
 import { useDispatch, useSelector } from "@/store";
-import { UPDATE_CONFIG } from "@/store/persist";
 import { Alert as RawAlert } from "./Alert";
 import { HIDE_ALERT } from "@/store/misc";
 import { CommandGroup, Cmd } from "./CommandGroup";
 import { IconActionItem } from "@/commands/types";
 import { ConnectedConfirmDialog } from "./ConnectedConfirmDialog";
+import { useConfig } from "@/state/root";
 
 export interface MainWindowProps extends ChildrenProp {
   title: string;
@@ -67,7 +67,6 @@ const Alert: React.FC = () => {
 };
 
 export const MainWindow: React.FC<MainWindowProps> = (props) => {
-  const dispatch = useDispatch();
   const loading = useSelector((state) => state.misc.loading > 0);
   const [drawerOpened, setDrawerOpened] = useState(false);
   const openDrawer = useCallback(() => {
@@ -76,13 +75,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
   const closeDrawer = useCallback(() => {
     setDrawerOpened(false);
   }, []);
-  const config = useSelector((state) => state.persist.config);
-  const onConfigChange = useCallback(
-    (newConfig: Config) => {
-      dispatch(UPDATE_CONFIG(newConfig));
-    },
-    [dispatch]
-  );
+  const [config, setConfig] = useConfig();
   const preferenceDialogRef = useRef({} as ComponentRef<typeof PreferenceDialog>);
   const aboutDialogRef = useRef({} as ComponentRef<typeof AboutDialog>);
   const callbacks = useMemo(
@@ -152,7 +145,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
       <div className="absolute left-0 right-0 top-9 bottom-0 flex box-border p-1">
         {props.children}
       </div>
-      <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={onConfigChange} />
+      <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={setConfig} />
       <AboutDialog ref={aboutDialogRef} />
       <Loading open={loading} />
       <ConnectedConfirmDialog />

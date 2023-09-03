@@ -3,6 +3,7 @@ import { shortHash } from "@/util";
 import { FileCommand } from "./types";
 import { useMemo } from "react";
 import { useDispatch } from "@/store";
+import { useConfigValue } from "@/state/root";
 
 const $path = (_: Commit, file: FileEntry) => file.path;
 const $oldPathOrPath = (_: Commit, file: FileEntry) => file.oldPath || file.path;
@@ -34,6 +35,7 @@ type DiffCommandOption = {
 
 const useDiffCommand = (opt: DiffCommandOption) => {
   const dispatch = useDispatch();
+  const config = useConfigValue();
   return useMemo<FileCommand>(() => {
     return {
       type: "file",
@@ -70,12 +72,13 @@ const useDiffCommand = (opt: DiffCommandOption) => {
         dispatch(
           SHOW_EXTERNAL_DIFF(
             { path: leftPath, revspec: leftRevspec },
-            { path: rightPath, revspec: rightRevspec }
+            { path: rightPath, revspec: rightRevspec },
+            config.externalDiffTool
           )
         );
       }
     };
-  }, [opt, dispatch]);
+  }, [opt, dispatch, config.externalDiffTool]);
 };
 
 const diffWithParentOpt = {

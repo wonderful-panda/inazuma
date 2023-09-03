@@ -5,14 +5,12 @@ import {
   useSelector as useSelector_
 } from "react-redux";
 import repositoryReducer from "./repository";
-import persistReducer from "./persist";
 import miscReducer from "./misc";
 import confirmDialogReducer from "./confirmDialog";
 
 const store = configureStore({
   reducer: {
     repository: repositoryReducer,
-    persist: persistReducer,
     misc: miscReducer,
     confirmDialog: confirmDialogReducer
   }

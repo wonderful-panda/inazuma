@@ -2,7 +2,6 @@ import { Grapher, GraphFragment } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { toSlashedPath } from "@/util";
 import { Dispatch, RootState } from "..";
-import { ADD_RECENT_OPENED_REPOSITORY } from "../persist";
 import { _CLOSE_REPOSITORY, _SET_LOG } from "../repository";
 import { withHandleError } from "./withHandleError";
 import { withLoading } from "./withLoading";
@@ -24,7 +23,7 @@ const fetchHistory = async (repoPath: string) => {
   return { commits, refs };
 };
 
-const openRepository = (realPath: string) => {
+const openRepository = (realPath: string, addRecentOpened: (repoPath: string) => void) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     const currentPath = getState().repository.path;
     const path = toSlashedPath(realPath);
@@ -38,7 +37,7 @@ const openRepository = (realPath: string) => {
       await invokeTauriCommand("close_repository", { repoPath: path });
     }
     await invokeTauriCommand("open_repository", { repoPath: path });
-    dispatch(ADD_RECENT_OPENED_REPOSITORY(path));
+    addRecentOpened(path);
     dispatch(_SET_LOG({ path, commits, refs: makeRefs(refs), graph, keepTabs: false }));
   };
 };
