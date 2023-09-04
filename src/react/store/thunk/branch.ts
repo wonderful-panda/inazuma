@@ -4,7 +4,6 @@ import { RELOAD_REPOSITORY } from "./repository";
 import { withHandleError } from "./withHandleError";
 import { withLoading } from "./withLoading";
 
-import { SHOW_CONFIRM_DIALOG } from "./confirmDialog";
 import { HIDE_LOADING, SHOW_LOADING, SHOW_WARNING } from "../misc";
 import { OPEN_DIALOG } from "./dialog";
 
@@ -71,19 +70,20 @@ const switchBranch = (options: SwitchOptions) => {
   };
 };
 
-const switchBranchWithConfirm = (options: SwitchOptions) => {
+const switchBranchWithConfirm = (
+  options: SwitchOptions,
+  showConfirmDialog: (payload: { title: string; content: string }) => Promise<boolean>
+) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const repoPath = state.repository.path;
     if (!repoPath) {
       return false;
     }
-    const ret = await dispatch(
-      SHOW_CONFIRM_DIALOG({
-        title: "Switch branch",
-        content: `Switch to branch [${options.branchName}]`
-      })
-    );
+    const ret = await showConfirmDialog({
+      title: "Switch branch",
+      content: `Switch to branch [${options.branchName}]`
+    });
     if (!ret) {
       return;
     }

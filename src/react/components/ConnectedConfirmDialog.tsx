@@ -1,17 +1,9 @@
-import { useDispatch, useSelector } from "@/store";
-import { CLOSE_CONFIRM_DIALOG } from "@/store/thunk/confirmDialog";
-import { useCallback } from "react";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { useCloseConfirmDialog, useConfirmDialogValue } from "@/state/root";
 
 export const ConnectedConfirmDialog: React.FC = () => {
-  const dispatch = useDispatch();
-  const confirmDialog = useSelector((state) => state.confirmDialog);
-  const handleClose = useCallback(
-    (accepted: boolean) => {
-      dispatch(CLOSE_CONFIRM_DIALOG({ accepted }));
-    },
-    [dispatch]
-  );
+  const confirmDialog = useConfirmDialogValue();
+  const handleClose = useCloseConfirmDialog();
 
   return (
     <ConfirmDialog

@@ -6,13 +6,11 @@ import {
 } from "react-redux";
 import repositoryReducer from "./repository";
 import miscReducer from "./misc";
-import confirmDialogReducer from "./confirmDialog";
 
 const store = configureStore({
   reducer: {
     repository: repositoryReducer,
-    misc: miscReducer,
-    confirmDialog: confirmDialogReducer
+    misc: miscReducer
   }
 });
 

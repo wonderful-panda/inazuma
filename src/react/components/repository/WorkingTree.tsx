@@ -35,6 +35,7 @@ import {
   useDiffWithParent2Command,
   useDiffWithParentCommand
 } from "@/commands/diff";
+import { useShowConfirmDialog } from "@/state/root";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -214,8 +215,9 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     [copyRelativePath, restore, diffUnstaged, diffWithParent, diffWithParent2, stage, unstage]
   );
 
+  const showConfirmDialog = useShowConfirmDialog();
   const commit = useCallback(() => dispatch(BEGIN_COMMIT()), [dispatch]);
-  const fixup = useCallback(() => dispatch(FIXUP()), [dispatch]);
+  const fixup = useCallback(() => dispatch(FIXUP(showConfirmDialog)), [dispatch]);
 
   useEffect(() => {
     treeRef.current?.scrollToItem(treeModelState.selectedIndex);

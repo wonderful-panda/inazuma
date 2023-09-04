@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { SWITCH_BRANCH_WITH_CONFIRM } from "@/store/thunk/branch";
 import { useDispatch } from "@/store";
 import { OPEN_DIALOG } from "@/store/thunk/dialog";
+import { useShowConfirmDialog } from "@/state/root";
 
 const HeaderItem: React.FC<{ text: string; expanded: boolean; onClick: () => void }> = ({
   text,
@@ -111,13 +112,14 @@ export const CommitLogSideBar: React.FC<{
     },
     [onItemClick, refMap]
   );
+  const showConfirmDialog = useShowConfirmDialog();
   const switchAction = useCallback(
     async (e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
       const fullname = e.currentTarget.dataset.fullname as string;
       const r = refMap[fullname];
       if (r && r.type === "branch") {
-        await dispatch(SWITCH_BRANCH_WITH_CONFIRM({ branchName: r.name }));
+        await dispatch(SWITCH_BRANCH_WITH_CONFIRM({ branchName: r.name }, showConfirmDialog));
       }
     },
     [dispatch, refMap]
