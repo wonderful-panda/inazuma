@@ -5,13 +5,11 @@ import { Drawer, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/m
 import { PreferenceDialog } from "./PreferenceDialog";
 import { AboutDialog } from "./AboutDialog";
 import { Loading } from "./Loading";
-import { useDispatch, useSelector } from "@/store";
 import { Alert as RawAlert } from "./Alert";
-import { HIDE_ALERT } from "@/store/misc";
 import { CommandGroup, Cmd } from "./CommandGroup";
 import { IconActionItem } from "@/commands/types";
 import { ConnectedConfirmDialog } from "./ConnectedConfirmDialog";
-import { useConfig } from "@/state/root";
+import { useAlertValue, useConfig, useHideAlert, useIsLoadingValue } from "@/state/root";
 
 export interface MainWindowProps extends ChildrenProp {
   title: string;
@@ -46,12 +44,11 @@ const ApplicationDrawerInner: React.FC<ApplicationDrawerProps> = ({ opened, clos
 const ApplicationDrawer = memo(ApplicationDrawerInner);
 
 const Alert: React.FC = () => {
-  const dispatch = useDispatch();
-  const alert = useSelector((state) => state.misc.alert);
+  const hideAlert = useHideAlert();
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<AlertType>("info");
   const [message, setMessage] = useState("");
-  const handleClose = useCallback(() => dispatch(HIDE_ALERT()), [dispatch]);
+  const alert = useAlertValue();
   useEffect(() => {
     setOpen(false);
     if (!alert) {
@@ -63,11 +60,11 @@ const Alert: React.FC = () => {
       setOpen(true);
     }, 200);
   }, [alert]);
-  return <RawAlert open={open} type={type} message={message} onClose={handleClose} />;
+  return <RawAlert open={open} type={type} message={message} onClose={hideAlert} />;
 };
 
 export const MainWindow: React.FC<MainWindowProps> = (props) => {
-  const loading = useSelector((state) => state.misc.loading > 0);
+  const isLoading = useIsLoadingValue();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const openDrawer = useCallback(() => {
     setDrawerOpened(true);
@@ -106,12 +103,12 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
   );
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (loading) {
+      if (isLoading) {
         e.preventDefault();
         return false;
       }
     },
-    [loading]
+    [isLoading]
   );
   return (
     <div
@@ -147,7 +144,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
       </div>
       <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={setConfig} />
       <AboutDialog ref={aboutDialogRef} />
-      <Loading open={loading} />
+      <Loading open={isLoading} />
       <ConnectedConfirmDialog />
       <Alert />
     </div>

@@ -4,21 +4,13 @@ import { CommitDetail } from "./CommitDetail";
 import { CommitList } from "./CommitList";
 import { WorkingTree } from "./WorkingTree";
 import { debounce } from "lodash";
-import { useDispatch, useSelector } from "@/store";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { CommitLogItems } from "@/store/repository";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { useCommitContextMenu } from "@/hooks/useContextMenu";
 import { VirtualListMethods } from "../VirtualList";
 import { CommandGroup, Cmd } from "../CommandGroup";
-import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { useBrowseSourceTreeCommand } from "@/commands/browseSourceTree";
 import { CommitCommand } from "@/commands/types";
-import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
-import { SHOW_COMMIT_DIFF } from "@/store/thunk/showCommitDiff";
-import { SHOW_WARNING } from "@/store/misc";
-import { RELOAD_WORKING_TREE } from "@/store/thunk/reloadWorkingTree";
-import { FETCH_COMMIT_DETAIL } from "@/store/thunk/fetchCommitDetail";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { PinnedCommitContext, SetPinnedCommitContext } from "./CommitListRow";
 import { useStateWithRef } from "@/hooks/useStateWithRef";
@@ -26,9 +18,21 @@ import { shortHash } from "@/util";
 import { CommitLogSideBar } from "./CommitLogSideBar";
 import { useCreateBranchCommand } from "@/commands/createBranch";
 import { ConnectedRepositoryDialog } from "./ConnectedRepositoryDialog";
+import { useBeginCommit, useReloadWorkingTree } from "@/state/repository/workingtree";
+import { useShowCommitDiff, useShowLsTree } from "@/state/repository/tabs";
+import { useFetchCommitDetail, useRepoPathValue } from "@/state/repository";
+import { useAtomValue } from "jotai";
+import {
+  CommitLogItems,
+  commitDetailAtom,
+  logAtom,
+  workingTreeAtom
+} from "@/state/repository/premitive";
+import { useShowWarning } from "@/state/root";
+import { useWithRef } from "@/hooks/useWithRef";
 
 const useBeginCommitCommand = () => {
-  const dispatch = useDispatch();
+  const beginCommit = useBeginCommit();
   return useMemo<CommitCommand>(
     () => ({
       type: "commit",
@@ -36,14 +40,15 @@ const useBeginCommitCommand = () => {
       label: "Commit",
       icon: "mdi:content-save",
       hidden: (commit) => commit.id !== "--",
-      handler: () => dispatch(BEGIN_COMMIT())
+      handler: beginCommit
     }),
-    [dispatch]
+    [beginCommit]
   );
 };
 
 const useCompareWithParentCommand = (commits: readonly Commit[]) => {
-  const dispatch = useDispatch();
+  const [, showCommitDiff] = useWithRef(useShowCommitDiff());
+  const showWarning = useShowWarning();
   return useMemo<CommitCommand>(
     () => ({
       type: "commit",
@@ -54,18 +59,19 @@ const useCompareWithParentCommand = (commits: readonly Commit[]) => {
       handler: (commit) => {
         const baseCommit = commits.find((c) => c.id === commit.parentIds[0]);
         if (!baseCommit) {
-          dispatch(SHOW_WARNING("Parent commit is not found"));
+          showWarning("Parent commit is not found");
           return;
         }
-        dispatch(SHOW_COMMIT_DIFF(baseCommit, commit));
+        showCommitDiff.current(baseCommit, commit);
       }
     }),
-    [dispatch, commits]
+    [showWarning, commits, showCommitDiff]
   );
 };
 
 const useCompareWithPinnedCommitCommand = (pinnedCommit: Commit | undefined) => {
-  const dispatch = useDispatch();
+  const [, showCommitDiff] = useWithRef(useShowCommitDiff());
+  const showWarning = useShowWarning();
   return useMemo<CommitCommand>(
     () => ({
       type: "commit",
@@ -78,12 +84,13 @@ const useCompareWithPinnedCommitCommand = (pinnedCommit: Commit | undefined) => 
       disabled: (commit) => !pinnedCommit || pinnedCommit.id === commit.id,
       handler: (commit) => {
         if (!pinnedCommit) {
+          showWarning("No commit is pinned");
           return;
         }
-        dispatch(SHOW_COMMIT_DIFF(pinnedCommit, commit));
+        showCommitDiff.current(pinnedCommit, commit);
       }
     }),
-    [dispatch, pinnedCommit]
+    [pinnedCommit, showCommitDiff, showWarning]
   );
 };
 
@@ -92,9 +99,8 @@ const CommitLogInner: React.FC<{
   repoPath: string;
   log: CommitLogItems;
 }> = ({ active, repoPath, log }) => {
-  const dispatch = useDispatch();
-  const workingTree = useSelector((state) => state.repository.workingTree);
-  const commitDetail = useSelector((state) => state.repository.commitDetail);
+  const workingTree = useAtomValue(workingTreeAtom);
+  const commitDetail = useAtomValue(commitDetailAtom);
   // selected row index, updated immediately
   const [selectedIndex, setSelectedIndex, selectedIndexRef] = useStateWithRef(0);
   // selected item id, updated lazily (after data-fetching completed)
@@ -125,18 +131,20 @@ const CommitLogInner: React.FC<{
       compareWithPinnedCommit
     ];
   }, [createBranch, browseSourceTree, beginCommit, compareWithParent, compareWithPinnedCommit]);
+  const reloadWorkingTree = useReloadWorkingTree();
+  const fetchCommitDetail = useFetchCommitDetail();
   const selectLog = useMemo(
     () =>
       debounce(async (index: number) => {
         if (repoPath && 0 <= index) {
           const sha = log.commits[index].id;
-          await dispatch(sha === "--" ? RELOAD_WORKING_TREE() : FETCH_COMMIT_DETAIL(sha));
+          await (sha === "--" ? reloadWorkingTree() : fetchCommitDetail(sha));
           if (sha === log.commits[selectedIndexRef.current]?.id) {
             setLoadedId(sha);
           }
         }
       }, 200),
-    [repoPath, log.commits, dispatch, selectedIndexRef]
+    [repoPath, log.commits, selectedIndexRef, reloadWorkingTree, fetchCommitDetail]
   );
   const currentRefs = useMemo(() => {
     if (!loadedId) {
@@ -165,9 +173,10 @@ const CommitLogInner: React.FC<{
     },
     [currentRefs, workingTree, commitDetail, loadedId]
   );
+  const showLsTree = useShowLsTree();
   const showLsTreeTab = useCallback(
-    () => loadedId !== "--" && commitDetail && dispatch(SHOW_LSTREE(commitDetail)),
-    [loadedId, commitDetail, dispatch]
+    () => loadedId !== "--" && commitDetail && showLsTree(commitDetail),
+    [loadedId, commitDetail, showLsTree]
   );
   const handleContextMenu = useCommitContextMenu();
 
@@ -224,8 +233,8 @@ const CommitLogInner: React.FC<{
 };
 
 const CommitLog: React.FC<{ active: boolean }> = ({ active }) => {
-  const repoPath = useSelector((state) => state.repository.path);
-  const log = useSelector((state) => state.repository.log);
+  const repoPath = useRepoPathValue();
+  const log = useAtomValue(logAtom);
   if (!repoPath || !log) {
     return <></>;
   }

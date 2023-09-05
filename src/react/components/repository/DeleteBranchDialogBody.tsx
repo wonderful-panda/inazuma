@@ -1,14 +1,14 @@
-import { useDispatch } from "@/store";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { useMemo, useRef } from "react";
-import { DELETE_BRANCH } from "@/store/thunk/branch";
 import { DialogBody } from "../DialogBody";
 import { DialogActionHandler } from "../Dialog";
-import { SHOW_WARNING } from "@/store/misc";
+import { useDeleteBranch } from "@/state/repository/branch";
+import { useShowWarning } from "@/state/root";
 
 export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branchName }) => {
-  const dispatch = useDispatch();
+  const deleteBranch = useDeleteBranch();
   const forceRef = useRef<HTMLInputElement>(null);
+  const showWarning = useShowWarning();
 
   const actions = useMemo<DialogActionHandler[]>(
     () => [
@@ -18,19 +18,17 @@ export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branc
         default: true,
         onClick: async (close: () => void) => {
           if (!branchName) {
-            dispatch(SHOW_WARNING("Branch name is not specified"));
+            showWarning("Branch name is not specified");
             return;
           }
-          const ret = await dispatch(
-            DELETE_BRANCH({ branchName, force: forceRef.current?.checked })
-          );
+          const ret = await deleteBranch({ branchName, force: forceRef.current?.checked });
           if (ret && ret !== "failed") {
             close();
           }
         }
       }
     ],
-    [branchName, dispatch]
+    [showWarning, branchName, deleteBranch]
   );
   return (
     <DialogBody

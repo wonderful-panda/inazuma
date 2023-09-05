@@ -1,14 +1,12 @@
-import { useDispatch } from "@/store";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { DialogActionHandler } from "../Dialog";
-import { CREATE_BRANCH } from "@/store/thunk/branch";
 import { DialogBody } from "../DialogBody";
+import { useCreateBranch } from "@/state/repository/branch";
 
 export const NewBranchDialogBody: React.FC<{
   commitId: string;
 }> = ({ commitId }) => {
-  const dispatch = useDispatch();
   const branchNameRef = useRef<HTMLInputElement>(null);
   const switchRef = useRef<HTMLInputElement>(null);
   const forceRef = useRef<HTMLInputElement>(null);
@@ -16,6 +14,8 @@ export const NewBranchDialogBody: React.FC<{
   useEffect(() => {
     setTimeout(() => branchNameRef.current?.focus(), 0);
   }, []);
+
+  const createBranch = useCreateBranch();
 
   const invokeNewBranch = useCallback(
     async (close: () => void) => {
@@ -25,14 +25,12 @@ export const NewBranchDialogBody: React.FC<{
       const branchName = branchNameRef.current.value;
       const switchBranch = switchRef.current?.checked || false;
       const force = forceRef.current?.checked || false;
-      const ret = await dispatch(
-        CREATE_BRANCH({ branchName, switch: switchBranch, commitId, force })
-      );
+      const ret = await createBranch({ branchName, switch: switchBranch, commitId, force });
       if (ret !== "failed" && ret) {
         close();
       }
     },
-    [dispatch, commitId]
+    [createBranch, commitId]
   );
   const actions = useMemo<DialogActionHandler[]>(
     () => [

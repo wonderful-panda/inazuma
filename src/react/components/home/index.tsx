@@ -2,26 +2,22 @@ import { Divider, List, Typography } from "@mui/material";
 import { RepositoryListItem, RepositoryListItemProps } from "./RepositoryListItem";
 import { useCallback, useMemo } from "react";
 import { MainWindow } from "@/components/MainWindow";
-import { useDispatch } from "@/store";
-import { OPEN_REPOSITORY } from "@/store/thunk/repository";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { Command } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import {
-  useAddRecentOpenedRepository,
   useRemoveRecentOpenedRepository,
   useVisibleRecentOpenedRepositoriesValue
 } from "@/state/root";
+import { useOpenRepository } from "@/state/repository";
 
 const Home = () => {
-  const dispatch = useDispatch();
-  const addRecentOpenedRepository = useAddRecentOpenedRepository();
+  const openRepository = useOpenRepository();
   const recentOpenedRepositories = useVisibleRecentOpenedRepositoriesValue();
   const removeRecentOpenedRepository = useRemoveRecentOpenedRepository();
   const handleOpen = useCallback(
-    (repoPath: string | undefined) =>
-      repoPath && dispatch(OPEN_REPOSITORY(repoPath, addRecentOpenedRepository)),
-    [dispatch, addRecentOpenedRepository]
+    (repoPath: string | undefined) => repoPath && openRepository(repoPath),
+    [openRepository]
   );
   const removeItemAction = useMemo<RepositoryListItemProps["secondaryAction"]>(
     () => ({

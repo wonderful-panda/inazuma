@@ -2,10 +2,9 @@ import { Collapse, IconButton, List, ListItem, ListItemButton, ListItemText } fr
 import React, { useCallback, useMemo, useState } from "react";
 import { Icon } from "../Icon";
 import classNames from "classnames";
-import { SWITCH_BRANCH_WITH_CONFIRM } from "@/store/thunk/branch";
-import { useDispatch } from "@/store";
-import { OPEN_DIALOG } from "@/store/thunk/dialog";
-import { useShowConfirmDialog } from "@/state/root";
+import { useSwitchBranch } from "@/state/repository/branch";
+import { useSetAtom } from "jotai";
+import { openDialogAtom } from "@/state/repository/dialog";
 
 const HeaderItem: React.FC<{ text: string; expanded: boolean; onClick: () => void }> = ({
   text,
@@ -96,7 +95,8 @@ export const CommitLogSideBar: React.FC<{
   refs: Refs;
   onItemClick: (r: Ref) => void;
 }> = ({ refs, onItemClick }) => {
-  const dispatch = useDispatch();
+  const switchBranch = useSwitchBranch();
+  const openDialog = useSetAtom(openDialogAtom);
   const refMap = useMemo(() => {
     const ret = {} as Record<string, Ref>;
     refs.branches.forEach((b) => (ret[b.fullname] = b));
@@ -112,17 +112,16 @@ export const CommitLogSideBar: React.FC<{
     },
     [onItemClick, refMap]
   );
-  const showConfirmDialog = useShowConfirmDialog();
   const switchAction = useCallback(
     async (e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
       const fullname = e.currentTarget.dataset.fullname as string;
       const r = refMap[fullname];
       if (r && r.type === "branch") {
-        await dispatch(SWITCH_BRANCH_WITH_CONFIRM({ branchName: r.name }, showConfirmDialog));
+        await switchBranch({ branchName: r.name });
       }
     },
-    [dispatch, refMap, showConfirmDialog]
+    [refMap, switchBranch]
   );
 
   const deleteAction = useCallback(
@@ -131,10 +130,10 @@ export const CommitLogSideBar: React.FC<{
       const fullname = e.currentTarget.dataset.fullname as string;
       const r = refMap[fullname];
       if (r && r.type === "branch") {
-        await dispatch(OPEN_DIALOG({ type: "DeleteBranch", branchName: r.name }));
+        await openDialog({ type: "DeleteBranch", branchName: r.name });
       }
     },
-    [dispatch, refMap]
+    [refMap, openDialog]
   );
 
   return (

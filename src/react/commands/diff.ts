@@ -1,9 +1,7 @@
-import { SHOW_EXTERNAL_DIFF } from "@/store/thunk/showExternalDiff";
 import { shortHash } from "@/util";
 import { FileCommand } from "./types";
 import { useMemo } from "react";
-import { useDispatch } from "@/store";
-import { useConfigValue } from "@/state/root";
+import { useShowExternalDiff } from "@/state/repository";
 
 const $path = (_: Commit, file: FileEntry) => file.path;
 const $oldPathOrPath = (_: Commit, file: FileEntry) => file.oldPath || file.path;
@@ -34,8 +32,7 @@ type DiffCommandOption = {
 };
 
 const useDiffCommand = (opt: DiffCommandOption) => {
-  const dispatch = useDispatch();
-  const config = useConfigValue();
+  const showExternalDiff = useShowExternalDiff();
   return useMemo<FileCommand>(() => {
     return {
       type: "file",
@@ -69,16 +66,13 @@ const useDiffCommand = (opt: DiffCommandOption) => {
         const rightPath = opt.rightPath(commit, file, localPath);
         const leftRevspec = opt.leftRevspec(commit, file);
         const rightRevspec = opt.rightRevspec(commit, file);
-        dispatch(
-          SHOW_EXTERNAL_DIFF(
-            { path: leftPath, revspec: leftRevspec },
-            { path: rightPath, revspec: rightRevspec },
-            config.externalDiffTool
-          )
+        showExternalDiff(
+          { path: leftPath, revspec: leftRevspec },
+          { path: rightPath, revspec: rightRevspec }
         );
       }
     };
-  }, [opt, dispatch, config.externalDiffTool]);
+  }, [opt, showExternalDiff]);
 };
 
 const diffWithParentOpt = {

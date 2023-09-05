@@ -1,11 +1,10 @@
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { SHOW_SUCCESS } from "@/store/misc";
 import { FileCommand } from "./types";
 import { useMemo } from "react";
-import { useDispatch } from "@/store";
+import { useShowSuccess } from "@/state/root";
 
 export const useCopyRelativePathCommand = () => {
-  const dispatch = useDispatch();
+  const showSuccess = useShowSuccess();
   return useMemo<FileCommand>(
     () => ({
       type: "file",
@@ -14,9 +13,9 @@ export const useCopyRelativePathCommand = () => {
       icon: "mdi:content-copy",
       handler: async (_, file) => {
         await invokeTauriCommand("yank_text", { text: file.path });
-        dispatch(SHOW_SUCCESS(`Copied: ${file.path}`));
+        showSuccess(`Copied: ${file.path}`);
       }
     }),
-    [dispatch]
+    [showSuccess]
   );
 };

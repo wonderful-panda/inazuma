@@ -1,5 +1,3 @@
-import { useDispatch } from "@/store";
-import { REPORT_ERROR } from "@/store/misc";
 import { filterTreeItems, sortTreeInplace } from "@/tree";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
@@ -15,6 +13,7 @@ import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useBlame } from "@/hooks/useBlame";
 import PathFilter from "./PathFilter";
+import { useReportError } from "@/state/root";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -113,7 +112,7 @@ const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
   const [blamePath, setBlamePath] = useState<string | undefined>(undefined);
   const revspec = commit.id;
   const blame = useBlame(repoPath, blamePath, revspec);
-  const dispatch = useDispatch();
+  const reportError = useReportError();
   useEffect(() => {
     invokeTauriCommand("get_tree", { repoPath, revspec })
       .then((entries) => {
@@ -127,9 +126,9 @@ const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
         setEntries(entries);
       })
       .catch((error) => {
-        dispatch(REPORT_ERROR({ error }));
+        reportError({ error });
       });
-  }, [repoPath, revspec, dispatch]);
+  }, [repoPath, revspec, reportError]);
   return !entries ? (
     <Loading open />
   ) : (

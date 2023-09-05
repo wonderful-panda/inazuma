@@ -1,11 +1,9 @@
-import { RESTORE, STAGE, UNSTAGE } from "@/store/thunk/workingtree";
 import { FileCommand } from "./types";
 import { useMemo } from "react";
-import { useDispatch } from "@/store";
-import { useShowConfirmDialog } from "@/state/root";
+import { useRestore, useStage, useUnstage } from "@/state/repository/workingtree";
 
 export const useStageCommand = () => {
-  const dispatch = useDispatch();
+  const stage = useStage();
   return useMemo<FileCommand>(
     () => ({
       type: "file",
@@ -16,15 +14,15 @@ export const useStageCommand = () => {
         return commit.id !== "--" || file.kind?.type === "staged";
       },
       handler(_, file) {
-        dispatch(STAGE(file.path));
+        stage(file.path);
       }
     }),
-    [dispatch]
+    [stage]
   );
 };
 
 export const useUnstageCommand = () => {
-  const dispatch = useDispatch();
+  const unstage = useUnstage();
   return useMemo<FileCommand>(
     () => ({
       type: "file",
@@ -35,16 +33,15 @@ export const useUnstageCommand = () => {
         return commit.id !== "--" || file.kind?.type !== "staged";
       },
       handler(_, file) {
-        dispatch(UNSTAGE(file.path));
+        unstage(file.path);
       }
     }),
-    [dispatch]
+    [unstage]
   );
 };
 
 export const useRestoreCommand = () => {
-  const dispatch = useDispatch();
-  const showConfirmDialog = useShowConfirmDialog();
+  const restore = useRestore();
   return useMemo<FileCommand>(
     () => ({
       type: "file",
@@ -55,9 +52,9 @@ export const useRestoreCommand = () => {
         return commit.id !== "--" || file.kind?.type !== "unstaged" || file.statusCode === "?";
       },
       handler(_, file) {
-        dispatch(RESTORE(file.path, showConfirmDialog));
+        restore(file.path);
       }
     }),
-    [dispatch, showConfirmDialog]
+    [restore]
   );
 };

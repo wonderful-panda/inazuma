@@ -1,8 +1,7 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { memo, useCallback, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import { REPORT_ERROR } from "@/store/misc";
 import { useXterm } from "@/hooks/useXterm";
+import { useReportError } from "@/state/root";
 
 export interface InteractiveShellProps {
   open: boolean;
@@ -25,7 +24,6 @@ const InteractiveShellInner: React.FC<
   width,
   height
 }) => {
-  const dispatch = useDispatch();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { open: openXterm, fit, changeFont, dispose } = useXterm({ onExit: hide });
 
@@ -35,6 +33,7 @@ const InteractiveShellInner: React.FC<
     fit();
   }, [width, height, fit]);
 
+  const reportError = useReportError();
   const openShell = useCallback(async () => {
     try {
       await openXterm(wrapperRef.current!, {
@@ -44,10 +43,10 @@ const InteractiveShellInner: React.FC<
         fontSize
       });
     } catch (error) {
-      dispatch(REPORT_ERROR({ error }));
+      reportError({ error });
       hide();
     }
-  }, [openXterm, hide, commandLine, repoPath, fontFamily, fontSize, dispatch]);
+  }, [openXterm, hide, commandLine, repoPath, fontFamily, fontSize, reportError]);
 
   useEffect(() => {
     if (open) {

@@ -1,12 +1,11 @@
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { SHOW_SUCCESS } from "@/store/misc";
 import { shortHash } from "@/util";
 import { CommitCommand } from "./types";
 import { useMemo } from "react";
-import { useDispatch } from "@/store";
+import { useShowSuccess } from "@/state/root";
 
 export const useCopyFullHashCommand = () => {
-  const dispatch = useDispatch();
+  const showSuccess = useShowSuccess();
   return useMemo<CommitCommand>(
     () => ({
       type: "commit",
@@ -15,15 +14,15 @@ export const useCopyFullHashCommand = () => {
       hidden: (commit) => commit.id === "--",
       handler: async (commit) => {
         await invokeTauriCommand("yank_text", { text: commit.id });
-        dispatch(SHOW_SUCCESS(`Copied: ${commit.id}`));
+        showSuccess(`Copied: ${commit.id}`);
       }
     }),
-    [dispatch]
+    [showSuccess]
   );
 };
 
 export const useCopyShortHashCommand = () => {
-  const dispatch = useDispatch();
+  const showSuccess = useShowSuccess();
   return useMemo<CommitCommand>(
     () => ({
       type: "commit",
@@ -33,9 +32,9 @@ export const useCopyShortHashCommand = () => {
       handler: async (commit) => {
         const text = shortHash(commit.id);
         await invokeTauriCommand("yank_text", { text });
-        dispatch(SHOW_SUCCESS(`Copied: ${text}`));
+        showSuccess(`Copied: ${text}`);
       }
     }),
-    [dispatch]
+    [showSuccess]
   );
 };

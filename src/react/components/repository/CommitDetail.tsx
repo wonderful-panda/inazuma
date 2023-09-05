@@ -10,15 +10,14 @@ import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { FileList, useFileListRowEventHandler } from "./FileList";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
 import { useDiffWithParentCommand } from "@/commands/diff";
-import { useDispatch } from "@/store";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { VirtualListMethods } from "../VirtualList";
-import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
 import { useShowFileContentCommand } from "@/commands/showFileContent";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
 import PathFilter from "./PathFilter";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
+import { useShowLsTree } from "@/state/repository/tabs";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -27,12 +26,12 @@ export interface CommitDetailProps {
 }
 
 const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
-  const dispatch = useDispatch();
+  const showLsTree = useShowLsTree();
   const showSourceTree_ = useCallback(() => {
     if (commit) {
-      dispatch(SHOW_LSTREE(commit));
+      showLsTree(commit);
     }
-  }, [commit, dispatch]);
+  }, [commit, showLsTree]);
   if (!commit) {
     return <FlexCard />;
   }

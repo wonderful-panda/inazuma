@@ -1,4 +1,3 @@
-import { Dispatch } from "@/store";
 import { IconName } from "@/types/IconName";
 
 export interface CommitCommand {
