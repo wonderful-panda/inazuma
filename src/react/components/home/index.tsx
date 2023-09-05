@@ -21,7 +21,7 @@ const Home = () => {
   const handleOpen = useCallback(
     (repoPath: string | undefined) =>
       repoPath && dispatch(OPEN_REPOSITORY(repoPath, addRecentOpenedRepository)),
-    [dispatch]
+    [dispatch, addRecentOpenedRepository]
   );
   const removeItemAction = useMemo<RepositoryListItemProps["secondaryAction"]>(
     () => ({

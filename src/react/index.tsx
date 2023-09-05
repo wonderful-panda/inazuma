@@ -178,7 +178,7 @@ const App = () => {
       unwatch1();
       unwatch2();
     };
-  }, [dispatch]);
+  }, [dispatch, addRecentOpened, setConfig]);
   const content = useMemo(() => {
     if (initializing) {
       return <Loading open />;

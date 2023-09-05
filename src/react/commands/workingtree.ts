@@ -58,6 +58,6 @@ export const useRestoreCommand = () => {
         dispatch(RESTORE(file.path, showConfirmDialog));
       }
     }),
-    [dispatch]
+    [dispatch, showConfirmDialog]
   );
 };

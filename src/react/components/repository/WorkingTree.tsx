@@ -217,7 +217,10 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
 
   const showConfirmDialog = useShowConfirmDialog();
   const commit = useCallback(() => dispatch(BEGIN_COMMIT()), [dispatch]);
-  const fixup = useCallback(() => dispatch(FIXUP(showConfirmDialog)), [dispatch]);
+  const fixup = useCallback(
+    () => dispatch(FIXUP(showConfirmDialog)),
+    [dispatch, showConfirmDialog]
+  );
 
   useEffect(() => {
     treeRef.current?.scrollToItem(treeModelState.selectedIndex);

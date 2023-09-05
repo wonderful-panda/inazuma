@@ -122,7 +122,7 @@ export const CommitLogSideBar: React.FC<{
         await dispatch(SWITCH_BRANCH_WITH_CONFIRM({ branchName: r.name }, showConfirmDialog));
       }
     },
-    [dispatch, refMap]
+    [dispatch, refMap, showConfirmDialog]
   );
 
   const deleteAction = useCallback(
