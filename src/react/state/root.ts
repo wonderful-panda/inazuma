@@ -90,24 +90,26 @@ const showConfirmDialogAtom = atom(
   }
 );
 
-const closeConfirmDialogAtom = atom(null, (get, set, accepted: boolean) => {
-  const prev = get(confirmDialogInnerAtom);
-  if (prev.status !== "open") {
-    return;
-  }
-  prev.resolve?.(accepted);
-  set(confirmDialogInnerAtom, {
-    ...prev,
-    resolve: undefined,
-    status: accepted ? "accepted" : "canceled"
+const closeConfirmDialogAtom = atom(null, (_get, set, accepted: boolean) => {
+  let prevVersion = 0;
+  set(confirmDialogInnerAtom, (prev) => {
+    if (prev.status !== "open") {
+      return prev;
+    }
+    prevVersion = prev.version;
+    prev.resolve?.(accepted);
+    return { ...prev, resolve: undefined, status: accepted ? "accepted" : "canceled" };
   });
+
   // title and content will be cleared after a while
   // (to avoid layout collaption during closing transision)
   setTimeout(() => {
-    const cur = get(confirmDialogInnerAtom);
-    if (cur.version === prev.version) {
-      set(confirmDialogInnerAtom, { version: cur.version, status: cur.status });
-    }
+    set(confirmDialogInnerAtom, (prev) => {
+      if (prev.version !== prevVersion) {
+        return prev;
+      }
+      return { version: prev.version, status: prev.status };
+    });
   }, 1000);
 });
 
