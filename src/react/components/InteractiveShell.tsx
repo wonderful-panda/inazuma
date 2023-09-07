@@ -1,5 +1,5 @@
 import AutoSizer from "react-virtualized-auto-sizer";
-import { memo, useCallback, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useXterm } from "@/hooks/useXterm";
 import { useReportError } from "@/state/root";
 
@@ -30,8 +30,10 @@ const InteractiveShellInner: React.FC<
   useEffect(() => dispose, [dispose]);
 
   useEffect(() => {
-    fit();
-  }, [width, height, fit]);
+    if (open) {
+      fit();
+    }
+  }, [width, height, fit, open]);
 
   const reportError = useReportError();
   const openShell = useCallback(async () => {
@@ -60,21 +62,22 @@ const InteractiveShellInner: React.FC<
     changeFont(fontFamily, fontSize);
   }, [changeFont, fontFamily, fontSize]);
 
-  return (
-    <div
-      ref={wrapperRef}
-      className="position-relative flex-1 overflow-hidden p-0.5"
-      style={{ width, height }}
-      tabIndex={0}
-    />
-  );
+  return <div ref={wrapperRef} className="relative flex-1 overflow-hidden p-0.5" tabIndex={0} />;
 };
 
+const nope = () => <></>;
+
 const InteractiveShell_: React.FC<InteractiveShellProps> = (props) => {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  // AutoSizer's children will be unmounted during 'display:none'.
+  // InteractiveShellInner must be kept mounted, so we put it out of AutoSizer.
   return (
-    <AutoSizer className="flex-1">
-      {(size) => <InteractiveShellInner {...props} {...size} />}
-    </AutoSizer>
+    <>
+      <InteractiveShellInner {...props} {...size} />;
+      <AutoSizer className="absolute flex-1" onResize={setSize}>
+        {nope}
+      </AutoSizer>
+    </>
   );
 };
 
