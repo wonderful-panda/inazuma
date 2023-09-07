@@ -11,7 +11,7 @@ import BlameTabTooltip from "./BlameTabTooltip";
 import LsTreeTabTooltip from "./LsTreeTabTooltip";
 import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
 import { lazy } from "../hoc/lazy";
-import { useConfigValue, useInteractiveShell, useInteractiveShellValue } from "@/state/root";
+import { useConfigValue } from "@/state/root";
 import { useCloseRepository, useReloadRepository, useRepoPathValue } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
 import { TabType, logAtom, tabsAtom } from "@/state/repository/premitive";
@@ -21,6 +21,7 @@ import {
   selectPreviousTabAtom,
   selectTabAtom
 } from "@/state/repository/tabs";
+import { useInteractiveShell, useInteractiveShellValue } from "@/state/repository/misc";
 
 const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
 const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });

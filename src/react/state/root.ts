@@ -173,21 +173,3 @@ export const useShowError = () => useSetAtom(showErrorAtom, opt);
 export const useShowSuccess = () => useSetAtom(showSuccessAtom, opt);
 export const useShowInfo = () => useSetAtom(showInfoAtom, opt);
 export const useHideAlert = () => useSetAtom(hideAlertAtom, opt);
-
-/**
- * Misc
- */
-const interactiveShellAtom = atom(false);
-
-export const useInteractiveShellValue = () => useAtomValue(interactiveShellAtom, opt);
-export const useInteractiveShell = () => {
-  const setInteractiveShell = useSetAtom(interactiveShellAtom, opt);
-  return useMemo(
-    () => ({
-      show: () => setInteractiveShell(true),
-      hide: () => setInteractiveShell(false),
-      toggle: () => setInteractiveShell((prev) => !prev)
-    }),
-    [setInteractiveShell]
-  );
-};
