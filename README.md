@@ -29,12 +29,6 @@ Git repository browser made by Tauri and React
 
 1. Install node >= 14
 
-1. Install yarn
-
-   ```shell
-   npm install yarn -g
-   ```
-
 1. Install rust and platform specific prerequisites of tauri
    according to [here](https://tauri.studio/guides/getting-started/prerequisites)
 
@@ -43,8 +37,8 @@ Git repository browser made by Tauri and React
    ```shell
    git clone https://github.com/wonderful-panda/inazuma
    cd inazuma
-   yarn
-   yarn build
+   npm install
+   npm run build
    ```
 
    :warning: memory >= 3GB must be available during bulid step.
