@@ -41,3 +41,6 @@ export const throttled = <T extends Record<string, (...args: any[]) => any>>(
   });
   return ret;
 };
+
+export const wait = (milliseconds: number) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));

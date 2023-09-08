@@ -1,17 +1,25 @@
-import { SHOW_FILE_CONTENT } from "@/store/thunk/showFileContent";
 import { FileCommand } from "./types";
+import { useMemo } from "react";
+import { useShowFileContent } from "@/state/repository/tabs";
 
-export const showFileContent: FileCommand = {
-  id: "showFileContent",
-  label: "Show file content",
-  icon: "octicon:file-code-16",
-  hidden: (commit, file) => {
-    if (commit.id === "--" || file.statusCode === "D") {
-      return true;
-    }
-    return false;
-  },
-  handler(dispatch, commit, file) {
-    dispatch(SHOW_FILE_CONTENT(commit, file));
-  }
+export const useShowFileContentCommand = () => {
+  const showFileContent = useShowFileContent();
+  return useMemo<FileCommand>(
+    () => ({
+      type: "file",
+      id: "showFileContent",
+      label: "Show file content",
+      icon: "octicon:file-code-16",
+      hidden: (commit, file) => {
+        if (commit.id === "--" || file.statusCode === "D") {
+          return true;
+        }
+        return false;
+      },
+      handler(commit, file) {
+        showFileContent(commit, file);
+      }
+    }),
+    [showFileContent]
+  );
 };

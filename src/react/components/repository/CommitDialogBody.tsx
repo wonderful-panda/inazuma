@@ -1,18 +1,18 @@
-import { useDispatch, useSelector } from "@/store";
 import { clamp } from "@/util";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DialogActionHandler } from "../Dialog";
-import { COMMIT } from "@/store/thunk/commit";
-import { REPORT_ERROR } from "@/store/misc";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DialogBody } from "../DialogBody";
+import { useCommit } from "@/state/repository/workingtree";
+import { useRepoPathValue } from "@/state/repository";
+import { useReportError } from "@/state/root";
 
 export const CommitDialogBody: React.FC = () => {
-  const dispatch = useDispatch();
-  const repoPath = useSelector((state) => state.repository.path);
+  const repoPath = useRepoPathValue();
   const messageRef = useRef<HTMLInputElement>(null);
   const amendRef = useRef<HTMLInputElement>(null);
+  const reportError = useReportError();
   const [rows, setRows] = useState(6);
 
   useEffect(() => {
@@ -44,11 +44,12 @@ export const CommitDialogBody: React.FC = () => {
           commitDetail.summary + (commitDetail.body ? "\n\n" + commitDetail.body : "");
         handleChange();
       } catch (error) {
-        dispatch(REPORT_ERROR({ error }));
+        reportError({ error });
       }
     },
-    [dispatch, repoPath, handleChange]
+    [reportError, repoPath, handleChange]
   );
+  const commit = useCommit();
   const invokeCommit = useCallback(
     async (close: () => void) => {
       if (!amendRef.current) {
@@ -59,12 +60,12 @@ export const CommitDialogBody: React.FC = () => {
         commitType: amendRef.current.checked ? "amend" : "normal",
         message
       };
-      const ret = await dispatch(COMMIT(options));
+      const ret = await commit(options);
       if (ret !== "failed" && ret) {
         close();
       }
     },
-    [dispatch]
+    [commit]
   );
   const actions = useMemo<DialogActionHandler[]>(
     () => [

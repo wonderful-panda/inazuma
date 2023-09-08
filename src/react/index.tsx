@@ -7,18 +7,22 @@ import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material"
 import { lime, yellow } from "@mui/material/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
-import store, { Dispatch, useSelector, watch } from "./store";
-import { Provider, useDispatch } from "react-redux";
-import { RESET_RECENT_OPENED_REPOSITORIES, UPDATE_CONFIG } from "./store/persist";
 import { CommandGroupProvider } from "./context/CommandGroupContext";
-import { OPEN_REPOSITORY, RELOAD_REPOSITORY } from "./store/thunk/repository";
 import { Loading } from "./components/Loading";
-import { REPORT_ERROR } from "./store/misc";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
 import { lazy } from "./components/hoc/lazy";
 import { invokeTauriCommand } from "./invokeTauriCommand";
 import { debounce } from "lodash";
 import { listen } from "@tauri-apps/api/event";
+import {
+  registerConfigWatcher,
+  registerRecentOpenedRepositoriesWatcher,
+  setInitialValue,
+  useConfigValue,
+  useReportError
+} from "./state/root";
+import { useOpenRepository, useReloadRepository, useRepoPathValue } from "./state/repository";
+import { useWithRef } from "./hooks/useWithRef";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
@@ -107,67 +111,44 @@ const displayStateStorage = {
   }
 };
 
-const init = async (dispatch: Dispatch) => {
-  document.addEventListener("contextmenu", (e) => e.preventDefault());
-  const [config, environment] = await invokeTauriCommand("load_persist_data");
-  displayStateStorage.reset(environment.state || {});
-  dispatch(UPDATE_CONFIG(config));
-  updateFont(config.fontFamily);
-  updateFontSize(config.fontSize);
-  dispatch(RESET_RECENT_OPENED_REPOSITORIES(environment.recentOpened || []));
-  const unlisten = await listen<null>("request_reload", () => dispatch(RELOAD_REPOSITORY()));
-  window.addEventListener("unload", unlisten);
-  const hash = window.location.hash ? decodeURI(window.location.hash.slice(1)) : undefined;
-  window.location.hash = "#home";
-  const initialRepository = await getInitialRepository(hash);
-  watch(
-    (state) => state.persist.config,
-    (newConfig) => {
-      invokeTauriCommand("save_config", { newConfig });
-      updateFont(newConfig.fontFamily);
-      updateFontSize(newConfig.fontSize);
-    }
-  );
-  watch(
-    (state) => state.persist.env.recentOpenedRepositories,
-    (newList) => invokeTauriCommand("store_recent_opened", { newList })
-  );
-  watch(
-    (state) => state.repository.path,
-    (newValue) => {
-      setTimeout(() => {
-        if (newValue) {
-          const title = `Inazuma (${newValue})`;
-          window.location.hash = `#${encodeURI(newValue)}`;
-          invokeTauriCommand("set_window_title", { title });
-        } else {
-          const title = "Inazuma";
-          window.location.hash = "#home";
-          invokeTauriCommand("set_window_title", { title });
-        }
-      }, 0);
-    }
-  );
-  if (initialRepository) {
-    await dispatch(OPEN_REPOSITORY(initialRepository));
-  }
-};
-
-const App = () => {
-  const dispatch = useDispatch();
-  const fontSize = useSelector((state) => state.persist.config.fontSize);
-  const repoPath = useSelector((state) => state.repository.path);
-  const theme = useMemo(() => createMuiTheme(fontSize), [fontSize]);
+const App = ({ startupRepository }: { startupRepository: string | undefined }) => {
+  const repoPath = useRepoPathValue();
+  const config = useConfigValue();
+  const [, openRepositoryRef] = useWithRef(useOpenRepository());
+  const [, reloadRepositoryRef] = useWithRef(useReloadRepository());
+  const theme = useMemo(() => createMuiTheme(config.fontSize), [config.fontSize]);
+  const reportError = useReportError();
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
-    init(dispatch)
-      .catch((error) => {
-        dispatch(REPORT_ERROR({ error }));
-      })
-      .finally(() => {
-        setInitializing(false);
-      });
-  }, [dispatch]);
+    listen<null>("request_reload", () => {
+      reloadRepositoryRef.current();
+    }).then((unlisten) => {
+      window.addEventListener("unload", unlisten);
+    });
+  }, [reloadRepositoryRef]);
+  useEffect(() => {
+    (async () => {
+      if (startupRepository) {
+        await openRepositoryRef.current(startupRepository);
+      }
+    })()
+      .catch((error) => reportError({ error }))
+      .finally(() => setInitializing(false));
+  }, [startupRepository, openRepositoryRef, reportError]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      let title: string = "Inazuma";
+      if (repoPath) {
+        title += ` (${repoPath})`;
+        window.location.hash = `#${encodeURI(repoPath)}`;
+      } else {
+        window.location.hash = "#home";
+      }
+      invokeTauriCommand("set_window_title", { title });
+    }, 0);
+  }, [repoPath]);
+
   const content = useMemo(() => {
     if (initializing) {
       return <Loading open />;
@@ -192,9 +173,30 @@ const App = () => {
   );
 };
 
-const root = createRoot(document.getElementById("app")!);
-root.render(
-  <Provider store={store}>
-    <App />
-  </Provider>
-);
+(async () => {
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
+  const [config, environment] = await invokeTauriCommand("load_persist_data");
+  updateFont(config.fontFamily);
+  updateFontSize(config.fontSize);
+  displayStateStorage.reset(environment.state || {});
+  setInitialValue(config, environment.recentOpened || []);
+  const unwatch1 = registerConfigWatcher((value) => {
+    invokeTauriCommand("save_config", { newConfig: value });
+    updateFont(value.fontFamily);
+    updateFontSize(value.fontSize);
+  });
+  const unwatch2 = registerRecentOpenedRepositoriesWatcher((value) =>
+    invokeTauriCommand("store_recent_opened", { newList: value })
+  );
+  window.addEventListener("unload", () => {
+    unwatch1();
+    unwatch2();
+  });
+
+  const hash = window.location.hash ? decodeURI(window.location.hash.slice(1)) : undefined;
+  window.location.hash = "#home";
+  const startupRepository = await getInitialRepository(hash);
+  const root = createRoot(document.getElementById("app")!);
+
+  root.render(<App startupRepository={startupRepository} />);
+})();

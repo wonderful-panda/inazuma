@@ -1,35 +1,35 @@
-import { useDispatch, useSelector } from "@/store";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { Dialog } from "../Dialog";
 import { CommitDialogBody } from "./CommitDialogBody";
 import { NewBranchDialogBody } from "./NewBranchDialogBody";
 import { assertNever } from "@/util";
-import { CLOSE_DIALOG } from "@/store/thunk/dialog";
 import { DeleteBranchDialogBody } from "./DeleteBranchDialogBody";
+import { useAtomValue, useSetAtom } from "jotai";
+import { closeDialogAtom } from "@/state/repository/dialog";
+import { activeDialogAtom } from "@/state/repository/premitive";
 
 export const ConnectedRepositoryDialog: React.FC = () => {
-  const dispatch = useDispatch();
-  const dialog = useSelector((state) => state.repository.activeDialog);
-  const close = useCallback(() => dispatch(CLOSE_DIALOG()), [dispatch]);
+  const dialog = useAtomValue(activeDialogAtom);
+  const closeDialog = useSetAtom(closeDialogAtom);
 
   const children = useMemo(() => {
-    if (!dialog) {
+    if (!dialog.param) {
       return <></>;
     }
-    switch (dialog.type) {
+    switch (dialog.param.type) {
       case "Commit":
         return <CommitDialogBody />;
       case "NewBranch":
-        return <NewBranchDialogBody commitId={dialog.commitId} />;
+        return <NewBranchDialogBody commitId={dialog.param.commitId} />;
       case "DeleteBranch":
-        return <DeleteBranchDialogBody branchName={dialog.branchName} />;
+        return <DeleteBranchDialogBody branchName={dialog.param.branchName} />;
       default:
-        return assertNever(dialog);
+        return assertNever(dialog.param);
     }
   }, [dialog]);
 
   return (
-    <Dialog className="max-w-none" draggable opened={!!dialog?.opened} close={close}>
+    <Dialog className="max-w-none" draggable opened={!!dialog?.opened} close={closeDialog}>
       {children}
     </Dialog>
   );

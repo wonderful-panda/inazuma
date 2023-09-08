@@ -5,7 +5,6 @@ import { FileStatusIcon } from "./FileStatusIcon";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { FileCommand, IconActionItem } from "@/commands/types";
 import { fileCommandsToActions } from "@/commands";
-import { useDispatch } from "@/store";
 import { RowActionButtons } from "./RowActionButtons";
 import { FileStat } from "./FileStat";
 
@@ -37,13 +36,10 @@ const FileListRow_: React.FC<FileListRowProps> = ({
   actionCommands
 }) => {
   const selectedIndex = useSelectedIndex();
-  const dispatch = useDispatch();
   const actions = useMemo(
     () =>
-      fileCommandsToActions(dispatch, actionCommands, commit, file).filter(
-        (a) => a.icon
-      ) as IconActionItem[],
-    [dispatch, actionCommands, commit, file]
+      fileCommandsToActions(actionCommands, commit, file).filter((a) => a.icon) as IconActionItem[],
+    [actionCommands, commit, file]
   );
   return (
     <div

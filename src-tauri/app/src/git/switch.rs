@@ -8,9 +8,9 @@ pub async fn switch(repo_path: &Path, options: &SwitchOptions) -> Result<(), Git
     if let Some(ref create_options) = options.create {
         args = vec![
             if create_options.force.is_some_and(|v| v) {
-                "-B"
+                "-C"
             } else {
-                "-b"
+                "-c"
             },
             &options.branch_name,
             &create_options.commit_id,

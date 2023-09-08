@@ -87,6 +87,7 @@ export const useXterm = (options: { onExit?: () => void }) => {
     if (shell.current) {
       shell.current.term.options.fontFamily = fontFamily;
       shell.current.term.options.fontSize = fontSize;
+      shell.current.fitAddon.fit();
     }
   }, []);
 

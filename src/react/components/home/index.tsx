@@ -1,20 +1,30 @@
 import { Divider, List, Typography } from "@mui/material";
-import { RepositoryListItem } from "./RepositoryListItem";
+import { RepositoryListItem, RepositoryListItemProps } from "./RepositoryListItem";
 import { useCallback, useMemo } from "react";
 import { MainWindow } from "@/components/MainWindow";
-import { useDispatch, useSelector } from "@/store";
-import { REMOVE_RECENT_OPENED_REPOSITORY } from "@/store/persist";
-import { OPEN_REPOSITORY } from "@/store/thunk/repository";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { Command } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import {
+  useRemoveRecentOpenedRepository,
+  useVisibleRecentOpenedRepositoriesValue
+} from "@/state/root";
+import { useOpenRepository } from "@/state/repository";
 
 const Home = () => {
-  const dispatch = useDispatch();
-  const recentOpened = useSelector((state) => state.persist.env.recentOpenedRepositories);
+  const openRepository = useOpenRepository();
+  const recentOpenedRepositories = useVisibleRecentOpenedRepositoriesValue();
+  const removeRecentOpenedRepository = useRemoveRecentOpenedRepository();
   const handleOpen = useCallback(
-    (repoPath: string | undefined) => repoPath && dispatch(OPEN_REPOSITORY(repoPath)),
-    [dispatch]
+    (repoPath: string | undefined) => repoPath && openRepository(repoPath),
+    [openRepository]
+  );
+  const removeItemAction = useMemo<RepositoryListItemProps["secondaryAction"]>(
+    () => ({
+      action: removeRecentOpenedRepository,
+      icon: "mdi:close"
+    }),
+    [removeRecentOpenedRepository]
   );
   const handleBrowseClick = useCallback(async () => {
     const ret = await invokeTauriCommand("show_folder_selector");
@@ -23,18 +33,14 @@ const Home = () => {
     }
   }, [handleOpen]);
 
-  const removeRecentOpenedRepository = useCallback(
-    (path: string) => dispatch(REMOVE_RECENT_OPENED_REPOSITORY(path)),
-    [dispatch]
-  );
   const openRecents = useMemo<Command[]>(
     () =>
       ([1, 2, 3, 4, 5] as const).map((i) => ({
         name: `OpenRecent-${i}`,
         hotkey: `Ctrl+Alt+${i}`,
-        handler: () => handleOpen(recentOpened[i - 1])
+        handler: () => handleOpen(recentOpenedRepositories[i - 1])
       })),
-    [recentOpened, handleOpen]
+    [recentOpenedRepositories, handleOpen]
   );
   return (
     <MainWindow title="Inazuma">
@@ -62,7 +68,7 @@ const Home = () => {
             Recent Opened
           </Typography>
           <List dense>
-            {recentOpened.map((path) => (
+            {recentOpenedRepositories.map((path) => (
               <RepositoryListItem
                 key={path}
                 itemId={path}
@@ -70,10 +76,7 @@ const Home = () => {
                 secondary={<span className="font-mono">{path}</span>}
                 icon="mdi:history"
                 action={handleOpen}
-                secondaryAction={{
-                  action: removeRecentOpenedRepository,
-                  icon: "mdi:close"
-                }}
+                secondaryAction={removeItemAction}
               />
             ))}
           </List>

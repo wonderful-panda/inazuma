@@ -1,14 +1,4 @@
 import { IconActionItem } from "@/commands/types";
-import { useDispatch, useSelector } from "@/store";
-import { HIDE_INTERACTIVE_SHELL, TOGGLE_INTERACTIVE_SHELL } from "@/store/misc";
-import {
-  REMOVE_TAB,
-  SELECT_NEXT_TAB,
-  SELECT_PREVIOUS_TAB,
-  SELECT_TAB,
-  TabType
-} from "@/store/repository";
-import { CLOSE_REPOSITORY, RELOAD_REPOSITORY } from "@/store/thunk/repository";
 import { assertNever } from "@/util";
 import { useCallback, useMemo } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
@@ -21,6 +11,17 @@ import BlameTabTooltip from "./BlameTabTooltip";
 import LsTreeTabTooltip from "./LsTreeTabTooltip";
 import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
 import { lazy } from "../hoc/lazy";
+import { useConfigValue } from "@/state/root";
+import { useCloseRepository, useReloadRepository, useRepoPathValue } from "@/state/repository";
+import { useAtomValue, useSetAtom } from "jotai";
+import { TabType, logAtom, tabsAtom } from "@/state/repository/premitive";
+import {
+  removeTabAtom,
+  selectNextTabAtom,
+  selectPreviousTabAtom,
+  selectTabAtom
+} from "@/state/repository/tabs";
+import { useInteractiveShell, useInteractiveShellValue } from "@/state/repository/misc";
 
 const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
 const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
@@ -42,13 +43,12 @@ const renderTabTooltip: TabContainerProps<TabType>["renderTabTooltip"] = (tab) =
 };
 
 const RepositoryPage: React.FC = () => {
-  const dispatch = useDispatch();
-  const repoPath = useSelector((state) => state.repository.path);
-  const refs = useSelector((state) => state.repository.log?.refs);
-  const tab = useSelector((state) => state.repository.tab);
-  const showInteractiveShell = useSelector((state) => state.misc.showInteractiveShell);
-  const monospace = useSelector((state) => state.persist.config.fontFamily.monospace || undefined);
-  const interactiveShell = useSelector((state) => state.persist.config.interactiveShell);
+  const repoPath = useRepoPathValue();
+  const tabs = useAtomValue(tabsAtom);
+  const refs = useAtomValue(logAtom)?.refs;
+  const interactiveShellValue = useInteractiveShellValue();
+  const interactiveShell = useInteractiveShell();
+  const config = useConfigValue();
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
       if (!repoPath || !tab) {
@@ -70,18 +70,32 @@ const RepositoryPage: React.FC = () => {
     },
     [repoPath, refs]
   );
+  const selectTab = useSetAtom(selectTabAtom);
+  const closeTab = useSetAtom(removeTabAtom);
+  const selectNextTab = useSetAtom(selectNextTabAtom);
+  const selectPrevTab = useSetAtom(selectPreviousTabAtom);
+  const closeRepository = useCloseRepository();
+  const reloadRepository = useReloadRepository();
   const callbacks = useMemo(
     () => ({
-      selectTab: (index: number) => dispatch(SELECT_TAB(index)),
-      closeTab: (index?: number) => dispatch(REMOVE_TAB(index)),
-      selectNextTab: () => dispatch(SELECT_NEXT_TAB()),
-      selectPrevTab: () => dispatch(SELECT_PREVIOUS_TAB()),
-      closeRepository: () => dispatch(CLOSE_REPOSITORY()),
-      toggleInteractiveShell: () => dispatch(TOGGLE_INTERACTIVE_SHELL()),
-      hideInteractiveShell: () => dispatch(HIDE_INTERACTIVE_SHELL()),
-      reloadRepository: () => dispatch(RELOAD_REPOSITORY())
+      selectTab,
+      closeTab,
+      selectNextTab,
+      selectPrevTab,
+      closeRepository,
+      toggleInteractiveShell: interactiveShell.toggle,
+      hideInteractiveShell: interactiveShell.hide,
+      reloadRepository
     }),
-    [dispatch]
+    [
+      interactiveShell,
+      selectTab,
+      closeTab,
+      selectNextTab,
+      selectPrevTab,
+      closeRepository,
+      reloadRepository
+    ]
   );
   const drawerItems: IconActionItem[] = useMemo(
     () => [
@@ -94,7 +108,7 @@ const RepositoryPage: React.FC = () => {
     ],
     [callbacks]
   );
-  const interactiveShellConfigured = !!interactiveShell;
+  const interactiveShellConfigured = !!config.interactiveShell;
   const titleBarActions: IconActionItem[] = useMemo(
     () => [
       {
@@ -113,7 +127,7 @@ const RepositoryPage: React.FC = () => {
     ],
     [interactiveShellConfigured, callbacks]
   );
-  if (!repoPath || !tab) {
+  if (!repoPath || !tabs) {
     return <></>;
   }
   return (
@@ -130,14 +144,14 @@ const RepositoryPage: React.FC = () => {
         persistKey="repository"
         initialDirection="horiz"
         initialRatio={0.7}
-        showSecondPanel={showInteractiveShell && !!interactiveShell}
+        showSecondPanel={interactiveShellValue && !!config.interactiveShell}
         allowDirectionChange
         firstPanelMinSize="20%"
         secondPanelMinSize="20%"
         first={
           <TabContainer
-            tabs={tab.tabs}
-            currentTabIndex={tab.currentIndex}
+            tabs={tabs.tabs}
+            currentTabIndex={tabs.currentIndex}
             renderTabContent={renderTabContent}
             renderTabTooltip={renderTabTooltip}
             selectTab={callbacks.selectTab}
@@ -146,11 +160,11 @@ const RepositoryPage: React.FC = () => {
         }
         second={
           <InteractiveShell
-            open={showInteractiveShell && !!interactiveShell}
-            commandLine={interactiveShell!}
+            open={interactiveShellValue && !!config.interactiveShell}
+            commandLine={config.interactiveShell!}
             repoPath={repoPath}
             hide={callbacks.hideInteractiveShell}
-            fontFamily={monospace}
+            fontFamily={config.fontFamily.monospace}
           />
         }
       />

@@ -6,10 +6,6 @@ import { decodeBase64, decodeToString } from "@/strings";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { VirtualListMethods } from "../VirtualList";
 import { Button, useTheme } from "@mui/material";
-import { useDispatch, useSelector } from "@/store";
-import { STAGE, UNSTAGE } from "@/store/thunk/workingtree";
-import { BEGIN_COMMIT } from "@/store/thunk/beginCommit";
-import { FIXUP } from "@/store/thunk/commit";
 import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
 import { TreeItem } from "@/tree";
 import { VirtualTree, VirtualTreeProps } from "../VirtualTree";
@@ -19,18 +15,24 @@ import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import classNames from "classnames";
 import { executeFileCommand } from "@/commands";
-import { diffUnstaged, diffWithParent, diffWithParent2 } from "@/commands/diff";
-import { stage, unstage, restore } from "@/commands/workingtree";
 import { IconActionItem } from "@/commands/types";
 import { RowActionButtons } from "./RowActionButtons";
 import { MonacoEditor } from "../MonacoEditor";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { REPORT_ERROR } from "@/store/misc";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import PathFilter from "./PathFilter";
 import { useFileContextMenuT } from "@/hooks/useContextMenu";
-import { copyRelativePath } from "@/commands/copyRelativePath";
+import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
+import { useRestoreCommand, useStageCommand, useUnstageCommand } from "@/commands/workingtree";
+import {
+  useDiffUnstagedCommand,
+  useDiffWithParent2Command,
+  useDiffWithParentCommand
+} from "@/commands/diff";
+import { useBeginCommit, useFixup, useStage, useUnstage } from "@/state/repository/workingtree";
+import { useRepoPathValue } from "@/state/repository";
+import { useReportError } from "@/state/root";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -38,16 +40,6 @@ export interface WorkingTreeProps {
 }
 type GroupHeaderType = "staged" | "unstaged" | "conflict";
 type RowType = WorkingTreeFileEntry | GroupHeaderType;
-
-const actionCommands = [
-  copyRelativePath,
-  restore,
-  diffUnstaged,
-  diffWithParent,
-  diffWithParent2,
-  stage,
-  unstage
-];
 
 const getItemKey = (item: RowType) =>
   typeof item === "string" ? item : `${item.path}:${item.kind.type}`;
@@ -76,8 +68,9 @@ const GroupHeader: React.FC<{
   index: number;
   height: number;
 }> = ({ type, index, height }) => {
-  const dispatch = useDispatch();
   const selectedIndex = useSelectedIndex();
+  const stage = useStage();
+  const unstage = useUnstage();
   const headerActions = useMemo<IconActionItem[]>(() => {
     if (type === "unstaged") {
       return [
@@ -85,7 +78,7 @@ const GroupHeader: React.FC<{
           id: "StageAll",
           label: "Stage all files",
           icon: "mdi:plus",
-          handler: () => dispatch(STAGE("*"))
+          handler: () => stage("*")
         }
       ];
     } else if (type === "staged") {
@@ -94,13 +87,13 @@ const GroupHeader: React.FC<{
           id: "UnstageAll",
           label: "Unstage all files",
           icon: "mdi:minus",
-          handler: () => dispatch(UNSTAGE("*"))
+          handler: () => unstage("*")
         }
       ];
     } else {
       return [];
     }
-  }, [type, dispatch]);
+  }, [type, stage, unstage]);
 
   return (
     <div
@@ -174,9 +167,7 @@ const filesToItems = (files: readonly WorkingTreeFileEntry[], filterText: string
 };
 
 export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) => {
-  const dispatch = useDispatch();
-
-  const repoPath = useSelector((state) => state.repository.path);
+  const repoPath = useRepoPathValue();
   const theme = useTheme();
   const rowHeight = theme.custom.baseFontSize * 3;
   const headerRowHeight = rowHeight * 0.75;
@@ -199,8 +190,30 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     treeModelDispatch
   );
 
-  const commit = useCallback(() => dispatch(BEGIN_COMMIT()), [dispatch]);
-  const fixup = useCallback(() => dispatch(FIXUP()), [dispatch]);
+  const copyRelativePath = useCopyRelativePathCommand();
+  const restore = useRestoreCommand();
+  const diffUnstaged = useDiffUnstagedCommand();
+  const diffWithParent = useDiffWithParentCommand();
+  const diffWithParent2 = useDiffWithParent2Command();
+  const stage = useStageCommand();
+  const unstage = useUnstageCommand();
+
+  const actionCommands = useMemo(
+    () => [
+      copyRelativePath,
+      restore,
+      diffUnstaged,
+      diffWithParent,
+      diffWithParent2,
+      stage,
+      unstage
+    ],
+    [copyRelativePath, restore, diffUnstaged, diffWithParent, diffWithParent2, stage, unstage]
+  );
+  const reportError = useReportError();
+
+  const beginCommit = useBeginCommit();
+  const fixup = useFixup();
 
   useEffect(() => {
     treeRef.current?.scrollToItem(treeModelState.selectedIndex);
@@ -218,11 +231,11 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
             const udiff = await getUdiff(repoPath, data.path, data.kind.type === "staged");
             setUdiff(udiff);
           } catch (error) {
-            dispatch(REPORT_ERROR({ error }));
+            reportError({ error });
           }
         }
       }, 200),
-    [repoPath, dispatch]
+    [repoPath, reportError]
   );
   useEffect(() => {
     selectFile(treeModelState.selectedItem?.item.data);
@@ -292,11 +305,11 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
       } else {
         if (stat) {
           const command = item.data.kind.type === "unstaged" ? diffUnstaged : diffWithParent;
-          executeFileCommand(command, dispatch, stat, item.data);
+          executeFileCommand(command, stat, item.data);
         }
       }
     },
-    [treeModelDispatch, dispatch, stat]
+    [treeModelDispatch, diffUnstaged, diffWithParent, stat]
   );
 
   const handleRowContextMenu = useFileContextMenuT<TreeItemVM<RowType>>(
@@ -323,7 +336,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         );
       }
     },
-    [stat, rowHeight, headerRowHeight]
+    [stat, rowHeight, headerRowHeight, actionCommands]
   );
 
   return (
@@ -364,7 +377,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
               >
                 Fixup
               </Button>
-              <Button title="Commit staged changes" onClick={commit} color="inherit">
+              <Button title="Commit staged changes" onClick={beginCommit} color="inherit">
                 Commit
               </Button>
             </>

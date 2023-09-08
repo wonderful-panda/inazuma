@@ -1,6 +1,4 @@
-import { useDispatch } from "@/store";
 import { shortHash } from "@/util";
-import { REPORT_ERROR } from "@/store/misc";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { FileList, useFileListRowEventHandler } from "./FileList";
@@ -9,14 +7,15 @@ import { FlexCard } from "../FlexCard";
 import { VirtualListMethods } from "../VirtualList";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
-import { diffAgainst } from "@/commands/diff";
-import { DiffViewer } from "./DiffViewer";
 import { debounce } from "lodash";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { decodeBase64, decodeToString } from "@/strings";
 import PathFilter from "./PathFilter";
 import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
+import { useDiffAgainstCommand } from "@/commands/diff";
+import { DiffViewer } from "./DiffViewer";
+import { useReportError } from "@/state/root";
 
 export interface CommitDiffTabProps {
   repoPath: string;
@@ -70,7 +69,6 @@ const CommitDiffContent: React.FC<{
   commit1: Commit;
   commit2: Commit;
 }> = ({ repoPath, commit1, commit2, files }) => {
-  const dispatch = useDispatch();
   const listRef = useRef<VirtualListMethods>(null);
   const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(files);
   const [filterText, setFilterText] = useState("");
@@ -90,7 +88,9 @@ const CommitDiffContent: React.FC<{
   useEffect(() => {
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
-  const actionCommands = useMemo(() => [diffAgainst(commit1)], [commit1]);
+  const reportError = useReportError();
+  const diffAgainst = useDiffAgainstCommand(commit1);
+  const actionCommands = useMemo(() => [diffAgainst], [diffAgainst]);
   const handleRowDoubleClick = useFileListRowEventHandler(actionCommands[0], commit2);
   const handleSelectFile = useMemo(
     () =>
@@ -99,12 +99,12 @@ const CommitDiffContent: React.FC<{
           setLoading(true);
           setContent(await loadContents(repoPath, commit1.id, commit2.id, file));
         } catch (error) {
-          dispatch(REPORT_ERROR({ error }));
+          reportError({ error });
         } finally {
           setLoading(false);
         }
       }, 200),
-    [dispatch, repoPath, commit1, commit2]
+    [reportError, repoPath, commit1, commit2]
   );
   useEffect(() => {
     handleSelectFile(files[selectedIndex]);
@@ -153,8 +153,8 @@ const CommitDiffContent: React.FC<{
 };
 
 const CommitDiffTab: React.FC<CommitDiffTabProps> = ({ repoPath, commit1, commit2 }) => {
-  const dispatch = useDispatch();
   const [files, setFiles] = useState<FileEntry[] | undefined>(undefined);
+  const reportError = useReportError();
   useEffect(() => {
     invokeTauriCommand("get_changes_between", {
       repoPath,
@@ -162,8 +162,8 @@ const CommitDiffTab: React.FC<CommitDiffTabProps> = ({ repoPath, commit1, commit
       revspec2: commit2.id
     })
       .then((files) => setFiles(files))
-      .catch((error) => dispatch(REPORT_ERROR({ error })));
-  }, [dispatch, repoPath, commit1, commit2]);
+      .catch((error) => reportError({ error }));
+  }, [reportError, repoPath, commit1, commit2]);
   if (!files) {
     return <Loading open />;
   } else {

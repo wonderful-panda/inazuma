@@ -20,9 +20,8 @@ import {
 } from "react";
 import { DialogMethods } from "./Dialog";
 import { FullscreenDialog } from "./FullscreenDialog";
-import { REPORT_ERROR } from "@/store/misc";
-import { useDispatch } from "@/store";
 import classNames from "classnames";
+import { useReportError } from "@/state/root";
 
 const SectionContent: React.FC<ChildrenProp> = ({ children }) => (
   <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>
@@ -130,7 +129,7 @@ const FontSelector: React.FC<{
 
 const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialogProps>(
   function PreferenceDialogContent(props, ref) {
-    const dispatchStore = useDispatch();
+    const reportError = useReportError();
     const [state, dispatch] = useReducer(reducer, props.config);
     useImperativeHandle(ref, () => ({
       save: () => props.onConfigChange(state)
@@ -148,9 +147,9 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
           setMonospaceFonts(monospace);
         })
         .catch((error) => {
-          dispatchStore(REPORT_ERROR({ error }));
+          reportError({ error });
         });
-    }, [dispatchStore]);
+    }, [reportError]);
     return (
       <div className="p-2">
         <Typography variant="h6" component="div" color="primary">

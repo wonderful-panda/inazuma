@@ -9,16 +9,15 @@ import { FlexCard } from "../FlexCard";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { FileList, useFileListRowEventHandler } from "./FileList";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
-import { diffWithParent } from "@/commands/diff";
-import { useDispatch } from "@/store";
+import { useDiffWithParentCommand } from "@/commands/diff";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { VirtualListMethods } from "../VirtualList";
-import { SHOW_LSTREE } from "@/store/thunk/showLsTree";
-import { showFileContent } from "@/commands/showFileContent";
+import { useShowFileContentCommand } from "@/commands/showFileContent";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
 import PathFilter from "./PathFilter";
-import { copyRelativePath } from "@/commands/copyRelativePath";
+import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
+import { useShowLsTree } from "@/state/repository/tabs";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -26,15 +25,13 @@ export interface CommitDetailProps {
   orientation: Orientation;
 }
 
-const actionCommands = [copyRelativePath, diffWithParent, showFileContent];
-
 const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
-  const dispatch = useDispatch();
+  const showLsTree = useShowLsTree();
   const showSourceTree_ = useCallback(() => {
     if (commit) {
-      dispatch(SHOW_LSTREE(commit));
+      showLsTree(commit);
     }
-  }, [commit, dispatch]);
+  }, [commit, showLsTree]);
   if (!commit) {
     return <FlexCard />;
   }
@@ -95,6 +92,14 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
     visibleFiles.length || 0,
     setSelectedIndex
   );
+  const copyRelativePath = useCopyRelativePathCommand();
+  const diffWithParent = useDiffWithParentCommand();
+  const showFileContent = useShowFileContentCommand();
+  const actionCommands = useMemo(
+    () => [copyRelativePath, diffWithParent, showFileContent],
+    [copyRelativePath, diffWithParent, showFileContent]
+  );
+
   useEffect(() => listRef.current?.scrollToItem(selectedIndex), [selectedIndex]);
   const onRowDoubleClick = useFileListRowEventHandler(diffWithParent, commit);
   const onRowContextMenu = useFileContextMenu(commit);

@@ -1,6 +1,5 @@
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useDispatch } from "@/store";
-import { REPORT_ERROR } from "@/store/misc";
+import { useReportError } from "@/state/root";
 import { decodeBase64, decodeToString } from "@/strings";
 import { useEffect, useState } from "react";
 
@@ -10,7 +9,7 @@ export const useBlame = (
   revspec: string
 ) => {
   const [blame, setBlame] = useState<{ blame?: Blame; path: string } | undefined>(undefined);
-  const dispatch = useDispatch();
+  const reportError = useReportError();
   useEffect(() => {
     (async () => {
       setBlame(undefined);
@@ -37,9 +36,9 @@ export const useBlame = (
         });
       } catch (error) {
         setBlame(undefined);
-        dispatch(REPORT_ERROR({ error }));
+        reportError({ error });
       }
     })();
-  }, [repoPath, relPath, revspec, dispatch]);
+  }, [repoPath, relPath, revspec, reportError]);
   return blame;
 };
