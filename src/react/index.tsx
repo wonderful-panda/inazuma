@@ -176,6 +176,8 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
 (async () => {
   document.addEventListener("contextmenu", (e) => e.preventDefault());
   const [config, environment] = await invokeTauriCommand("load_persist_data");
+  updateFont(config.fontFamily);
+  updateFontSize(config.fontSize);
   displayStateStorage.reset(environment.state || {});
   setInitialValue(config, environment.recentOpened || []);
   const unwatch1 = registerConfigWatcher((value) => {
