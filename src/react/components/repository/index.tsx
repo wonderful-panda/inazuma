@@ -21,7 +21,7 @@ import {
   selectPreviousTabAtom,
   selectTabAtom
 } from "@/state/repository/tabs";
-import { useInteractiveShell, useInteractiveShellValue } from "@/state/repository/misc";
+import { interactiveShellAtom, useInteractiveShell } from "@/state/repository/misc";
 
 const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
 const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
@@ -46,7 +46,7 @@ const RepositoryPage: React.FC = () => {
   const repoPath = useRepoPathValue();
   const tabs = useAtomValue(tabsAtom);
   const refs = useAtomValue(logAtom)?.refs;
-  const interactiveShellValue = useInteractiveShellValue();
+  const interactiveShellOpened = useAtomValue(interactiveShellAtom);
   const interactiveShell = useInteractiveShell();
   const config = useConfigValue();
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
@@ -144,7 +144,7 @@ const RepositoryPage: React.FC = () => {
         persistKey="repository"
         initialDirection="horiz"
         initialRatio={0.7}
-        showSecondPanel={interactiveShellValue && !!config.interactiveShell}
+        showSecondPanel={interactiveShellOpened && !!config.interactiveShell}
         allowDirectionChange
         firstPanelMinSize="20%"
         secondPanelMinSize="20%"
@@ -160,7 +160,7 @@ const RepositoryPage: React.FC = () => {
         }
         second={
           <InteractiveShell
-            open={interactiveShellValue && !!config.interactiveShell}
+            open={interactiveShellOpened && !!config.interactiveShell}
             commandLine={config.interactiveShell!}
             repoPath={repoPath}
             hide={callbacks.hideInteractiveShell}

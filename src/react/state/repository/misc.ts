@@ -1,9 +1,8 @@
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useSetAtom } from "jotai";
 import { useMemo } from "react";
 
-const interactiveShellAtom = atom(false);
+export const interactiveShellAtom = atom(false);
 
-export const useInteractiveShellValue = () => useAtomValue(interactiveShellAtom);
 export const useInteractiveShell = () => {
   const setInteractiveShell = useSetAtom(interactiveShellAtom);
   return useMemo(
