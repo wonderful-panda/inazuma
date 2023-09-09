@@ -33,8 +33,8 @@ const updateFont = (fontFamily: FontFamily) => {
   setCssVariable("--inazuma-monospace-fontfamily", fontFamily.monospace || monospaceFontfamily);
 };
 const fontSizeNumber = {
-  "x-small": 10,
-  small: 12,
+  "x-small": 12,
+  small: 14,
   medium: 16
 };
 
