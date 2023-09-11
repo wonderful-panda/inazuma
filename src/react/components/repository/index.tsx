@@ -12,16 +12,22 @@ import LsTreeTabTooltip from "./LsTreeTabTooltip";
 import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
 import { lazy } from "../hoc/lazy";
 import { useConfigValue } from "@/state/root";
-import { useCloseRepository, useReloadRepository, useRepoPathValue } from "@/state/repository";
+import { logAtom, repoPathAtom } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
-import { TabType, logAtom, tabsAtom } from "@/state/repository/premitive";
 import {
+  TabType,
   removeTabAtom,
   selectNextTabAtom,
   selectPreviousTabAtom,
-  selectTabAtom
+  selectTabAtom,
+  tabsAtom
 } from "@/state/repository/tabs";
-import { interactiveShellAtom, useInteractiveShell } from "@/state/repository/misc";
+import {
+  hideInteractiveShellAtom,
+  interactiveShellAtom,
+  toggleInteractiveShellAtom
+} from "@/state/repository/misc";
+import { useCloseRepository, useReloadRepository } from "@/hooks/actions/openRepository";
 
 const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
 const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
@@ -43,11 +49,12 @@ const renderTabTooltip: TabContainerProps<TabType>["renderTabTooltip"] = (tab) =
 };
 
 const RepositoryPage: React.FC = () => {
-  const repoPath = useRepoPathValue();
+  const repoPath = useAtomValue(repoPathAtom);
   const tabs = useAtomValue(tabsAtom);
   const refs = useAtomValue(logAtom)?.refs;
-  const interactiveShellOpened = useAtomValue(interactiveShellAtom);
-  const interactiveShell = useInteractiveShell();
+  const interactiveShell = useAtomValue(interactiveShellAtom);
+  const toggleInteractiveShell = useSetAtom(toggleInteractiveShellAtom);
+  const hideInteractiveShell = useSetAtom(hideInteractiveShellAtom);
   const config = useConfigValue();
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
@@ -76,56 +83,34 @@ const RepositoryPage: React.FC = () => {
   const selectPrevTab = useSetAtom(selectPreviousTabAtom);
   const closeRepository = useCloseRepository();
   const reloadRepository = useReloadRepository();
-  const callbacks = useMemo(
-    () => ({
-      selectTab,
-      closeTab,
-      selectNextTab,
-      selectPrevTab,
-      closeRepository,
-      toggleInteractiveShell: interactiveShell.toggle,
-      hideInteractiveShell: interactiveShell.hide,
-      reloadRepository
-    }),
-    [
-      interactiveShell,
-      selectTab,
-      closeTab,
-      selectNextTab,
-      selectPrevTab,
-      closeRepository,
-      reloadRepository
-    ]
-  );
   const drawerItems: IconActionItem[] = useMemo(
     () => [
       {
         id: "backToHome",
         label: "Home",
         icon: "mdi:home",
-        handler: callbacks.closeRepository
+        handler: closeRepository
       }
     ],
-    [callbacks]
+    [closeRepository]
   );
-  const interactiveShellConfigured = !!config.interactiveShell;
   const titleBarActions: IconActionItem[] = useMemo(
     () => [
       {
         id: "toggleConsole",
         label: "Show / hide interactive shell",
         icon: "mdi:console",
-        disabled: !interactiveShellConfigured,
-        handler: callbacks.toggleInteractiveShell
+        disabled: !config.interactiveShell,
+        handler: toggleInteractiveShell
       },
       {
         id: "reload",
         label: "Reload repository",
         icon: "mdi:reload",
-        handler: callbacks.reloadRepository
+        handler: reloadRepository
       }
     ],
-    [interactiveShellConfigured, callbacks]
+    [config.interactiveShell, toggleInteractiveShell, reloadRepository]
   );
   if (!repoPath || !tabs) {
     return <></>;
@@ -133,18 +118,18 @@ const RepositoryPage: React.FC = () => {
   return (
     <MainWindow title={repoPath} drawerItems={drawerItems} titleBarActions={titleBarActions}>
       <CommandGroup name="RepositoryPage">
-        <Cmd name="NextTab" hotkey="Ctrl+Tab" handler={callbacks.selectNextTab} />
-        <Cmd name="PrevTab" hotkey="Ctrl+Shift+Tab" handler={callbacks.selectPrevTab} />
-        <Cmd name="CloseTab" hotkey="Ctrl+F4" handler={callbacks.closeTab} />
-        <Cmd name="ToggleShell" hotkey="Ctrl+T" handler={callbacks.toggleInteractiveShell} />
-        <Cmd name="CloseRepository" hotkey="Ctrl+H" handler={callbacks.closeRepository} />
-        <Cmd name="ReloadRepository" hotkey="Ctrl+R" handler={callbacks.reloadRepository} />
+        <Cmd name="NextTab" hotkey="Ctrl+Tab" handler={selectNextTab} />
+        <Cmd name="PrevTab" hotkey="Ctrl+Shift+Tab" handler={selectPrevTab} />
+        <Cmd name="CloseTab" hotkey="Ctrl+F4" handler={closeTab} />
+        <Cmd name="ToggleShell" hotkey="Ctrl+T" handler={toggleInteractiveShell} />
+        <Cmd name="CloseRepository" hotkey="Ctrl+H" handler={closeRepository} />
+        <Cmd name="ReloadRepository" hotkey="Ctrl+R" handler={reloadRepository} />
       </CommandGroup>
       <PersistSplitterPanel
         persistKey="repository"
         initialDirection="horiz"
         initialRatio={0.7}
-        showSecondPanel={interactiveShellOpened && !!config.interactiveShell}
+        showSecondPanel={interactiveShell && !!config.interactiveShell}
         allowDirectionChange
         firstPanelMinSize="20%"
         secondPanelMinSize="20%"
@@ -154,16 +139,16 @@ const RepositoryPage: React.FC = () => {
             currentTabIndex={tabs.currentIndex}
             renderTabContent={renderTabContent}
             renderTabTooltip={renderTabTooltip}
-            selectTab={callbacks.selectTab}
-            closeTab={callbacks.closeTab}
+            selectTab={selectTab}
+            closeTab={closeTab}
           />
         }
         second={
           <InteractiveShell
-            open={interactiveShellOpened && !!config.interactiveShell}
+            open={interactiveShell && !!config.interactiveShell}
             commandLine={config.interactiveShell!}
             repoPath={repoPath}
-            hide={callbacks.hideInteractiveShell}
+            hide={hideInteractiveShell}
             fontFamily={config.fontFamily.monospace}
           />
         }

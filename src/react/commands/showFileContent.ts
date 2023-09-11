@@ -1,6 +1,6 @@
+import { useShowFileContent } from "@/hooks/actions/showFileContent";
 import { FileCommand } from "./types";
 import { useMemo } from "react";
-import { useShowFileContent } from "@/state/repository/tabs";
 
 export const useShowFileContentCommand = () => {
   const showFileContent = useShowFileContent();

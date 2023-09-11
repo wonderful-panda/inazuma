@@ -18,18 +18,15 @@ import { shortHash } from "@/util";
 import { CommitLogSideBar } from "./CommitLogSideBar";
 import { useCreateBranchCommand } from "@/commands/createBranch";
 import { ConnectedRepositoryDialog } from "./ConnectedRepositoryDialog";
-import { useBeginCommit, useReloadWorkingTree } from "@/state/repository/workingtree";
-import { useShowCommitDiff, useShowLsTree } from "@/state/repository/tabs";
-import { useFetchCommitDetail, useRepoPathValue } from "@/state/repository";
+import { CommitLogItems, commitDetailAtom, logAtom, repoPathAtom } from "@/state/repository";
 import { useAtomValue } from "jotai";
-import {
-  CommitLogItems,
-  commitDetailAtom,
-  logAtom,
-  workingTreeAtom
-} from "@/state/repository/premitive";
 import { useShowWarning } from "@/state/root";
 import { useWithRef } from "@/hooks/useWithRef";
+import { useBeginCommit, useReloadWorkingTree } from "@/hooks/actions/workingtree";
+import { useShowCommitDiff } from "@/hooks/actions/showCommitDiff";
+import { workingTreeAtom } from "@/state/repository/workingtree";
+import { useShowLsTree } from "@/hooks/actions/showLsTree";
+import { useFetchCommitDetail } from "@/hooks/actions/fetchCommitDetail";
 
 const useBeginCommitCommand = () => {
   const beginCommit = useBeginCommit();
@@ -233,7 +230,7 @@ const CommitLogInner: React.FC<{
 };
 
 const CommitLog: React.FC<{ active: boolean }> = ({ active }) => {
-  const repoPath = useRepoPathValue();
+  const repoPath = useAtomValue(repoPathAtom);
   const log = useAtomValue(logAtom);
   if (!repoPath || !log) {
     return <></>;

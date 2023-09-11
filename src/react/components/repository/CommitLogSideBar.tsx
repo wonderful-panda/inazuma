@@ -2,7 +2,7 @@ import { Collapse, IconButton, List, ListItem, ListItemButton, ListItemText } fr
 import React, { useCallback, useMemo, useState } from "react";
 import { Icon } from "../Icon";
 import classNames from "classnames";
-import { useSwitchBranch } from "@/state/repository/branch";
+import { useSwitchBranch } from "@/hooks/actions/branch";
 import { useSetAtom } from "jotai";
 import { openDialogAtom } from "@/state/repository/dialog";
 

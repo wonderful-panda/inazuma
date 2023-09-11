@@ -1,7 +1,30 @@
-import { atom, useAtomValue, useSetAtom } from "jotai";
-import { useCallbackWithErrorHandler } from "../util";
-import { RepositoryTab, repoPathAtom, tabsAtom } from "./premitive";
-import { getFileName, shortHash } from "@/util";
+import { TabDefinition } from "@/components/TabContainer";
+import { atom } from "jotai";
+
+export type TabType = {
+  commits: null;
+  tree: {
+    commit: Commit;
+  };
+  commitDiff: {
+    commit1: Commit;
+    commit2: Commit;
+  };
+  file: {
+    commit: Commit;
+    path: string;
+  };
+};
+
+export type RepositoryTab = TabDefinition<TabType>;
+export type TabsState = { tabs: RepositoryTab[]; currentIndex: number };
+
+const initialTabs: TabsState = { tabs: [], currentIndex: -1 };
+export const tabsAtom = atom<TabsState>(initialTabs);
+
+export const resetTabsAtom = atom(null, (_get, set) => {
+  set(tabsAtom, initialTabs);
+});
 
 export const addTabAtom = atom(null, (_get, set, update: RepositoryTab) => {
   set(tabsAtom, (prev) => {
@@ -70,66 +93,3 @@ export const selectPreviousTabAtom = atom(null, (_get, set) => {
     }
   });
 });
-
-export const useShowCommitDiff = () => {
-  const repoPath = useAtomValue(repoPathAtom);
-  const addTab = useSetAtom(addTabAtom);
-  return useCallbackWithErrorHandler(
-    (commit1: Commit, commit2: Commit) => {
-      if (!repoPath) {
-        return;
-      }
-      addTab({
-        type: "commitDiff",
-        id: `commitDiff:${commit1.id}-${commit2.id}`,
-        title: `COMPARE @ ${shortHash(commit1.id)}-${shortHash(commit2.id)}`,
-        payload: { commit1, commit2 },
-        closable: true
-      });
-    },
-    [repoPath, addTab]
-  );
-};
-
-export const useShowLsTree = () => {
-  const repoPath = useAtomValue(repoPathAtom);
-  const addTab = useSetAtom(addTabAtom);
-  return useCallbackWithErrorHandler(
-    (commit: Commit) => {
-      if (!repoPath) {
-        return;
-      }
-      addTab({
-        type: "tree",
-        id: `tree:${commit.id}`,
-        title: `TREE @ ${shortHash(commit.id)}`,
-        payload: { commit },
-        closable: true
-      });
-    },
-    [repoPath, addTab]
-  );
-};
-
-export const useShowFileContent = () => {
-  const repoPath = useAtomValue(repoPathAtom);
-  const addTab = useSetAtom(addTabAtom);
-  return useCallbackWithErrorHandler(
-    (commit: Commit, file: FileEntry) => {
-      if (!repoPath) {
-        return;
-      }
-      if (file.statusCode === "D") {
-        return;
-      }
-      addTab({
-        type: "file",
-        id: `blame:${commit.id}/${file.path}`,
-        title: `${getFileName(file.path)} @ ${shortHash(commit.id)}`,
-        payload: { path: file.path, commit },
-        closable: true
-      });
-    },
-    [repoPath, addTab]
-  );
-};

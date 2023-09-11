@@ -4,12 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DialogActionHandler } from "../Dialog";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DialogBody } from "../DialogBody";
-import { useCommit } from "@/state/repository/workingtree";
-import { useRepoPathValue } from "@/state/repository";
 import { useReportError } from "@/state/root";
+import { useAtomValue } from "jotai";
+import { repoPathAtom } from "@/state/repository";
+import { useCommit } from "@/hooks/actions/workingtree";
 
 export const CommitDialogBody: React.FC = () => {
-  const repoPath = useRepoPathValue();
+  const repoPath = useAtomValue(repoPathAtom);
   const messageRef = useRef<HTMLInputElement>(null);
   const amendRef = useRef<HTMLInputElement>(null);
   const reportError = useReportError();

@@ -21,7 +21,9 @@ import {
   useConfigValue,
   useReportError
 } from "./state/root";
-import { useOpenRepository, useReloadRepository, useRepoPathValue } from "./state/repository";
+import { repoPathAtom } from "./state/repository";
+import { useAtomValue } from "jotai";
+import { useOpenRepository, useReloadRepository } from "./hooks/actions/openRepository";
 import { useWithRef } from "./hooks/useWithRef";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
@@ -112,29 +114,29 @@ const displayStateStorage = {
 };
 
 const App = ({ startupRepository }: { startupRepository: string | undefined }) => {
-  const repoPath = useRepoPathValue();
+  const repoPath = useAtomValue(repoPathAtom);
   const config = useConfigValue();
-  const [, openRepositoryRef] = useWithRef(useOpenRepository());
-  const [, reloadRepositoryRef] = useWithRef(useReloadRepository());
+  const [, openRepository] = useWithRef(useOpenRepository());
+  const reloadRepository = useReloadRepository();
   const theme = useMemo(() => createMuiTheme(config.fontSize), [config.fontSize]);
-  const reportError = useReportError();
+  const [, reportError] = useWithRef(useReportError());
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
     listen<null>("request_reload", () => {
-      reloadRepositoryRef.current();
+      reloadRepository();
     }).then((unlisten) => {
       window.addEventListener("unload", unlisten);
     });
-  }, [reloadRepositoryRef]);
+  }, [reloadRepository]);
   useEffect(() => {
     (async () => {
       if (startupRepository) {
-        await openRepositoryRef.current(startupRepository);
+        await openRepository.current(startupRepository);
       }
     })()
-      .catch((error) => reportError({ error }))
+      .catch((error) => reportError.current({ error }))
       .finally(() => setInitializing(false));
-  }, [startupRepository, openRepositoryRef, reportError]);
+  }, [startupRepository, openRepository, reportError]);
 
   useEffect(() => {
     setTimeout(() => {

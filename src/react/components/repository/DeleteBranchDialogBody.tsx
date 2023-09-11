@@ -2,7 +2,7 @@ import { Checkbox, FormControlLabel } from "@mui/material";
 import { useMemo, useRef } from "react";
 import { DialogBody } from "../DialogBody";
 import { DialogActionHandler } from "../Dialog";
-import { useDeleteBranch } from "@/state/repository/branch";
+import { useDeleteBranch } from "@/hooks/actions/branch";
 import { useShowWarning } from "@/state/root";
 
 export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branchName }) => {

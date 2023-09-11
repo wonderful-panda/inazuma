@@ -1,16 +1,10 @@
-import { atom, useSetAtom } from "jotai";
-import { useMemo } from "react";
+import { atom } from "jotai";
 
 export const interactiveShellAtom = atom(false);
 
-export const useInteractiveShell = () => {
-  const setInteractiveShell = useSetAtom(interactiveShellAtom);
-  return useMemo(
-    () => ({
-      show: () => setInteractiveShell(true),
-      hide: () => setInteractiveShell(false),
-      toggle: () => setInteractiveShell((prev) => !prev)
-    }),
-    [setInteractiveShell]
-  );
-};
+export const showInteractiveShellAtom = atom(null, (_get, set) => set(interactiveShellAtom, true));
+
+export const hideInteractiveShellAtom = atom(null, (_get, set) => set(interactiveShellAtom, false));
+export const toggleInteractiveShellAtom = atom(null, (_get, set) =>
+  set(interactiveShellAtom, (prev) => !prev)
+);

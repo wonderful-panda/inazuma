@@ -30,9 +30,10 @@ import {
   useDiffWithParent2Command,
   useDiffWithParentCommand
 } from "@/commands/diff";
-import { useBeginCommit, useFixup, useStage, useUnstage } from "@/state/repository/workingtree";
-import { useRepoPathValue } from "@/state/repository";
 import { useReportError } from "@/state/root";
+import { useBeginCommit, useFixup, useStage, useUnstage } from "@/hooks/actions/workingtree";
+import { useAtomValue } from "jotai";
+import { repoPathAtom } from "@/state/repository";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -167,7 +168,7 @@ const filesToItems = (files: readonly WorkingTreeFileEntry[], filterText: string
 };
 
 export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) => {
-  const repoPath = useRepoPathValue();
+  const repoPath = useAtomValue(repoPathAtom);
   const theme = useTheme();
   const rowHeight = theme.custom.baseFontSize * 3;
   const headerRowHeight = rowHeight * 0.75;

@@ -9,7 +9,7 @@ import {
   useRemoveRecentOpenedRepository,
   useVisibleRecentOpenedRepositoriesValue
 } from "@/state/root";
-import { useOpenRepository } from "@/state/repository";
+import { useOpenRepository } from "@/hooks/actions/openRepository";
 
 const Home = () => {
   const openRepository = useOpenRepository();

@@ -2,7 +2,7 @@ import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { DialogActionHandler } from "../Dialog";
 import { DialogBody } from "../DialogBody";
-import { useCreateBranch } from "@/state/repository/branch";
+import { useCreateBranch } from "@/hooks/actions/branch";
 
 export const NewBranchDialogBody: React.FC<{
   commitId: string;

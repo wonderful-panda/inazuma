@@ -17,7 +17,7 @@ import { KeyDownTrapper } from "../KeyDownTrapper";
 import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
 import PathFilter from "./PathFilter";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
-import { useShowLsTree } from "@/state/repository/tabs";
+import { useShowLsTree } from "@/hooks/actions/showLsTree";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
