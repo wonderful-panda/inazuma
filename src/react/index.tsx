@@ -25,6 +25,7 @@ import { repoPathAtom } from "./state/repository";
 import { useAtomValue } from "jotai";
 import { useOpenRepository, useReloadRepository } from "./hooks/actions/openRepository";
 import { useWithRef } from "./hooks/useWithRef";
+import { MainWindow } from "./components/MainWindow";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
@@ -166,7 +167,7 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
         <CommandGroupProvider>
           <ContextMenuProvider>
             <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
-              {content}
+              <MainWindow>{content}</MainWindow>
             </PersistStateProvider>
           </ContextMenuProvider>
         </CommandGroupProvider>

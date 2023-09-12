@@ -1,6 +1,16 @@
 import IconButton from "@mui/material/IconButton";
 import { Icon } from "./Icon";
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  createContext,
+  useContext,
+  useLayoutEffect
+} from "react";
 import { Drawer, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import { PreferenceDialog } from "./PreferenceDialog";
 import { AboutDialog } from "./AboutDialog";
@@ -11,7 +21,7 @@ import { IconActionItem } from "@/commands/types";
 import { ConnectedConfirmDialog } from "./ConnectedConfirmDialog";
 import { useAlertValue, useConfig, useHideAlert, useIsLoadingValue } from "@/state/root";
 
-export interface MainWindowProps extends ChildrenProp {
+export interface MainWindowProps {
   title: string;
   drawerItems?: readonly IconActionItem[];
   titleBarActions?: readonly IconActionItem[];
@@ -63,7 +73,22 @@ const Alert: React.FC = () => {
   return <RawAlert open={open} type={type} message={message} onClose={hideAlert} />;
 };
 
-export const MainWindow: React.FC<MainWindowProps> = (props) => {
+const MainWindowPropsValueContext = createContext<MainWindowProps>({ title: "" });
+const MainWindowPropsSetterContext = createContext<(value: MainWindowProps) => void>(() => {});
+
+export const MainWindowProperty: React.FC<MainWindowProps> = ({
+  title,
+  titleBarActions,
+  drawerItems
+}) => {
+  const setProps = useContext(MainWindowPropsSetterContext);
+  useLayoutEffect(() => {
+    setProps({ title, titleBarActions, drawerItems });
+  }, [setProps, title, titleBarActions, drawerItems]);
+  return <></>;
+};
+
+export const MainWindow: React.FC<ChildrenProp> = ({ children }) => {
   const isLoading = useIsLoadingValue();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const openDrawer = useCallback(() => {
@@ -75,6 +100,7 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
   const [config, setConfig] = useConfig();
   const preferenceDialogRef = useRef({} as ComponentRef<typeof PreferenceDialog>);
   const aboutDialogRef = useRef({} as ComponentRef<typeof AboutDialog>);
+  const [props, setProps] = useState<MainWindowProps>({ title: "" });
   const callbacks = useMemo(
     () => ({
       openPreference: () => preferenceDialogRef.current.open(),
@@ -111,42 +137,46 @@ export const MainWindow: React.FC<MainWindowProps> = (props) => {
     [isLoading]
   );
   return (
-    <div
-      className="absolute left-0 right-0 top-0 bottom-0 flex box-border m-0"
-      onKeyDown={onKeyDown}
-    >
-      <CommandGroup name="main">
-        <Cmd name="Preference" hotkey="Ctrl+Shift+P" handler={callbacks.openPreference} />
-        <Cmd name="About" hotkey="Ctrl+Shift+V" handler={callbacks.openAbout} />
-      </CommandGroup>
-      <div className="absolute left-0 right-0 top-0 h-9 leading-9 pr-2 flex-row-nowrap bg-titlebar text-xl">
-        <IconButton className="p-0 w-9" onClick={openDrawer} size="large">
-          <Icon icon="mdi:menu" />
-        </IconButton>
-        <span className="flex-1">{props.title}</span>
-        {props.titleBarActions &&
-          props.titleBarActions.map((a) => (
-            <IconButton
-              key={a.id}
-              title={a.label}
-              disabled={a.disabled}
-              className="p-0 w-9"
-              onClick={a.handler}
-              size="large"
-            >
-              <Icon className="text-2xl text-inherit" icon={a.icon} />
+    <MainWindowPropsValueContext.Provider value={props}>
+      <MainWindowPropsSetterContext.Provider value={setProps}>
+        <div
+          className="absolute left-0 right-0 top-0 bottom-0 flex box-border m-0"
+          onKeyDown={onKeyDown}
+        >
+          <CommandGroup name="main">
+            <Cmd name="Preference" hotkey="Ctrl+Shift+P" handler={callbacks.openPreference} />
+            <Cmd name="About" hotkey="Ctrl+Shift+V" handler={callbacks.openAbout} />
+          </CommandGroup>
+          <div className="absolute left-0 right-0 top-0 h-9 leading-9 pr-2 flex-row-nowrap bg-titlebar text-xl">
+            <IconButton className="p-0 w-9" onClick={openDrawer} size="large">
+              <Icon icon="mdi:menu" />
             </IconButton>
-          ))}
-      </div>
-      <ApplicationDrawer opened={drawerOpened} close={closeDrawer} items={drawerItems} />
-      <div className="absolute left-0 right-0 top-9 bottom-0 flex box-border p-1">
-        {props.children}
-      </div>
-      <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={setConfig} />
-      <AboutDialog ref={aboutDialogRef} />
-      <Loading open={isLoading} />
-      <ConnectedConfirmDialog />
-      <Alert />
-    </div>
+            <span className="flex-1">{props.title}</span>
+            {props.titleBarActions &&
+              props.titleBarActions.map((a) => (
+                <IconButton
+                  key={a.id}
+                  title={a.label}
+                  disabled={a.disabled}
+                  className="p-0 w-9"
+                  onClick={a.handler}
+                  size="large"
+                >
+                  <Icon className="text-2xl text-inherit" icon={a.icon} />
+                </IconButton>
+              ))}
+          </div>
+          <ApplicationDrawer opened={drawerOpened} close={closeDrawer} items={drawerItems} />
+          <div className="absolute left-0 right-0 top-9 bottom-0 flex box-border p-1">
+            {children}
+          </div>
+          <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={setConfig} />
+          <AboutDialog ref={aboutDialogRef} />
+          <Loading open={isLoading} />
+          <ConnectedConfirmDialog />
+          <Alert />
+        </div>
+      </MainWindowPropsSetterContext.Provider>
+    </MainWindowPropsValueContext.Provider>
   );
 };

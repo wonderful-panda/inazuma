@@ -1,7 +1,7 @@
 import { Divider, List, Typography } from "@mui/material";
 import { RepositoryListItem, RepositoryListItemProps } from "./RepositoryListItem";
 import { useCallback, useMemo } from "react";
-import { MainWindow } from "@/components/MainWindow";
+import { MainWindowProperty } from "@/components/MainWindow";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { Command } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
@@ -43,7 +43,8 @@ const Home = () => {
     [recentOpenedRepositories, handleOpen]
   );
   return (
-    <MainWindow title="Inazuma">
+    <>
+      <MainWindowProperty title="Inazuma" />
       <CommandGroup name="home">
         <Cmd name="OpenFolderSelector" hotkey="Ctrl+O" handler={handleBrowseClick} />
         {openRecents.map((command) => (
@@ -82,7 +83,7 @@ const Home = () => {
           </List>
         </div>
       </div>
-    </MainWindow>
+    </>
   );
 };
 

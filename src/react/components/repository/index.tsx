@@ -3,7 +3,7 @@ import { assertNever } from "@/util";
 import { useCallback, useMemo } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { InteractiveShell } from "../InteractiveShell";
-import { MainWindow } from "../MainWindow";
+import { MainWindowProperty } from "../MainWindow";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { TabContainer, TabContainerProps, TooltipTitle } from "../TabContainer";
 import CommitLog from "./CommitLog";
@@ -116,7 +116,12 @@ const RepositoryPage: React.FC = () => {
     return <></>;
   }
   return (
-    <MainWindow title={repoPath} drawerItems={drawerItems} titleBarActions={titleBarActions}>
+    <>
+      <MainWindowProperty
+        title={repoPath}
+        drawerItems={drawerItems}
+        titleBarActions={titleBarActions}
+      />
       <CommandGroup name="RepositoryPage">
         <Cmd name="NextTab" hotkey="Ctrl+Tab" handler={selectNextTab} />
         <Cmd name="PrevTab" hotkey="Ctrl+Shift+Tab" handler={selectPrevTab} />
@@ -153,7 +158,7 @@ const RepositoryPage: React.FC = () => {
           />
         }
       />
-    </MainWindow>
+    </>
   );
 };
 
