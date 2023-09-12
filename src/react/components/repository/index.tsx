@@ -16,11 +16,11 @@ import { logAtom, repoPathAtom } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   TabType,
-  removeTabAtom,
-  selectNextTabAtom,
-  selectPreviousTabAtom,
-  selectTabAtom,
-  tabsAtom
+  removeRepoTabAtom,
+  selectNextRepoTabAtom,
+  selectPreviousRepoTabAtom,
+  selectRepoTabAtom,
+  repoTabsAtom
 } from "@/state/repository/tabs";
 import {
   hideInteractiveShellAtom,
@@ -50,7 +50,7 @@ const renderTabTooltip: TabContainerProps<TabType>["renderTabTooltip"] = (tab) =
 
 const RepositoryPage: React.FC = () => {
   const repoPath = useAtomValue(repoPathAtom);
-  const tabs = useAtomValue(tabsAtom);
+  const tabs = useAtomValue(repoTabsAtom);
   const refs = useAtomValue(logAtom)?.refs;
   const interactiveShell = useAtomValue(interactiveShellAtom);
   const toggleInteractiveShell = useSetAtom(toggleInteractiveShellAtom);
@@ -77,10 +77,10 @@ const RepositoryPage: React.FC = () => {
     },
     [repoPath, refs]
   );
-  const selectTab = useSetAtom(selectTabAtom);
-  const closeTab = useSetAtom(removeTabAtom);
-  const selectNextTab = useSetAtom(selectNextTabAtom);
-  const selectPrevTab = useSetAtom(selectPreviousTabAtom);
+  const selectTab = useSetAtom(selectRepoTabAtom);
+  const closeTab = useSetAtom(removeRepoTabAtom);
+  const selectNextTab = useSetAtom(selectNextRepoTabAtom);
+  const selectPrevTab = useSetAtom(selectPreviousRepoTabAtom);
   const closeRepository = useCloseRepository();
   const reloadRepository = useReloadRepository();
   const drawerItems: IconActionItem[] = useMemo(
