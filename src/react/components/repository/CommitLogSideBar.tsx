@@ -82,7 +82,7 @@ const RefListItem: React.FC<{
       <ListItemText
         title={r.name}
         classes={{
-          primary: "ellipsis mr-2 " + primaryTextClass
+          primary: "ellipsis mr-2 text-lg " + primaryTextClass
         }}
         primary={r.name}
       />
