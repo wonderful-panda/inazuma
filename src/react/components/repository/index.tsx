@@ -28,6 +28,7 @@ import {
   toggleInteractiveShellAtom
 } from "@/state/repository/misc";
 import { useCloseRepository, useReloadRepository } from "@/hooks/actions/openRepository";
+import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
 
 const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
 const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
@@ -61,19 +62,29 @@ const RepositoryPage: React.FC = () => {
       if (!repoPath || !tab) {
         return <></>;
       }
+      let child: React.ReactNode;
       switch (tab.type) {
         case "commits":
-          return <CommitLog active={active} />;
+          child = <CommitLog />;
+          break;
         case "file":
-          return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} />;
+          child = <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} />;
+          break;
         case "tree":
-          return <LsTreeTab repoPath={repoPath} {...tab.payload} refs={refs} />;
+          child = <LsTreeTab repoPath={repoPath} {...tab.payload} refs={refs} />;
+          break;
         case "commitDiff":
-          return <CommitDiffTab repoPath={repoPath} {...tab.payload} />;
+          child = <CommitDiffTab repoPath={repoPath} {...tab.payload} />;
+          break;
         default:
           assertNever(tab);
           break;
       }
+      return (
+        <CommandGroupTreeProvider name={tab.id} enabled={active}>
+          {child}
+        </CommandGroupTreeProvider>
+      );
     },
     [repoPath, refs]
   );
