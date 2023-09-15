@@ -1,5 +1,6 @@
-import { closeRepositoryAtom, repoPathAtom, setLogAtom } from "@/state/repository";
+import { closeRepositoryAtom, repoPathAtom } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback } from "react";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 import { getFileName, toSlashedPath } from "@/util";
 import { GraphFragment, Grapher } from "@/grapher";
@@ -107,25 +108,27 @@ export const useOpenRepository = () => {
   );
 };
 
-export const useReloadRepository = () => {
-  const path = useAtomValue(repoPathAtom);
-  const setLog = useSetAtom(setLogAtom);
+export const useReloadSpecifiedRepository = () => {
+  const setLogToRepositoryStore = useSetAtom(setLogToRepositoryStoreAtom);
   return useCallbackWithErrorHandler(
-    async () => {
-      if (!path) {
-        return;
-      }
+    async (path: string) => {
       const { commits, refs } = await fetchHistory(path);
       const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
       const graph: Record<string, GraphFragment> = {};
       commits.forEach((c) => {
         graph[c.id] = grapher.proceed(c);
       });
-      setLog({ path, commits, refs: makeRefs(refs), graph, keepTabs: false });
+      setLogToRepositoryStore({ path, commits, refs: makeRefs(refs), graph, keepTabs: false });
     },
-    [path, setLog],
+    [setLogToRepositoryStore],
     { loading: true }
   );
+};
+
+export const useReloadRepository = () => {
+  const path = useAtomValue(repoPathAtom);
+  const reloadSpecifiedRepository = useReloadSpecifiedRepository();
+  return useCallback(() => reloadSpecifiedRepository(path), [path, reloadSpecifiedRepository]);
 };
 
 export const useCloseRepository = () => {

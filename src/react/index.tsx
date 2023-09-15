@@ -22,7 +22,7 @@ import {
   useReportError
 } from "./state/root";
 import { useAtomValue, useSetAtom } from "jotai";
-import { useOpenRepository, useReloadRepository } from "./hooks/actions/openRepository";
+import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions/openRepository";
 import { useWithRef } from "./hooks/useWithRef";
 import { MainWindow } from "./components/MainWindow";
 import { AppTabType, appTabsAtom, removeAppTabAtom, selectAppTabAtom } from "./state/tabs";
@@ -168,13 +168,14 @@ const Content: React.FC = () => {
 const App = ({ startupRepository }: { startupRepository: string | undefined }) => {
   const config = useConfigValue();
   const [, openRepository] = useWithRef(useOpenRepository());
-  const reloadRepository = useReloadRepository();
+  const reloadRepository = useReloadSpecifiedRepository();
   const theme = useMemo(() => createMuiTheme(config.fontSize), [config.fontSize]);
   const [, reportError] = useWithRef(useReportError());
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
-    listen<null>("request_reload", () => {
-      reloadRepository();
+    listen<string>("request_reload", (e) => {
+      console.log("request_reload", e);
+      reloadRepository(e.payload);
     }).then((unlisten) => {
       window.addEventListener("unload", unlisten);
     });

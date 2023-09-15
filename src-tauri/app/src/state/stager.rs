@@ -68,7 +68,7 @@ fn handle_event<R: Runtime>(
                     warn!("{}", e);
                 } else {
                     if let Some(win) = app_handle.get_window("main") {
-                        if let Err(e) = win.emit("request_reload", ()) {
+                        if let Err(e) = win.emit("request_reload", &f.repo_path) {
                             error!("Failed to emit event: request_reload, {}", e);
                         }
                     }
