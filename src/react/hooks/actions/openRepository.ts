@@ -118,7 +118,7 @@ export const useReloadSpecifiedRepository = () => {
       commits.forEach((c) => {
         graph[c.id] = grapher.proceed(c);
       });
-      setLogToRepositoryStore({ path, commits, refs: makeRefs(refs), graph, keepTabs: false });
+      setLogToRepositoryStore({ path, commits, refs: makeRefs(refs), graph, keepTabs: true });
     },
     [setLogToRepositoryStore],
     { loading: true }
