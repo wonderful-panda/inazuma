@@ -26,7 +26,7 @@ import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions
 import { useWithRef } from "./hooks/useWithRef";
 import { MainWindow } from "./components/MainWindow";
 import { AppTabType, appTabsAtom, removeAppTabAtom, selectAppTabAtom } from "./state/tabs";
-import { TabContainer, TabContainerProps } from "./components/TabContainer";
+import { TabContainer, TabContainerProps, TooltipTitle } from "./components/TabContainer";
 import { assertNever } from "./util";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
@@ -145,9 +145,14 @@ const Content: React.FC = () => {
   const renderTabTooltip = useCallback<TabContainerProps<AppTabType>["renderTabTooltip"]>((tab) => {
     switch (tab.type) {
       case "home":
-        return "Home";
+        return <TooltipTitle text="Home" />;
       case "repository":
-        return tab.payload.path;
+        return (
+          <>
+            <TooltipTitle text="Repository" />
+            <span className="ml-2 font-mono">{tab.payload.path}</span>
+          </>
+        );
       default:
         assertNever(tab);
         return "";
