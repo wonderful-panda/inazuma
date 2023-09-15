@@ -1,13 +1,13 @@
 import "xterm/css/xterm.css";
 import "./install-polyfill";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import Home from "./components/home";
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
-import { CommandGroupProvider } from "./context/CommandGroupContext";
+import { CommandGroupProvider, CommandGroupTreeProvider } from "./context/CommandGroupContext";
 import { Loading } from "./components/Loading";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
 import { lazy } from "./components/hoc/lazy";
@@ -21,11 +21,13 @@ import {
   useConfigValue,
   useReportError
 } from "./state/root";
-import { repoPathAtom } from "./state/repository";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useOpenRepository, useReloadRepository } from "./hooks/actions/openRepository";
 import { useWithRef } from "./hooks/useWithRef";
 import { MainWindow } from "./components/MainWindow";
+import { AppTabType, appTabsAtom, removeAppTabAtom, selectAppTabAtom } from "./state/tabs";
+import { TabContainer, TabContainerProps } from "./components/TabContainer";
+import { assertNever } from "./util";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
@@ -114,8 +116,56 @@ const displayStateStorage = {
   }
 };
 
+const Content: React.FC = () => {
+  const tabs = useAtomValue(appTabsAtom);
+  const selectTab = useSetAtom(selectAppTabAtom);
+  const removeTab = useSetAtom(removeAppTabAtom);
+  const renderTabContent = useCallback<TabContainerProps<AppTabType>["renderTabContent"]>(
+    (tab, active) => {
+      let child: React.ReactNode;
+      switch (tab.type) {
+        case "home":
+          child = <Home active={active} />;
+          break;
+        case "repository":
+          child = <RepositoryPage active={active} path={tab.payload.path} />;
+          break;
+        default:
+          assertNever(tab);
+          break;
+      }
+      return (
+        <CommandGroupTreeProvider name={tab.id} enabled={active}>
+          {child}
+        </CommandGroupTreeProvider>
+      );
+    },
+    []
+  );
+  const renderTabTooltip = useCallback<TabContainerProps<AppTabType>["renderTabTooltip"]>((tab) => {
+    switch (tab.type) {
+      case "home":
+        return "Home";
+      case "repository":
+        return tab.payload.path;
+      default:
+        assertNever(tab);
+        return "";
+    }
+  }, []);
+
+  return (
+    <TabContainer
+      tabs={tabs.tabs}
+      currentTabIndex={tabs.currentIndex}
+      renderTabContent={renderTabContent}
+      renderTabTooltip={renderTabTooltip}
+      selectTab={selectTab}
+      closeTab={removeTab}
+    />
+  );
+};
 const App = ({ startupRepository }: { startupRepository: string | undefined }) => {
-  const repoPath = useAtomValue(repoPathAtom);
   const config = useConfigValue();
   const [, openRepository] = useWithRef(useOpenRepository());
   const reloadRepository = useReloadRepository();
@@ -139,28 +189,13 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
       .finally(() => setInitializing(false));
   }, [startupRepository, openRepository, reportError]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      let title: string = "Inazuma";
-      if (repoPath) {
-        title += ` (${repoPath})`;
-        window.location.hash = `#${encodeURI(repoPath)}`;
-      } else {
-        window.location.hash = "#home";
-      }
-      invokeTauriCommand("set_window_title", { title });
-    }, 0);
-  }, [repoPath]);
-
   const content = useMemo(() => {
     if (initializing) {
       return <Loading open />;
-    } else if (repoPath) {
-      return <RepositoryPage />;
     } else {
-      return <Home />;
+      return <Content />;
     }
-  }, [initializing, repoPath]);
+  }, [initializing]);
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>

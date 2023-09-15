@@ -1,6 +1,6 @@
 import { IconActionItem } from "@/commands/types";
 import { assertNever } from "@/util";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { InteractiveShell } from "../InteractiveShell";
 import { MainWindowProperty } from "../MainWindow";
@@ -11,9 +11,9 @@ import BlameTabTooltip from "./BlameTabTooltip";
 import LsTreeTabTooltip from "./LsTreeTabTooltip";
 import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
 import { lazy } from "../hoc/lazy";
-import { useConfigValue } from "@/state/root";
+import { repositoryStoresAtomFamily, useConfigValue } from "@/state/root";
 import { logAtom, repoPathAtom } from "@/state/repository";
-import { useAtomValue, useSetAtom } from "jotai";
+import { Provider, useAtomValue, useSetAtom } from "jotai";
 import {
   TabType,
   removeRepoTabAtom,
@@ -29,6 +29,7 @@ import {
 } from "@/state/repository/misc";
 import { useCloseRepository, useReloadRepository } from "@/hooks/actions/openRepository";
 import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
 const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
@@ -49,7 +50,7 @@ const renderTabTooltip: TabContainerProps<TabType>["renderTabTooltip"] = (tab) =
   }
 };
 
-const RepositoryPage: React.FC = () => {
+const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const repoPath = useAtomValue(repoPathAtom);
   const tabs = useAtomValue(repoTabsAtom);
   const refs = useAtomValue(logAtom)?.refs;
@@ -94,17 +95,6 @@ const RepositoryPage: React.FC = () => {
   const selectPrevTab = useSetAtom(selectPreviousRepoTabAtom);
   const closeRepository = useCloseRepository();
   const reloadRepository = useReloadRepository();
-  const drawerItems: IconActionItem[] = useMemo(
-    () => [
-      {
-        id: "backToHome",
-        label: "Home",
-        icon: "mdi:home",
-        handler: closeRepository
-      }
-    ],
-    [closeRepository]
-  );
   const titleBarActions: IconActionItem[] = useMemo(
     () => [
       {
@@ -128,11 +118,7 @@ const RepositoryPage: React.FC = () => {
   }
   return (
     <>
-      <MainWindowProperty
-        title={repoPath}
-        drawerItems={drawerItems}
-        titleBarActions={titleBarActions}
-      />
+      {active && <MainWindowProperty title={repoPath} titleBarActions={titleBarActions} />}
       <CommandGroup name="RepositoryPage">
         <Cmd name="NextTab" hotkey="Ctrl+Tab" handler={selectNextTab} />
         <Cmd name="PrevTab" hotkey="Ctrl+Shift+Tab" handler={selectPrevTab} />
@@ -173,4 +159,19 @@ const RepositoryPage: React.FC = () => {
   );
 };
 
-export default RepositoryPage;
+const RepositoryPageTab: React.FC<{ path: string; active: boolean }> = ({ path, active }) => {
+  const store = useAtomValue(repositoryStoresAtomFamily(path));
+  useEffect(() => {
+    return () => {
+      invokeTauriCommand("close_repository", { repoPath: path });
+      repositoryStoresAtomFamily.remove(path);
+    };
+  }, [path]);
+  return (
+    <Provider store={store}>
+      <RepositoryPage active={active} />
+    </Provider>
+  );
+};
+
+export default RepositoryPageTab;

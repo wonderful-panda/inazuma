@@ -32,7 +32,7 @@ export const TooltipCommitDisplay: React.FC<{ commit: Commit; className?: string
 
 const TabButton: React.FC<{
   text: string;
-  tooltop: React.ReactChild;
+  tooltop: React.ReactNode;
   closable: boolean;
   select: () => void;
   close: () => void;
@@ -94,7 +94,7 @@ export type TabDefinition<T> = {
 export interface TabContainerProps<T> {
   tabs: readonly TabDefinition<T>[];
   currentTabIndex: number;
-  renderTabTooltip: (tab: TabDefinition<T>) => React.ReactChild;
+  renderTabTooltip: (tab: TabDefinition<T>) => React.ReactNode;
   renderTabContent: (tab: TabDefinition<T>, active: boolean) => React.ReactNode;
   selectTab: (index: number) => void;
   closeTab: (index: number) => void;

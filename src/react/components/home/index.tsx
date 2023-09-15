@@ -11,7 +11,7 @@ import {
 } from "@/state/root";
 import { useOpenRepository } from "@/hooks/actions/openRepository";
 
-const Home = () => {
+const Home: React.FC<{ active: boolean }> = ({ active }) => {
   const openRepository = useOpenRepository();
   const recentOpenedRepositories = useVisibleRecentOpenedRepositoriesValue();
   const removeRecentOpenedRepository = useRemoveRecentOpenedRepository();
@@ -44,7 +44,7 @@ const Home = () => {
   );
   return (
     <>
-      <MainWindowProperty title="Inazuma" />
+      {active && <MainWindowProperty title="Inazuma" />}
       <CommandGroup name="home">
         <Cmd name="OpenFolderSelector" hotkey="Ctrl+O" handler={handleBrowseClick} />
         {openRecents.map((command) => (

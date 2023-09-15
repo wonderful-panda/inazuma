@@ -3,8 +3,7 @@ import { atom } from "jotai";
 
 export type TabsState<T> = { tabs: TabDefinition<T>[]; currentIndex: number };
 
-export const createTabsAtoms = <T>() => {
-  const initialTabs: TabsState<T> = { tabs: [], currentIndex: -1 };
+export const createTabsAtoms = <T>(initialTabs: TabsState<T>) => {
   const tabsAtom = atom<TabsState<T>>(initialTabs);
   const resetTabsAtom = atom(null, (_get, set) => {
     set(tabsAtom, initialTabs);
@@ -87,3 +86,21 @@ export const createTabsAtoms = <T>() => {
     selectPreviousTabAtom
   };
 };
+
+export type AppTabType = {
+  home: null;
+  repository: { path: string };
+};
+
+export const {
+  tabsAtom: appTabsAtom,
+  resetTabsAtom: resetAppTabsAtom,
+  addTabAtom: addAppTabAtom,
+  removeTabAtom: removeAppTabAtom,
+  selectTabAtom: selectAppTabAtom,
+  selectNextTabAtom: selectNextAppTabAtom,
+  selectPreviousTabAtom: selectPreviousAppTabAtom
+} = createTabsAtoms<AppTabType>({
+  tabs: [{ type: "home", id: "__HOME__", title: "HOME", closable: false }],
+  currentIndex: 0
+});

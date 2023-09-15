@@ -1,10 +1,11 @@
 import { closeRepositoryAtom, repoPathAtom, setLogAtom } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
-import { toSlashedPath } from "@/util";
+import { getFileName, toSlashedPath } from "@/util";
 import { GraphFragment, Grapher } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useAddRecentOpenedRepository } from "@/state/root";
+import { setLogToRepositoryStoreAtom, useAddRecentOpenedRepository } from "@/state/root";
+import { addAppTabAtom, appTabsAtom, selectAppTabAtom } from "@/state/tabs";
 
 const fetchHistory = async (repoPath: string) => {
   const [commits, refs] = await invokeTauriCommand("fetch_history", {
@@ -69,26 +70,39 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
 };
 
 export const useOpenRepository = () => {
-  const currentPath = useAtomValue(repoPathAtom);
+  const appTabs = useAtomValue(appTabsAtom);
+  const addAppTab = useSetAtom(addAppTabAtom);
+  const selectAppTab = useSetAtom(selectAppTabAtom);
   const addRecentOpenedRepository = useAddRecentOpenedRepository();
-  const setLog = useSetAtom(setLogAtom);
+  const setLogToRepositoryStore = useSetAtom(setLogToRepositoryStoreAtom);
   return useCallbackWithErrorHandler(
     async (realPath: string) => {
       const path = toSlashedPath(realPath);
+      const index = appTabs.tabs.findIndex(
+        (tab) => tab.type === "repository" && path === tab.payload.path
+      );
+      if (0 <= index) {
+        selectAppTab(index);
+        return;
+      }
       const { commits, refs } = await fetchHistory(path);
       const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
       const graph: Record<string, GraphFragment> = {};
       commits.forEach((c) => {
         graph[c.id] = grapher.proceed(c);
       });
-      if (currentPath) {
-        await invokeTauriCommand("close_repository", { repoPath: currentPath });
-      }
       await invokeTauriCommand("open_repository", { repoPath: path });
       addRecentOpenedRepository(path);
-      setLog({ path, commits, refs: makeRefs(refs), graph, keepTabs: false });
+      addAppTab({
+        type: "repository",
+        id: `__REPO__:${path}`,
+        title: getFileName(path),
+        payload: { path },
+        closable: true
+      });
+      setLogToRepositoryStore({ path, commits, refs: makeRefs(refs), graph, keepTabs: false });
     },
-    [currentPath, addRecentOpenedRepository, setLog],
+    [appTabs.tabs, addAppTab, selectAppTab, addRecentOpenedRepository, setLogToRepositoryStore],
     { loading: true }
   );
 };

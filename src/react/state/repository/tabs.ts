@@ -26,4 +26,7 @@ export const {
   selectTabAtom: selectRepoTabAtom,
   selectNextTabAtom: selectNextRepoTabAtom,
   selectPreviousTabAtom: selectPreviousRepoTabAtom
-} = createTabsAtoms<TabType>();
+} = createTabsAtoms<TabType>({
+  tabs: [{ type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false }],
+  currentIndex: 0
+});

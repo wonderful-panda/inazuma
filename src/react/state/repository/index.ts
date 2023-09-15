@@ -1,6 +1,6 @@
 import { GraphFragment } from "@/grapher";
-import { atom } from "jotai";
-import { resetRepoTabsAtom, repoTabsAtom } from "./tabs";
+import { atom, createStore } from "jotai";
+import { resetRepoTabsAtom } from "./tabs";
 import { resetDialogAtom } from "./dialog";
 import { workingTreeAtom } from "./workingtree";
 
@@ -14,6 +14,12 @@ export const commitDetailAtom = atom<CommitDetail | undefined>(undefined);
 
 const _repoPathAtom = atom<string>("");
 export const repoPathAtom = atom((get) => get(_repoPathAtom));
+
+export const createRepositoryStore = (path: string) => {
+  const store = createStore();
+  store.set(_repoPathAtom, path);
+  return store;
+};
 
 export const setLogAtom = atom(
   null,
@@ -35,10 +41,7 @@ export const setLogAtom = atom(
     set(workingTreeAtom, undefined);
     set(resetDialogAtom);
     if (!keepTabs) {
-      set(repoTabsAtom, {
-        tabs: [{ type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false }],
-        currentIndex: 0
-      });
+      set(resetRepoTabsAtom);
     }
   }
 );
