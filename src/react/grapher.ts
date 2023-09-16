@@ -2,7 +2,7 @@ export interface Edge {
   index: number;
   id: string;
   childId: string;
-  color: string;
+  color?: string;
 }
 
 export interface InterEdge extends Edge {}
@@ -13,7 +13,7 @@ export interface NodeEdge extends Edge {
 
 export interface NodeSymbol {
   index: number;
-  color: string;
+  color?: string;
 }
 
 export interface GraphFragment {
@@ -61,9 +61,19 @@ class ColorPallete {
 export class Grapher {
   _prev: GraphFragment | null;
   _pallete: ColorPallete;
-  constructor(public colors: string[]) {
+  _refs: Refs;
+  constructor(
+    public colors: string[],
+    refs: Refs
+  ) {
     this._prev = null;
     this._pallete = new ColorPallete(colors);
+    this._refs = refs;
+  }
+
+  isMajorRef(id: string): boolean {
+    const refs = this._refs.refsById[id];
+    return refs && refs.some((r) => r.type === "branch" || r.type === "tag");
   }
 
   proceed(dagNode: DagNode): GraphFragment {
@@ -81,31 +91,36 @@ export class Grapher {
         }
       });
     }
+    let isMajor = this.isMajorRef(dagNode.id);
     let node: NodeSymbol | undefined;
     const interEdges: InterEdge[] = [];
     const nodeEdges: NodeEdge[] = [];
     const occupied: boolean[] = [];
     prevEdges.forEach((e) => {
-      const { id, childId, index, color } = e;
+      const { id, childId, index, color: prevColor } = e;
       if (id === dagNode.id) {
-        nodeEdges.push({ type: "C", index, id, childId, color });
+        isMajor ||= !!prevColor;
+        nodeEdges.push({ type: "C", index, id, childId, color: prevColor });
         let edgeGoingOn = false;
         if (!node) {
           occupied[index] = true;
+          const color = !prevColor && isMajor ? this._pallete.pop() : prevColor;
           node = { index, color };
           if (primaryParent) {
-            nodeEdges.push({ type: "P", index, id: primaryParent, childId: id, color });
+            const id = primaryParent;
+            nodeEdges.push({ type: "P", index, id, childId: id, color });
             edgeGoingOn = true;
           }
         }
-        if (!edgeGoingOn) {
-          this._pallete.push(color);
+        if (!edgeGoingOn && prevColor) {
+          this._pallete.push(prevColor);
         }
       } else {
         interEdges.push(e);
         occupied[index] = true;
         const pidx = secondaryParents.indexOf(id);
         if (pidx >= 0) {
+          const color = !prevColor && isMajor ? this._pallete.pop() : prevColor;
           nodeEdges.push({ type: "P", index, id, childId: dagNode.id, color });
           secondaryParents.splice(pidx, 1);
         }
@@ -117,7 +132,7 @@ export class Grapher {
       }
       if (!node) {
         occupied[index] = true;
-        const color = this._pallete.pop();
+        const color = isMajor ? this._pallete.pop() : undefined;
         node = { index, color };
         if (primaryParent) {
           nodeEdges.push({ type: "P", index, id: primaryParent, childId: dagNode.id, color });
@@ -126,7 +141,7 @@ export class Grapher {
         const parentId = secondaryParents.shift();
         if (parentId) {
           occupied[index] = true;
-          const color = this._pallete.pop();
+          const color = isMajor ? this._pallete.pop() : undefined;
           nodeEdges.push({ type: "P", index, id: parentId, childId: dagNode.id, color });
         } else {
           break;

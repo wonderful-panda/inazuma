@@ -57,15 +57,13 @@ type Props = {
 const GRID_WIDTH = 20;
 const WORK_COLOR = "#555";
 
-const actualColor = (id: string, color: string) => {
-  return id === "--" ? WORK_COLOR : color;
-};
+const actualColor = (color: string | undefined) => color || WORK_COLOR;
 
 const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   const node = graph.node;
   const width = GRID_WIDTH * graph.width;
   let radius: number;
-  if (graph.id === "--") {
+  if (!graph.node.color) {
     radius = 4;
   } else if (head) {
     radius = 10;
@@ -85,7 +83,7 @@ const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   const topMostEdges = graph.nodeEdges.filter(
     (edge, i, arr) => (i === 0 || i === arr.length - 1) && edge.index !== node.index
   );
-  const nodeColor = actualColor(graph.id, graph.node.color);
+  const nodeColor = actualColor(graph.node.color);
   return (
     <svg width={width} height={height}>
       <defs>
@@ -116,7 +114,7 @@ const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
             y1="0"
             x2={c2x(edge.index, GRID_WIDTH)}
             y2={height}
-            stroke={actualColor(edge.childId, edge.color)}
+            stroke={actualColor(edge.color)}
             mask={`url(#${edgeMask})`}
           />
         ))}
@@ -127,7 +125,7 @@ const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
             edge={edge}
             width={GRID_WIDTH}
             height={height}
-            stroke={actualColor(edge.childId, edge.color)}
+            stroke={actualColor(edge.color)}
             mask={i === 0 || i === arr.length - 1 ? undefined : `url(#${edgeMask})`}
           />
         ))}

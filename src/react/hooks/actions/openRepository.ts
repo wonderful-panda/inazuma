@@ -23,7 +23,7 @@ const fetchHistory = async (repoPath: string) => {
     });
   }
   const refs = makeRefs(rawRefs);
-  const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
+  const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"], refs);
   const graph: Record<string, GraphFragment> = {};
   commits.forEach((c) => {
     graph[c.id] = grapher.proceed(c);
