@@ -1,4 +1,5 @@
 import { IconActionItem } from "@/commands/types";
+import { DevTools } from "jotai-devtools";
 import { assertNever } from "@/util";
 import { useCallback, useMemo, useEffect } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
@@ -169,6 +170,7 @@ const RepositoryPageTab: React.FC<{ path: string; active: boolean }> = ({ path, 
   }, [path]);
   return (
     <Provider store={store}>
+      <DevTools store={store} />
       <RepositoryPage active={active} />
     </Provider>
   );
