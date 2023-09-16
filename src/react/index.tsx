@@ -25,9 +25,17 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions/openRepository";
 import { useWithRef } from "./hooks/useWithRef";
 import { MainWindow } from "./components/MainWindow";
-import { AppTabType, appTabsAtom, removeAppTabAtom, selectAppTabAtom } from "./state/tabs";
+import {
+  AppTabType,
+  appTabsAtom,
+  removeAppTabAtom,
+  selectAppTabAtom,
+  selectNextAppTabAtom,
+  selectPreviousAppTabAtom
+} from "./state/tabs";
 import { TabContainer, TabContainerProps, TooltipTitle } from "./components/TabContainer";
 import { assertNever } from "./util";
+import { Cmd, CommandGroup } from "./components/CommandGroup";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
@@ -119,6 +127,8 @@ const displayStateStorage = {
 const Content: React.FC = () => {
   const tabs = useAtomValue(appTabsAtom);
   const selectTab = useSetAtom(selectAppTabAtom);
+  const selectNextTab = useSetAtom(selectNextAppTabAtom);
+  const selectPrevTab = useSetAtom(selectPreviousAppTabAtom);
   const removeTab = useSetAtom(removeAppTabAtom);
   const renderTabContent = useCallback<TabContainerProps<AppTabType>["renderTabContent"]>(
     (tab, active) => {
@@ -160,14 +170,20 @@ const Content: React.FC = () => {
   }, []);
 
   return (
-    <TabContainer
-      tabs={tabs.tabs}
-      currentTabIndex={tabs.currentIndex}
-      renderTabContent={renderTabContent}
-      renderTabTooltip={renderTabTooltip}
-      selectTab={selectTab}
-      closeTab={removeTab}
-    />
+    <>
+      <CommandGroup name="root">
+        <Cmd name="SelectNextAppTab" handler={selectNextTab} hotkey="Ctrl+ArrowRight" />
+        <Cmd name="SelectPrevAppTab" handler={selectPrevTab} hotkey="Ctrl+ArrowLeft" />
+      </CommandGroup>
+      <TabContainer
+        tabs={tabs.tabs}
+        currentTabIndex={tabs.currentIndex}
+        renderTabContent={renderTabContent}
+        renderTabTooltip={renderTabTooltip}
+        selectTab={selectTab}
+        closeTab={removeTab}
+      />
+    </>
   );
 };
 const App = ({ startupRepository }: { startupRepository: string | undefined }) => {
