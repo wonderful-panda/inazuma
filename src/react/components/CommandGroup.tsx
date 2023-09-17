@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { Command } from "@/context/CommandGroupContext";
+import { Command, useCommandGroupTree } from "@/context/CommandGroupContext";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 
 export const Cmd: React.FC<Command> = () => <></>;
@@ -10,6 +10,10 @@ export const CommandGroup: React.FC<
     enabled?: boolean;
   } & ChildrenProp
 > = ({ name, enabled = true, children }) => {
+  const commandGroupTree = useCommandGroupTree();
+  const actualEnabled = enabled && commandGroupTree.enabled;
+  const groupName = `${commandGroupTree.path}:${name}`;
+
   const commands = useMemo(() => {
     const ret: Command[] = [];
     React.Children.forEach(children, (child) => {
@@ -26,11 +30,11 @@ export const CommandGroup: React.FC<
   }, [children]);
   const commandGroup = useCommandGroup();
   useEffect(() => {
-    if (enabled) {
-      commandGroup.register({ groupName: name, commands });
-      return () => commandGroup.unregister(name);
+    if (actualEnabled) {
+      commandGroup.register({ groupName, commands });
+      return () => commandGroup.unregister(groupName);
     }
-  }, [commandGroup, name, enabled, commands]);
+  }, [commandGroup, groupName, actualEnabled, commands]);
 
   return <></>;
 };

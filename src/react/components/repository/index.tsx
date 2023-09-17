@@ -1,9 +1,10 @@
 import { IconActionItem } from "@/commands/types";
+import { DevTools } from "jotai-devtools";
 import { assertNever } from "@/util";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { InteractiveShell } from "../InteractiveShell";
-import { MainWindow } from "../MainWindow";
+import { MainWindowProperty } from "../MainWindow";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { TabContainer, TabContainerProps, TooltipTitle } from "../TabContainer";
 import CommitLog from "./CommitLog";
@@ -11,23 +12,25 @@ import BlameTabTooltip from "./BlameTabTooltip";
 import LsTreeTabTooltip from "./LsTreeTabTooltip";
 import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
 import { lazy } from "../hoc/lazy";
-import { useConfigValue } from "@/state/root";
+import { repositoryStoresAtomFamily, useConfigValue } from "@/state/root";
 import { logAtom, repoPathAtom } from "@/state/repository";
-import { useAtomValue, useSetAtom } from "jotai";
+import { Provider, useAtomValue, useSetAtom } from "jotai";
 import {
   TabType,
-  removeTabAtom,
-  selectNextTabAtom,
-  selectPreviousTabAtom,
-  selectTabAtom,
-  tabsAtom
+  removeRepoTabAtom,
+  selectNextRepoTabAtom,
+  selectPreviousRepoTabAtom,
+  selectRepoTabAtom,
+  repoTabsAtom
 } from "@/state/repository/tabs";
 import {
   hideInteractiveShellAtom,
   interactiveShellAtom,
   toggleInteractiveShellAtom
 } from "@/state/repository/misc";
-import { useCloseRepository, useReloadRepository } from "@/hooks/actions/openRepository";
+import { useReloadRepository } from "@/hooks/actions/openRepository";
+import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
 const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
@@ -48,9 +51,9 @@ const renderTabTooltip: TabContainerProps<TabType>["renderTabTooltip"] = (tab) =
   }
 };
 
-const RepositoryPage: React.FC = () => {
+const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const repoPath = useAtomValue(repoPathAtom);
-  const tabs = useAtomValue(tabsAtom);
+  const tabs = useAtomValue(repoTabsAtom);
   const refs = useAtomValue(logAtom)?.refs;
   const interactiveShell = useAtomValue(interactiveShellAtom);
   const toggleInteractiveShell = useSetAtom(toggleInteractiveShellAtom);
@@ -61,39 +64,37 @@ const RepositoryPage: React.FC = () => {
       if (!repoPath || !tab) {
         return <></>;
       }
+      let child: React.ReactNode;
       switch (tab.type) {
         case "commits":
-          return <CommitLog active={active} />;
+          child = <CommitLog />;
+          break;
         case "file":
-          return <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} />;
+          child = <BlameTab repoPath={repoPath} {...tab.payload} refs={refs} />;
+          break;
         case "tree":
-          return <LsTreeTab repoPath={repoPath} {...tab.payload} refs={refs} />;
+          child = <LsTreeTab repoPath={repoPath} {...tab.payload} refs={refs} />;
+          break;
         case "commitDiff":
-          return <CommitDiffTab repoPath={repoPath} {...tab.payload} />;
+          child = <CommitDiffTab repoPath={repoPath} {...tab.payload} />;
+          break;
         default:
           assertNever(tab);
           break;
       }
+      return (
+        <CommandGroupTreeProvider name={tab.id} enabled={active}>
+          {child}
+        </CommandGroupTreeProvider>
+      );
     },
     [repoPath, refs]
   );
-  const selectTab = useSetAtom(selectTabAtom);
-  const closeTab = useSetAtom(removeTabAtom);
-  const selectNextTab = useSetAtom(selectNextTabAtom);
-  const selectPrevTab = useSetAtom(selectPreviousTabAtom);
-  const closeRepository = useCloseRepository();
+  const selectTab = useSetAtom(selectRepoTabAtom);
+  const closeTab = useSetAtom(removeRepoTabAtom);
+  const selectNextTab = useSetAtom(selectNextRepoTabAtom);
+  const selectPrevTab = useSetAtom(selectPreviousRepoTabAtom);
   const reloadRepository = useReloadRepository();
-  const drawerItems: IconActionItem[] = useMemo(
-    () => [
-      {
-        id: "backToHome",
-        label: "Home",
-        icon: "mdi:home",
-        handler: closeRepository
-      }
-    ],
-    [closeRepository]
-  );
   const titleBarActions: IconActionItem[] = useMemo(
     () => [
       {
@@ -116,13 +117,13 @@ const RepositoryPage: React.FC = () => {
     return <></>;
   }
   return (
-    <MainWindow title={repoPath} drawerItems={drawerItems} titleBarActions={titleBarActions}>
+    <>
+      {active && <MainWindowProperty title={repoPath} titleBarActions={titleBarActions} />}
       <CommandGroup name="RepositoryPage">
         <Cmd name="NextTab" hotkey="Ctrl+Tab" handler={selectNextTab} />
         <Cmd name="PrevTab" hotkey="Ctrl+Shift+Tab" handler={selectPrevTab} />
         <Cmd name="CloseTab" hotkey="Ctrl+F4" handler={closeTab} />
         <Cmd name="ToggleShell" hotkey="Ctrl+T" handler={toggleInteractiveShell} />
-        <Cmd name="CloseRepository" hotkey="Ctrl+H" handler={closeRepository} />
         <Cmd name="ReloadRepository" hotkey="Ctrl+R" handler={reloadRepository} />
       </CommandGroup>
       <PersistSplitterPanel
@@ -153,8 +154,24 @@ const RepositoryPage: React.FC = () => {
           />
         }
       />
-    </MainWindow>
+    </>
   );
 };
 
-export default RepositoryPage;
+const RepositoryPageTab: React.FC<{ path: string; active: boolean }> = ({ path, active }) => {
+  const store = useAtomValue(repositoryStoresAtomFamily(path));
+  useEffect(() => {
+    return () => {
+      invokeTauriCommand("close_repository", { repoPath: path });
+      repositoryStoresAtomFamily.remove(path);
+    };
+  }, [path]);
+  return (
+    <Provider store={store}>
+      <DevTools store={store} />
+      <RepositoryPage active={active} />
+    </Provider>
+  );
+};
+
+export default RepositoryPageTab;

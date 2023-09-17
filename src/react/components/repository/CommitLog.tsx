@@ -92,10 +92,9 @@ const useCompareWithPinnedCommitCommand = (pinnedCommit: Commit | undefined) => 
 };
 
 const CommitLogInner: React.FC<{
-  active: boolean;
   repoPath: string;
   log: CommitLogItems;
-}> = ({ active, repoPath, log }) => {
+}> = ({ repoPath, log }) => {
   const workingTree = useAtomValue(workingTreeAtom);
   const commitDetail = useAtomValue(commitDetailAtom);
   // selected row index, updated immediately
@@ -189,7 +188,7 @@ const CommitLogInner: React.FC<{
   );
   return (
     <>
-      <CommandGroup name="CommitLog" enabled={active}>
+      <CommandGroup name="CommitLog">
         <Cmd name="NextCommit" hotkey="Ctrl+N" handler={moveNext} />
         <Cmd name="PrevCommit" hotkey="Ctrl+P" handler={movePrevious} />
         <Cmd name="ShowLsTree" hotkey="Ctrl+L" handler={showLsTreeTab} />
@@ -229,13 +228,13 @@ const CommitLogInner: React.FC<{
   );
 };
 
-const CommitLog: React.FC<{ active: boolean }> = ({ active }) => {
+const CommitLog: React.FC = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const log = useAtomValue(logAtom);
   if (!repoPath || !log) {
     return <></>;
   }
-  return <CommitLogInner active={active} repoPath={repoPath} log={log} />;
+  return <CommitLogInner repoPath={repoPath} log={log} />;
 };
 
 export default CommitLog;

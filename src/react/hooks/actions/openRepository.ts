@@ -1,26 +1,34 @@
-import { closeRepositoryAtom, repoPathAtom, setLogAtom } from "@/state/repository";
+import { repoPathAtom } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback } from "react";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
-import { toSlashedPath } from "@/util";
+import { getFileName, toSlashedPath } from "@/util";
 import { GraphFragment, Grapher } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useAddRecentOpenedRepository } from "@/state/root";
+import { setLogToRepositoryStoreAtom, useAddRecentOpenedRepository } from "@/state/root";
+import { addAppTabAtom, appTabsAtom, selectAppTabAtom } from "@/state/tabs";
 
 const fetchHistory = async (repoPath: string) => {
-  const [commits, refs] = await invokeTauriCommand("fetch_history", {
+  const [commits, rawRefs] = await invokeTauriCommand("fetch_history", {
     repoPath,
     maxCount: 1000
   });
-  if (refs.head) {
+  if (rawRefs.head) {
     commits.unshift({
       id: "--",
       author: "--",
       date: Date.now(),
       summary: "<Working tree>",
-      parentIds: [refs.head, ...refs.mergeHeads]
+      parentIds: [rawRefs.head, ...rawRefs.mergeHeads]
     });
   }
-  return { commits, refs };
+  const refs = makeRefs(rawRefs);
+  const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
+  const graph: Record<string, GraphFragment> = {};
+  commits.forEach((c) => {
+    graph[c.id] = grapher.proceed(c);
+  });
+  return { commits, refs, graph };
 };
 
 const makeRefs = (rawRefs: RawRefs): Refs => {
@@ -69,59 +77,53 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
 };
 
 export const useOpenRepository = () => {
-  const currentPath = useAtomValue(repoPathAtom);
+  const appTabs = useAtomValue(appTabsAtom);
+  const addAppTab = useSetAtom(addAppTabAtom);
+  const selectAppTab = useSetAtom(selectAppTabAtom);
   const addRecentOpenedRepository = useAddRecentOpenedRepository();
-  const setLog = useSetAtom(setLogAtom);
+  const setLogToRepositoryStore = useSetAtom(setLogToRepositoryStoreAtom);
   return useCallbackWithErrorHandler(
     async (realPath: string) => {
       const path = toSlashedPath(realPath);
-      const { commits, refs } = await fetchHistory(path);
-      const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
-      const graph: Record<string, GraphFragment> = {};
-      commits.forEach((c) => {
-        graph[c.id] = grapher.proceed(c);
-      });
-      if (currentPath) {
-        await invokeTauriCommand("close_repository", { repoPath: currentPath });
+      const { commits, refs, graph } = await fetchHistory(path);
+      const index = appTabs.tabs.findIndex(
+        (tab) => tab.type === "repository" && path === tab.payload.path
+      );
+      if (0 <= index) {
+        setLogToRepositoryStore({ path, commits, refs, graph, keepTabs: true });
+        selectAppTab(index);
+        return;
       }
       await invokeTauriCommand("open_repository", { repoPath: path });
       addRecentOpenedRepository(path);
-      setLog({ path, commits, refs: makeRefs(refs), graph, keepTabs: false });
+      setLogToRepositoryStore({ path, commits, refs, graph, keepTabs: false });
+      addAppTab({
+        type: "repository",
+        id: `__REPO__:${path}`,
+        title: getFileName(path),
+        payload: { path },
+        closable: true
+      });
     },
-    [currentPath, addRecentOpenedRepository, setLog],
+    [appTabs.tabs, addAppTab, selectAppTab, addRecentOpenedRepository, setLogToRepositoryStore],
+    { loading: true }
+  );
+};
+
+export const useReloadSpecifiedRepository = () => {
+  const setLogToRepositoryStore = useSetAtom(setLogToRepositoryStoreAtom);
+  return useCallbackWithErrorHandler(
+    async (path: string) => {
+      const { commits, refs, graph } = await fetchHistory(path);
+      setLogToRepositoryStore({ path, commits, refs, graph, keepTabs: true });
+    },
+    [setLogToRepositoryStore],
     { loading: true }
   );
 };
 
 export const useReloadRepository = () => {
   const path = useAtomValue(repoPathAtom);
-  const setLog = useSetAtom(setLogAtom);
-  return useCallbackWithErrorHandler(
-    async () => {
-      if (!path) {
-        return;
-      }
-      const { commits, refs } = await fetchHistory(path);
-      const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"]);
-      const graph: Record<string, GraphFragment> = {};
-      commits.forEach((c) => {
-        graph[c.id] = grapher.proceed(c);
-      });
-      setLog({ path, commits, refs: makeRefs(refs), graph, keepTabs: false });
-    },
-    [path, setLog],
-    { loading: true }
-  );
-};
-
-export const useCloseRepository = () => {
-  const repoPath = useAtomValue(repoPathAtom);
-  const closeRepository = useSetAtom(closeRepositoryAtom);
-  return useCallbackWithErrorHandler(async () => {
-    if (!repoPath) {
-      return;
-    }
-    closeRepository();
-    await invokeTauriCommand("close_repository", { repoPath });
-  }, [repoPath, closeRepository]);
+  const reloadSpecifiedRepository = useReloadSpecifiedRepository();
+  return useCallback(() => reloadSpecifiedRepository(path), [path, reloadSpecifiedRepository]);
 };

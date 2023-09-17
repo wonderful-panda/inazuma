@@ -1,5 +1,5 @@
 import { assertNever } from "@/util";
-import { createContext, useEffect, useMemo, useReducer } from "react";
+import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 
 // prettier-ignore
 type Char =
@@ -103,6 +103,31 @@ export const CommandGroupContext = createContext({
   resume: () => {}
 } as CommandGroupMethods);
 
+const CommandGroupTreeContext = createContext({
+  path: "/root",
+  enabled: true
+});
+
+export const CommandGroupTreeProvider: React.FC<
+  { name: string; enabled: boolean } & ChildrenProp
+> = ({ name, enabled, children }) => {
+  const parentContext = useContext(CommandGroupTreeContext);
+  const path = `${parentContext.path}/${name}`;
+  const actuallyEnabled = parentContext.enabled && enabled;
+  const state = useMemo(
+    () => ({
+      path,
+      enabled: actuallyEnabled
+    }),
+    [path, actuallyEnabled]
+  );
+  return (
+    <CommandGroupTreeContext.Provider value={state}>{children}</CommandGroupTreeContext.Provider>
+  );
+};
+
+export const useCommandGroupTree = () => useContext(CommandGroupTreeContext);
+
 export const CommandGroupProvider: React.FC<ChildrenProp> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const methods = useMemo<CommandGroupMethods>(
@@ -118,15 +143,15 @@ export const CommandGroupProvider: React.FC<ChildrenProp> = ({ children }) => {
     }),
     []
   );
-  const hotkeyMap = useMemo<Record<string, Command>>(() => {
-    const ret: Record<string, Command> = {};
+  const hotkeyMap = useMemo<Record<string, { cmd: Command; group: string }>>(() => {
+    const ret: Record<string, { cmd: Command; group: string }> = {};
     state.groups.forEach((g) =>
       g.commands.forEach((c) => {
         if (c.hotkey) {
           if (ret[c.hotkey]) {
-            console.warn(`duplicated HotKey: [${c.hotkey}] ${ret[c.hotkey].name}, ${c.name}`);
+            console.warn(`duplicated HotKey: [${c.hotkey}] ${ret[c.hotkey].cmd.name}, ${c.name}`);
           }
-          ret[c.hotkey] = c;
+          ret[c.hotkey] = { cmd: c, group: g.groupName };
         }
       })
     );
@@ -142,11 +167,11 @@ export const CommandGroupProvider: React.FC<ChildrenProp> = ({ children }) => {
         return;
       }
       const hotkey = getHotKeyString(e);
-      const cmd = hotkeyMap[hotkey];
-      if (cmd) {
+      const c = hotkeyMap[hotkey];
+      if (c) {
         e.preventDefault();
-        console.log(`run ${cmd.name}`);
-        cmd.handler();
+        console.log(`run ${c.cmd.name}, ${c.group}`);
+        c.cmd.handler();
       }
     };
     window.addEventListener("keydown", onKeyDown);

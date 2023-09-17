@@ -73,7 +73,7 @@ const InteractiveShell_: React.FC<InteractiveShellProps> = (props) => {
   // InteractiveShellInner must be kept mounted, so we put it out of AutoSizer.
   return (
     <>
-      <InteractiveShellInner {...props} {...size} />;
+      <InteractiveShellInner {...props} {...size} />
       <AutoSizer className="absolute flex-1" onResize={setSize}>
         {nope}
       </AutoSizer>

@@ -1,12 +1,12 @@
 import { repoPathAtom } from "@/state/repository";
-import { addTabAtom } from "@/state/repository/tabs";
+import { addRepoTabAtom } from "@/state/repository/tabs";
 import { getFileName, shortHash } from "@/util";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 
 export const useShowFileContent = () => {
   const repoPath = useAtomValue(repoPathAtom);
-  const addTab = useSetAtom(addTabAtom);
+  const addTab = useSetAtom(addRepoTabAtom);
   return useCallbackWithErrorHandler(
     (commit: Commit, file: FileEntry) => {
       if (!repoPath) {
