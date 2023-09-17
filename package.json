@@ -21,7 +21,7 @@
     "test:tauri": "cargo test --manifest-path src-tauri/app/Cargo.toml",
     "build": "run-s build:frontend build:tauri",
     "watch:ts": "vite",
-    "watch:frontend": "run-p \"build:tailwind -w\" \"check:ts -w\" watch:ts",
+    "watch:frontend": "run-p \"build:tailwind -- -w\" \"check:ts -- -w\" watch:ts",
     "watch:tauri": "tauri dev",
     "watch": "run-p watch:*",
     "all": "run-s clean format lint build"
