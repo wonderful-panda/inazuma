@@ -1,4 +1,4 @@
-import { closeRepositoryAtom, repoPathAtom } from "@/state/repository";
+import { repoPathAtom } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
@@ -129,16 +129,4 @@ export const useReloadRepository = () => {
   const path = useAtomValue(repoPathAtom);
   const reloadSpecifiedRepository = useReloadSpecifiedRepository();
   return useCallback(() => reloadSpecifiedRepository(path), [path, reloadSpecifiedRepository]);
-};
-
-export const useCloseRepository = () => {
-  const repoPath = useAtomValue(repoPathAtom);
-  const closeRepository = useSetAtom(closeRepositoryAtom);
-  return useCallbackWithErrorHandler(async () => {
-    if (!repoPath) {
-      return;
-    }
-    closeRepository();
-    await invokeTauriCommand("close_repository", { repoPath });
-  }, [repoPath, closeRepository]);
 };

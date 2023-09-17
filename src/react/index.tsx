@@ -30,6 +30,7 @@ import {
   appTabsAtom,
   removeAppTabAtom,
   selectAppTabAtom,
+  selectHomeTabAtom,
   selectNextAppTabAtom,
   selectPreviousAppTabAtom
 } from "./state/tabs";
@@ -130,6 +131,7 @@ const Content: React.FC = () => {
   const selectNextTab = useSetAtom(selectNextAppTabAtom);
   const selectPrevTab = useSetAtom(selectPreviousAppTabAtom);
   const removeTab = useSetAtom(removeAppTabAtom);
+  const selectHomeTab = useSetAtom(selectHomeTabAtom);
   const renderTabContent = useCallback<TabContainerProps<AppTabType>["renderTabContent"]>(
     (tab, active) => {
       let child: React.ReactNode;
@@ -174,6 +176,7 @@ const Content: React.FC = () => {
       <CommandGroup name="root">
         <Cmd name="SelectNextAppTab" handler={selectNextTab} hotkey="Ctrl+ArrowRight" />
         <Cmd name="SelectPrevAppTab" handler={selectPrevTab} hotkey="Ctrl+ArrowLeft" />
+        <Cmd name="SelectHomeTab" hotkey="Ctrl+H" handler={selectHomeTab} />
       </CommandGroup>
       <TabContainer
         tabs={tabs.tabs}

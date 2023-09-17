@@ -46,15 +46,6 @@ export const setLogAtom = atom(
   }
 );
 
-export const closeRepositoryAtom = atom(null, (_get, set) => {
-  set(_repoPathAtom, "");
-  set(logAtom, undefined);
-  set(commitDetailAtom, undefined);
-  set(workingTreeAtom, undefined);
-  set(resetRepoTabsAtom);
-  set(resetDialogAtom);
-});
-
 export const setCommitDetailAtom = atom(
   null,
   (get, set, update: { repoPath: string; value: CommitDetail }) => {

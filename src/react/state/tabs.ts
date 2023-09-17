@@ -104,3 +104,14 @@ export const {
   tabs: [{ type: "home", id: "__HOME__", title: "HOME", closable: false }],
   currentIndex: 0
 });
+
+export const selectHomeTabAtom = atom(null, (_get, set) => {
+  set(appTabsAtom, prev => {
+    const index = prev.tabs.findIndex(t => t.type === "home");
+    if (0 <= index) {
+      return { tabs: prev.tabs, currentIndex: index};
+    } else {
+      return prev;
+    }
+  })
+})

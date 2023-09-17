@@ -28,7 +28,7 @@ import {
   interactiveShellAtom,
   toggleInteractiveShellAtom
 } from "@/state/repository/misc";
-import { useCloseRepository, useReloadRepository } from "@/hooks/actions/openRepository";
+import { useReloadRepository } from "@/hooks/actions/openRepository";
 import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 
@@ -94,7 +94,6 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const closeTab = useSetAtom(removeRepoTabAtom);
   const selectNextTab = useSetAtom(selectNextRepoTabAtom);
   const selectPrevTab = useSetAtom(selectPreviousRepoTabAtom);
-  const closeRepository = useCloseRepository();
   const reloadRepository = useReloadRepository();
   const titleBarActions: IconActionItem[] = useMemo(
     () => [
@@ -125,7 +124,6 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
         <Cmd name="PrevTab" hotkey="Ctrl+Shift+Tab" handler={selectPrevTab} />
         <Cmd name="CloseTab" hotkey="Ctrl+F4" handler={closeTab} />
         <Cmd name="ToggleShell" hotkey="Ctrl+T" handler={toggleInteractiveShell} />
-        <Cmd name="CloseRepository" hotkey="Ctrl+H" handler={closeRepository} />
         <Cmd name="ReloadRepository" hotkey="Ctrl+R" handler={reloadRepository} />
       </CommandGroup>
       <PersistSplitterPanel
