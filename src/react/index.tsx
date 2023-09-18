@@ -8,7 +8,6 @@ import { lime, yellow } from "@mui/material/colors";
 import { PersistStateProvider } from "./context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
 import { CommandGroupProvider, CommandGroupTreeProvider } from "./context/CommandGroupContext";
-import { Loading } from "./components/Loading";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
 import { lazy } from "./components/hoc/lazy";
 import { invokeTauriCommand } from "./invokeTauriCommand";
@@ -215,7 +214,7 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
 
   const content = useMemo(() => {
     if (initializing) {
-      return <Loading open />;
+      return <></>;
     } else {
       return <Content />;
     }
