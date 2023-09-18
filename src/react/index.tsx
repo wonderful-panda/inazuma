@@ -21,18 +21,17 @@ import {
   useConfigValue,
   useReportError
 } from "./state/root";
-import { useAtomValue, useSetAtom } from "jotai";
 import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions/openRepository";
 import { useWithRef } from "./hooks/useWithRef";
 import { MainWindow } from "./components/MainWindow";
 import {
   AppTabType,
-  appTabsAtom,
-  removeAppTabAtom,
-  selectAppTabAtom,
-  selectHomeTabAtom,
-  selectNextAppTabAtom,
-  selectPreviousAppTabAtom
+  useAppTabsValue,
+  useRemoveAppTab,
+  useSelectAppTab,
+  useSelectHomeTab,
+  useSelectNextAppTab,
+  useSelectPrevAppTab
 } from "./state/tabs";
 import { TabContainer, TabContainerProps, TooltipTitle } from "./components/TabContainer";
 import { assertNever } from "./util";
@@ -126,12 +125,12 @@ const displayStateStorage = {
 };
 
 const Content: React.FC = () => {
-  const tabs = useAtomValue(appTabsAtom);
-  const selectTab = useSetAtom(selectAppTabAtom);
-  const selectNextTab = useSetAtom(selectNextAppTabAtom);
-  const selectPrevTab = useSetAtom(selectPreviousAppTabAtom);
-  const removeTab = useSetAtom(removeAppTabAtom);
-  const selectHomeTab = useSetAtom(selectHomeTabAtom);
+  const tabs = useAppTabsValue();
+  const selectTab = useSelectAppTab();
+  const selectNextTab = useSelectNextAppTab();
+  const selectPrevTab = useSelectPrevAppTab();
+  const removeTab = useRemoveAppTab();
+  const selectHomeTab = useSelectHomeTab();
   const renderTabContent = useCallback<TabContainerProps<AppTabType>["renderTabContent"]>(
     (tab, active) => {
       let child: React.ReactNode;

@@ -1,5 +1,6 @@
 import { TabDefinition } from "@/components/TabContainer";
-import { atom } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
+import { getRootStore } from "./rootStore";
 
 export type TabsState<T> = { tabs: TabDefinition<T>[]; currentIndex: number };
 
@@ -92,26 +93,34 @@ export type AppTabType = {
   repository: { path: string };
 };
 
-export const {
-  tabsAtom: appTabsAtom,
-  resetTabsAtom: resetAppTabsAtom,
-  addTabAtom: addAppTabAtom,
-  removeTabAtom: removeAppTabAtom,
-  selectTabAtom: selectAppTabAtom,
-  selectNextTabAtom: selectNextAppTabAtom,
-  selectPreviousTabAtom: selectPreviousAppTabAtom
+const {
+  tabsAtom,
+  addTabAtom,
+  removeTabAtom,
+  selectTabAtom,
+  selectNextTabAtom,
+  selectPreviousTabAtom
 } = createTabsAtoms<AppTabType>({
   tabs: [{ type: "home", id: "__HOME__", title: "HOME", closable: false }],
   currentIndex: 0
 });
 
-export const selectHomeTabAtom = atom(null, (_get, set) => {
-  set(appTabsAtom, prev => {
-    const index = prev.tabs.findIndex(t => t.type === "home");
+const opt = { store: getRootStore() };
+export const useAppTabsValue = () => useAtomValue(tabsAtom, opt);
+export const useAddAppTab = () => useSetAtom(addTabAtom, opt);
+export const useRemoveAppTab = () => useSetAtom(removeTabAtom, opt);
+export const useSelectAppTab = () => useSetAtom(selectTabAtom, opt);
+export const useSelectNextAppTab = () => useSetAtom(selectNextTabAtom, opt);
+export const useSelectPrevAppTab = () => useSetAtom(selectPreviousTabAtom, opt);
+
+const selectHomeTabAtom = atom(null, (_get, set) => {
+  set(tabsAtom, (prev) => {
+    const index = prev.tabs.findIndex((t) => t.type === "home");
     if (0 <= index) {
-      return { tabs: prev.tabs, currentIndex: index};
+      return { tabs: prev.tabs, currentIndex: index };
     } else {
       return prev;
     }
-  })
-})
+  });
+});
+export const useSelectHomeTab = () => useSetAtom(selectHomeTabAtom, opt);

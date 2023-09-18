@@ -6,7 +6,7 @@ import { getFileName, toSlashedPath } from "@/util";
 import { GraphFragment, Grapher } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useAddRecentOpenedRepository } from "@/state/root";
-import { addAppTabAtom, appTabsAtom, selectAppTabAtom } from "@/state/tabs";
+import { useAddAppTab, useAppTabsValue, useSelectAppTab } from "@/state/tabs";
 
 const fetchHistory = async (repoPath: string) => {
   const [commits, rawRefs] = await invokeTauriCommand("fetch_history", {
@@ -77,9 +77,9 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
 };
 
 export const useOpenRepository = () => {
-  const appTabs = useAtomValue(appTabsAtom);
-  const addAppTab = useSetAtom(addAppTabAtom);
-  const selectAppTab = useSetAtom(selectAppTabAtom);
+  const appTabs = useAppTabsValue();
+  const addAppTab = useAddAppTab();
+  const selectAppTab = useSelectAppTab();
   const addRecentOpenedRepository = useAddRecentOpenedRepository();
   const setLogToRepositoryStore = useSetAtom(setLogToRepositoryStoreAtom);
   return useCallbackWithErrorHandler(
