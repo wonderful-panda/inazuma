@@ -111,6 +111,15 @@ export class Grapher {
             nodeEdges.push({ type: "P", index, id, childId: id, color });
             edgeGoingOn = true;
           }
+        } else if (!node.color && prevColor) {
+          node.color = prevColor;
+          let first = true;
+          nodeEdges.forEach((ne) => {
+            if (ne.type === "P" && !ne.color) {
+              ne.color = first ? prevColor : this._pallete.pop();
+              first = false;
+            }
+          });
         }
         if (!edgeGoingOn && prevColor) {
           this._pallete.push(prevColor);
