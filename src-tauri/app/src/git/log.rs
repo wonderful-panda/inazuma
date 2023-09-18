@@ -78,7 +78,7 @@ fn build_args<'a>(format: &'a str, max_count_option: &'a str, heads: &[&'a str])
             args.push(h);
         }
     } else {
-        for a in ["--branches", "--tags", "--remotes"].iter() {
+        for a in ["--branches", "--tags", "--remotes", "HEAD"].iter() {
             args.push(a);
         }
     }
