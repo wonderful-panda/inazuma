@@ -25,12 +25,14 @@ import { useWithRef } from "./hooks/useWithRef";
 import { MainWindow } from "./components/MainWindow";
 import {
   AppTabType,
+  registerApplicationTabsWatcher,
   useAppTabsValue,
   useRemoveAppTab,
   useSelectAppTab,
   useSelectHomeTab,
   useSelectNextAppTab,
-  useSelectPrevAppTab
+  useSelectPrevAppTab,
+  setInitialValue as setInitialAppTabsValue
 } from "./state/tabs";
 import { TabContainer, TabContainerProps, TooltipTitle } from "./components/TabContainer";
 import { assertNever } from "./util";
@@ -241,6 +243,11 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
   updateFontSize(config.fontSize);
   displayStateStorage.reset(environment.state || {});
   setInitialValue(config, environment.recentOpened || []);
+  const appTabsJsonString = sessionStorage.getItem("applicationTabs");
+  if (appTabsJsonString) {
+    console.debug(appTabsJsonString);
+    setInitialAppTabsValue(JSON.parse(appTabsJsonString));
+  }
   const unwatch1 = registerConfigWatcher((value) => {
     invokeTauriCommand("save_config", { newConfig: value });
     updateFont(value.fontFamily);
@@ -249,9 +256,14 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
   const unwatch2 = registerRecentOpenedRepositoriesWatcher((value) =>
     invokeTauriCommand("store_recent_opened", { newList: value })
   );
+  const unwatch3 = registerApplicationTabsWatcher((value) =>
+    sessionStorage.setItem("applicationTabs", JSON.stringify(value))
+  );
+
   window.addEventListener("unload", () => {
     unwatch1();
     unwatch2();
+    unwatch3();
   });
 
   const hash = window.location.hash ? decodeURI(window.location.hash.slice(1)) : undefined;

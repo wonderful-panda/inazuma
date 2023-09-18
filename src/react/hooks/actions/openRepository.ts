@@ -1,4 +1,4 @@
-import { repoPathAtom, setLogToRepositoryStoreAtom } from "@/state/repository";
+import { logAtom, repoPathAtom, setLogToRepositoryStoreAtom } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
@@ -126,4 +126,14 @@ export const useReloadRepository = () => {
   const path = useAtomValue(repoPathAtom);
   const reloadSpecifiedRepository = useReloadSpecifiedRepository();
   return useCallback(() => reloadSpecifiedRepository(path), [path, reloadSpecifiedRepository]);
+};
+
+export const useLoadRepositoryIfNotYet = () => {
+  const notLoadedYet = useAtomValue(logAtom) === undefined;
+  const reloadRepository = useReloadRepository();
+  return useCallback(() => {
+    if (notLoadedYet) {
+      reloadRepository();
+    }
+  }, [notLoadedYet, reloadRepository]);
 };

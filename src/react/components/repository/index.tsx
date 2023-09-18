@@ -28,7 +28,7 @@ import {
   interactiveShellAtom,
   toggleInteractiveShellAtom
 } from "@/state/repository/misc";
-import { useReloadRepository } from "@/hooks/actions/openRepository";
+import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/hooks/actions/openRepository";
 import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 
@@ -59,6 +59,8 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const toggleInteractiveShell = useSetAtom(toggleInteractiveShellAtom);
   const hideInteractiveShell = useSetAtom(hideInteractiveShellAtom);
   const config = useConfigValue();
+  const loadRepositoryIfNotYet = useLoadRepositoryIfNotYet();
+  useEffect(loadRepositoryIfNotYet, [loadRepositoryIfNotYet]);
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
       if (!repoPath || !tab) {
@@ -113,9 +115,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
     ],
     [config.interactiveShell, toggleInteractiveShell, reloadRepository]
   );
-  if (!repoPath || !tabs) {
-    return <></>;
-  }
+  useEffect(() => {}, []);
   return (
     <>
       {active && <MainWindowProperty title={repoPath} titleBarActions={titleBarActions} />}

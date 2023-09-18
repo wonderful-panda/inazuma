@@ -1,6 +1,7 @@
 import { TabDefinition } from "@/components/TabContainer";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { getRootStore } from "./rootStore";
+import { createWacher } from "./util";
 
 export type TabsState<T> = { tabs: TabDefinition<T>[]; currentIndex: number };
 
@@ -124,3 +125,9 @@ const selectHomeTabAtom = atom(null, (_get, set) => {
   });
 });
 export const useSelectHomeTab = () => useSetAtom(selectHomeTabAtom, opt);
+
+export const registerApplicationTabsWatcher = createWacher(tabsAtom, opt.store);
+
+export const setInitialValue = (value: TabsState<AppTabType>) => {
+  opt.store.set(tabsAtom, value);
+};
