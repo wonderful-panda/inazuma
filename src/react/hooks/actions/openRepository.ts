@@ -1,11 +1,11 @@
-import { repoPathAtom } from "@/state/repository";
+import { repoPathAtom, setLogToRepositoryStoreAtom } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 import { getFileName, toSlashedPath } from "@/util";
 import { GraphFragment, Grapher } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { setLogToRepositoryStoreAtom, useAddRecentOpenedRepository } from "@/state/root";
+import { useAddRecentOpenedRepository } from "@/state/root";
 import { addAppTabAtom, appTabsAtom, selectAppTabAtom } from "@/state/tabs";
 
 const fetchHistory = async (repoPath: string) => {

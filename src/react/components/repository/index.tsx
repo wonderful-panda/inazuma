@@ -12,8 +12,8 @@ import BlameTabTooltip from "./BlameTabTooltip";
 import LsTreeTabTooltip from "./LsTreeTabTooltip";
 import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
 import { lazy } from "../hoc/lazy";
-import { repositoryStoresAtomFamily, useConfigValue } from "@/state/root";
-import { logAtom, repoPathAtom } from "@/state/repository";
+import { useConfigValue } from "@/state/root";
+import { logAtom, repoPathAtom, repositoryStoresAtomFamily } from "@/state/repository";
 import { Provider, useAtomValue, useSetAtom } from "jotai";
 import {
   TabType,

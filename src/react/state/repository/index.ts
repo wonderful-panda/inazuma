@@ -3,6 +3,7 @@ import { atom, createStore } from "jotai";
 import { resetRepoTabsAtom } from "./tabs";
 import { resetDialogAtom } from "./dialog";
 import { workingTreeAtom } from "./workingtree";
+import { atomFamily } from "jotai/utils";
 
 export interface CommitLogItems {
   commits: Commit[];
@@ -21,7 +22,11 @@ export const createRepositoryStore = (path: string) => {
   return store;
 };
 
-export const setLogAtom = atom(
+export const repositoryStoresAtomFamily = atomFamily((path: string) =>
+  atom(createRepositoryStore(path))
+);
+
+const _setLogAtom = atom(
   null,
   (
     _get,
@@ -43,6 +48,24 @@ export const setLogAtom = atom(
     if (!keepTabs) {
       set(resetRepoTabsAtom);
     }
+  }
+);
+
+export const setLogToRepositoryStoreAtom = atom(
+  null,
+  (
+    get,
+    _set,
+    update: {
+      path: string;
+      keepTabs: boolean;
+      commits: Commit[];
+      refs: Refs;
+      graph: Record<string, GraphFragment>;
+    }
+  ) => {
+    const store = get(repositoryStoresAtomFamily(update.path));
+    store.set(_setLogAtom, update);
   }
 );
 

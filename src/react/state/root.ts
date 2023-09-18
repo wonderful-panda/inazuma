@@ -1,16 +1,11 @@
-import { atom, useAtom, useAtomValue, createStore, useSetAtom } from "jotai";
-import { atomFamily } from "jotai/utils";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { createWacher } from "./util";
 import { useMemo } from "react";
 import { serializeError } from "@/util";
-import { createRepositoryStore, setLogAtom } from "./repository";
-import { GraphFragment } from "@/grapher";
+import { getRootStore } from "./rootStore";
 
-const rootStore = createStore();
+const rootStore = getRootStore();
 const opt = { store: rootStore };
-
-export type JotaiStore = typeof rootStore;
-export const getRootStore = () => rootStore;
 
 /**
  * Config
@@ -176,25 +171,3 @@ export const useShowError = () => useSetAtom(showErrorAtom, opt);
 export const useShowSuccess = () => useSetAtom(showSuccessAtom, opt);
 export const useShowInfo = () => useSetAtom(showInfoAtom, opt);
 export const useHideAlert = () => useSetAtom(hideAlertAtom, opt);
-
-export const repositoryStoresAtomFamily = atomFamily((path: string) =>
-  atom(createRepositoryStore(path))
-);
-
-export const setLogToRepositoryStoreAtom = atom(
-  null,
-  (
-    get,
-    _set,
-    update: {
-      path: string;
-      keepTabs: boolean;
-      commits: Commit[];
-      refs: Refs;
-      graph: Record<string, GraphFragment>;
-    }
-  ) => {
-    const store = get(repositoryStoresAtomFamily(update.path));
-    store.set(setLogAtom, update);
-  }
-);
