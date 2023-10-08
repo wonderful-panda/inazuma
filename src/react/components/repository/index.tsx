@@ -115,7 +115,6 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
     ],
     [config.interactiveShell, toggleInteractiveShell, reloadRepository]
   );
-  useEffect(() => {}, []);
   return (
     <>
       {active && <MainWindowProperty title={repoPath} titleBarActions={titleBarActions} />}
