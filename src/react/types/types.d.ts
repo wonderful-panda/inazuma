@@ -41,6 +41,7 @@ declare global {
   type BranchRef = Extract<Ref, { type: "branch" }>;
   type TagRef = Extract<Ref, { type: "tag" }>;
   type RemoteRef = Extract<Ref, { type: "remote" }>;
+  type ReflogRef = Extract<Ref, { type: "reflog" }>;
 
   type Refs = {
     head?: string;

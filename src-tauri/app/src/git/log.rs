@@ -71,13 +71,19 @@ fn max_count_option(max_count: u32) -> String {
     }
 }
 
-fn build_args<'a>(format: &'a str, max_count_option: &'a str, heads: &[&'a str]) -> Vec<&'a str> {
+fn build_args<'a>(
+    format: &'a str,
+    max_count_option: &'a str,
+    all: bool,
+    heads: &[&'a str],
+) -> Vec<&'a str> {
     let mut args: Vec<&str> = Vec::new();
     if heads.len() > 0 {
         for h in heads {
             args.push(h);
         }
-    } else {
+    }
+    if all {
         for a in ["--branches", "--tags", "--remotes", "HEAD"].iter() {
             args.push(a);
         }
@@ -93,11 +99,12 @@ fn build_args<'a>(format: &'a str, max_count_option: &'a str, heads: &[&'a str])
 pub async fn log(
     repo_path: &Path,
     max_count: u32,
+    all: bool,
     heads: &[&str],
 ) -> Result<Vec<Commit>, GitError> {
     let max_count_option = max_count_option(max_count);
     let format = format!("--format={}", LOG_FORMAT);
-    let args = build_args(format.as_str(), max_count_option.as_str(), heads);
+    let args = build_args(format.as_str(), max_count_option.as_str(), all, heads);
     let output = exec(repo_path, "log", &args, &[]).await?;
     GitError::assert_process_output("log", &output)?;
     let stdout = std::str::from_utf8(&output.stdout).unwrap();
@@ -165,11 +172,12 @@ pub async fn filelog(
     repo_path: &Path,
     rel_path: &str,
     max_count: u32,
+    all: bool,
     heads: &[&str],
 ) -> Result<Vec<FileLogEntry>, GitError> {
     let max_count_option = max_count_option(max_count);
     let format = format!("--format=%n{}", LOG_FORMAT);
-    let mut args = build_args(format.as_str(), max_count_option.as_str(), heads);
+    let mut args = build_args(format.as_str(), max_count_option.as_str(), all, heads);
     args.push("--follow");
     args.push("-z");
     args.push("--raw");

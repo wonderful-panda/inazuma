@@ -80,3 +80,24 @@ pub async fn get_refs(repo_path: &Path) -> Result<Refs, GitError> {
     refs.merge_heads = merge_heads::get_merge_heads(repo_path).await?;
     Ok(refs)
 }
+
+pub async fn get_reflog(repo_path: &Path, count: u32) -> Result<Vec<(String, String)>, GitError> {
+    if count == 0 {
+        return Ok(Vec::new());
+    }
+    let count_option = format!("-{}", count);
+    let args = vec!["--format=%gd %H", "-z", &count_option];
+    let output = exec(repo_path, "reflog", &args, &[]).await?;
+    GitError::assert_process_output("reflog", &output)?;
+    let stdout = std::str::from_utf8(&output.stdout).unwrap();
+    let lines = stdout.split('\0').collect::<Vec<_>>();
+    let ret = lines
+        .iter()
+        .filter(|&l| l.len() > 0)
+        .map(|&l| {
+            let tokens = l.split(' ').collect::<Vec<_>>();
+            (tokens[0].to_string(), tokens[1].to_string())
+        })
+        .collect::<Vec<_>>();
+    Ok(ret)
+}

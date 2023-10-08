@@ -8,10 +8,11 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useAddRecentOpenedRepository } from "@/state/root";
 import { useAddAppTab, useAppTabsValue, useSelectAppTab } from "@/state/tabs";
 
-const fetchHistory = async (repoPath: string) => {
+const fetchHistory = async (repoPath: string, reflogCount: number) => {
   const [commits, rawRefs] = await invokeTauriCommand("fetch_history", {
     repoPath,
-    maxCount: 1000
+    maxCount: 1000,
+    reflogCount
   });
   if (rawRefs.head) {
     commits.unshift({
@@ -57,17 +58,16 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
     }
     (refs.refsById[r.id] || (refs.refsById[r.id] = [])).push(r);
   });
-  const types: Ref["type"][] = ["branch", "tag", "remote"];
+  const types: Ref["type"][] = ["branch", "tag", "remote", "reflog"];
   const compare = (a: Ref, b: Ref) => {
     if (a.type === b.type) {
-      if (a.type === "branch" && b.type === "branch") {
-        if (a.current) {
-          return -1;
-        } else if (b.current) {
-          return 1;
-        }
+      if (a.type === "branch" && b.type === "branch" && a.current !== b.current) {
+        return a.current ? -1 : 1;
+      } else if (a.type === "reflog" && b.type === "reflog") {
+        return a.index - b.index;
+      } else {
+        return a.fullname.localeCompare(b.fullname);
       }
-      return a.fullname.localeCompare(b.fullname);
     } else {
       return types.indexOf(a.type) - types.indexOf(b.type);
     }
@@ -85,7 +85,7 @@ export const useOpenRepository = () => {
   return useCallbackWithErrorHandler(
     async (realPath: string) => {
       const path = toSlashedPath(realPath);
-      const { commits, refs, graph } = await fetchHistory(path);
+      const { commits, refs, graph } = await fetchHistory(path, 0);
       const index = appTabs.tabs.findIndex(
         (tab) => tab.type === "repository" && path === tab.payload.path
       );
@@ -114,7 +114,7 @@ export const useReloadSpecifiedRepository = () => {
   const setLogToRepositoryStore = useSetAtom(setLogToRepositoryStoreAtom);
   return useCallbackWithErrorHandler(
     async (path: string) => {
-      const { commits, refs, graph } = await fetchHistory(path);
+      const { commits, refs, graph } = await fetchHistory(path, 0);
       setLogToRepositoryStore({ path, commits, refs, graph, keepTabs: true });
     },
     [setLogToRepositoryStore],

@@ -105,12 +105,34 @@ pub async fn close_repository(
 pub async fn fetch_history(
     repo_path: &Path,
     max_count: u32,
+    reflog_count: u32,
 ) -> Result<(Vec<Commit>, Refs), String> {
-    tokio::try_join!(
-        git::log::log(repo_path, max_count, &[]),
+    let reflog = git::refs::get_reflog(repo_path, reflog_count).await?;
+    let heads = reflog.iter().map(|(_, id)| id.as_str()).collect::<Vec<_>>();
+    let (commits, mut refs) = tokio::try_join!(
+        git::log::log(repo_path, max_count, true, &heads[..]),
         git::refs::get_refs(&repo_path),
     )
-    .map_err(|e| e.into())
+    .map_err(|e| <git::GitError as Into<String>>::into(e))?;
+    refs.refs.extend(
+        reflog
+            .into_iter()
+            .enumerate()
+            .map(|(index, (name, id))| Ref::Reflog {
+                id,
+                index,
+                fullname: name.clone(),
+                name,
+            }),
+    );
+    Ok((commits, refs))
+}
+
+#[tauri::command]
+pub async fn get_reflog(repo_path: &Path, count: u32) -> Result<Vec<(String, String)>, String> {
+    git::refs::get_reflog(repo_path, count)
+        .await
+        .map_err(|e| e.into())
 }
 
 #[tauri::command]
@@ -160,7 +182,7 @@ pub async fn get_workingtree_stat<'a>(repo_path: &'a Path) -> Result<WorkingTree
 pub async fn get_blame(repo_path: &Path, rel_path: &str, revspec: &str) -> Result<Blame, String> {
     let (blame_entries, commits, content) = tokio::try_join!(
         git::blame::blame(repo_path, rel_path, revspec),
-        git::log::filelog(repo_path, rel_path, 1000, &[]),
+        git::log::filelog(repo_path, rel_path, 1000, true, &[]),
         git::file::get_content(repo_path, rel_path, revspec, false)
     )?;
     let content_base64 = base64::encode(&content);

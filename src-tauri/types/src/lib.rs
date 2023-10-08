@@ -301,6 +301,12 @@ pub enum Ref {
         name: String,
         remote: String,
     },
+    Reflog {
+        id: String,
+        index: usize,
+        fullname: String,
+        name: String,
+    },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]

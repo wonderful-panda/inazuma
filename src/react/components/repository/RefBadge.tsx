@@ -33,6 +33,10 @@ const Remote: React.FC<{ r: RemoteRef }> = ({ r }) => (
   <Badge className="text-[grey] border border-solid border-current rounded-xl">{`${r.remote}/${r.name}`}</Badge>
 );
 
+const Reflog: React.FC<{ r: ReflogRef }> = ({ r }) => (
+  <Badge className="text-[grey] border border-solid border-current">{r.name}</Badge>
+);
+
 export const RefBadge: React.FC<{ r: Ref }> = ({ r }) => {
   switch (r.type) {
     case "branch":
@@ -41,6 +45,8 @@ export const RefBadge: React.FC<{ r: Ref }> = ({ r }) => {
       return <Tag r={r} />;
     case "remote":
       return <Remote r={r} />;
+    case "reflog":
+      return <Reflog r={r} />;
     default:
       return assertNever(r);
   }

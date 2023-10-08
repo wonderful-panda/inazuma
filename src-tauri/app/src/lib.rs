@@ -108,6 +108,7 @@ pub fn run() {
             commands::open_repository,
             commands::close_repository,
             commands::fetch_history,
+            commands::get_reflog,
             commands::commit,
             commands::create_branch,
             commands::delete_branch,
