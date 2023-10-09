@@ -11,7 +11,14 @@ import React, {
   useContext,
   useLayoutEffect
 } from "react";
-import { Drawer, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/material";
+import {
+  Drawer,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography
+} from "@mui/material";
 import { PreferenceDialog } from "./PreferenceDialog";
 import { AboutDialog } from "./AboutDialog";
 import { Loading } from "./Loading";
@@ -39,11 +46,13 @@ const ApplicationDrawerInner: React.FC<ApplicationDrawerProps> = ({ opened, clos
       <Typography variant="h6" component="div">
         <div className="w-52 pt-5" onClick={close}>
           {items.map((item) => (
-            <ListItem dense button disabled={item.disabled} key={item.id} onClick={item.handler}>
-              <ListItemIcon>
-                <Icon className="text-2xl" icon={item.icon} />
-              </ListItemIcon>
-              <ListItemText primary={item.label} disableTypography />
+            <ListItem dense key={item.id} disablePadding>
+              <ListItemButton disabled={item.disabled} onClick={item.handler}>
+                <ListItemIcon>
+                  <Icon className="text-2xl" icon={item.icon} />
+                </ListItemIcon>
+                <ListItemText primary={item.label} disableTypography />
+              </ListItemButton>
             </ListItem>
           ))}{" "}
         </div>{" "}

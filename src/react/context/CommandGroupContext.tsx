@@ -17,9 +17,9 @@ type OtherKey =
 
 const codeToKey = (code: string): string => {
   if (code.startsWith("Key")) {
-    return code.substr(3);
+    return code.substring(3);
   } else if (code.startsWith("Digit")) {
-    return code.substr(5);
+    return code.substring(5);
   } else {
     return code;
   }

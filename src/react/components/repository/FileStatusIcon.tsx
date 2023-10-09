@@ -19,7 +19,7 @@ const attrs: Record<string, Attr> = {
 };
 
 const getAttr = (statusCode: string): Attr =>
-  attrs[statusCode.substr(0, 1)] || {
+  attrs[statusCode.substring(0, 1)] || {
     icon: "octicon:diff-ignored-16",
     color: "red",
     title: `UNKNOWN STATUS CODE: ${statusCode}`

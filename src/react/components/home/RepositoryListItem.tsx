@@ -2,6 +2,7 @@ import { Icon } from "../Icon";
 import {
   IconButton,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText
@@ -39,26 +40,28 @@ export const RepositoryListItem: React.FC<RepositoryListItemProps> = ({
   }, [secondaryAction, itemId]);
   return (
     <div className="group">
-      <ListItem className="p-0" button dense onClick={onClick}>
-        <ListItemIcon className="ml-2 text-2xl">
-          <Icon icon={icon} />
-        </ListItemIcon>
-        <ListItemText
-          primaryTypographyProps={{ className: "text-xl" }}
-          secondaryTypographyProps={{ className: "text-greytext" }}
-          primary={primary}
-          secondary={secondary}
-        />
-        {secondaryAction && (
-          <ListItemSecondaryAction
-            className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75"
-            onClick={onSecondaryActionClick}
-          >
-            <IconButton className="text-2xl" edge="end" size="large">
-              <Icon icon={secondaryAction.icon} />
-            </IconButton>
-          </ListItemSecondaryAction>
-        )}
+      <ListItem dense disablePadding>
+        <ListItemButton onClick={onClick}>
+          <ListItemIcon className="ml-2 text-2xl">
+            <Icon icon={icon} />
+          </ListItemIcon>
+          <ListItemText
+            primaryTypographyProps={{ className: "text-xl" }}
+            secondaryTypographyProps={{ className: "text-greytext" }}
+            primary={primary}
+            secondary={secondary}
+          />
+          {secondaryAction && (
+            <ListItemSecondaryAction
+              className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75"
+              onClick={onSecondaryActionClick}
+            >
+              <IconButton className="text-2xl" edge="end" size="large">
+                <Icon icon={secondaryAction.icon} />
+              </IconButton>
+            </ListItemSecondaryAction>
+          )}
+        </ListItemButton>
       </ListItem>
     </div>
   );

@@ -71,9 +71,9 @@ const useDecorationEffect = (
     }
     const ranges = lineNumbersToRanges(lineNumbers);
     const decorations = ranges.map((range) => ({ range, options }));
-    const decorationIds = editor.deltaDecorations([], decorations);
+    const decorationCollection = editor.createDecorationsCollection(decorations);
     return () => {
-      editor.deltaDecorations(decorationIds, []);
+      decorationCollection.clear();
     };
   }, [editor, lineNumbers, options]);
 };
