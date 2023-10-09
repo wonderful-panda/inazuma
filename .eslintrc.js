@@ -11,16 +11,18 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:deprecation/recommended",
     "prettier"
   ],
-  plugins: ["@typescript-eslint", "react"],
+  plugins: ["@typescript-eslint", "react", "deprecation"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2017,
     sourceType: "module",
     ecmaFeatures: {
       jsx: true
-    }
+    },
+    project: "./src/react/tsconfig.json"
   },
   settings: {
     react: {
