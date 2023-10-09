@@ -48,6 +48,13 @@ export const useRemoveRecentOpenedRepository = () =>
   useSetAtom(removeRecentOpenedRepositoryAtom, opt);
 export const useSetRecentOpenedRepositories = () => useSetAtom(recentOpenedRepositoriesAtom, opt);
 
+export const addRecentOpenedRepository = (path: string) =>
+  rootStore.set(addRecentOpenedRepositoryAtom, path);
+export const removeRecentOpenedRepository = (path: string) =>
+  rootStore.set(removeRecentOpenedRepositoryAtom, path);
+export const setRecentOpenedRepository = (paths: string[]) =>
+  rootStore.set(recentOpenedRepositoriesAtom, paths);
+
 export const registerRecentOpenedRepositoriesWatcher = createWacher(
   recentOpenedRepositoriesAtom,
   rootStore

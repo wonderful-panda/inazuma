@@ -106,13 +106,21 @@ const {
   currentIndex: 0
 });
 
-const opt = { store: getRootStore() };
+const store = getRootStore();
+const opt = { store };
 export const useAppTabsValue = () => useAtomValue(tabsAtom, opt);
 export const useAddAppTab = () => useSetAtom(addTabAtom, opt);
 export const useRemoveAppTab = () => useSetAtom(removeTabAtom, opt);
 export const useSelectAppTab = () => useSetAtom(selectTabAtom, opt);
 export const useSelectNextAppTab = () => useSetAtom(selectNextTabAtom, opt);
 export const useSelectPrevAppTab = () => useSetAtom(selectPreviousTabAtom, opt);
+
+export const getAppTabsValue = () => store.get(tabsAtom);
+export const addAppTab = (update: TabDefinition<AppTabType>) => store.set(addTabAtom, update);
+export const removeAppTab = (index?: number) => store.set(removeTabAtom, index);
+export const selectAppTab = (index: number) => store.set(selectTabAtom, index);
+export const selectNextAppTab = () => store.set(selectNextTabAtom);
+export const selectPrevAppTab = () => store.set(selectPreviousTabAtom);
 
 const selectHomeTabAtom = atom(null, (_get, set) => {
   set(tabsAtom, (prev) => {
@@ -125,9 +133,10 @@ const selectHomeTabAtom = atom(null, (_get, set) => {
   });
 });
 export const useSelectHomeTab = () => useSetAtom(selectHomeTabAtom, opt);
+export const selectHomeTab = () => store.set(selectHomeTabAtom);
 
 export const registerApplicationTabsWatcher = createWacher(tabsAtom, opt.store);
 
 export const setInitialValue = (value: TabsState<AppTabType>) => {
-  opt.store.set(tabsAtom, value);
+  store.set(tabsAtom, value);
 };
