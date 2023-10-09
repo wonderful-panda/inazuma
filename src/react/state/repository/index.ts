@@ -26,7 +26,7 @@ export const repositoryStoresAtomFamily = atomFamily((path: string) =>
   atom(createRepositoryStore(path))
 );
 
-const _setLogAtom = atom(
+export const setLogAtom = atom(
   null,
   (
     _get,
@@ -48,24 +48,6 @@ const _setLogAtom = atom(
     if (!keepTabs) {
       set(resetRepoTabsAtom);
     }
-  }
-);
-
-export const setLogToRepositoryStoreAtom = atom(
-  null,
-  (
-    get,
-    _set,
-    update: {
-      path: string;
-      keepTabs: boolean;
-      commits: Commit[];
-      refs: Refs;
-      graph: Record<string, GraphFragment>;
-    }
-  ) => {
-    const store = get(repositoryStoresAtomFamily(update.path));
-    store.set(_setLogAtom, update);
   }
 );
 

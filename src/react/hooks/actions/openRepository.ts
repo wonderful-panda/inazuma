@@ -1,12 +1,13 @@
-import { logAtom, repoPathAtom, setLogToRepositoryStoreAtom } from "@/state/repository";
-import { useAtomValue, useSetAtom } from "jotai";
-import { useCallback } from "react";
+import { setLogAtom, logAtom, repoPathAtom, repositoryStoresAtomFamily } from "@/state/repository";
+import { Getter, Setter } from "jotai";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 import { getFileName, toSlashedPath } from "@/util";
 import { GraphFragment, Grapher } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useAddRecentOpenedRepository } from "@/state/root";
-import { useAddAppTab, useAppTabsValue, useSelectAppTab } from "@/state/tabs";
+import { addRecentOpenedRepository } from "@/state/root";
+import { addAppTab, getAppTabsValue, selectAppTab } from "@/state/tabs";
+import { useAtomCallback } from "jotai/utils";
+import { reflogAtom } from "@/state/repository/misc";
 
 const fetchHistory = async (repoPath: string, reflogCount: number) => {
   const [commits, rawRefs] = await invokeTauriCommand("fetch_history", {
@@ -77,63 +78,75 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
 };
 
 export const useOpenRepository = () => {
-  const appTabs = useAppTabsValue();
-  const addAppTab = useAddAppTab();
-  const selectAppTab = useSelectAppTab();
-  const addRecentOpenedRepository = useAddRecentOpenedRepository();
-  const setLogToRepositoryStore = useSetAtom(setLogToRepositoryStoreAtom);
-  return useCallbackWithErrorHandler(
-    async (realPath: string) => {
-      const path = toSlashedPath(realPath);
-      const { commits, refs, graph } = await fetchHistory(path, 0);
-      const index = appTabs.tabs.findIndex(
-        (tab) => tab.type === "repository" && path === tab.payload.path
-      );
-      if (0 <= index) {
-        setLogToRepositoryStore({ path, commits, refs, graph, keepTabs: true });
-        selectAppTab(index);
-        return;
-      }
-      await invokeTauriCommand("open_repository", { repoPath: path });
-      addRecentOpenedRepository(path);
-      setLogToRepositoryStore({ path, commits, refs, graph, keepTabs: false });
-      addAppTab({
-        type: "repository",
-        id: `__REPO__:${path}`,
-        title: getFileName(path),
-        payload: { path },
-        closable: true
-      });
-    },
-    [appTabs.tabs, addAppTab, selectAppTab, addRecentOpenedRepository, setLogToRepositoryStore],
-    { loading: true }
+  return useAtomCallback(
+    useCallbackWithErrorHandler(
+      async (get, _set, realPath: string) => {
+        const path = toSlashedPath(realPath);
+        const store = get(repositoryStoresAtomFamily(path));
+        const { commits, refs, graph } = await fetchHistory(path, 0);
+        const appTabs = getAppTabsValue();
+        const index = appTabs.tabs.findIndex(
+          (tab) => tab.type === "repository" && path === tab.payload.path
+        );
+        if (0 <= index) {
+          store.set(setLogAtom, { path, commits, refs, graph, keepTabs: true });
+          selectAppTab(index);
+          return;
+        }
+        await invokeTauriCommand("open_repository", { repoPath: path });
+        addRecentOpenedRepository(path);
+        store.set(setLogAtom, { path, commits, refs, graph, keepTabs: false });
+        addAppTab({
+          type: "repository",
+          id: `__REPO__:${path}`,
+          title: getFileName(path),
+          payload: { path },
+          closable: true
+        });
+      },
+      [],
+      { loading: true }
+    )
   );
 };
 
+const reloadSpecifiedRepository = async (get: Getter, _set: Setter, path: string) => {
+  const store = get(repositoryStoresAtomFamily(path));
+  const reflogCount = store.get(reflogAtom) ? 26 : 0;
+  const { commits, refs, graph } = await fetchHistory(path, reflogCount);
+  store.set(setLogAtom, { path, commits, refs, graph, keepTabs: true });
+};
+
 export const useReloadSpecifiedRepository = () => {
-  const setLogToRepositoryStore = useSetAtom(setLogToRepositoryStoreAtom);
-  return useCallbackWithErrorHandler(
-    async (path: string) => {
-      const { commits, refs, graph } = await fetchHistory(path, 0);
-      setLogToRepositoryStore({ path, commits, refs, graph, keepTabs: true });
-    },
-    [setLogToRepositoryStore],
-    { loading: true }
+  return useAtomCallback(
+    useCallbackWithErrorHandler(reloadSpecifiedRepository, [], { loading: true })
   );
 };
 
 export const useReloadRepository = () => {
-  const path = useAtomValue(repoPathAtom);
-  const reloadSpecifiedRepository = useReloadSpecifiedRepository();
-  return useCallback(() => reloadSpecifiedRepository(path), [path, reloadSpecifiedRepository]);
+  return useAtomCallback(
+    useCallbackWithErrorHandler(
+      (get: Getter, set: Setter) => {
+        const path = get(repoPathAtom);
+        return reloadSpecifiedRepository(get, set, path);
+      },
+      [],
+      { loading: true }
+    )
+  );
 };
 
 export const useLoadRepositoryIfNotYet = () => {
-  const notLoadedYet = useAtomValue(logAtom) === undefined;
-  const reloadRepository = useReloadRepository();
-  return useCallback(() => {
-    if (notLoadedYet) {
-      reloadRepository();
-    }
-  }, [notLoadedYet, reloadRepository]);
+  return useAtomCallback(
+    useCallbackWithErrorHandler(
+      (get: Getter, set: Setter) => {
+        if (get(logAtom) === undefined) {
+          const path = get(repoPathAtom);
+          return reloadSpecifiedRepository(get, set, path);
+        }
+      },
+      [],
+      { loading: true }
+    )
+  );
 };

@@ -8,3 +8,6 @@ export const hideInteractiveShellAtom = atom(null, (_get, set) => set(interactiv
 export const toggleInteractiveShellAtom = atom(null, (_get, set) =>
   set(interactiveShellAtom, (prev) => !prev)
 );
+
+export const reflogAtom = atom(false);
+export const toggleReflogAtom = atom(null, (_get, set) => set(reflogAtom, (prev) => !prev));

@@ -26,7 +26,8 @@ import {
 import {
   hideInteractiveShellAtom,
   interactiveShellAtom,
-  toggleInteractiveShellAtom
+  toggleInteractiveShellAtom,
+  toggleReflogAtom
 } from "@/state/repository/misc";
 import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/hooks/actions/openRepository";
 import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
@@ -58,9 +59,12 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const interactiveShell = useAtomValue(interactiveShellAtom);
   const toggleInteractiveShell = useSetAtom(toggleInteractiveShellAtom);
   const hideInteractiveShell = useSetAtom(hideInteractiveShellAtom);
+  const toggleReflog = useSetAtom(toggleReflogAtom);
   const config = useConfigValue();
   const loadRepositoryIfNotYet = useLoadRepositoryIfNotYet();
-  useEffect(loadRepositoryIfNotYet, [loadRepositoryIfNotYet]);
+  useEffect(() => {
+    loadRepositoryIfNotYet();
+  }, [loadRepositoryIfNotYet]);
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
       if (!repoPath || !tab) {
@@ -100,6 +104,15 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const titleBarActions: IconActionItem[] = useMemo(
     () => [
       {
+        id: "toggleReflog",
+        label: "Show / hide reflog",
+        icon: "mdi:history",
+        handler: () => {
+          toggleReflog();
+          reloadRepository();
+        }
+      },
+      {
         id: "toggleConsole",
         label: "Show / hide interactive shell",
         icon: "mdi:console",
@@ -113,7 +126,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
         handler: reloadRepository
       }
     ],
-    [config.interactiveShell, toggleInteractiveShell, reloadRepository]
+    [config.interactiveShell, toggleReflog, toggleInteractiveShell, reloadRepository]
   );
   return (
     <>
