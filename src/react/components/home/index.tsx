@@ -6,7 +6,7 @@ import { CommandGroup, Cmd } from "../CommandGroup";
 import { Command } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import {
-  useRemoveRecentOpenedRepository,
+  removeRecentOpenedRepository,
   useVisibleRecentOpenedRepositoriesValue
 } from "@/state/root";
 import { useOpenRepository } from "@/hooks/actions/openRepository";
@@ -14,7 +14,6 @@ import { useOpenRepository } from "@/hooks/actions/openRepository";
 const Home: React.FC<{ active: boolean }> = ({ active }) => {
   const openRepository = useOpenRepository();
   const recentOpenedRepositories = useVisibleRecentOpenedRepositoriesValue();
-  const removeRecentOpenedRepository = useRemoveRecentOpenedRepository();
   const handleOpen = useCallback(
     (repoPath: string | undefined) => repoPath && openRepository(repoPath),
     [openRepository]
@@ -24,7 +23,7 @@ const Home: React.FC<{ active: boolean }> = ({ active }) => {
       action: removeRecentOpenedRepository,
       icon: "mdi:close"
     }),
-    [removeRecentOpenedRepository]
+    []
   );
   const handleBrowseClick = useCallback(async () => {
     const ret = await invokeTauriCommand("show_folder_selector");

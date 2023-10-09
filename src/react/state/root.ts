@@ -43,10 +43,6 @@ const removeRecentOpenedRepositoryAtom = atom(null, (_get, set, repositoryPath: 
 
 export const useVisibleRecentOpenedRepositoriesValue = () =>
   useAtomValue(visibleRecentOpenedRepositoriesAtom, opt);
-export const useAddRecentOpenedRepository = () => useSetAtom(addRecentOpenedRepositoryAtom, opt);
-export const useRemoveRecentOpenedRepository = () =>
-  useSetAtom(removeRecentOpenedRepositoryAtom, opt);
-export const useSetRecentOpenedRepositories = () => useSetAtom(recentOpenedRepositoriesAtom, opt);
 
 export const addRecentOpenedRepository = (path: string) =>
   rootStore.set(addRecentOpenedRepositoryAtom, path);

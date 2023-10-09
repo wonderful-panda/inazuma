@@ -27,12 +27,12 @@ import {
   AppTabType,
   registerApplicationTabsWatcher,
   useAppTabsValue,
-  useRemoveAppTab,
-  useSelectAppTab,
-  useSelectHomeTab,
-  useSelectNextAppTab,
-  useSelectPrevAppTab,
-  setInitialValue as setInitialAppTabsValue
+  setInitialValue as setInitialAppTabsValue,
+  selectNextAppTab,
+  selectPrevAppTab,
+  selectHomeTab,
+  selectAppTab,
+  removeAppTab
 } from "./state/tabs";
 import { TabContainer, TabContainerProps, TooltipTitle } from "./components/TabContainer";
 import { assertNever } from "./util";
@@ -127,11 +127,6 @@ const displayStateStorage = {
 
 const Content: React.FC = () => {
   const tabs = useAppTabsValue();
-  const selectTab = useSelectAppTab();
-  const selectNextTab = useSelectNextAppTab();
-  const selectPrevTab = useSelectPrevAppTab();
-  const removeTab = useRemoveAppTab();
-  const selectHomeTab = useSelectHomeTab();
   const renderTabContent = useCallback<TabContainerProps<AppTabType>["renderTabContent"]>(
     (tab, active) => {
       let child: React.ReactNode;
@@ -174,8 +169,8 @@ const Content: React.FC = () => {
   return (
     <>
       <CommandGroup name="root">
-        <Cmd name="SelectNextAppTab" handler={selectNextTab} hotkey="Ctrl+ArrowRight" />
-        <Cmd name="SelectPrevAppTab" handler={selectPrevTab} hotkey="Ctrl+ArrowLeft" />
+        <Cmd name="SelectNextAppTab" handler={selectNextAppTab} hotkey="Ctrl+ArrowRight" />
+        <Cmd name="SelectPrevAppTab" handler={selectPrevAppTab} hotkey="Ctrl+ArrowLeft" />
         <Cmd name="SelectHomeTab" hotkey="Ctrl+H" handler={selectHomeTab} />
       </CommandGroup>
       <TabContainer
@@ -183,8 +178,8 @@ const Content: React.FC = () => {
         currentTabIndex={tabs.currentIndex}
         renderTabContent={renderTabContent}
         renderTabTooltip={renderTabTooltip}
-        selectTab={selectTab}
-        closeTab={removeTab}
+        selectTab={selectAppTab}
+        closeTab={removeAppTab}
       />
     </>
   );
