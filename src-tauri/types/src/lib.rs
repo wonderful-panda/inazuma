@@ -2,6 +2,37 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
 
+fn default_recent_count() -> u32 {
+    10
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct ConfigBase {
+    #[serde(default)]
+    pub font_family: FontFamily,
+    #[serde(default)]
+    pub font_size: FontSize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub external_diff_tool: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interactive_shell: Option<String>,
+    #[serde(default = "default_recent_count")]
+    pub recent_list_count: u32,
+}
+
+impl Into<Config> for ConfigBase {
+    fn into(self) -> Config {
+        Config {
+            font_family: self.font_family,
+            font_size: self.font_size,
+            external_diff_tool: self.external_diff_tool,
+            interactive_shell: self.interactive_shell,
+            recent_list_count: self.recent_list_count,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]

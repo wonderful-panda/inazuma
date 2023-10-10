@@ -6,7 +6,7 @@ use std::{
 };
 
 use tokio::sync::Mutex;
-use types::Config;
+use types::{Config, ConfigBase};
 
 pub struct ConfigState {
     config_file_path: Option<PathBuf>,
@@ -33,7 +33,8 @@ impl ConfigState {
         if let Some(ref path) = self.config_file_path {
             if path.exists() {
                 let file = File::open(path)?;
-                self.config = serde_json::from_reader(BufReader::new(file))?;
+                let config: ConfigBase = serde_json::from_reader(BufReader::new(file))?;
+                self.config = config.into();
             }
         }
         Ok(())
