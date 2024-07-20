@@ -33,7 +33,10 @@ export const RepositoryListItem: React.FC<RepositoryListItemProps> = ({
   const onClick = useCallback(() => action(itemId), [action, itemId]);
   const onSecondaryActionClick = useMemo(() => {
     if (secondaryAction) {
-      return () => secondaryAction?.action(itemId);
+      return (e: React.MouseEvent) => {
+        e.stopPropagation();
+        secondaryAction?.action(itemId);
+      };
     } else {
       return undefined;
     }
