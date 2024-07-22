@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { IconButton } from "@mui/material";
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Icon } from "./Icon";
 
 interface SplitterProps {
@@ -11,10 +11,12 @@ interface SplitterProps {
   onPositionChange: (position: number) => void;
 }
 
+const handleRotateButtonMouseDown = (e: React.MouseEvent) => e.stopPropagation();
+
 const RotateButton: React.FC<{
   dragging: boolean;
   horiz: boolean;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
 }> = ({ dragging, horiz, onClick }) => (
   <IconButton
     className={classNames(
@@ -26,6 +28,7 @@ const RotateButton: React.FC<{
       dragging ? "visible" : "invisible"
     )}
     title="Switch direction"
+    onMouseDown={handleRotateButtonMouseDown}
     onClick={onClick}
     size="large"
   >
@@ -70,9 +73,13 @@ export const Splitter: React.FC<SplitterProps> = ({
     },
     [horiz, thickness, onPositionChange]
   );
-  const handleUpdateDirection = useCallback(() => {
-    onUpdateDirection?.(horiz ? "vert" : "horiz");
-  }, [horiz, onUpdateDirection]);
+  const handleUpdateDirection = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onUpdateDirection?.(horiz ? "vert" : "horiz");
+    },
+    [horiz, onUpdateDirection]
+  );
   return (
     <div
       className={classNames(
