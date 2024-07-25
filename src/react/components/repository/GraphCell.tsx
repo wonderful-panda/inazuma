@@ -28,21 +28,21 @@ const NodeLine: React.FC<NodeLineProps> = (props) => {
       />
     );
   } else {
+    const radius = Math.min(width, height / 2);
     const x1 = c2x(edge.index, width);
     const x2 = c2x(graph.node.index, width);
     const y1 = edge.type === "P" ? height : 0;
     const y2 = height / 2;
-    const rx = width;
-    const ry = height / 2;
     let sweep: number;
     if (edge.type === "P") {
       sweep = x1 < x2 ? 1 : 0;
     } else {
       sweep = x1 < x2 ? 0 : 1;
     }
-    const ex = x1 < x2 ? rx : -1 * rx;
-    const ey = y1 < y2 ? ry : -1 * ry;
-    const d = `M ${x1},${y1} a ${rx},${ry} 0 0,${sweep} ${ex},${ey} H ${x2}`;
+    const sy = y2 + (edge.type === "P" ? radius : -radius);
+    const ex = x1 < x2 ? radius : -radius;
+    const ey = y1 < y2 ? radius : -radius;
+    const d = `M ${x1},${y1} V ${sy} a ${radius},${radius} 0 0,${sweep} ${ex},${ey} H ${x2}`;
     return <path d={d} mask={mask} stroke={stroke} strokeWidth={strokeWidth} fill="none" />;
   }
 };
@@ -54,7 +54,7 @@ type Props = {
   maskIdPrefix: string;
 };
 
-const GRID_WIDTH = 20;
+const GRID_WIDTH = 16;
 const WORK_COLOR = "#555";
 
 const actualColor = (color: string | undefined) => color || WORK_COLOR;
@@ -64,17 +64,13 @@ const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   const width = GRID_WIDTH * graph.width;
   let radius: number;
   if (!graph.node.color) {
-    radius = 4;
+    radius = 3;
   } else if (head) {
-    radius = 10;
-  } else {
     radius = 6;
+  } else {
+    radius = 4;
   }
-  let nodeMaskRadius = radius + 3;
-  if (height < 36) {
-    radius -= 1;
-    nodeMaskRadius -= 2;
-  }
+  const nodeMaskRadius = radius + 2;
   const nodeX = c2x(node.index, GRID_WIDTH);
   const nodeY = height / 2;
   const shortId = shortHash(graph.id);
@@ -101,7 +97,7 @@ const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
               width={GRID_WIDTH}
               height={height}
               stroke="black"
-              strokeWidth={6}
+              strokeWidth={5}
             />
           ))}
         </mask>
@@ -140,7 +136,7 @@ const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
             stroke={nodeColor}
             fillOpacity={0}
           />
-          <circle cx={nodeX} cy={nodeY} r={radius - 5} fill={nodeColor} />
+          <circle cx={nodeX} cy={nodeY} r={radius - 4} fill={nodeColor} />
         </>
       ) : (
         <circle cx={nodeX} cy={nodeY} r={radius} fill={nodeColor} />
