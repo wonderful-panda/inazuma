@@ -111,12 +111,11 @@ impl StagerState {
         }
     }
 
-    pub fn wakeup_watcher<R: Runtime>(
+    fn wakeup_watcher<R: Runtime>(
         &mut self,
         app_handle: AppHandle<R>,
     ) -> Result<(), Box<dyn Error>> {
         if self.watcher.is_some() {
-            warn!("Watcher is already awakened");
             return Ok(());
         }
         let (tx, rx) = mpsc::channel::<Result<Event, NotifyError>>(100);
@@ -130,7 +129,12 @@ impl StagerState {
         Ok(())
     }
 
-    pub fn watch(&mut self, repo: &Repository) -> Result<(), Box<dyn Error>> {
+    pub fn watch<R: Runtime>(
+        &mut self,
+        app_handle: AppHandle<R>,
+        repo: &Repository,
+    ) -> Result<(), Box<dyn Error>> {
+        self.wakeup_watcher(app_handle)?;
         if let Some(ref mut watcher) = self.watcher {
             watcher.watch(&repo.stage_file_dir, notify::RecursiveMode::NonRecursive)?;
             debug!("watching: {:?}", repo.stage_file_dir);
@@ -140,10 +144,15 @@ impl StagerState {
         Ok(())
     }
 
-    pub fn unwatch(&mut self, repo: &Repository) -> Result<(), Box<dyn Error>> {
+    pub async fn unwatch(&mut self, repo: &Repository) -> Result<(), Box<dyn Error>> {
         if let Some(ref mut watcher) = self.watcher {
             watcher.unwatch(&repo.stage_file_dir)?;
             debug!("unwatch: {:?}", repo.stage_file_dir);
+            let mut watch_files = self.watch_files.lock().await;
+            watch_files.retain(|_, v| v.repo_path.ne(&repo.path));
+            if watch_files.len() == 0 {
+                drop(self.watcher.take())
+            }
         } else {
             warn!("Watcher is not awakened");
         }

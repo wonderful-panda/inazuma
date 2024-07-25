@@ -74,15 +74,18 @@ pub async fn show_folder_selector() -> Option<String> {
 }
 
 #[tauri::command]
-pub async fn open_repository(
+pub async fn open_repository<R: Runtime>(
     repo_path: &Path,
     repo_state: State<'_, RepositoriesStateMutex>,
     stager_state: State<'_, StagerStateMutex>,
+    app_handle: AppHandle<R>,
 ) -> Result<(), String> {
     let mut repositories = repo_state.0.lock().await;
     let repo = repositories.get_or_insert(repo_path);
     let mut stager = stager_state.0.lock().await;
-    stager.watch(repo).map_err(|e| format!("{}", e))?;
+    stager
+        .watch(app_handle, repo)
+        .map_err(|e| format!("{}", e))?;
     Ok(())
 }
 
@@ -96,7 +99,7 @@ pub async fn close_repository(
     let repositories = repo_state.0.lock().await;
     if let Some(repo) = repositories.get(repo_path) {
         let mut stager = stager_state.0.lock().await;
-        stager.unwatch(repo).map_err(|e| format!("{}", e))?;
+        stager.unwatch(repo).await.map_err(|e| format!("{}", e))?;
     }
     Ok(())
 }
