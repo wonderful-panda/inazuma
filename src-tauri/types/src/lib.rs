@@ -142,17 +142,26 @@ pub struct Commit {
     pub id: String,
     pub parent_ids: Vec<String>,
     pub author: String,
+    pub mail_address: String,
     #[ts(type = "number")]
     pub date: u64,
     pub summary: String,
 }
 
 impl Commit {
-    pub fn new(id: &str, parents: &str, author: &str, date: u64, summary: &str) -> Commit {
+    pub fn new(
+        id: &str,
+        parents: &str,
+        author: &str,
+        mail_address: &str,
+        date: u64,
+        summary: &str,
+    ) -> Commit {
         return Commit {
             id: id.to_string(),
             parent_ids: parents.split(' ').map(Into::into).collect(),
             author: author.to_string(),
+            mail_address: mail_address.to_string(),
             date,
             summary: summary.to_string(),
         };

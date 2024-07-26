@@ -19,6 +19,7 @@ const fetchHistory = async (repoPath: string, reflogCount: number) => {
     commits.unshift({
       id: "--",
       author: "--",
+      mailAddress: "",
       date: Date.now(),
       summary: "<Working tree>",
       parentIds: [rawRefs.head, ...rawRefs.mergeHeads]

@@ -15,12 +15,14 @@ const LOG_FORMAT: &str = "\
     id:%H%n\
     parents:%P%n\
     author:%an%n\
+    mail:%ae%n\
     date:%at%n\
     summary:%s";
 
 const ID: &str = "id";
 const PARENTS: &str = "parents";
 const AUTHOR: &str = "author";
+const MAIL: &str = "mail";
 const DATE: &str = "date";
 const SUMMARY: &str = "summary";
 
@@ -28,6 +30,7 @@ pub fn parse_log_output(output: &str) -> Result<Vec<Commit>, GitError> {
     let mut id = "";
     let mut parents = "";
     let mut author = "";
+    let mut mail_address = "";
     let mut date: u64 = 0;
     let mut commits: Vec<Commit> = Vec::new();
     for line in output.lines() {
@@ -42,14 +45,18 @@ pub fn parse_log_output(output: &str) -> Result<Vec<Commit>, GitError> {
             [AUTHOR, value] => {
                 author = value;
             }
+            [MAIL, value] => {
+                mail_address = value;
+            }
             [DATE, value] => {
                 date = value.parse::<u64>().unwrap() * 1000;
             }
             [SUMMARY, value] => {
-                commits.push(Commit::new(id, parents, author, date, value));
+                commits.push(Commit::new(id, parents, author, mail_address, date, value));
                 id = "";
                 parents = "";
                 author = "";
+                mail_address = "";
                 date = 0;
             }
             _ => {
@@ -127,6 +134,7 @@ pub fn parse_filelog_output(output: &str) -> Result<Vec<FileLogEntry>, GitError>
     let mut id = "";
     let mut parents = "";
     let mut author = "";
+    let mut mail_address = "";
     let mut date: u64 = 0;
     let mut summary = "";
     let mut entries: Vec<FileLogEntry> = Vec::new();
@@ -145,6 +153,9 @@ pub fn parse_filelog_output(output: &str) -> Result<Vec<FileLogEntry>, GitError>
             [AUTHOR, value] => {
                 author = value;
             }
+            [MAIL, value] => {
+                mail_address = value;
+            }
             [DATE, value] => {
                 date = value.parse::<u64>().unwrap() * 1000;
             }
@@ -154,12 +165,13 @@ pub fn parse_filelog_output(output: &str) -> Result<Vec<FileLogEntry>, GitError>
             }
             _ => {
                 // stat line
-                let commit = Commit::new(id, parents, author, date, summary);
+                let commit = Commit::new(id, parents, author, mail_address, date, summary);
                 let entry = parse_raw_numstat_rows(line)?.remove(0);
                 entries.push(FileLogEntry { commit, entry });
                 id = "";
                 parents = "";
                 author = "";
+                mail_address = "";
                 date = 0;
                 summary = "";
             }
@@ -201,16 +213,19 @@ mod tests {
             id:5cc9b4bc00000000000000000000000000000000\n\
             parents:4f158cd300000000000000000000000000000000 749b9a9000000000000000000000000000000000\n\
             author:Carol\n\
+            mail:carol@example.com\n\
             date:1612789513\n\
             summary:\n\
             id:749b9a9000000000000000000000000000000000\n\
             parents:4f158cd300000000000000000000000000000000\n\
             author:Bob\n\
+            mail:bob@example.com\n\
             date:1612789146\n\
             summary:second commit\n\
             id:4f158cd300000000000000000000000000000000\n\
             parents:\n\
             author:Alice\n\
+            mail:alice@example.com\n\
             date:1612789108\n\
             summary:first commit\n\
         ";
@@ -220,18 +235,21 @@ mod tests {
                 "5cc9b4bc00000000000000000000000000000000",
                 "4f158cd300000000000000000000000000000000 749b9a9000000000000000000000000000000000",
                 "Carol",
+                "carol@example.com",
                 1612789513000,
                 ""),
             Commit::new(
                 "749b9a9000000000000000000000000000000000",
                 "4f158cd300000000000000000000000000000000",
                 "Bob",
+                "bob@example.com",
                 1612789146000,
                 "second commit"),
             Commit::new(
                 "4f158cd300000000000000000000000000000000",
                 "",
                 "Alice",
+                "alice@example.com",
                 1612789108000,
                 "first commit"),
         ];

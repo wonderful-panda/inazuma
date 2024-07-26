@@ -117,6 +117,7 @@ const LOG_FORMAT: &str = "\
     id:%H%n\
     parents:%P%n\
     author:%an%n\
+    mail:%ae%n\
     date:%at%n\
     summary:%s%n\
     body:{{{%n\
@@ -126,6 +127,7 @@ const LOG_FORMAT: &str = "\
 const ID: &str = "id";
 const PARENTS: &str = "parents";
 const AUTHOR: &str = "author";
+const MAIL: &str = "mail";
 const DATE: &str = "date";
 const SUMMARY: &str = "summary";
 const BODY: &str = "body";
@@ -142,6 +144,7 @@ enum Region {
  * id:{id}\n
  * parents:{parents}\n
  * author:{author}\n
+ * mail:{author mail}\n
  * date:{author-date}\n
  * summary:{summary}\n
  * body:{{{
@@ -155,6 +158,7 @@ fn parse_commit_detail_output(output: &str) -> Result<CommitDetail, GitError> {
     let mut id = "";
     let mut parents = "";
     let mut author = "";
+    let mut mail_address = "";
     let mut date: u64 = 0;
     let mut summary = "";
     let mut body = String::from("");
@@ -172,6 +176,9 @@ fn parse_commit_detail_output(output: &str) -> Result<CommitDetail, GitError> {
                     }
                     [AUTHOR, value] => {
                         author = value;
+                    }
+                    [MAIL, value] => {
+                        mail_address = value;
                     }
                     [DATE, value] => {
                         date = value.parse::<u64>().unwrap() * 1000;
@@ -215,7 +222,7 @@ fn parse_commit_detail_output(output: &str) -> Result<CommitDetail, GitError> {
         }
     }
     Ok(CommitDetail {
-        commit: Commit::new(id, parents, author, date, summary),
+        commit: Commit::new(id, parents, author, mail_address, date, summary),
         body: body.to_string(),
         files,
     })

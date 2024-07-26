@@ -29,6 +29,7 @@ export const useReloadWorkingTree = () => {
     const value: WorkingTreeStat = {
       id: "--",
       author: "--",
+      mailAddress: "",
       summary: "<Working tree>",
       date: Date.now(),
       parentIds: stat.parentIds,
