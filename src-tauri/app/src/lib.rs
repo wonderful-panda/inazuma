@@ -16,14 +16,16 @@ use state::stager::StagerStateMutex;
 use std::{error::Error, fs::create_dir_all};
 use sync::get_sync;
 use tauri::{
-    generate_handler, App, AppHandle, Manager, RunEvent, Runtime, WindowBuilder, WindowEvent,
-    WindowUrl,
+    generate_handler, App, AppHandle, Manager, RunEvent, Runtime, WebviewUrl, WebviewWindowBuilder,
+    WindowEvent,
 };
+use tauri_plugin_clipboard_manager;
+use tauri_plugin_dialog;
 use tokio::spawn;
 use types::WindowState;
 
 fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
-    let app_dir = app.path_resolver().app_config_dir().unwrap();
+    let app_dir = app.path().app_config_dir().unwrap();
     if !app_dir.exists() {
         if let Err(e) = create_dir_all(&app_dir) {
             error!(
@@ -51,7 +53,8 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
     } = env_state.env.window_state;
 
     let (mut wait, mut notify) = get_sync();
-    let app_handle = app.app_handle();
+
+    let app_handle = AppHandle::clone(app.handle());
     spawn(async move {
         let state = app_handle.state::<ConfigStateMutex>();
         *state.0.lock().await = config_state;
@@ -69,7 +72,7 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
 
     wait.wait();
 
-    let win = WindowBuilder::new(app, "main", WindowUrl::App("index.html".into()))
+    let win = WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
         .title("Inazuma")
         .resizable(true)
         .fullscreen(false)
@@ -94,6 +97,8 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
 
 pub fn run() {
     let app = tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .manage(EnvStateMutex::new())
         .manage(ConfigStateMutex::new())
         .manage(PtyStateMutex::new())
@@ -146,7 +151,7 @@ pub fn run() {
             if label.eq("main") {
                 let app_handle_clone = AppHandle::clone(&app_handle);
                 spawn(async move {
-                    let window = app_handle_clone.get_window("main").unwrap();
+                    let window = app_handle_clone.get_webview_window("main").unwrap();
                     let mutex = app_handle_clone.state::<EnvStateMutex>();
                     let mut env_state = mutex.0.lock().await;
                     if let Err(e) = env_state.store_window_state(&window) {

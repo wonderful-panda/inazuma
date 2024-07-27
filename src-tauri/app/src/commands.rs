@@ -3,8 +3,10 @@ use std::path::Path;
 
 use font_kit::sources::fs::FsSource;
 use portable_pty::ExitStatus;
-use tauri::{api::dialog::blocking::FileDialogBuilder, Window};
-use tauri::{AppHandle, ClipboardManager, Runtime, State};
+use tauri::{AppHandle, Runtime, State};
+use tauri::{Emitter, Window};
+use tauri_plugin_clipboard_manager::ClipboardExt;
+use tauri_plugin_dialog::DialogExt;
 
 use crate::git::build_command_line;
 use crate::state::pty::{PtyId, PtyStateMutex};
@@ -58,18 +60,15 @@ pub async fn save_config(
 
 #[cfg(any(target_os = "windows", target_os = "macos"))]
 #[tauri::command]
-pub async fn show_folder_selector<T: Runtime>(window: Window<T>) -> Option<String> {
-    FileDialogBuilder::new()
+pub async fn show_folder_selector<T: Runtime>(
+    window: Window<T>,
+    app_handle: AppHandle<T>,
+) -> Option<String> {
+    app_handle
+        .dialog()
+        .file()
         .set_parent(&window)
-        .pick_folder()
-        .map(|path| path.to_str().unwrap().replace("\\", "/").into())
-}
-
-#[cfg(target_os = "linux")]
-#[tauri::command]
-pub async fn show_folder_selector() -> Option<String> {
-    FileDialogBuilder::new()
-        .pick_folder()
+        .blocking_pick_folder()
         .map(|path| path.to_str().unwrap().replace("\\", "/").into())
 }
 
@@ -330,7 +329,7 @@ pub async fn show_external_diff(
 #[tauri::command]
 pub async fn yank_text<T: Runtime>(text: &str, app_handle: AppHandle<T>) -> Result<(), String> {
     app_handle
-        .clipboard_manager()
+        .clipboard()
         .write_text(text)
         .map_err(|e| format!("{}", e))
 }
@@ -342,9 +341,9 @@ pub async fn open_pty<T: Runtime>(
     rows: u16,
     cols: u16,
     pty_state: State<'_, PtyStateMutex>,
-    window: Window<T>,
+    app_handle: AppHandle<T>,
 ) -> Result<usize, String> {
-    open_pty_internal(command_line, cwd, rows, cols, pty_state, window).await
+    open_pty_internal(command_line, cwd, rows, cols, pty_state, app_handle).await
 }
 
 async fn open_pty_internal<T: Runtime>(
@@ -353,18 +352,20 @@ async fn open_pty_internal<T: Runtime>(
     rows: u16,
     cols: u16,
     pty_state: State<'_, PtyStateMutex>,
-    window: Window<T>,
+    app_handle: AppHandle<T>,
 ) -> Result<usize, String> {
-    let win1 = window.clone();
+    let handle_clone = AppHandle::clone(&app_handle);
     let on_data = move |id: PtyId, data: &[u8]| {
         let data = String::from_utf8(data.to_vec()).unwrap();
-        if let Err(e) = win1.emit(format!("pty-data:{}", id.0).as_str(), data) {
+        if let Err(e) = handle_clone.emit(format!("pty-data:{}", id.0).as_str(), data) {
             warn!("Failed to emit pty-data event, {}", e);
         }
     };
-    let win2 = window.clone();
+    let handle_clone = AppHandle::clone(&app_handle);
     let on_exit = move |id: PtyId, exit_code: ExitStatus| {
-        if let Err(e) = win2.emit(format!("pty-exit:{}", id.0).as_str(), exit_code.success()) {
+        if let Err(e) =
+            handle_clone.emit(format!("pty-exit:{}", id.0).as_str(), exit_code.success())
+        {
             warn!("Failed to emit pty-exit event, {}", e);
         }
     };
@@ -415,10 +416,10 @@ pub async fn exect_git_with_pty<T: Runtime>(
     rows: u16,
     cols: u16,
     pty_state: State<'_, PtyStateMutex>,
-    window: Window<T>,
+    app_handle: AppHandle<T>,
 ) -> Result<usize, String> {
     let command_line = build_command_line(repo_path, command, &args[..]);
-    open_pty_internal(&command_line, repo_path, rows, cols, pty_state, window).await
+    open_pty_internal(&command_line, repo_path, rows, cols, pty_state, app_handle).await
 }
 
 #[tauri::command]

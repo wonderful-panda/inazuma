@@ -4,3 +4,4 @@ members = [
   "types",
   "generate",
 ]
+resolver = "2"

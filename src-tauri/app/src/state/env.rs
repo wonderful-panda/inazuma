@@ -5,7 +5,7 @@ use std::{
     path::PathBuf,
 };
 
-use tauri::{PhysicalSize, Runtime, Size, Window};
+use tauri::{PhysicalSize, Runtime, Size, WebviewWindow};
 use tokio::sync::Mutex;
 use types::{Environment, WindowState};
 
@@ -42,7 +42,7 @@ impl EnvState {
 
     pub fn restore_window_state<T: Runtime>(
         &self,
-        window: &Window<T>,
+        window: &WebviewWindow<T>,
     ) -> Result<(), Box<dyn Error>> {
         let WindowState {
             width,
@@ -59,7 +59,7 @@ impl EnvState {
 
     pub fn store_window_state<T: Runtime>(
         &mut self,
-        window: &Window<T>,
+        window: &WebviewWindow<T>,
     ) -> Result<(), Box<dyn Error>> {
         let maximized = window.is_maximized()?;
         self.env.window_state.maximized = maximized;

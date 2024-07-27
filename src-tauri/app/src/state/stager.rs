@@ -3,7 +3,7 @@ use std::error::Error;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
-use tauri::{AppHandle, Manager, Runtime};
+use tauri::{AppHandle, Emitter, Runtime};
 use tokio::spawn;
 use tokio::sync::mpsc;
 use tokio::sync::mpsc::Receiver;
@@ -67,10 +67,8 @@ fn handle_event<R: Runtime>(
                 if let Err(e) = update_index(&f).await {
                     warn!("{}", e);
                 } else {
-                    if let Some(win) = app_handle.get_window("main") {
-                        if let Err(e) = win.emit("request_reload", &f.repo_path) {
-                            error!("Failed to emit event: request_reload, {}", e);
-                        }
+                    if let Err(e) = app_handle.emit("request_reload", &f.repo_path) {
+                        error!("Failed to emit event: request_reload, {}", e);
                     }
                 }
             }

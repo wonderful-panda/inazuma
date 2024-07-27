@@ -9,5 +9,5 @@ extern crate log;
 #[tokio::main]
 async fn main() {
     env_logger::init();
-    app::run()
+    inazuma::run()
 }
