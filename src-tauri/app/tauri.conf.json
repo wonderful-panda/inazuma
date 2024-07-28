@@ -47,7 +47,10 @@
   "app": {
     "withGlobalTauri": true,
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "scope": ["http://avatar.localhost/*", "avatar://*"]
+      }
     }
   }
 }
