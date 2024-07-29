@@ -10,16 +10,19 @@ import { useAtomCallback } from "jotai/utils";
 import { reflogAtom } from "@/state/repository/misc";
 
 const fetchHistory = async (repoPath: string, reflogCount: number) => {
-  const [commits, rawRefs] = await invokeTauriCommand("fetch_history", {
-    repoPath,
-    maxCount: 1000,
-    reflogCount
-  });
+  const [[commits, rawRefs], user] = await Promise.all([
+    invokeTauriCommand("fetch_history", {
+      repoPath,
+      maxCount: 1000,
+      reflogCount
+    }),
+    invokeTauriCommand("get_user_info", { repoPath })
+  ]);
   if (rawRefs.head) {
     commits.unshift({
       id: "--",
-      author: "--",
-      mailAddress: "",
+      author: user.name,
+      mailAddress: user.email,
       date: Date.now(),
       summary: "<Working tree>",
       parentIds: [rawRefs.head, ...rawRefs.mergeHeads]

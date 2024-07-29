@@ -1,9 +1,6 @@
 import { Button } from "@mui/material";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Icon } from "../Icon";
-import { GitHash } from "../GitHash";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { formatDateTimeLong } from "@/date";
 import { RefBadge } from "./RefBadge";
 import { FlexCard } from "../FlexCard";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
@@ -18,6 +15,7 @@ import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelect
 import PathFilter from "./PathFilter";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
 import { useShowLsTree } from "@/hooks/actions/showLsTree";
+import { CommitAttributes } from "./CommitAttributes";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -37,27 +35,18 @@ const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
   }
   const content = (
     <>
-      <div className="border-b mb-1 border-solid border-current text-2xl">{commit.summary}</div>
-      <div className="flex-row-wrap mb-1 text-greytext text-lg">
-        <div className="flex-row-nowrap mr-4">
-          <GitHash hash={commit.id} />
-        </div>
-        <div className="flex-row-nowrap mr-4">
-          <Icon className="mr-0.5 my-auto" icon="mdi:account" />
-          {commit.author}
-        </div>
-        <div className="flex-row-nowrap mr-4">
-          <Icon className="mr-0.5 my-auto" icon="mdi:clock-outline" />
-          {formatDateTimeLong(commit.date)}
-        </div>
+      <div className="flex-col-wrap p-2 mb-2 border-b border-greytext">
+        <CommitAttributes commit={commit} />
       </div>
-      <div className="flex-row-wrap my-1">
-        {refs.map((r) => (
-          <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
-        ))}
-      </div>
+      {refs.length > 0 && (
+        <div className="flex-row-wrap mx-2 mb-2">
+          {refs.map((r) => (
+            <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
+          ))}
+        </div>
+      )}
       {commit.body && (
-        <pre className="flex-initial m-1 p-2 overflow-auto text-lg whitespace-pre-wrap font-normal">
+        <pre className="flex-1 m-1 p-2 overflow-auto text-base font-normal bg-tooltip text-greytext">
           {commit.body}
         </pre>
       )}
@@ -65,6 +54,7 @@ const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
   );
   return (
     <FlexCard
+      title={commit.summary}
       content={content}
       actions={
         <>

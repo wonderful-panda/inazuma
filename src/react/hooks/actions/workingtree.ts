@@ -15,9 +15,12 @@ export const useReloadWorkingTree = () => {
     if (!repoPath) {
       return;
     }
-    const stat = await invokeTauriCommand("get_workingtree_stat", {
-      repoPath
-    });
+    const [stat, user] = await Promise.all([
+      invokeTauriCommand("get_workingtree_stat", {
+        repoPath
+      }),
+      invokeTauriCommand("get_user_info", { repoPath })
+    ]);
     const files: Record<WorkingTreeFileKind["type"], WorkingTreeFileEntry[]> = {
       unmerged: [],
       unstaged: [],
@@ -28,8 +31,8 @@ export const useReloadWorkingTree = () => {
     }
     const value: WorkingTreeStat = {
       id: "--",
-      author: "--",
-      mailAddress: "",
+      author: user.name,
+      mailAddress: user.email,
       summary: "<Working tree>",
       date: Date.now(),
       parentIds: stat.parentIds,

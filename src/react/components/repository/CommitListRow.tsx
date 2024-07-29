@@ -10,6 +10,7 @@ import { Icon } from "@iconify/react";
 import { CommitCommand } from "@/commands/types";
 import { RowActionButtons, RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
+import { Avatar } from "./Avatar";
 
 export const PinnedCommitContext = createContext<Commit | undefined>(undefined);
 
@@ -73,29 +74,36 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
   return (
     <div
       className={classNames(
-        "flex box-border cursor-pointer overflow-hidden group",
+        "flex h-full box-border cursor-pointer overflow-hidden group",
         "pl-4 border-b border-solid border-paper",
         selected ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
     >
       <GraphCell graph={graph} height={height} head={head} maskIdPrefix={parentId} />
-      <div className="relative my-auto flex-col-nowrap flex-1 ml-6 overflow-hidden">
+      <div className="my-auto ml-6 py-2 h-full w-10">
+        <Avatar mailAddress={commit.mailAddress} />
+      </div>
+      <div className="relative my-auto flex-col-nowrap flex-1 ml-2 overflow-hidden">
         <div className="flex-row-nowrap items-center text-lg leading-6">
           {refs && refs.map((r) => <RefBadge key={`${r.type}:${r.fullname}`} r={r} />)}
           <span className={classNames("ellipsis", pinned && "text-secondary")}>
             {commit.summary}
           </span>
         </div>
-        <div className="flex-row-nowrap leading-5 pl-1 text-greytext whitespace-nowrap">
-          <GitHash hash={commit.id} />
-          {!workingTree && (
+        <div className="flex-row-nowrap leading-5 text-greytext whitespace-nowrap">
+          {workingTree ? (
             <>
-              <span className="flex-row-nowrap whitespace-nowrap">
-                <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:account" />
-                {commit.author}
-                <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:clock-outline" />
-                {formatDateTimeLong(commit.date)}
-              </span>
+              <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:account" />
+              {commit.author}
+            </>
+          ) : (
+            <>
+              <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:hashtag-box" />
+              <GitHash hash={workingTree ? "-------" : commit.id} />
+              <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:account" />
+              {commit.author}
+              <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:clock-outline" />
+              {formatDateTimeLong(commit.date)}
             </>
           )}
         </div>
