@@ -423,6 +423,16 @@ pub async fn exect_git_with_pty<T: Runtime>(
 }
 
 #[tauri::command]
+pub async fn get_user_info(repo_path: &Path) -> Result<GitUser, String> {
+    let (name, email) = tokio::try_join!(
+        git::config::get_config_value(repo_path, "user.name", false),
+        git::config::get_config_value(repo_path, "user.email", false),
+    )
+    .map_err(|e| format!("{}", e))?;
+    Ok(GitUser { name, email })
+}
+
+#[tauri::command]
 pub async fn find_repository_root() -> Result<Option<String>, String> {
     Ok(git::find_repository_root().await?)
 }

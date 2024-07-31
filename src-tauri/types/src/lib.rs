@@ -452,3 +452,11 @@ pub struct Font {
     pub family_name: String,
     pub monospace: bool,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct GitUser {
+    pub name: String,
+    pub email: String,
+}

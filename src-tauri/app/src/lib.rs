@@ -139,6 +139,7 @@ pub fn run() {
             commands::unstage,
             commands::restore,
             commands::show_external_diff,
+            commands::get_user_info,
             commands::yank_text,
             commands::open_pty,
             commands::write_pty,
