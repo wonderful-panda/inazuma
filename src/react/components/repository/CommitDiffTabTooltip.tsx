@@ -1,4 +1,5 @@
-import { TooltipCommitDisplay, TooltipTitle } from "../TabContainer";
+import { TooltipTitle } from "../TabContainer";
+import { CommitAttributes } from "./CommitAttributes";
 
 export interface CommitDiffTabTooltipProps {
   commit1: Commit;
@@ -9,8 +10,12 @@ const CommitDiffTabTooltip: React.FC<CommitDiffTabTooltipProps> = ({ commit1, co
   return (
     <>
       <TooltipTitle text="Commit difference" />
-      <TooltipCommitDisplay className="ml-2" commit={commit1} />
-      <TooltipCommitDisplay className="ml-2" commit={commit2} />
+      <div className="m-1 ml-4 pb-1 border-b border-greytext">
+        <CommitAttributes commit={commit1} showSummary />
+      </div>
+      <div className="m-1 ml-4 pt-1">
+        <CommitAttributes commit={commit2} showSummary />
+      </div>
     </>
   );
 };

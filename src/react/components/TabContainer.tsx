@@ -50,7 +50,8 @@ const TabButton: React.FC<{
       <Tooltip
         title={p.tooltop}
         classes={{
-          tooltip: "bg-tooltip px-4 py-2 drop-shadow text-base flex-col-nowrap max-w-lg"
+          tooltip:
+            "bg-tooltip px-4 py-2 drop-shadow text-base flex-col-nowrap max-w-lg border border-background"
         }}
       >
         <Button

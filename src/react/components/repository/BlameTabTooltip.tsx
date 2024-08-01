@@ -1,4 +1,5 @@
-import { TooltipCommitDisplay, TooltipTitle } from "../TabContainer";
+import { TooltipTitle } from "../TabContainer";
+import { CommitAttributes } from "./CommitAttributes";
 
 export interface BlameTabTooltipProps {
   commit: Commit;
@@ -9,8 +10,10 @@ const BlameTabTooltip: React.FC<BlameTabTooltipProps> = ({ commit, path }) => {
   return (
     <>
       <TooltipTitle text="Blame" />
-      <span className="ml-2 font-mono">{path}</span>
-      <TooltipCommitDisplay className="ml-4" commit={commit} />
+      <span className="m-1 ml-4 border-b border-greytext font-mono">{path}</span>
+      <div className="m-1 ml-4">
+        <CommitAttributes commit={commit} showSummary />
+      </div>
     </>
   );
 };

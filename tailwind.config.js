@@ -26,7 +26,7 @@ module.exports = {
         paper: "#333",
         splitter: colors.grey[800],
         titlebar: "#2a2a2a",
-        tooltip: "#2a2a2a",
+        tooltip: "#333",
         greytext: colors.grey[500],
         gray: colors.grey
       },

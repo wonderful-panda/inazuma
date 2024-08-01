@@ -8,14 +8,14 @@ const AttrIcon: React.FC<{ icon: IconName }> = ({ icon }) => (
   <Icon className="mr-1 my-auto flex-none text-greytext" icon={icon} />
 );
 
-export const CommitAttributes: React.FC<{ commit: CommitDetail; showSummary?: boolean }> = ({
+export const CommitAttributes: React.FC<{ commit: Commit; showSummary?: boolean }> = ({
   commit,
   showSummary
 }) => {
   return (
     <div className="grid grid-cols-[auto_1fr]">
       {showSummary && (
-        <div className="col-span-2 grid grid-cols-[auto_1fr] text-lg font-bold mb-1">
+        <div className="col-span-2 grid grid-cols-[auto_1fr] font-bold mb-1">
           <AttrIcon icon="mdi:message-text" />
           <span className="ellipsis" title={commit.summary}>
             {commit.summary}
