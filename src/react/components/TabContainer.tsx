@@ -50,7 +50,7 @@ const TabButton: React.FC<{
     >
       <LazyTooltip
         renderTooltip={p.renderTooltop}
-        className="bg-tooltip px-4 py-2 drop-shadow text-base flex-col-nowrap max-w-lg border border-background"
+        className="bg-tooltip px-4 py-2 drop-shadow text-base flex-col-nowrap max-w-2xl border border-background"
       >
         <Button
           color={p.current ? "primary" : "inherit"}
