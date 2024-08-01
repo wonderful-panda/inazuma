@@ -113,7 +113,14 @@ export const MainWindow: React.FC<ChildrenProp> = ({ children }) => {
   const callbacks = useMemo(
     () => ({
       openPreference: () => preferenceDialogRef.current.open(),
-      openAbout: () => aboutDialogRef.current.open()
+      openAbout: () => aboutDialogRef.current.open(),
+      changeFontSize: () => {
+        setConfig((prev) => {
+          const fontSizeList: FontSize[] = ["x-small", "small", "medium"];
+          const fontSize = fontSizeList[(fontSizeList.indexOf(prev.fontSize) + 1) % 3];
+          return { ...prev, fontSize };
+        });
+      }
     }),
     []
   );
@@ -153,6 +160,7 @@ export const MainWindow: React.FC<ChildrenProp> = ({ children }) => {
           onKeyDown={onKeyDown}
         >
           <CommandGroup name="main">
+            <Cmd name="ChangeFontSize" hotkey="Ctrl+Alt+F" handler={callbacks.changeFontSize} />
             <Cmd name="Preference" hotkey="Ctrl+Shift+P" handler={callbacks.openPreference} />
             <Cmd name="About" hotkey="Ctrl+Shift+V" handler={callbacks.openAbout} />
           </CommandGroup>
