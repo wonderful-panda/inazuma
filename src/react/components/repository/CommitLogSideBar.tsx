@@ -78,7 +78,7 @@ const RefListItem: React.FC<{
   rowActions?: React.ReactNode;
 }> = ({ r, onClick, primaryTextClass, rowActions }) => (
   <ListItem className="flex flex-1 group" disablePadding>
-    <ListItemButton className="px-2 py-1" data-fullname={r.fullname} dense onClick={onClick}>
+    <ListItemButton className="px-2 py-0" data-fullname={r.fullname} dense onClick={onClick}>
       <ListItemText
         title={r.name}
         classes={{
