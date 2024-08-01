@@ -1,8 +1,9 @@
 import { Icon } from "./Icon";
 import classNames from "classnames";
-import { Button, IconButton, styled, Tooltip } from "@mui/material";
+import { Button, IconButton, styled } from "@mui/material";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GitHash } from "./GitHash";
+import { LazyTooltip } from "./LazyTooltip";
 
 const CURRENT_TABBUTTON_CLASS = "__current_tabbutton__";
 
@@ -32,7 +33,7 @@ export const TooltipCommitDisplay: React.FC<{ commit: Commit; className?: string
 
 const TabButton: React.FC<{
   text: string;
-  tooltop: React.ReactNode;
+  renderTooltop: () => React.ReactNode;
   closable: boolean;
   select: () => void;
   close: () => void;
@@ -47,12 +48,9 @@ const TabButton: React.FC<{
         }
       )}
     >
-      <Tooltip
-        title={p.tooltop}
-        classes={{
-          tooltip:
-            "bg-tooltip px-4 py-2 drop-shadow text-base flex-col-nowrap max-w-lg border border-background"
-        }}
+      <LazyTooltip
+        renderTooltip={p.renderTooltop}
+        className="bg-tooltip px-4 py-2 drop-shadow text-base flex-col-nowrap max-w-lg border border-background"
       >
         <Button
           color={p.current ? "primary" : "inherit"}
@@ -66,7 +64,7 @@ const TabButton: React.FC<{
         >
           {p.text}
         </Button>
-      </Tooltip>
+      </LazyTooltip>
       {p.closable && (
         <IconButton
           tabIndex={-1}
@@ -139,7 +137,7 @@ export const TabContainer = <T = Record<string, any>,>(p: TabContainerProps<T>) 
           <TabButton
             key={t.id}
             text={t.title}
-            tooltop={p.renderTabTooltip(t)}
+            renderTooltop={() => p.renderTabTooltip(t)}
             closable={t.closable}
             select={() => p.selectTab(index)}
             close={() => p.closeTab(index)}
