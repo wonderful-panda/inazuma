@@ -15,7 +15,7 @@ export const CommitAttributes: React.FC<{ commit: Commit; showSummary?: boolean 
   return (
     <div className="grid grid-cols-[auto_1fr]">
       {showSummary && (
-        <div className="col-span-2 grid grid-cols-[auto_1fr] font-bold mb-1">
+        <div className="col-span-2 grid grid-cols-[auto_1fr] font-bold mb-1 text-lg">
           <AttrIcon icon="mdi:message-text" />
           <span className="ellipsis" title={commit.summary}>
             {commit.summary}

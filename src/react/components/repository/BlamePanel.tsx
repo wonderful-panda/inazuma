@@ -10,6 +10,8 @@ import { VirtualListMethods } from "../VirtualList";
 import { BlameFooter } from "./BlameFooter";
 import { BlameViewer } from "./BlameViewer";
 import { FileCommitList } from "./FileCommitList";
+import { CommitAttributes } from "./CommitAttributes";
+import classNames from "classnames";
 
 setupMonaco();
 
@@ -72,12 +74,20 @@ const SecondPanel: React.FC<SecondPanelProps> = ({
 export interface BlamePanelProps {
   persistKey: string;
   blame: Blame;
+  commit: Commit;
   path: string;
-  sha: string;
   refs: Refs | undefined;
+  showCommitAttrs?: boolean;
 }
 
-export const BlamePanel: React.FC<BlamePanelProps> = ({ persistKey, blame, path, sha, refs }) => {
+export const BlamePanel: React.FC<BlamePanelProps> = ({
+  persistKey,
+  blame,
+  commit,
+  path,
+  refs,
+  showCommitAttrs
+}) => {
   const handleRowContextMenu = useFileCommitContextMenu(path);
   const [selectedItem, setSelectedItem] = useState({
     index: -1,
@@ -115,30 +125,49 @@ export const BlamePanel: React.FC<BlamePanelProps> = ({ persistKey, blame, path,
     listRef.current?.scrollToItem(selectedItem.index);
   }, [selectedItem.index]);
 
+  const first = useCallback(
+    (direction: Direction) => (
+      <div
+        className={classNames(
+          "flex-1",
+          direction === "horiz" ? "flex-col-nowrap" : "flex-row-nowrap"
+        )}
+      >
+        {showCommitAttrs && (
+          <div className={classNames("m-2 mb-auto", direction === "vert" && "max-w-2xl")}>
+            <div className={classNames("p-2 border border-greytext")}>
+              <CommitAttributes commit={commit} showSummary />
+            </div>
+          </div>
+        )}
+        <SelectedIndexProvider value={selectedItem.index}>
+          <KeyDownTrapper className="m-1 p-1 border border-paper" onKeyDown={handleKeyDown}>
+            <FileCommitList
+              ref={listRef}
+              commits={blame.commits}
+              refs={refs}
+              onRowMouseDown={handleRowMouseDown}
+              onRowContextMenu={handleRowContextMenu}
+            />
+          </KeyDownTrapper>
+        </SelectedIndexProvider>
+      </div>
+    ),
+    [selectedItem, blame.commits, refs, handleKeyDown, handleRowMouseDown, handleRowContextMenu]
+  );
+
   return (
     <div className="flex-col-nowrap flex-1 px-2 pt-1">
       <div className="flex-row-nowrap items-center text-xl p-2 font-mono font-bold">
         <span className="pr-2 whitespace-nowrap text-secondary">{path}</span>
         <span className="text-greytext pr-2">@</span>
-        <GitHash className="text-greytext" hash={sha} />
+        <GitHash className="text-greytext" hash={commit.id} />
       </div>
       <PersistSplitterPanel
         persistKey={persistKey}
         initialRatio={0.3}
         initialDirection="horiz"
-        first={
-          <SelectedIndexProvider value={selectedItem.index}>
-            <KeyDownTrapper className="m-1 p-1 border border-paper" onKeyDown={handleKeyDown}>
-              <FileCommitList
-                ref={listRef}
-                commits={blame.commits}
-                refs={refs}
-                onRowMouseDown={handleRowMouseDown}
-                onRowContextMenu={handleRowContextMenu}
-              />
-            </KeyDownTrapper>
-          </SelectedIndexProvider>
-        }
+        first={first}
         second={
           <SecondPanel
             blame={blame}

@@ -10,15 +10,15 @@ export interface BlameTabProps {
 }
 
 const BlameTab: React.FC<BlameTabProps> = ({ repoPath, path, commit, refs }) => {
-  const sha = commit.id;
-  const blame = useBlame(repoPath, path, sha);
+  const blame = useBlame(repoPath, path, commit.id);
   return blame?.blame ? (
     <BlamePanel
       persistKey="repository/BlameTab"
       blame={blame.blame}
       path={path}
-      sha={sha}
+      commit={commit}
       refs={refs}
+      showCommitAttrs
     />
   ) : (
     <Loading open />

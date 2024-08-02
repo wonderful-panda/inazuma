@@ -14,6 +14,9 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useBlame } from "@/hooks/useBlame";
 import PathFilter from "./PathFilter";
 import { useReportError } from "@/state/root";
+import { CommitAttributes } from "./CommitAttributes";
+import classNames from "classnames";
+import { FlexCard } from "../FlexCard";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -22,10 +25,12 @@ export interface LsTreeTabProps {
 }
 
 const LsTreeWithFilter: React.FC<{
+  orientation: Orientation;
+  commit: Commit;
   entries: readonly LstreeEntry[];
   blamePath: string | undefined;
   onUpdateBlamePath: (value: string | undefined) => void;
-}> = ({ entries, blamePath, onUpdateBlamePath }) => {
+}> = ({ orientation, commit, entries, blamePath, onUpdateBlamePath }) => {
   const [filterText, setFilterText] = useState("");
   const filteredEntries = useMemo(() => {
     if (!filterText) {
@@ -81,28 +86,52 @@ const LsTreeWithFilter: React.FC<{
     },
     [onUpdateBlamePath, handleKeyDown]
   );
-  return (
-    <div className="flex-col-nowrap flex-1 m-1">
-      <div className="flex-row-nowrap items-end mb-4 mr-2">
-        <PathFilter onFilterTextChange={setFilterText} className="flex-1" />
-        <IconButton size="small" onClick={expandAll} title="Expand all">
-          <Icon icon="mdi:chevron-down" className="text-2xl" />
-        </IconButton>
-        <IconButton size="small" onClick={collapseAll} title="Collapse all">
-          <Icon icon="mdi:chevron-up" className="text-2xl" />
-        </IconButton>
+  const content = (
+    <div
+      className={classNames(
+        "flex-1 m-1",
+        orientation === "portrait" ? "flex-col-nowrap" : "flex-row-nowrap"
+      )}
+    >
+      <div className="flex-col-nowrap m-1">
+        <div
+          className={classNames(
+            "mb-2 px-2 border border-greytext",
+            orientation === "landscape" && "max-w-2xl"
+          )}
+        >
+          <CommitAttributes commit={commit} showSummary />
+        </div>
+        <div className="flex-col-nowrap mb-auto p-2">
+          <div className="flex-row-nowrap items-end mb-2 mr-2">
+            <PathFilter onFilterTextChange={setFilterText} className="flex-1" />
+            <IconButton size="small" onClick={expandAll} title="Expand all">
+              <Icon icon="mdi:chevron-down" className="text-2xl" />
+            </IconButton>
+            <IconButton size="small" onClick={collapseAll} title="Collapse all">
+              <Icon icon="mdi:chevron-up" className="text-2xl" />
+            </IconButton>
+          </div>
+        </div>
       </div>
-      <SelectedIndexProvider value={state.selectedIndex}>
-        <KeyDownTrapper className="m-1 p-1 border border-paper" onKeyDown={handleKeyDownWithEnter}>
-          <LsTree
-            treeModelState={state}
-            treeModelDispatch={dispatch}
-            onRowMouseDown={handleRowMouseDown}
-            onRowDoubleClick={handleRowDoubleClick}
-            getRowClass={getRowClass}
-          />
-        </KeyDownTrapper>
-      </SelectedIndexProvider>
+      <div className="flex-col-nowrap flex-1 m-1 border border-greytext">
+        <SelectedIndexProvider value={state.selectedIndex}>
+          <KeyDownTrapper className="p-1 border border-paper" onKeyDown={handleKeyDownWithEnter}>
+            <LsTree
+              treeModelState={state}
+              treeModelDispatch={dispatch}
+              onRowMouseDown={handleRowMouseDown}
+              onRowDoubleClick={handleRowDoubleClick}
+              getRowClass={getRowClass}
+            />
+          </KeyDownTrapper>
+        </SelectedIndexProvider>
+      </div>
+    </div>
+  );
+  return (
+    <div className="flex flex-1 p-2">
+      <FlexCard content={content} />
     </div>
   );
 };
@@ -113,6 +142,18 @@ const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
   const revspec = commit.id;
   const blame = useBlame(repoPath, blamePath, revspec);
   const reportError = useReportError();
+  const lstree = useCallback(
+    (direction: Direction) => (
+      <LsTreeWithFilter
+        orientation={direction === "horiz" ? "portrait" : "landscape"}
+        commit={commit}
+        entries={entries}
+        blamePath={blamePath}
+        onUpdateBlamePath={setBlamePath}
+      />
+    ),
+    [commit, entries, blamePath, setBlamePath]
+  );
   useEffect(() => {
     invokeTauriCommand("get_tree", { repoPath, revspec })
       .then((entries) => {
@@ -136,21 +177,15 @@ const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
       persistKey="repository/LsTreeTab"
       initialRatio={0.3}
       initialDirection="horiz"
-      first={
-        <LsTreeWithFilter
-          entries={entries}
-          blamePath={blamePath}
-          onUpdateBlamePath={setBlamePath}
-        />
-      }
+      first={lstree}
       second={
         <div className="flex flex-1 relative">
           {blame?.blame && (
             <BlamePanel
               persistKey="repository/LsTreeTab/BlamePanel"
               blame={blame.blame}
+              commit={commit}
               path={blame.path}
-              sha={revspec}
               refs={refs}
             />
           )}

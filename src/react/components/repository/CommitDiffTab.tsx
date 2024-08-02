@@ -1,4 +1,3 @@
-import { shortHash } from "@/util";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { FileList, useFileListRowEventHandler } from "./FileList";
@@ -16,6 +15,7 @@ import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelect
 import { useDiffAgainstCommand } from "@/commands/diff";
 import { DiffViewer } from "./DiffViewer";
 import { useReportError } from "@/state/root";
+import { CommitAttributes } from "./CommitAttributes";
 
 export interface CommitDiffTabProps {
   repoPath: string;
@@ -113,9 +113,14 @@ const CommitDiffContent: React.FC<{
   const first = (
     <div className="flex flex-1 p-2">
       <FlexCard
-        title={`Changes ${shortHash(commit1.id)} - ${shortHash(commit2.id)}`}
         content={
           <div className="flex-1 flex-col-nowrap">
+            <div className="p-2 mb-2 border border-greytext">
+              <CommitAttributes commit={commit1} showSummary />
+            </div>
+            <div className="p-2 border border-greytext">
+              <CommitAttributes commit={commit2} showSummary />
+            </div>
             <PathFilter onFilterTextChange={setFilterText} className="m-2" />
             <SelectedIndexProvider value={selectedIndex}>
               <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
@@ -135,7 +140,7 @@ const CommitDiffContent: React.FC<{
     </div>
   );
   const second = (
-    <div className="relative flex flex-1 p-2">
+    <div className="relative flex-col-nowrap flex-1 p-2">
       <DiffViewer left={content[0]} right={content[1]} />
       {loading && <Loading open />}
     </div>
