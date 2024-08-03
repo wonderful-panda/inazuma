@@ -180,7 +180,7 @@ const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
       first={lstree}
       second={
         <div className="flex flex-1 relative">
-          {blame?.blame && (
+          {blame?.blame ? (
             <BlamePanel
               persistKey="repository/LsTreeTab/BlamePanel"
               blame={blame.blame}
@@ -188,6 +188,8 @@ const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
               path={blame.path}
               refs={refs}
             />
+          ) : (
+            <div className="m-auto text-4xl font-bold text-paper">NO FILE SELECTED</div>
           )}
           {blame && !blame.blame && <Loading open />}
         </div>

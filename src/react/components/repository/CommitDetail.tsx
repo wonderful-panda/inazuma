@@ -46,7 +46,7 @@ const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
         </div>
       )}
       {commit.body && (
-        <pre className="flex-1 m-1 p-2 overflow-auto text-base font-normal bg-tooltip text-greytext">
+        <pre className="flex-1 m-1 p-2 overflow-auto text-lg font-normal bg-tooltip text-greytext">
           {commit.body}
         </pre>
       )}
