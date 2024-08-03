@@ -47,12 +47,12 @@
     "string_decoder": "^1.3.0"
   },
   "devDependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.10.4",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
     "@iconify/json": "^2.1.113",
     "@iconify/react": "^4.0.0",
     "@iconify/utils": "^2.0.0",
-    "@mui/material": "^5.14.5",
+    "@mui/material": "^5.16.6",
     "@tauri-apps/cli": "^2.0.0-beta.22",
     "@types/chardet": "^0.8.3",
     "@types/lodash": "^4.17.7",
