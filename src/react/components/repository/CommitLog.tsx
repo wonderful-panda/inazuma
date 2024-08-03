@@ -43,9 +43,8 @@ const useBeginCommitCommand = () => {
   );
 };
 
-const useCompareWithParentCommand = (commits: readonly Commit[]) => {
+const useCompareWithParentCommand = () => {
   const [, showCommitDiff] = useWithRef(useShowCommitDiff());
-  const showWarning = useShowWarning();
   return useMemo<CommitCommand>(
     () => ({
       type: "commit",
@@ -54,15 +53,10 @@ const useCompareWithParentCommand = (commits: readonly Commit[]) => {
       icon: "octicon:git-compare-16",
       hidden: (commit) => commit.id === "--" || commit.parentIds.length === 0,
       handler: (commit) => {
-        const baseCommit = commits.find((c) => c.id === commit.parentIds[0]);
-        if (!baseCommit) {
-          showWarning("Parent commit is not found");
-          return;
-        }
-        showCommitDiff.current(baseCommit, commit);
+        showCommitDiff.current("parent", commit);
       }
     }),
-    [showWarning, commits, showCommitDiff]
+    [showCommitDiff]
   );
 };
 
@@ -116,7 +110,7 @@ const CommitLogInner: React.FC<{
   const createBranch = useCreateBranchCommand();
   const browseSourceTree = useBrowseSourceTreeCommand();
   const beginCommit = useBeginCommitCommand();
-  const compareWithParent = useCompareWithParentCommand(log.commits);
+  const compareWithParent = useCompareWithParentCommand();
   const compareWithPinnedCommit = useCompareWithPinnedCommitCommand(pinnedCommit);
   const actionCommands = useMemo<CommitCommand[]>(() => {
     return [

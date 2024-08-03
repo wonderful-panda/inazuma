@@ -19,8 +19,8 @@ import { CommitAttributes } from "./CommitAttributes";
 
 export interface CommitDiffTabProps {
   repoPath: string;
-  commit1: Commit;
-  commit2: Commit;
+  commitFrom: Commit | "parent";
+  commitTo: Commit;
 }
 
 const getContent = async (
@@ -44,8 +44,8 @@ const getContent = async (
 
 const loadContents = (
   repoPath: string,
-  sha1: string,
-  sha2: string,
+  revspec1: string,
+  revspec2: string,
   file: FileEntry | undefined
 ): Promise<[TextFile | undefined, TextFile | undefined]> => {
   if (!file) {
@@ -55,20 +55,20 @@ const loadContents = (
   const left =
     file.statusCode === "A" || file.delta?.type !== "text"
       ? Promise.resolve(undefined)
-      : getContent(repoPath, leftPath, sha1);
+      : getContent(repoPath, leftPath, revspec1);
   const right =
     file.statusCode === "D" || file.delta?.type !== "text"
       ? Promise.resolve(undefined)
-      : getContent(repoPath, file.path, sha2);
+      : getContent(repoPath, file.path, revspec2);
   return Promise.all([left, right]);
 };
 
 const CommitDiffContent: React.FC<{
   repoPath: string;
   files: FileEntry[];
-  commit1: Commit;
-  commit2: Commit;
-}> = ({ repoPath, commit1, commit2, files }) => {
+  commitFrom: Commit | "parent";
+  commitTo: Commit;
+}> = ({ repoPath, commitFrom, commitTo, files }) => {
   const listRef = useRef<VirtualListMethods>(null);
   const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(files);
   const [filterText, setFilterText] = useState("");
@@ -89,22 +89,29 @@ const CommitDiffContent: React.FC<{
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
   const reportError = useReportError();
-  const diffAgainst = useDiffAgainstCommand(commit1);
+  const diffAgainst = useDiffAgainstCommand(commitFrom);
   const actionCommands = useMemo(() => [diffAgainst], [diffAgainst]);
-  const handleRowDoubleClick = useFileListRowEventHandler(actionCommands[0], commit2);
+  const handleRowDoubleClick = useFileListRowEventHandler(actionCommands[0], commitTo);
   const handleSelectFile = useMemo(
     () =>
       debounce(async (file: FileEntry | undefined) => {
         try {
           setLoading(true);
-          setContent(await loadContents(repoPath, commit1.id, commit2.id, file));
+          setContent(
+            await loadContents(
+              repoPath,
+              commitFrom === "parent" ? `${commitTo.id}~` : commitFrom.id,
+              commitTo.id,
+              file
+            )
+          );
         } catch (error) {
           reportError({ error });
         } finally {
           setLoading(false);
         }
       }, 200),
-    [reportError, repoPath, commit1, commit2]
+    [reportError, repoPath, commitFrom, commitTo]
   );
   useEffect(() => {
     handleSelectFile(files[selectedIndex]);
@@ -115,18 +122,20 @@ const CommitDiffContent: React.FC<{
       <FlexCard
         content={
           <div className="flex-1 flex-col-nowrap">
-            <div className="p-2 mb-2 border border-greytext">
-              <CommitAttributes commit={commit1} showSummary />
-            </div>
+            {commitFrom !== "parent" && (
+              <div className="p-2 mb-2 border border-greytext">
+                <CommitAttributes commit={commitFrom} showSummary />
+              </div>
+            )}
             <div className="p-2 border border-greytext">
-              <CommitAttributes commit={commit2} showSummary />
+              <CommitAttributes commit={commitTo} showSummary />
             </div>
             <PathFilter onFilterTextChange={setFilterText} className="m-2" />
             <SelectedIndexProvider value={selectedIndex}>
               <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
                 <FileList
                   ref={listRef}
-                  commit={commit2}
+                  commit={commitTo}
                   files={visibleFiles}
                   onRowMouseDown={handleRowMouseDown}
                   onRowDoubleClick={handleRowDoubleClick}
@@ -157,24 +166,28 @@ const CommitDiffContent: React.FC<{
   );
 };
 
-const CommitDiffTab: React.FC<CommitDiffTabProps> = ({ repoPath, commit1, commit2 }) => {
+const CommitDiffTab: React.FC<CommitDiffTabProps> = ({ repoPath, commitFrom, commitTo }) => {
   const [files, setFiles] = useState<FileEntry[] | undefined>(undefined);
   const reportError = useReportError();
   useEffect(() => {
-    invokeTauriCommand("get_changes_between", {
-      repoPath,
-      revspec1: commit1.id,
-      revspec2: commit2.id
-    })
+    (commitFrom !== "parent"
+      ? invokeTauriCommand("get_changes_between", {
+          repoPath,
+          revspec1: commitFrom.id,
+          revspec2: commitTo.id
+        })
+      : invokeTauriCommand("get_changes", {
+          repoPath,
+          revspec: commitTo.id
+        })
+    )
       .then((files) => setFiles(files))
       .catch((error) => reportError({ error }));
-  }, [reportError, repoPath, commit1, commit2]);
+  }, [reportError, repoPath, commitFrom, commitTo]);
   if (!files) {
     return <Loading open />;
   } else {
-    return (
-      <CommitDiffContent repoPath={repoPath} commit1={commit1} commit2={commit2} files={files} />
-    );
+    return <CommitDiffContent {...{ repoPath, commitFrom, commitTo, files }} />;
   }
 };
 

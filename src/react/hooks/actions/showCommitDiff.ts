@@ -8,15 +8,18 @@ export const useShowCommitDiff = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const addTab = useSetAtom(addRepoTabAtom);
   return useCallbackWithErrorHandler(
-    (commit1: Commit, commit2: Commit) => {
+    (commitFrom: Commit | "parent", commitTo: Commit) => {
       if (!repoPath) {
         return;
       }
       addTab({
         type: "commitDiff",
-        id: `commitDiff:${commit1.id}-${commit2.id}`,
-        title: `COMPARE @ ${shortHash(commit1.id)}-${shortHash(commit2.id)}`,
-        payload: { commit1, commit2 },
+        id: `commitDiff:${commitFrom !== "parent" ? commitFrom.id : "PARENT"}-${commitTo.id}`,
+        title:
+          commitFrom !== "parent"
+            ? `DIFF @ ${shortHash(commitFrom.id)}<->${shortHash(commitTo.id)}`
+            : `CHANGES @ ${shortHash(commitTo.id)}`,
+        payload: { commitFrom, commitTo },
         closable: true
       });
     },

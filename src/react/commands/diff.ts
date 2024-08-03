@@ -126,19 +126,22 @@ const useDiffUnstagedOpt = {
 };
 export const useDiffUnstagedCommand = () => useDiffCommand(useDiffUnstagedOpt);
 
-export const useDiffAgainstCommand = (baseCommit: Commit) => {
+export const useDiffAgainstCommand = (from: Commit | "parent") => {
   const opt = useMemo(
-    () => ({
-      id: `DiffAgainst-${baseCommit.id}`,
-      label: `Compare with ${shortHash(baseCommit.id)}`,
-      allowCommitted: true,
-      disabledStatusCodes: ["D"],
-      leftPath: $oldPathOrPath,
-      leftRevspec: $const(baseCommit.id),
-      rightPath: $path,
-      rightRevspec: $targetRevspec
-    }),
-    [baseCommit]
+    () =>
+      from === "parent"
+        ? diffWithParentOpt
+        : {
+            id: `DiffAgainst-${from.id}`,
+            label: `Compare with ${shortHash(from.id)}`,
+            allowCommitted: true,
+            disabledStatusCodes: ["D"],
+            leftPath: $oldPathOrPath,
+            leftRevspec: $const(from.id),
+            rightPath: $path,
+            rightRevspec: $targetRevspec
+          },
+    [from]
   );
   return useDiffCommand(opt);
 };

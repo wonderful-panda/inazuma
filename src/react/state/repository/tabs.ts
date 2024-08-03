@@ -7,8 +7,8 @@ export type TabType = {
     commit: Commit;
   };
   commitDiff: {
-    commit1: Commit;
-    commit2: Commit;
+    commitFrom: Commit | "parent";
+    commitTo: Commit;
   };
   file: {
     commit: Commit;
@@ -27,6 +27,6 @@ export const {
   selectNextTabAtom: selectNextRepoTabAtom,
   selectPreviousTabAtom: selectPreviousRepoTabAtom
 } = createTabsAtoms<TabType>({
-  tabs: [{ type: "commits", title: "COMMITS", id: "__COMMITS__", closable: false }],
+  tabs: [{ type: "commits", title: "HISTORY", id: "__COMMITS__", closable: false }],
   currentIndex: 0
 });

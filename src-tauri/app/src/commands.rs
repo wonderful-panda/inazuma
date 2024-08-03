@@ -220,6 +220,17 @@ pub async fn get_changes_between(
 }
 
 #[tauri::command]
+pub async fn get_changes(repo_path: &Path, revspec: &str) -> Result<Vec<FileEntry>, String> {
+    if let Some(parent) =
+        git::rev_parse::rev_parse(repo_path, format!("{}~", revspec).as_str()).await?
+    {
+        Ok(git::diff::get_changes_between(repo_path, parent.as_str(), revspec).await?)
+    } else {
+        Err("Parent commit is not found".to_owned())
+    }
+}
+
+#[tauri::command]
 pub async fn get_workingtree_udiff_base64(
     repo_path: &Path,
     rel_path: &str,

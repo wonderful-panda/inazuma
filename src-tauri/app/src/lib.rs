@@ -122,6 +122,7 @@ pub fn run() {
             commands::create_branch,
             commands::delete_branch,
             commands::get_blame,
+            commands::get_changes,
             commands::get_changes_between,
             commands::get_commit_detail,
             commands::get_content_base64,
