@@ -122,7 +122,7 @@ export const MainWindow: React.FC<ChildrenProp> = ({ children }) => {
         });
       }
     }),
-    []
+    [setConfig]
   );
 
   const drawerItems = useMemo<readonly IconActionItem[]>(

@@ -153,7 +153,16 @@ export const BlamePanel: React.FC<BlamePanelProps> = ({
         </SelectedIndexProvider>
       </div>
     ),
-    [selectedItem, blame.commits, refs, handleKeyDown, handleRowMouseDown, handleRowContextMenu]
+    [
+      selectedItem,
+      blame.commits,
+      showCommitAttrs,
+      commit,
+      refs,
+      handleKeyDown,
+      handleRowMouseDown,
+      handleRowContextMenu
+    ]
   );
 
   return (

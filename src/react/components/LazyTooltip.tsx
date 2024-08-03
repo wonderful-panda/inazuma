@@ -11,7 +11,7 @@ export const LazyTooltip: React.FC<{
   const handleOpen = useCallback(() => {
     title.current = renderTooltip();
     setOpen(true);
-  }, []);
+  }, [renderTooltip]);
   const handleClose = useCallback(() => {
     title.current = null;
     setOpen(false);
