@@ -5,7 +5,7 @@ export interface Edge {
   color?: string;
 }
 
-export interface InterEdge extends Edge {}
+export type InterEdge = Edge;
 
 export interface NodeEdge extends Edge {
   type: "P" | "C";

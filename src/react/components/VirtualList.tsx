@@ -63,7 +63,9 @@ const VirtualListInner = <T,>(
   const listRef = useRef<FixedSizeList & VariableSizeList>(null);
   useImperativeHandle(ref, () => ({
     scrollToItem: (index) => {
-      0 <= index && listRef.current?.scrollToItem(index);
+      if (0 <= index) {
+        listRef.current?.scrollToItem(index);
+      }
     }
   }));
   useEffect(() => {
