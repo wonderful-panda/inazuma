@@ -10,7 +10,15 @@ export default defineConfig({
   plugins: [react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } })],
   build: {
     sourcemap: "inline",
-    outDir: "../../dist"
+    outDir: "../../dist",
+    rollupOptions: {
+      onwarn(warning, defaultHandler) {
+        if (warning.code === "SOURCEMAP_ERROR") {
+          return;
+        }
+        defaultHandler(warning);
+      }
+    }
   },
   resolve: {
     alias: [
