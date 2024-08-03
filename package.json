@@ -37,7 +37,7 @@
     "iconv-lite": "^0.6.2",
     "jotai": "^2.4.1",
     "lodash": "^4.17.20",
-    "monaco-editor": "^0.41.0",
+    "monaco-editor": "^0.50.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.5",
