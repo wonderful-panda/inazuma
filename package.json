@@ -49,9 +49,9 @@
   "devDependencies": {
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
-    "@iconify/json": "^2.1.113",
-    "@iconify/react": "^4.0.0",
-    "@iconify/utils": "^2.0.0",
+    "@iconify/json": "^2.2.233",
+    "@iconify/react": "^5.0.2",
+    "@iconify/utils": "^2.1.29",
     "@mui/material": "^5.16.6",
     "@tauri-apps/cli": "^2.0.0-beta.22",
     "@types/chardet": "^0.8.3",
