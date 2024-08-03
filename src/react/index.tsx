@@ -1,4 +1,4 @@
-import "xterm/css/xterm.css";
+import "@xterm/xterm/css/xterm.css";
 import "./install-polyfill";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";

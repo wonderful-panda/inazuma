@@ -1,8 +1,8 @@
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { listen } from "@tauri-apps/api/event";
 import { useCallback, useRef } from "react";
-import { Terminal } from "xterm";
-import { FitAddon } from "xterm-addon-fit";
+import { Terminal } from "@xterm/xterm";
+import { FitAddon } from "@xterm/addon-fit";
 
 interface Shell {
   id: number;
