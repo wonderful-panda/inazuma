@@ -3,7 +3,7 @@ import { useLoading, useReportError } from "@/state/root";
 
 type TryUnwrapProimse<T> = T extends Promise<infer U> ? U : T;
 
-export function useCallbackWithErrorHandler<T extends (...args: any[]) => unknown>(
+export function useCallbackWithErrorHandler<T extends (...args: never[]) => unknown>(
   func: T,
   deps: unknown[],
   opt?: { loading?: boolean }
@@ -16,11 +16,11 @@ export function useCallbackWithErrorHandler<T extends (...args: any[]) => unknow
         if (opt?.loading) {
           loading.show();
         }
-        const ret = func(...args);
+        const ret = func(...args) as ReturnType<T>;
         if (ret instanceof Promise) {
-          return await ret;
+          return (await ret) as TryUnwrapProimse<ReturnType<T>>;
         } else {
-          return ret;
+          return ret as TryUnwrapProimse<ReturnType<T>>;
         }
       } catch (error) {
         reportError({ error });

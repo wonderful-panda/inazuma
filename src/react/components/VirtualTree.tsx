@@ -27,14 +27,14 @@ const ExpandButton: React.FC<{ expanded: boolean; size: number }> = ({ expanded,
   </svg>
 );
 
-const VirtualTreeRowInner = (props: {
+const VirtualTreeRowInner = <T,>(props: {
   height: number;
-  item: TreeItem<any>;
+  item: TreeItem<T>;
   index: number;
   level: number;
   expanded: boolean;
-  renderRow: (item: TreeItem<any>, index: number, expanded: boolean) => React.ReactNode;
-  toggleExpand: (item: TreeItem<any>) => void;
+  renderRow: (item: TreeItem<T>, index: number, expanded: boolean) => React.ReactNode;
+  toggleExpand: (item: TreeItem<T>) => void;
 }) => {
   const { height, item, index, level, expanded, renderRow, toggleExpand } = props;
   const onClick = useCallback(
@@ -58,7 +58,7 @@ const VirtualTreeRowInner = (props: {
     </div>
   );
 };
-const VirtualTreeRow = memo(VirtualTreeRowInner);
+const VirtualTreeRow = memo(VirtualTreeRowInner) as typeof VirtualTreeRowInner;
 
 export const VirtualTree = <T,>({
   treeModelState,
@@ -95,7 +95,7 @@ export const VirtualTree = <T,>({
   }, [itemSize, treeModelState.visibleItems]);
   const children = useCallback(
     ({ index, item: { item, expanded, level } }: { index: number; item: TreeItemVM<T> }) => (
-      <VirtualTreeRow
+      <VirtualTreeRow<T>
         height={typeof itemSize === "number" ? itemSize : itemSize(item.data)}
         item={item}
         index={index}

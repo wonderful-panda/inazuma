@@ -11,7 +11,7 @@ export const useBlame = (
   const [blame, setBlame] = useState<{ blame?: Blame; path: string } | undefined>(undefined);
   const reportError = useReportError();
   useEffect(() => {
-    (async () => {
+    void (async () => {
       setBlame(undefined);
       if (!repoPath || !relPath) {
         return;

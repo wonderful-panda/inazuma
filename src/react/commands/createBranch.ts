@@ -11,7 +11,7 @@ export const useCreateBranchCommand = () => {
       label: "Create new branch",
       icon: "octicon:git-branch-16",
       hidden: (commit) => commit.id === "--",
-      handler: async (commit) => {
+      handler: (commit) => {
         beginCreateBranch(commit.id);
       }
     }),

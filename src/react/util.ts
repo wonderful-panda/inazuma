@@ -20,18 +20,28 @@ export const getExtension = (pathOrFileName: string): string => {
   return 0 <= p ? fileName.slice(p) : "";
 };
 
-export const serializeError = (error: any): ErrorLike => ({
-  name: error.name || "Unknown",
-  message: error.message || `${error}`,
-  stack: error.stack
-});
+export const serializeError = (error: unknown): ErrorLike => {
+  if (typeof error === "object" && error !== null) {
+    return {
+      name: "name" in error ? (error.name as string) : "Unknown",
+      message: "message" in error ? (error.message as string) : JSON.stringify(error),
+      stack: "stack" in error ? (error.stack as string) : undefined
+    };
+  } else {
+    return {
+      name: "Unknown",
+      message: JSON.stringify(error),
+      stack: undefined
+    };
+  }
+};
 
 export const toSlashedPath = (path: string) => path.replace(/\\/g, "/");
 
-type Debounced<T extends Record<string, (...args: any[]) => any>> = {
+type Debounced<T extends Record<string, (...args: never[]) => unknown>> = {
   [K in keyof T]: DebouncedFunc<T[K]>;
 };
-export const throttled = <T extends Record<string, (...args: any[]) => any>>(
+export const throttled = <T extends Record<string, (...args: never[]) => unknown>>(
   obj: T,
   ms: number
 ): Debounced<T> => {

@@ -97,7 +97,12 @@ export const CommitDialogBody: React.FC = () => {
         onChange={handleChange}
       />
       <FormControlLabel
-        control={<Checkbox inputRef={amendRef} onChange={handleAmendChange} />}
+        control={
+          <Checkbox
+            inputRef={amendRef}
+            onChange={handleAmendChange as VoidReturn<typeof handleAmendChange>}
+          />
+        }
         label="amend last commit"
       />
     </DialogBody>

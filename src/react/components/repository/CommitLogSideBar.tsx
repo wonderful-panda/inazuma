@@ -113,24 +113,24 @@ export const CommitLogSideBar: React.FC<{
     [onItemClick, refMap]
   );
   const switchAction = useCallback(
-    async (e: React.MouseEvent<HTMLElement>) => {
+    (e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
       const fullname = e.currentTarget.dataset.fullname as string;
       const r = refMap[fullname];
       if (r && r.type === "branch") {
-        await switchBranch({ branchName: r.name });
+        void switchBranch({ branchName: r.name });
       }
     },
     [refMap, switchBranch]
   );
 
   const deleteAction = useCallback(
-    async (e: React.MouseEvent<HTMLElement>) => {
+    (e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
       const fullname = e.currentTarget.dataset.fullname as string;
       const r = refMap[fullname];
       if (r && r.type === "branch") {
-        await openDialog({ type: "DeleteBranch", branchName: r.name });
+        openDialog({ type: "DeleteBranch", branchName: r.name });
       }
     },
     [refMap, openDialog]

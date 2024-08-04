@@ -6,13 +6,13 @@ import { DialogActionHandler, useDialogContext } from "./Dialog";
 
 const DRAGGABLE_ELEMENT_CLASS = "dialog-draggable-handle";
 
-export interface DialogBodyProps extends ChildrenProp {
+export type DialogBodyProps = React.PropsWithChildren<{
   title?: string;
   className?: string;
   actions?: readonly DialogActionHandler[];
   focusDefaultButton?: boolean;
   defaultActionKey?: "Enter" | "Alt+Enter" | "Ctrl+Enter";
-}
+}>;
 
 export const DialogBody: React.FC<DialogBodyProps> = ({
   title,
@@ -49,7 +49,7 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
   );
   useEffect(() => {
     if (defaultButtonRef.current && focusDefaultButton) {
-      defaultButtonRef.current.focus({ focusVisible: true } as any);
+      defaultButtonRef.current.focus();
     }
   }, [focusDefaultButton]);
   const buttons = useMemo(

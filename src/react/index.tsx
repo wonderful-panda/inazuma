@@ -32,7 +32,8 @@ import {
   selectPrevAppTab,
   selectHomeTab,
   selectAppTab,
-  removeAppTab
+  removeAppTab,
+  TabsState
 } from "./state/tabs";
 import { TabContainer, TabContainerProps, TooltipTitle } from "./components/TabContainer";
 import { assertNever } from "./util";
@@ -192,9 +193,9 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
   const [, reportError] = useWithRef(useReportError());
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
-    listen<string>("request_reload", (e) => {
+    void listen<string>("request_reload", (e) => {
       console.log("request_reload", e);
-      reloadRepository(e.payload);
+      void reloadRepository(e.payload);
     }).then((unlisten) => {
       window.addEventListener("unload", unlisten);
     });
@@ -231,7 +232,7 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
   );
 };
 
-(async () => {
+void (async () => {
   document.addEventListener("contextmenu", (e) => e.preventDefault());
   const [config, environment] = await invokeTauriCommand("load_persist_data");
   updateFont(config.fontFamily);
@@ -241,15 +242,15 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
   const appTabsJsonString = sessionStorage.getItem("applicationTabs");
   if (appTabsJsonString) {
     console.debug(appTabsJsonString);
-    setInitialAppTabsValue(JSON.parse(appTabsJsonString));
+    setInitialAppTabsValue(JSON.parse(appTabsJsonString) as TabsState<AppTabType>);
   }
   const unwatch1 = registerConfigWatcher((value) => {
-    invokeTauriCommand("save_config", { newConfig: value });
+    void invokeTauriCommand("save_config", { newConfig: value });
     updateFont(value.fontFamily);
     updateFontSize(value.fontSize);
   });
-  const unwatch2 = registerRecentOpenedRepositoriesWatcher((value) =>
-    invokeTauriCommand("store_recent_opened", { newList: value })
+  const unwatch2 = registerRecentOpenedRepositoriesWatcher(
+    (value) => void invokeTauriCommand("store_recent_opened", { newList: value })
   );
   const unwatch3 = registerApplicationTabsWatcher((value) =>
     sessionStorage.setItem("applicationTabs", JSON.stringify(value))

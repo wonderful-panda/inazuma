@@ -1,4 +1,4 @@
-import { Button, Dialog as RawDialog, Paper, PaperProps } from "@mui/material";
+import { type Button, Dialog as RawDialog, Paper, PaperProps } from "@mui/material";
 import Draggable from "react-draggable";
 import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
@@ -21,19 +21,19 @@ export interface DialogMethods {
 export interface DialogActionHandler {
   text: string;
   color?: React.ComponentProps<typeof Button>["color"];
-  onClick: (close: () => void) => void;
+  onClick: (close: () => void) => unknown;
   default?: boolean;
 }
 
-export interface DialogProps extends ChildrenProp {
-  close: () => void;
+export type DialogProps = React.PropsWithChildren<{
+  close: () => unknown;
   fullScreen?: boolean;
   draggable?: boolean;
   disableBackdropClick?: boolean;
   opened: boolean;
   TransitionComponent?: React.ComponentProps<typeof RawDialog>["TransitionComponent"];
   className?: string;
-}
+}>;
 
 type OnCloseType = Required<React.ComponentProps<typeof RawDialog>>["onClose"];
 

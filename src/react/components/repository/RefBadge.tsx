@@ -1,7 +1,10 @@
 import classNames from "classnames";
 import { assertNever } from "@/util";
 
-const Badge: React.FC<{ className?: string } & ChildrenProp> = ({ className, children }) => (
+const Badge: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
+  className,
+  children
+}) => (
   <span
     className={classNames(
       "align-middle h-4 leading-4 text-sm mr-1 my-auto px-2 box-content whitespace-nowrap cursor-default bg-background",

@@ -34,7 +34,7 @@ export const useXterm = (options: { onExit?: () => void }) => {
     shell.current?.fitAddon.dispose();
     shell.current?.term.dispose();
     shell.current = undefined;
-    closePtyRef.current?.();
+    void closePtyRef.current?.();
     closePtyRef.current = undefined;
   }, []);
 

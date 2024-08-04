@@ -27,7 +27,7 @@ const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
   const showLsTree = useShowLsTree();
   const showSourceTree_ = useCallback(() => {
     if (commit) {
-      showLsTree(commit);
+      void showLsTree(commit);
     }
   }, [commit, showLsTree]);
   if (!commit) {

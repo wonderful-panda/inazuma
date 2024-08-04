@@ -131,7 +131,7 @@ export const useCommit = () => {
         return false;
       }
       await invokeTauriCommand("commit", { repoPath, options });
-      reloadRepository();
+      await reloadRepository();
       return true;
     },
     [repoPath, reloadRepository, showWarning],

@@ -5,10 +5,10 @@ import { useCommandGroup } from "@/hooks/useCommandGroup";
 export const Cmd: React.FC<Command> = () => <></>;
 
 export const CommandGroup: React.FC<
-  {
+  React.PropsWithChildren<{
     name: string;
     enabled?: boolean;
-  } & ChildrenProp
+  }>
 > = ({ name, enabled = true, children }) => {
   const commandGroupTree = useCommandGroupTree();
   const actualEnabled = enabled && commandGroupTree.enabled;
@@ -24,7 +24,7 @@ export const CommandGroup: React.FC<
       if (name !== Cmd.name) {
         console.error(`CommandGroup can contain ${Cmd.name} only`);
       }
-      ret.push(child.props);
+      ret.push(child.props as Command);
     });
     return ret;
   }, [children]);

@@ -84,7 +84,7 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
 export const useOpenRepository = () => {
   return useAtomCallback(
     useCallbackWithErrorHandler(
-      async (get, _set, realPath: string) => {
+      async (get: Getter, _set: Setter, realPath: string) => {
         const path = toSlashedPath(realPath);
         const store = get(repositoryStoresAtomFamily(path));
         const { commits, refs, graph } = await fetchHistory(path, 0);

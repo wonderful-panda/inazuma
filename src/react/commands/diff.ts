@@ -66,7 +66,7 @@ const useDiffCommand = (opt: DiffCommandOption) => {
         const rightPath = opt.rightPath(commit, file, localPath);
         const leftRevspec = opt.leftRevspec(commit, file);
         const rightRevspec = opt.rightRevspec(commit, file);
-        showExternalDiff(
+        void showExternalDiff(
           { path: leftPath, revspec: leftRevspec },
           { path: rightPath, revspec: rightRevspec }
         );

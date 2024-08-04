@@ -1,10 +1,10 @@
 import classNames from "classnames";
 
-export interface KeyDownTrapperProps extends ChildrenProp {
+export type KeyDownTrapperProps = React.PropsWithChildren<{
   onKeyDown: (e: React.KeyboardEvent) => void;
   className?: string;
   tabIndex?: number;
-}
+}>;
 
 export const KeyDownTrapper: React.FC<KeyDownTrapperProps> = ({
   onKeyDown,

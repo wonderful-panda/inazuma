@@ -119,7 +119,7 @@ const TabPage = <T,>(p: {
   }
 };
 
-export const TabContainer = <T = Record<string, any>,>(p: TabContainerProps<T>) => {
+export const TabContainer = <T,>(p: TabContainerProps<T>) => {
   const tabBarRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = tabBarRef.current?.querySelector(`.${CURRENT_TABBUTTON_CLASS}`);

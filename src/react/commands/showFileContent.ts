@@ -17,7 +17,7 @@ export const useShowFileContentCommand = () => {
         return false;
       },
       handler(commit, file) {
-        showFileContent(commit, file);
+        void showFileContent(commit, file);
       }
     }),
     [showFileContent]

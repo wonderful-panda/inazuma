@@ -14,7 +14,7 @@ export const lazy = <P extends object>(
   const Lazy = (props: P) => {
     const [Component, setComponent] = useState<React.ComponentType<P> | undefined>(undefined);
     useEffect(() => {
-      factory_().then((value) => setComponent(() => value.default));
+      void factory_().then((value) => setComponent(() => value.default));
     }, []);
     if (Component) {
       return <Component {...props} />;

@@ -15,10 +15,10 @@ export interface RepositoryListItemProps {
   icon: IconName;
   primary: string;
   secondary: string | React.ReactNode;
-  action: (itemId: string) => void;
+  action: (itemId: string) => unknown;
   secondaryAction?: {
     icon: IconName;
-    action: (itemId: string) => void;
+    action: (itemId: string) => unknown;
   };
 }
 

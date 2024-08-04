@@ -39,7 +39,7 @@ export interface TreeModelState<D> {
   selectedItem: TreeItemVM<D> | undefined;
 }
 
-const initialState: TreeModelState<any> = {
+const initialState: TreeModelState<never> = {
   rootItems: [],
   visibleItems: [],
   expandedItems: new Set(),

@@ -40,7 +40,7 @@ export type HotKey = `${Exclude<Modifier, "Shift+" | "">}${Char | OtherKey}` | `
 export interface Command {
   name: string;
   hotkey?: HotKey;
-  handler: () => void;
+  handler: () => unknown;
 }
 interface CommandGroup {
   groupName: string;
@@ -109,7 +109,7 @@ const CommandGroupTreeContext = createContext({
 });
 
 export const CommandGroupTreeProvider: React.FC<
-  { name: string; enabled: boolean } & ChildrenProp
+  React.PropsWithChildren<{ name: string; enabled: boolean }>
 > = ({ name, enabled, children }) => {
   const parentContext = useContext(CommandGroupTreeContext);
   const path = `${parentContext.path}/${name}`;
@@ -128,7 +128,7 @@ export const CommandGroupTreeProvider: React.FC<
 
 export const useCommandGroupTree = () => useContext(CommandGroupTreeContext);
 
-export const CommandGroupProvider: React.FC<ChildrenProp> = ({ children }) => {
+export const CommandGroupProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const methods = useMemo<CommandGroupMethods>(
     () => ({
@@ -171,7 +171,7 @@ export const CommandGroupProvider: React.FC<ChildrenProp> = ({ children }) => {
       if (c) {
         e.preventDefault();
         console.log(`run ${c.cmd.name}, ${c.group}`);
-        c.cmd.handler();
+        void c.cmd.handler();
       }
     };
     window.addEventListener("keydown", onKeyDown);

@@ -1,11 +1,11 @@
-import { createContext } from "react";
+import { createContext, PropsWithChildren } from "react";
 
 export const SelectedIndexContext = createContext<number>(-1);
 
 export const SelectedIndexProvider: React.FC<
-  {
+  PropsWithChildren<{
     value: number;
-  } & ChildrenProp
+  }>
 > = ({ value, children }) => {
   return <SelectedIndexContext.Provider value={value}>{children}</SelectedIndexContext.Provider>;
 };

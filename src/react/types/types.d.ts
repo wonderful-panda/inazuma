@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+export {};
 
 declare global {
   interface Window {
@@ -103,5 +103,5 @@ declare global {
     stack?: string;
   }
 
-  type ChildrenProp = { children: ReactNode };
+  type VoidReturn<T extends (...args: never[]) => unknown> = (...args: Parameters<T>) => void;
 }

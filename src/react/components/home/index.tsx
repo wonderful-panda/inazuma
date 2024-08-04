@@ -28,7 +28,7 @@ const Home: React.FC<{ active: boolean }> = ({ active }) => {
   const handleBrowseClick = useCallback(async () => {
     const ret = await invokeTauriCommand("show_folder_selector");
     if (ret) {
-      handleOpen(ret);
+      await handleOpen(ret);
     }
   }, [handleOpen]);
 

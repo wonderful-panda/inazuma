@@ -79,7 +79,7 @@ const GroupHeader: React.FC<{
           id: "StageAll",
           label: "Stage all files",
           icon: "mdi:plus",
-          handler: () => stage("*")
+          handler: () => void stage("*")
         }
       ];
     } else if (type === "staged") {
@@ -88,7 +88,7 @@ const GroupHeader: React.FC<{
           id: "UnstageAll",
           label: "Unstage all files",
           icon: "mdi:minus",
-          handler: () => unstage("*")
+          handler: () => void unstage("*")
         }
       ];
     } else {
@@ -239,7 +239,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     [repoPath, reportError]
   );
   useEffect(() => {
-    selectFile(treeModelState.selectedItem?.item.data);
+    void selectFile(treeModelState.selectedItem?.item.data);
   }, [selectFile, treeModelState.selectedItem]);
 
   useEffect(() => {
@@ -373,12 +373,16 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
               <Button
                 title="Meld staged changes into last commit without changing message"
                 disabled={staged.length === 0}
-                onClick={fixup}
+                onClick={fixup as VoidReturn<typeof fixup>}
                 color="inherit"
               >
                 Fixup
               </Button>
-              <Button title="Commit staged changes" onClick={beginCommit} color="inherit">
+              <Button
+                title="Commit staged changes"
+                onClick={beginCommit as VoidReturn<typeof beginCommit>}
+                color="inherit"
+              >
                 Commit
               </Button>
             </>

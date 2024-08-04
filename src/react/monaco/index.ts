@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { blue, green, grey, red } from "@mui/material/colors";
 import { getExtension } from "@/util";
 import * as monaco from "monaco-editor";
@@ -14,7 +15,7 @@ export const setup = () => {
     return;
   }
   initialized = true;
-  (self as any).MonacoEnvironment = {
+  (self as unknown as Record<string, unknown>).MonacoEnvironment = {
     getWorker(_: unknown, label: string) {
       if (label === "json") {
         return jsonWorker();

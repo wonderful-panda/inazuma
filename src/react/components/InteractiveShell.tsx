@@ -52,7 +52,7 @@ const InteractiveShellInner: React.FC<
 
   useEffect(() => {
     if (open) {
-      openShell();
+      void openShell();
       // don't dispose on cleanup.
       // keep shell opened during hidden.
     }

@@ -1,17 +1,17 @@
 import { Slide, SlideProps } from "@mui/material";
-import { forwardRef } from "react";
+import { forwardRef, Ref } from "react";
 import { Dialog, DialogActionHandler } from "./Dialog";
 import { DialogBody, DialogBodyProps } from "./DialogBody";
 
-export interface FullscreenDialogProps extends ChildrenProp {
+export type FullscreenDialogProps = React.PropsWithChildren<{
   title: string;
   opened: boolean;
   close: () => void;
   actions?: readonly DialogActionHandler[];
   defaultActionKey?: DialogBodyProps["defaultActionKey"];
-}
+}>;
 
-const TransitionInner = (props: SlideProps, ref: any) => (
+const TransitionInner = (props: SlideProps, ref: Ref<unknown>) => (
   <Slide direction="right" ref={ref} {...props} mountOnEnter unmountOnExit />
 );
 const Transition = forwardRef(TransitionInner);

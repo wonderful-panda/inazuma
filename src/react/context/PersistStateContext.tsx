@@ -14,7 +14,7 @@ export const PersistStateContext = createContext<PersistStateMethods>({
 });
 
 export const PersistStateProvider: React.FC<
-  { storage: PartialStorage; prefix?: string } & ChildrenProp
+  React.PropsWithChildren<{ storage: PartialStorage; prefix?: string }>
 > = ({ storage, prefix, children }) => {
   const handler: PersistStateMethods = useMemo(
     () => ({
@@ -24,8 +24,8 @@ export const PersistStateProvider: React.FC<
         let defaultValue = initialValue;
         if (valueFromStorage) {
           try {
-            defaultValue = JSON.parse(valueFromStorage);
-          } catch (e) {
+            defaultValue = JSON.parse(valueFromStorage) as T;
+          } catch (_e) {
             console.warn("[PersistStateProvider] Failed to parse storaged value");
           }
         }

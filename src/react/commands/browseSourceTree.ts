@@ -11,8 +11,8 @@ export const useBrowseSourceTreeCommand = () => {
       label: "Browse source tree",
       icon: "mdi:file-tree",
       hidden: (commit) => commit.id === "--",
-      handler: async (commit) => {
-        showLsTree(commit);
+      handler: (commit) => {
+        void showLsTree(commit);
       }
     }),
     [showLsTree]

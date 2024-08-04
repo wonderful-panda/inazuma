@@ -23,7 +23,7 @@ import { FullscreenDialog } from "./FullscreenDialog";
 import classNames from "classnames";
 import { useReportError } from "@/state/root";
 
-const SectionContent: React.FC<ChildrenProp> = ({ children }) => (
+const SectionContent: React.FC<React.PropsWithChildren> = ({ children }) => (
   <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>
 );
 

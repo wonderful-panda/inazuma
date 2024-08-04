@@ -53,7 +53,7 @@ const useCompareWithParentCommand = () => {
       icon: "octicon:git-compare-16",
       hidden: (commit) => commit.id === "--" || commit.parentIds.length === 0,
       handler: (commit) => {
-        showCommitDiff.current("parent", commit);
+        void showCommitDiff.current("parent", commit);
       }
     }),
     [showCommitDiff]
@@ -78,7 +78,7 @@ const useCompareWithPinnedCommitCommand = (pinnedCommit: Commit | undefined) => 
           showWarning("No commit is pinned");
           return;
         }
-        showCommitDiff.current(pinnedCommit, commit);
+        void showCommitDiff.current(pinnedCommit, commit);
       }
     }),
     [pinnedCommit, showCommitDiff, showWarning]
@@ -145,7 +145,7 @@ const CommitLogInner: React.FC<{
   }, [loadedId, log]);
 
   useEffect(() => {
-    selectLog(selectedIndex);
+    void selectLog(selectedIndex);
   }, [selectedIndex, selectLog]);
 
   const detail = useCallback(

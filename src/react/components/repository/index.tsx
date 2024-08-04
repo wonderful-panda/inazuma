@@ -63,7 +63,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const config = useConfigValue();
   const loadRepositoryIfNotYet = useLoadRepositoryIfNotYet();
   useEffect(() => {
-    loadRepositoryIfNotYet();
+    void loadRepositoryIfNotYet();
   }, [loadRepositoryIfNotYet]);
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
@@ -109,7 +109,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
         icon: "mdi:history",
         handler: () => {
           toggleReflog();
-          reloadRepository();
+          void reloadRepository();
         }
       },
       {
@@ -174,8 +174,9 @@ const RepositoryPageTab: React.FC<{ path: string; active: boolean }> = ({ path, 
   const store = useAtomValue(repositoryStoresAtomFamily(path));
   useEffect(() => {
     return () => {
-      invokeTauriCommand("close_repository", { repoPath: path });
-      repositoryStoresAtomFamily.remove(path);
+      void invokeTauriCommand("close_repository", { repoPath: path }).then(() => {
+        repositoryStoresAtomFamily.remove(path);
+      });
     };
   }, [path]);
   return (

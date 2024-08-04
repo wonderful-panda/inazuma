@@ -19,9 +19,7 @@ export const filterTreeItems = <T>(
   items: readonly TreeItem<T>[],
   predicate: (item: T) => boolean
 ): TreeItem<T>[] => {
-  return items
-    .map((item) => filterTreeItem(item, predicate))
-    .filter((item) => !!item) as TreeItem<T>[];
+  return items.map((item) => filterTreeItem(item, predicate)).filter((item) => !!item);
 };
 export const filterTreeItem = <T>(
   item: TreeItem<T>,

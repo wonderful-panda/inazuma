@@ -97,7 +97,7 @@ export const MainWindowProperty: React.FC<MainWindowProps> = ({
   return <></>;
 };
 
-export const MainWindow: React.FC<ChildrenProp> = ({ children }) => {
+export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
   const isLoading = useIsLoadingValue();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const openDrawer = useCallback(() => {
