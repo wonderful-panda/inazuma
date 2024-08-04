@@ -66,7 +66,6 @@ export const VirtualTree = <T,>({
   itemSize,
   getItemKey,
   renderRow,
-  onKeyDown,
   ...rest
 }: VirtualTreeProps<T>) => {
   const listRef = useRef<VirtualListMethods>(null);
