@@ -1,5 +1,6 @@
 import { IconName } from "@/types/IconName";
 import { Icon } from "../Icon";
+import { FileStatus, isValidFileStatus } from "@/filestatus";
 
 type Attr = {
   icon: IconName;
@@ -7,7 +8,7 @@ type Attr = {
   title: string;
 };
 
-const attrs: Record<string, Attr> = {
+const attrs: Record<FileStatus, Attr> = {
   M: { icon: "octicon:diff-modified-16", color: "orange", title: "modified" },
   T: { icon: "octicon:diff-modified-16", color: "orange", title: "type changed" },
   R: { icon: "octicon:diff-renamed-16", color: "cyan", title: "renamed" },
@@ -15,15 +16,20 @@ const attrs: Record<string, Attr> = {
   "?": { icon: "octicon:diff-added-16", color: "gray", title: "unknown" },
   C: { icon: "octicon:diff-added-16", color: "lightgreen", title: "copied" },
   D: { icon: "octicon:diff-removed-16", color: "hotpink", title: "removed" },
-  U: { icon: "octicon:diff-modified-16", color: "red", title: "conflicted" }
+  U: { icon: "octicon:diff-modified-16", color: "red", title: "conflicted" },
+  "!": { icon: "octicon:diff-ignored-16", color: "gray", title: "ignored" }
 };
 
-const getAttr = (statusCode: string): Attr =>
-  attrs[statusCode.substring(0, 1)] || {
-    icon: "octicon:diff-ignored-16",
-    color: "red",
-    title: `UNKNOWN STATUS CODE: ${statusCode}`
-  };
+const getAttr = (statusCode: string): Attr => {
+  const status = statusCode.substring(0, 1);
+  return isValidFileStatus(status)
+    ? attrs[status]
+    : {
+        icon: "octicon:diff-ignored-16",
+        color: "red",
+        title: `UNKNOWN STATUS CODE: ${statusCode}`
+      };
+};
 
 export interface FileStatusIconProps {
   statusCode: string;

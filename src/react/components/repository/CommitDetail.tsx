@@ -16,6 +16,7 @@ import PathFilter from "./PathFilter";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
 import { useShowLsTree } from "@/hooks/actions/showLsTree";
 import { CommitAttributes } from "./CommitAttributes";
+import { NumStat } from "./NumStat";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
@@ -102,7 +103,16 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
       first={<CommitMetadata {...props} />}
       second={
         <FlexCard
-          title={commit && "Changes"}
+          title={
+            commit && (
+              <>
+                <span className="flex-1 mt-1">Changes</span>
+                <span className="text-base">
+                  <NumStat files={commit.files} />
+                </span>
+              </>
+            )
+          }
           content={
             commit && (
               <div className="flex-1 flex-col-nowrap">
