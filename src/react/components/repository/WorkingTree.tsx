@@ -34,6 +34,7 @@ import { useReportError } from "@/state/root";
 import { useBeginCommit, useFixup, useStage, useUnstage } from "@/hooks/actions/workingtree";
 import { useAtomValue } from "jotai";
 import { repoPathAtom } from "@/state/repository";
+import { NumStat } from "./NumStat";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -68,10 +69,18 @@ const GroupHeader: React.FC<{
   type: GroupHeaderType;
   index: number;
   height: number;
-}> = ({ type, index, height }) => {
+  childItems?: readonly TreeItem<RowType>[];
+}> = ({ type, index, height, childItems }) => {
   const selectedIndex = useSelectedIndex();
   const stage = useStage();
   const unstage = useUnstage();
+  const files = useMemo(
+    () =>
+      (childItems ?? [])
+        .filter((c) => typeof c.data !== "string")
+        .map((c) => c.data as WorkingTreeFileEntry),
+    [childItems]
+  );
   const headerActions = useMemo<IconActionItem[]>(() => {
     if (type === "unstaged") {
       return [
@@ -99,12 +108,15 @@ const GroupHeader: React.FC<{
   return (
     <div
       className={classNames(
-        "flex-row-nowrap items-center pl-2 flex-1 text-xl cursor-pointer overflow-hidden select-none group",
+        "flex-row-nowrap items-center pl-2 flex-1 text-lg font-bold cursor-pointer overflow-hidden select-none group",
         selectedIndex === index ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
       style={{ height }}
     >
       <span className="flex-1">{type}</span>
+      <span className="text-base">
+        <NumStat files={files} />
+      </span>
       <RowActionButtons actions={headerActions} size={height} />
     </div>
   );
@@ -321,7 +333,14 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
   const renderRow = useCallback<VirtualTreeProps<RowType>["renderRow"]>(
     (item, index) => {
       if (typeof item.data === "string") {
-        return <GroupHeader type={item.data} index={index} height={headerRowHeight} />;
+        return (
+          <GroupHeader
+            type={item.data}
+            index={index}
+            height={headerRowHeight}
+            childItems={item.children}
+          />
+        );
       } else {
         if (!stat) {
           return <></>;
