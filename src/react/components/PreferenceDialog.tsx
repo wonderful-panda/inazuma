@@ -2,6 +2,7 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { assertNever } from "@/util";
 import {
   Autocomplete,
+  Checkbox,
   FormControlLabel,
   FormLabel,
   Radio,
@@ -23,6 +24,12 @@ import { FullscreenDialog } from "./FullscreenDialog";
 import classNames from "classnames";
 import { useReportError } from "@/state/root";
 
+const SectionHeader: React.FC<{ text: string }> = ({ text }) => (
+  <Typography variant="h6" component="div" color="primary">
+    {text}
+  </Typography>
+);
+
 const SectionContent: React.FC<React.PropsWithChildren> = ({ children }) => (
   <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>
 );
@@ -35,8 +42,13 @@ type Action =
         | "fontSize"
         | "externalDiff"
         | "interactiveShell"
-        | "recentListCount";
+        | "recentListCount"
+        | "avatarShape";
       payload: string | null | undefined;
+    }
+  | {
+      type: "useGravatar";
+      payload: boolean;
     }
   | {
       type: "reset";
@@ -46,6 +58,8 @@ type Action =
 const reducer = (state: Config, action: Action) => {
   if (action.type === "reset") {
     return action.payload;
+  } else if (action.type === "useGravatar") {
+    return { ...state, useGravatar: action.payload };
   } else {
     const newState = { ...state };
     const value = action.payload || undefined;
@@ -76,6 +90,10 @@ const reducer = (state: Config, action: Action) => {
             newState.recentListCount = intValue;
           }
         }
+        break;
+      case "avatarShape":
+        newState.avatarShape = value === "circle" ? "circle" : "square";
+        break;
         break;
       default:
         assertNever(action);
@@ -152,9 +170,7 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
     }, [reportError]);
     return (
       <div className="p-2">
-        <Typography variant="h6" component="div" color="primary">
-          Font
-        </Typography>
+        <SectionHeader text="Font" />
         <SectionContent>
           <FontSelector
             label="Default font"
@@ -181,9 +197,7 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
             </RadioGroup>
           </div>
         </SectionContent>
-        <Typography variant="h6" component="div" color="primary">
-          External tools
-        </Typography>
+        <SectionHeader text="External tools" />
         <SectionContent>
           <TextField
             /* eslint-disable-next-line no-template-curly-in-string */
@@ -201,9 +215,33 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
             onChange={({ target }) => dispatch({ type: "interactiveShell", payload: target.value })}
           />
         </SectionContent>
-        <Typography variant="h6" component="div" color="primary">
-          Miscellaneous
-        </Typography>
+        <SectionHeader text="Avatar" />
+        <SectionContent>
+          <div className="flex-col-nowrap mt-4">
+            <FormLabel>Shape</FormLabel>
+            <RadioGroup
+              row
+              value={state.avatarShape}
+              onChange={({ target }) => dispatch({ type: "avatarShape", payload: target.value })}
+            >
+              <FormControlLabel value="square" control={<Radio />} label="square" />
+              <FormControlLabel value="circle" control={<Radio />} label="circle" />
+            </RadioGroup>
+          </div>
+          <FormControlLabel
+            label="Fetch avatars from Gravatar.com"
+            control={
+              <Checkbox
+                checked={state.useGravatar}
+                onChange={({ target }) =>
+                  dispatch({ type: "useGravatar", payload: target.checked })
+                }
+              />
+            }
+          />
+        </SectionContent>
+
+        <SectionHeader text="Miscellaneus" />
         <SectionContent>
           <TextField
             label="Number of recent opened list"

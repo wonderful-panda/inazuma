@@ -13,7 +13,9 @@ const opt = { store: rootStore };
 const configAtom = atom<Config>({
   fontFamily: {},
   fontSize: "medium",
-  recentListCount: 10
+  recentListCount: 10,
+  avatarShape: "square",
+  useGravatar: true
 });
 export const useConfig = () => useAtom(configAtom, opt);
 export const useConfigValue = () => useAtomValue(configAtom, opt);

@@ -52,7 +52,9 @@ pub fn handle_request<R: Runtime>(
         let url = request.uri();
         debug!("accept: {}", url);
         if let Some(mail) = get_mail_address_from_avatar_url(url) {
-            if let Ok(Some(data)) = avatars.fetch_avatar(mail).await {
+            if mail.eq("__DEFAULT__") {
+                responder.respond(build_avatar_response(DEFAULT_AVATAR, "image/svg+xml"));
+            } else if let Ok(Some(data)) = avatars.fetch_avatar(mail).await {
                 responder.respond(build_avatar_response(Vec::clone(&*data), "image/png"));
             } else {
                 responder.respond(build_avatar_response(DEFAULT_AVATAR, "image/svg+xml"));

@@ -3,6 +3,7 @@ import { formatDateTimeLong } from "@/date";
 import { GitHash } from "../GitHash";
 import { Icon } from "../Icon";
 import { Avatar } from "./Avatar";
+import { useConfigValue } from "@/state/root";
 
 const AttrIcon: React.FC<{ icon: IconName }> = ({ icon }) => (
   <Icon className="mr-1 my-auto flex-none text-greytext" icon={icon} />
@@ -12,6 +13,7 @@ export const CommitAttributes: React.FC<{ commit: Commit; showSummary?: boolean 
   commit,
   showSummary
 }) => {
+  const config = useConfigValue();
   return (
     <div className="grid grid-cols-[auto_1fr]">
       {showSummary && (
@@ -23,7 +25,11 @@ export const CommitAttributes: React.FC<{ commit: Commit; showSummary?: boolean 
         </div>
       )}
       <div className="w-14 h-14 mt-1">
-        <Avatar mailAddress={commit.mailAddress} />
+        <Avatar
+          mailAddress={commit.mailAddress}
+          shape={config.avatarShape}
+          fromGravatar={config.useGravatar}
+        />
       </div>
       <div className="grid flex-1 pl-4 overflow-hidden text-base">
         <div className="grid grid-cols-[auto_1fr]">

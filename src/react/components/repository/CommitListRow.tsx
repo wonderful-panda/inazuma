@@ -11,6 +11,7 @@ import { CommitCommand } from "@/commands/types";
 import { RowActionButtons, RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
 import { Avatar } from "./Avatar";
+import { useConfigValue } from "@/state/root";
 
 export const PinnedCommitContext = createContext<Commit | undefined>(undefined);
 
@@ -59,6 +60,7 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
   const selectedIndex = useSelectedIndex();
   const pinnedCommit = useContext(PinnedCommitContext);
   const setPinnedCommit = useContext(SetPinnedCommitContext);
+  const config = useConfigValue();
   const selected = selectedIndex === index;
   const pinned = pinnedCommit?.id === commit.id;
   const workingTree = commit.id === "--";
@@ -81,7 +83,11 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
     >
       <GraphCell graph={graph} height={height} head={head} maskIdPrefix={parentId} />
       <div className="my-auto ml-6 py-2 h-full w-10">
-        <Avatar mailAddress={commit.mailAddress} />
+        <Avatar
+          mailAddress={commit.mailAddress}
+          shape={config.avatarShape}
+          fromGravatar={config.useGravatar}
+        />
       </div>
       <div className="relative my-auto flex-col-nowrap flex-1 ml-2 overflow-hidden">
         <div className="flex-row-nowrap items-center text-lg leading-6">

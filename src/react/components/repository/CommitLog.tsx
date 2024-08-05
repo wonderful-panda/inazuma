@@ -201,7 +201,7 @@ const CommitLogInner: React.FC<{
             <SelectedIndexProvider value={selectedIndex}>
               <PinnedCommitContext.Provider value={pinnedCommit}>
                 <SetPinnedCommitContext.Provider value={setPinnedCommit}>
-                  <KeyDownTrapper className="m-2" onKeyDown={handleKeyDown}>
+                  <KeyDownTrapper className="mx-3 my-2" onKeyDown={handleKeyDown}>
                     <CommitList
                       ref={listRef}
                       {...log}

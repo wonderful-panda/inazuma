@@ -6,6 +6,10 @@ fn default_recent_count() -> u32 {
     10
 }
 
+fn default_use_gravatar() -> bool {
+    true
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ConfigBase {
@@ -19,6 +23,10 @@ pub struct ConfigBase {
     pub interactive_shell: Option<String>,
     #[serde(default = "default_recent_count")]
     pub recent_list_count: u32,
+    #[serde(default)]
+    pub avatar_shape: AvatarShape,
+    #[serde(default = "default_use_gravatar")]
+    pub use_gravatar: bool,
 }
 
 impl Into<Config> for ConfigBase {
@@ -29,6 +37,8 @@ impl Into<Config> for ConfigBase {
             external_diff_tool: self.external_diff_tool,
             interactive_shell: self.interactive_shell,
             recent_list_count: self.recent_list_count,
+            avatar_shape: self.avatar_shape,
+            use_gravatar: self.use_gravatar,
         }
     }
 }
@@ -44,6 +54,8 @@ pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub interactive_shell: Option<String>,
     pub recent_list_count: u32,
+    pub avatar_shape: AvatarShape,
+    pub use_gravatar: bool,
 }
 
 impl Default for Config {
@@ -53,7 +65,9 @@ impl Default for Config {
             font_size: FontSize::default(),
             external_diff_tool: None,
             interactive_shell: None,
-            recent_list_count: 10,
+            recent_list_count: default_recent_count(),
+            avatar_shape: AvatarShape::default(),
+            use_gravatar: default_use_gravatar(),
         }
     }
 }
@@ -132,6 +146,21 @@ pub enum FontSize {
 impl Default for FontSize {
     fn default() -> Self {
         FontSize::Medium
+    }
+}
+
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[ts(export)]
+pub enum AvatarShape {
+    #[serde(rename = "square")]
+    Square,
+    #[serde(rename = "circle")]
+    Circle,
+}
+
+impl Default for AvatarShape {
+    fn default() -> Self {
+        AvatarShape::Square
     }
 }
 
