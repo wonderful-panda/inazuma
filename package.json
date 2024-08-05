@@ -1,6 +1,6 @@
 {
   "name": "inazuma",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "main": "dist/browser/main.js",
   "author": "Iwata Hidetaka",
   "license": "MIT",

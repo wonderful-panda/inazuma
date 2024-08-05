@@ -41,7 +41,7 @@
     "beforeBuildCommand": ""
   },
   "productName": "inazuma",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "identifier": "inazuma.tauri.dev",
   "plugins": {},
   "app": {
