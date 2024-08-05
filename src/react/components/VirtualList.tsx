@@ -118,7 +118,7 @@ const VirtualListInner = <T,>(
     overscanCount: 8
   };
   return (
-    <AutoSizer className="flex-1">
+    <AutoSizer className="flex-1" doNotBailOutOnEmptyChildren>
       {(size) =>
         typeof itemSize === "number" ? (
           <MemoizedFixedSizeList itemSize={itemSize} {...props} {...size} />
