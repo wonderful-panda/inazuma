@@ -16,7 +16,8 @@ export default tseslint.config({
   },
   extends: [
     eslint.configs.recommended,
-    ...tseslint.configs.recommendedTypeChecked
+    ...tseslint.configs.recommendedTypeChecked,
+    ...tseslint.configs.stylisticTypeChecked,
   ],
   rules: {
     ...react.configs.recommended.rules,

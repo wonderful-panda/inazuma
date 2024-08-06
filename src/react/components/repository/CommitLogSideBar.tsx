@@ -105,7 +105,7 @@ export const CommitLogSideBar: React.FC<{
   }, [refs]);
   const handleListItemClick = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
-      const fullname = e.currentTarget.dataset.fullname as string;
+      const fullname = e.currentTarget.dataset.fullname!;
       if (refMap[fullname]) {
         onItemClick(refMap[fullname]);
       }
@@ -115,7 +115,7 @@ export const CommitLogSideBar: React.FC<{
   const switchAction = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
-      const fullname = e.currentTarget.dataset.fullname as string;
+      const fullname = e.currentTarget.dataset.fullname!;
       const r = refMap[fullname];
       if (r && r.type === "branch") {
         void switchBranch({ branchName: r.name });
@@ -127,7 +127,7 @@ export const CommitLogSideBar: React.FC<{
   const deleteAction = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
-      const fullname = e.currentTarget.dataset.fullname as string;
+      const fullname = e.currentTarget.dataset.fullname!;
       const r = refMap[fullname];
       if (r && r.type === "branch") {
         openDialog({ type: "DeleteBranch", branchName: r.name });

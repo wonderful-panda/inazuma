@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useShowExternalDiff } from "@/hooks/actions/showExternalDiff";
 
 const $path = (_: Commit, file: FileEntry) => file.path;
-const $oldPathOrPath = (_: Commit, file: FileEntry) => file.oldPath || file.path;
+const $oldPathOrPath = (_: Commit, file: FileEntry) => file.oldPath ?? file.path;
 const $localPath = (_: Commit, __: FileEntry, localPath: string) => localPath;
 
 const $nthParent = (index: number) => (commit: Commit) => commit.parentIds[index];
@@ -17,7 +17,7 @@ const $targetRevspec = (commit: Commit, file: FileEntry) => {
 };
 const $const = (value: string) => () => value;
 
-type DiffCommandOption = {
+interface DiffCommandOption {
   id: string;
   label: string;
   allowUnmerged?: boolean;
@@ -29,7 +29,7 @@ type DiffCommandOption = {
   rightPath: (commit: Commit, file: FileEntry, localPath: string) => string;
   leftRevspec: (commit: Commit, file: FileEntry) => string | undefined;
   rightRevspec: (commit: Commit, file: FileEntry) => string;
-};
+}
 
 const useDiffCommand = (opt: DiffCommandOption) => {
   const showExternalDiff = useShowExternalDiff();
@@ -60,7 +60,7 @@ const useDiffCommand = (opt: DiffCommandOption) => {
         }
         return false;
       },
-      disabled: (_, file) => opt.disabledStatusCodes.indexOf(file.statusCode) >= 0,
+      disabled: (_, file) => opt.disabledStatusCodes.includes(file.statusCode),
       handler: (commit, file, localPath) => {
         const leftPath = opt.leftPath(commit, file, localPath);
         const rightPath = opt.rightPath(commit, file, localPath);

@@ -61,7 +61,7 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
           className="text-xl"
           size="large"
           onClick={() => a.onClick(close)}
-          color={a.color || "inherit"}
+          color={a.color ?? "inherit"}
         >
           {a.text}
         </Button>
@@ -73,7 +73,7 @@ export const DialogBody: React.FC<DialogBodyProps> = ({
       <IconButton className="absolute top-1 right-1" onClick={close} size="medium">
         <Icon icon="mdi:close" />
       </IconButton>
-      {(title || draggable) && (
+      {(title !== undefined || draggable) && (
         <DialogTitle
           className={classNames("px-5 py-3", draggable && "cursor-move " + DRAGGABLE_ELEMENT_CLASS)}
         >

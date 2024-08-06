@@ -56,7 +56,7 @@ export const CommitDialogBody: React.FC = () => {
       if (!amendRef.current) {
         return;
       }
-      const message = messageRef.current?.value || "";
+      const message = messageRef.current?.value ?? "";
       const options: CommitOptions = {
         commitType: amendRef.current.checked ? "amend" : "normal",
         message

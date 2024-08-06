@@ -1,4 +1,4 @@
-import { assertNever } from "@/util";
+import { assertNever, nope } from "@/util";
 import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 
 // prettier-ignore
@@ -97,10 +97,10 @@ export interface CommandGroupMethods {
 }
 
 export const CommandGroupContext = createContext({
-  register: () => {},
-  unregister: () => {},
-  suspend: () => {},
-  resume: () => {}
+  register: nope,
+  unregister: nope,
+  suspend: nope,
+  resume: nope
 } as CommandGroupMethods);
 
 const CommandGroupTreeContext = createContext({

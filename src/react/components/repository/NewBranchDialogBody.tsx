@@ -23,8 +23,8 @@ export const NewBranchDialogBody: React.FC<{
         return;
       }
       const branchName = branchNameRef.current.value;
-      const switchBranch = switchRef.current?.checked || false;
-      const force = forceRef.current?.checked || false;
+      const switchBranch = switchRef.current?.checked ?? false;
+      const force = forceRef.current?.checked ?? false;
       const ret = await createBranch({ branchName, switch: switchBranch, commitId, force });
       if (ret !== "failed" && ret) {
         close();

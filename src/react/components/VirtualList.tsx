@@ -39,7 +39,7 @@ const useRowEventHandler = <T,>(
       return undefined;
     }
     return (event: React.MouseEvent) => {
-      const index = parseInt((event.currentTarget as HTMLElement).dataset.index || "-1");
+      const index = parseInt((event.currentTarget as HTMLElement).dataset.index ?? "-1");
       if (0 <= index && items[index] !== undefined) {
         handler(event, index, items[index]);
       }

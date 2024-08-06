@@ -44,14 +44,14 @@ declare global {
   type RemoteRef = Extract<Ref, { type: "remote" }>;
   type ReflogRef = Extract<Ref, { type: "reflog" }>;
 
-  type Refs = {
+  interface Refs {
     head?: string;
     mergeHeads: string[];
     branches: BranchRef[];
     tags: TagRef[];
     remotes: Record<string, RemoteRef[]>;
     refsById: Record<string, Ref[]>;
-  };
+  }
 
   interface DagNode {
     id: string;
@@ -75,8 +75,8 @@ declare global {
       } & WorkingTreeStat);
 
   interface Blame {
-    commits: ReadonlyArray<FileCommit>;
-    commitIds: ReadonlyArray<string>;
+    commits: readonly FileCommit[];
+    commitIds: readonly string[];
     content: {
       text: string;
       encoding: string;

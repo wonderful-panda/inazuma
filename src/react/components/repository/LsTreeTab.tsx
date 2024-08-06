@@ -36,7 +36,7 @@ const LsTreeWithFilter: React.FC<{
     if (!filterText) {
       return entries;
     }
-    return filterTreeItems(entries, (data) => data.path.indexOf(filterText) >= 0);
+    return filterTreeItems(entries, (data) => data.path.includes(filterText));
   }, [entries, filterText]);
 
   const [state, dispatch] = useTreeModel<LstreeData>();

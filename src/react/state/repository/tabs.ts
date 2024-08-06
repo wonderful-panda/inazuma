@@ -1,7 +1,7 @@
 import { TabDefinition } from "@/components/TabContainer";
 import { createTabsAtoms } from "../tabs";
 
-export type TabType = {
+export interface TabType {
   commits: null;
   tree: {
     commit: Commit;
@@ -14,7 +14,7 @@ export type TabType = {
     commit: Commit;
     path: string;
   };
-};
+}
 
 export type RepositoryTab = TabDefinition<TabType>;
 

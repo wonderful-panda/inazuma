@@ -73,7 +73,7 @@ export class Grapher {
 
   isMajorRef(id: string): boolean {
     const refs = this._refs.refsById[id];
-    return refs?.some((r) => r.type === "branch" || r.type === "tag") || false;
+    return refs?.some((r) => r.type === "branch" || r.type === "tag") ?? false;
   }
 
   proceed(dagNode: DagNode): GraphFragment {

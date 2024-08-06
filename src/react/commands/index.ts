@@ -75,7 +75,7 @@ export const executeCommand = (
     return false;
   }
   if (command.type === "file") {
-    command.handler(commit, file, localPath || file.path);
+    command.handler(commit, file, localPath ?? file.path);
   } else {
     command.handler(commit);
   }

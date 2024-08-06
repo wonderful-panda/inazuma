@@ -20,7 +20,7 @@ export const FileStat: React.FC<{ file: FileEntry; className?: string }> = ({
       <span className="font-bold text-greytext mr-1 uppercase">
         {file.kind?.type === "unmerged"
           ? `conflict (${conflictTypes[file.kind.conflict_type]})`
-          : file.delta?.type || "unknown"}
+          : (file.delta?.type ?? "unknown")}
       </span>
       {file.delta?.type === "text" && (
         <>

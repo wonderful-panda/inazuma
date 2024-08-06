@@ -51,7 +51,7 @@ const loadContents = (
   if (!file) {
     return Promise.resolve([undefined, undefined]);
   }
-  const leftPath = file.oldPath || file.path;
+  const leftPath = file.oldPath ?? file.path;
   const left =
     file.statusCode === "A" || file.delta?.type !== "text"
       ? Promise.resolve(undefined)
@@ -73,7 +73,7 @@ const CommitDiffContent: React.FC<{
   const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(files);
   const [filterText, setFilterText] = useState("");
   const visibleFiles = useMemo(
-    () => files.filter((f) => f.path.indexOf(filterText) >= 0),
+    () => files.filter((f) => f.path.includes(filterText)),
     [files, filterText]
   );
   const [content, setContent] = useState<[TextFile | undefined, TextFile | undefined]>([
@@ -90,7 +90,7 @@ const CommitDiffContent: React.FC<{
   }, [selectedIndex]);
   const reportError = useReportError();
   const diffAgainst = useDiffAgainstCommand(commitFrom);
-  const actionCommands = useMemo(() => [diffAgainst] as const, [diffAgainst] as const);
+  const actionCommands = useMemo(() => [diffAgainst] as const, [diffAgainst]);
   const handleRowDoubleClick = useFileListRowEventHandler(actionCommands[0], commitTo);
   const handleSelectFile = useMemo(
     () =>

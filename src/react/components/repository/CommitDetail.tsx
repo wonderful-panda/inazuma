@@ -20,7 +20,7 @@ import { NumStat } from "./NumStat";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;
-  refs: Ref[];
+  refs: Ref[] | undefined;
   orientation: Orientation;
 }
 
@@ -39,7 +39,7 @@ const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
       <div className="flex-col-wrap p-2 mb-2 border-b border-greytext">
         <CommitAttributes commit={commit} />
       </div>
-      {refs.length > 0 && (
+      {refs && refs.length > 0 && (
         <div className="flex-row-wrap mx-2 mb-2">
           {refs.map((r) => (
             <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
@@ -73,7 +73,7 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
   const commit = props.commit;
   const [filterText, setFilterText] = useState("");
   const visibleFiles = useMemo(
-    () => (commit ? commit.files.filter((f) => f.path.indexOf(filterText) >= 0) : []),
+    () => (commit ? commit.files.filter((f) => f.path.includes(filterText)) : []),
     [commit, filterText]
   );
   const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(visibleFiles || []);

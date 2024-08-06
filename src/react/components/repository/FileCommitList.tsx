@@ -30,7 +30,7 @@ const FileCommitList_: React.ForwardRefRenderFunction<VirtualListMethods, FileCo
         commit={item}
         index={index}
         head={item.id === refs?.head}
-        refs={refs?.refsById[item.id] || []}
+        refs={refs?.refsById[item.id]}
         height={getRowHeight(item, baseFontSize)}
       />
     ),

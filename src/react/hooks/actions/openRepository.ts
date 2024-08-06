@@ -40,7 +40,7 @@ const fetchHistory = async (repoPath: string, reflogCount: number) => {
 const makeRefs = (rawRefs: RawRefs): Refs => {
   const { head, mergeHeads, refs: refArray } = rawRefs;
   const refs: Refs = {
-    head: head || undefined,
+    head,
     mergeHeads,
     branches: [],
     tags: [],
@@ -56,12 +56,12 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
         refs.tags.push(r);
         break;
       case "remote":
-        (refs.remotes[r.remote] || (refs.remotes[r.remote] = [])).push(r);
+        (refs.remotes[r.remote] ?? (refs.remotes[r.remote] = [])).push(r);
         break;
       default:
         break;
     }
-    (refs.refsById[r.id] || (refs.refsById[r.id] = [])).push(r);
+    (refs.refsById[r.id] ?? (refs.refsById[r.id] = [])).push(r);
   });
   const types: Ref["type"][] = ["branch", "tag", "remote", "reflog"];
   const compare = (a: Ref, b: Ref) => {

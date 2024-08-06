@@ -6,11 +6,11 @@ export type DialogParam =
   | { type: "NewBranch"; commitId: string }
   | { type: "DeleteBranch"; branchName: string };
 
-export type DialogState = {
+export interface DialogState {
   opened: boolean;
   param: DialogParam | undefined;
   version: number;
-};
+}
 
 const _activeDialogAtom = atom<DialogState>({ version: 0, opened: false, param: undefined });
 export const activeDialogAtom = atom((get) => get(_activeDialogAtom));

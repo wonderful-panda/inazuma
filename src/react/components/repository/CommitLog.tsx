@@ -140,7 +140,7 @@ const CommitLogInner: React.FC<{
     if (!loadedId) {
       return [];
     } else {
-      return log.refs.refsById[loadedId] || [];
+      return log.refs.refsById[loadedId];
     }
   }, [loadedId, log]);
 

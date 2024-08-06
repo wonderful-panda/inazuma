@@ -72,7 +72,7 @@ const Home: React.FC<{ active: boolean }> = ({ active }) => {
               <RepositoryListItem
                 key={path}
                 itemId={path}
-                primary={path.split(/[\\/]/).pop() || path}
+                primary={path.split(/[\\/]/).pop() ?? path}
                 secondary={<span className="font-mono">{path}</span>}
                 icon="mdi:history"
                 action={handleOpen}

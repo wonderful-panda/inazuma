@@ -61,11 +61,11 @@ export const registerRecentOpenedRepositoriesWatcher = createWacher(
 /**
  * ConfirmDialog
  */
-type ConfirmDialogState = {
+interface ConfirmDialogState {
   title?: string;
   content?: React.ReactNode;
   status: "none" | "open" | "accepted" | "canceled";
-};
+}
 
 type ConfirmDialogInnerState = {
   version: number;

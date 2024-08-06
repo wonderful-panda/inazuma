@@ -174,7 +174,7 @@ const UdiffViewer: React.FC<{ udiff: Udiff | undefined }> = ({ udiff }) => {
 
 const filesToItems = (files: readonly WorkingTreeFileEntry[], filterText: string) => {
   return files
-    .filter((f) => f.path.indexOf(filterText) >= 0)
+    .filter((f) => f.path.includes(filterText))
     .sort((a, b) => a.path.localeCompare(b.path))
     .map((data) => ({ data }));
 };

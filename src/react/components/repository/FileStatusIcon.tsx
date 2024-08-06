@@ -2,11 +2,11 @@ import { IconName } from "@/types/IconName";
 import { Icon } from "../Icon";
 import { FileStatus, isValidFileStatus } from "@/filestatus";
 
-type Attr = {
+interface Attr {
   icon: IconName;
   color: string;
   title: string;
-};
+}
 
 const attrs: Record<FileStatus, Attr> = {
   M: { icon: "octicon:diff-modified-16", color: "orange", title: "modified" },

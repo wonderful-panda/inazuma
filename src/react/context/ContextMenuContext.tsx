@@ -1,5 +1,6 @@
 import { ActionItem } from "@/commands/types";
 import { Icon } from "@/components/Icon";
+import { nope } from "@/util";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { createContext, useCallback, useMemo, useState } from "react";
 
@@ -8,7 +9,7 @@ export interface ContextMenuMethods {
 }
 
 export const ContextMenuContext = createContext<ContextMenuMethods>({
-  show: () => {}
+  show: nope
 });
 
 interface State {
@@ -38,7 +39,7 @@ export const ContextMenuProvider: React.FC<React.PropsWithChildren> = ({ childre
   );
   const handleClose = useCallback(() => setState(undefined), []);
   const menuItems = useMemo(() => {
-    return (state?.menus || []).map((m) => {
+    return (state?.menus ?? []).map((m) => {
       const onClick = () => {
         if (m.disabled) {
           return;

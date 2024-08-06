@@ -3,7 +3,10 @@ import { atom, useAtomValue } from "jotai";
 import { getRootStore } from "./rootStore";
 import { createWacher } from "./util";
 
-export type TabsState<T> = { tabs: TabDefinition<T>[]; currentIndex: number };
+export interface TabsState<T> {
+  tabs: TabDefinition<T>[];
+  currentIndex: number;
+}
 
 export const createTabsAtoms = <T>(initialTabs: TabsState<T>) => {
   const tabsAtom = atom<TabsState<T>>(initialTabs);
@@ -30,7 +33,7 @@ export const createTabsAtoms = <T>(initialTabs: TabsState<T>) => {
       if (!prev) {
         return prev;
       }
-      const realIndex = index === undefined ? prev.currentIndex : index;
+      const realIndex = index ?? prev.currentIndex;
       if (!prev.tabs[realIndex]?.closable) {
         return prev;
       }
@@ -89,10 +92,10 @@ export const createTabsAtoms = <T>(initialTabs: TabsState<T>) => {
   };
 };
 
-export type AppTabType = {
+export interface AppTabType {
   home: null;
   repository: { path: string };
-};
+}
 
 const {
   tabsAtom,

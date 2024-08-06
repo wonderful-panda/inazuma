@@ -12,10 +12,11 @@ import { RowActionButtons, RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
 import { Avatar } from "./Avatar";
 import { useConfigValue } from "@/state/root";
+import { nope } from "@/util";
 
 export const PinnedCommitContext = createContext<Commit | undefined>(undefined);
 
-export const SetPinnedCommitContext = createContext<SetState<Commit | undefined>>(() => () => {});
+export const SetPinnedCommitContext = createContext<SetState<Commit | undefined>>(() => nope);
 
 export interface CommitListRowProps {
   height: number;

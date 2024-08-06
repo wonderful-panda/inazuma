@@ -84,7 +84,7 @@ export function getLangIdFromPath(path: string): string {
     });
   }
   const ext = getExtension(path).toLowerCase();
-  return langIdMap[ext] || "plaintext";
+  return langIdMap[ext] ?? "plaintext";
 }
 
 /**
@@ -94,7 +94,7 @@ export function getLangIdFromPath(path: string): string {
  *  [1, 2, 4, 5, 6, 8] => [(1 to 2), (4 to 6), (8 to 8)]
  *
  */
-export function lineNumbersToRanges(lineNumbers: ReadonlyArray<number>): monaco.IRange[] {
+export function lineNumbersToRanges(lineNumbers: readonly number[]): monaco.IRange[] {
   const ret: monaco.IRange[] = [];
   let startLineNumber = -1;
   let endLineNumber = -1;

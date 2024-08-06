@@ -15,7 +15,7 @@ const RowActionButtons_: React.FC<{
 }> = ({ size, actions }) => {
   const buttons = useMemo(
     () =>
-      (actions || []).map((a) => {
+      (actions ?? []).map((a) => {
         const handleClick = (e: React.MouseEvent) => {
           e.stopPropagation();
           if (!a.disabled) {

@@ -62,7 +62,7 @@ const reducer = (state: Config, action: Action) => {
     return { ...state, useGravatar: action.payload };
   } else {
     const newState = { ...state };
-    const value = action.payload || undefined;
+    const value = action.payload ?? undefined;
     switch (action.type) {
       case "fontFamilyStandard":
         newState.fontFamily = { ...state.fontFamily, standard: value };
@@ -85,7 +85,7 @@ const reducer = (state: Config, action: Action) => {
         break;
       case "recentListCount":
         {
-          const intValue = parseInt(value || "0");
+          const intValue = parseInt(value ?? "0");
           if (!isNaN(intValue) && intValue > 0) {
             newState.recentListCount = intValue;
           }

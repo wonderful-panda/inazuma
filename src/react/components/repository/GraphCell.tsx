@@ -4,7 +4,7 @@ import { memo } from "react";
 
 const c2x = (c: number, gridWidth: number) => c * gridWidth + gridWidth / 2;
 
-type NodeLineProps = {
+interface NodeLineProps {
   graph: GraphFragment;
   edge: NodeEdge;
   width: number;
@@ -12,7 +12,7 @@ type NodeLineProps = {
   mask?: string;
   stroke: string;
   strokeWidth?: number;
-};
+}
 const NodeLine: React.FC<NodeLineProps> = (props) => {
   const { graph, edge, width, height, mask, stroke, strokeWidth } = props;
   if (edge.index === graph.node.index) {
@@ -47,17 +47,17 @@ const NodeLine: React.FC<NodeLineProps> = (props) => {
   }
 };
 
-type Props = {
+interface Props {
   graph: GraphFragment;
   height: number;
   head: boolean;
   maskIdPrefix: string;
-};
+}
 
 const GRID_WIDTH = 16;
 const WORK_COLOR = "#555";
 
-const actualColor = (color: string | undefined) => color || WORK_COLOR;
+const actualColor = (color: string | undefined) => color ?? WORK_COLOR;
 
 const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   const node = graph.node;

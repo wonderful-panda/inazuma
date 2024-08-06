@@ -155,7 +155,7 @@ const BlameViewer_: React.FC<BlameViewerProps> = ({
 
   const handleMouseMove = useCallback(
     (e: IEditorMouseEvent) => {
-      const commitId = blame.commitIds[(e.target.position?.lineNumber || 0) - 1];
+      const commitId = blame.commitIds[(e.target.position?.lineNumber ?? 0) - 1];
       setHoveredCommitId(commitId);
     },
     [blame]
@@ -222,12 +222,12 @@ const BlameViewer_: React.FC<BlameViewerProps> = ({
   const lineNumberMap = useMemo(() => {
     const map: Record<string, number[]> = {};
     blame.commitIds.forEach((commitId, index) => {
-      (map[commitId] || (map[commitId] = [])).push(index + 1);
+      (map[commitId] ?? (map[commitId] = [])).push(index + 1);
     });
     return map;
   }, [blame]);
   const selectedCommitLineNumbers = useMemo(
-    () => (selectedCommitId && lineNumberMap[selectedCommitId]) || [],
+    () => (selectedCommitId ? (lineNumberMap[selectedCommitId] ?? []) : []),
     [lineNumberMap, selectedCommitId]
   );
   useDecorationEffect(editor, selectedCommitLineNumbers, selectedCommitDecorationOptions);

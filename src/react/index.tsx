@@ -44,8 +44,8 @@ const RepositoryPage = lazy(() => import("./components/repository"), { preload: 
 const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
 const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");
 const updateFont = (fontFamily: FontFamily) => {
-  setCssVariable("--inazuma-standard-fontfamily", fontFamily.standard || defaultFontfamily);
-  setCssVariable("--inazuma-monospace-fontfamily", fontFamily.monospace || monospaceFontfamily);
+  setCssVariable("--inazuma-standard-fontfamily", fontFamily.standard ?? defaultFontfamily);
+  setCssVariable("--inazuma-monospace-fontfamily", fontFamily.monospace ?? monospaceFontfamily);
 };
 const fontSizeNumber = {
   "x-small": 12,

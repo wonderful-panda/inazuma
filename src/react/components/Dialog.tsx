@@ -40,7 +40,7 @@ type OnCloseType = Required<React.ComponentProps<typeof RawDialog>>["onClose"];
 
 const DialogContext = createContext({
   draggable: false,
-  close: () => {}
+  close: nope
 });
 
 export const useDialogContext = () => useContext(DialogContext);
