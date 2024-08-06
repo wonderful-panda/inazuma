@@ -126,8 +126,8 @@ const CommitLogInner: React.FC<{
   const selectLog = useMemo(
     () =>
       debounce(async (index: number) => {
-        if (repoPath && 0 <= index) {
-          const sha = log.commits[index].id;
+        if (repoPath && 0 <= index && index < log.commits.length) {
+          const sha = log.commits[index]!.id;
           await (sha === "--" ? reloadWorkingTree() : fetchCommitDetail(sha));
           if (sha === log.commits[selectedIndexRef.current]?.id) {
             setLoadedId(sha);

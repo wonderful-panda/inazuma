@@ -5,7 +5,7 @@ import { createRoot } from "react-dom/client";
 import Home from "./components/home";
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
-import { PersistStateProvider } from "./context/PersistStateContext";
+import { PartialStorage, PersistStateProvider } from "./context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
 import { CommandGroupProvider, CommandGroupTreeProvider } from "./context/CommandGroupContext";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
@@ -115,7 +115,7 @@ const saveDisplayState = debounce((newState: Record<string, string>) => {
 const displayStateStorage = {
   state: {} as Record<string, string>,
   getItem(key: string) {
-    return this.state[key];
+    return this.state[key] ?? null;
   },
   setItem(key: string, value: string) {
     this.state[key] = value;
@@ -124,6 +124,9 @@ const displayStateStorage = {
   reset(state: Record<string, string>) {
     this.state = state;
   }
+} satisfies PartialStorage & {
+  state: Record<string, string>;
+  reset: (state: Record<string, string>) => void;
 };
 
 const Content: React.FC = () => {

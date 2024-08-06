@@ -90,7 +90,7 @@ const CommitDiffContent: React.FC<{
   }, [selectedIndex]);
   const reportError = useReportError();
   const diffAgainst = useDiffAgainstCommand(commitFrom);
-  const actionCommands = useMemo(() => [diffAgainst], [diffAgainst]);
+  const actionCommands = useMemo(() => [diffAgainst] as const, [diffAgainst] as const);
   const handleRowDoubleClick = useFileListRowEventHandler(actionCommands[0], commitTo);
   const handleSelectFile = useMemo(
     () =>

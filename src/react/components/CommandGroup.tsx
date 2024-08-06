@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { Command, useCommandGroupTree } from "@/context/CommandGroupContext";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
+import { nope } from "@/util";
 
 export const Cmd: React.FC<Command> = () => <></>;
 
@@ -34,6 +35,7 @@ export const CommandGroup: React.FC<
       commandGroup.register({ groupName, commands });
       return () => commandGroup.unregister(groupName);
     }
+    return nope;
   }, [commandGroup, groupName, actualEnabled, commands]);
 
   return <></>;

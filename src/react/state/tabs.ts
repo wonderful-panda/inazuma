@@ -31,7 +31,7 @@ export const createTabsAtoms = <T>(initialTabs: TabsState<T>) => {
         return prev;
       }
       const realIndex = index === undefined ? prev.currentIndex : index;
-      if (!prev.tabs[realIndex].closable) {
+      if (!prev.tabs[realIndex]?.closable) {
         return prev;
       }
       const tabs = prev.tabs.filter((_, i) => i !== realIndex);

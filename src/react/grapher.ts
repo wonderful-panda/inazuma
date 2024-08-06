@@ -43,12 +43,12 @@ class ColorPallete {
       this._queue.splice(0, 0, ...this.colors);
     }
     const ret = this._queue.shift()!;
-    this._used[ret] += 1;
+    this._used[ret]! += 1;
     return ret;
   }
 
   push(color: string) {
-    this._used[color] -= 1;
+    this._used[color]! -= 1;
     if (this._used[color] === 0) {
       this._queue.push(color);
     }
@@ -73,7 +73,7 @@ export class Grapher {
 
   isMajorRef(id: string): boolean {
     const refs = this._refs.refsById[id];
-    return refs && refs.some((r) => r.type === "branch" || r.type === "tag");
+    return refs?.some((r) => r.type === "branch" || r.type === "tag") || false;
   }
 
   proceed(dagNode: DagNode): GraphFragment {

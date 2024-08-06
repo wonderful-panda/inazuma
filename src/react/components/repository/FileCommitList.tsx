@@ -8,8 +8,8 @@ export interface FileCommitListProps extends VirtualListEvents<FileCommit> {
   refs: Refs | undefined;
 }
 
-export const getRowHeight = (commit: FileCommit, baseFontSize: number) => {
-  if (commit.oldPath) {
+export const getRowHeight = (commit: FileCommit | undefined, baseFontSize: number) => {
+  if (commit?.oldPath) {
     return baseFontSize * 4.75;
   } else {
     return baseFontSize * 3.25;

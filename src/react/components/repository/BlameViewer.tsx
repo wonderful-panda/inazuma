@@ -170,7 +170,9 @@ const BlameViewer_: React.FC<BlameViewerProps> = ({
         return;
       }
       const commitId = blame.commitIds[e.target.position.lineNumber - 1];
-      onContextMenu(e.event.browserEvent, commitId);
+      if (commitId !== undefined) {
+        onContextMenu(e.event.browserEvent, commitId);
+      }
     },
     [blame, onContextMenu]
   );

@@ -117,7 +117,7 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
       changeFontSize: () => {
         setConfig((prev) => {
           const fontSizeList: FontSize[] = ["x-small", "small", "medium"];
-          const fontSize = fontSizeList[(fontSizeList.indexOf(prev.fontSize) + 1) % 3];
+          const fontSize = fontSizeList[(fontSizeList.indexOf(prev.fontSize) + 1) % 3] ?? "x-small";
           return { ...prev, fontSize };
         });
       }
@@ -147,7 +147,7 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
     (e: React.KeyboardEvent) => {
       if (isLoading) {
         e.preventDefault();
-        return false;
+        e.stopPropagation();
       }
     },
     [isLoading]

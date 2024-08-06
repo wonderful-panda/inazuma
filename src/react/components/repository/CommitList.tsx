@@ -30,7 +30,7 @@ const CommitList_: React.ForwardRefRenderFunction<VirtualListMethods, CommitList
           commit={item}
           index={index}
           head={item.id === refs.head}
-          graph={graph[item.id]}
+          graph={graph[item.id]!}
           refs={refs.refsById[item.id]}
           height={rowHeight}
           parentId={instanceId}

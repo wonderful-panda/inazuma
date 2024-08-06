@@ -27,7 +27,7 @@ type DiffCommandOption = {
   disabledStatusCodes: string[];
   leftPath: (commit: Commit, file: FileEntry, localPath: string) => string;
   rightPath: (commit: Commit, file: FileEntry, localPath: string) => string;
-  leftRevspec: (commit: Commit, file: FileEntry) => string;
+  leftRevspec: (commit: Commit, file: FileEntry) => string | undefined;
   rightRevspec: (commit: Commit, file: FileEntry) => string;
 };
 
@@ -66,16 +66,18 @@ const useDiffCommand = (opt: DiffCommandOption) => {
         const rightPath = opt.rightPath(commit, file, localPath);
         const leftRevspec = opt.leftRevspec(commit, file);
         const rightRevspec = opt.rightRevspec(commit, file);
-        void showExternalDiff(
-          { path: leftPath, revspec: leftRevspec },
-          { path: rightPath, revspec: rightRevspec }
-        );
+        if (leftRevspec) {
+          void showExternalDiff(
+            { path: leftPath, revspec: leftRevspec },
+            { path: rightPath, revspec: rightRevspec }
+          );
+        }
       }
     };
   }, [opt, showExternalDiff]);
 };
 
-const diffWithParentOpt = {
+const diffWithParentOpt: DiffCommandOption = {
   id: "DiffWithParent",
   label: "Compare with parent",
   allowUnmerged: true,
@@ -89,7 +91,7 @@ const diffWithParentOpt = {
 };
 export const useDiffWithParentCommand = () => useDiffCommand(diffWithParentOpt);
 
-const diffWithParent2Opt = {
+const diffWithParent2Opt: DiffCommandOption = {
   id: "DiffWithParent:2",
   label: "Compare with second parent",
   allowUnmerged: true,
@@ -102,7 +104,7 @@ const diffWithParent2Opt = {
 };
 export const useDiffWithParent2Command = () => useDiffCommand(diffWithParent2Opt);
 
-const diffWithLocalOpt = {
+const diffWithLocalOpt: DiffCommandOption = {
   id: "DiffWithLocal",
   label: "Compare with local",
   allowCommitted: true,
@@ -114,7 +116,7 @@ const diffWithLocalOpt = {
 };
 export const useDiffWithLocalCommand = () => useDiffCommand(diffWithLocalOpt);
 
-const useDiffUnstagedOpt = {
+const useDiffUnstagedOpt: DiffCommandOption = {
   id: "DiffUnstaged",
   label: "Compare with Staged",
   allowUnstaged: true,

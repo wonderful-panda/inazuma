@@ -89,7 +89,7 @@ export const VirtualTree = <T,>({
     } else {
       return (index: number) => {
         const vm = treeModelState.visibleItems[index];
-        return itemSize(vm.item.data);
+        return vm ? itemSize(vm.item.data) : 0;
       };
     }
   }, [itemSize, treeModelState.visibleItems]);

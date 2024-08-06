@@ -99,7 +99,7 @@ export function lineNumbersToRanges(lineNumbers: ReadonlyArray<number>): monaco.
   let startLineNumber = -1;
   let endLineNumber = -1;
   for (let i = 0; i < lineNumbers.length + 1; ++i) {
-    const lineNumber = lineNumbers[i]; // index is 0-based, lineNumber is 1-based
+    const lineNumber = lineNumbers[i]!; // index is 0-based, lineNumber is 1-based
     if (endLineNumber + 1 === lineNumber) {
       endLineNumber = lineNumber;
     } else {

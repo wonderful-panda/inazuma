@@ -148,8 +148,9 @@ export const CommandGroupProvider: React.FC<React.PropsWithChildren> = ({ childr
     state.groups.forEach((g) =>
       g.commands.forEach((c) => {
         if (c.hotkey) {
-          if (ret[c.hotkey]) {
-            console.warn(`duplicated HotKey: [${c.hotkey}] ${ret[c.hotkey].cmd.name}, ${c.name}`);
+          const existing = ret[c.hotkey];
+          if (existing) {
+            console.warn(`duplicated HotKey: [${c.hotkey}] ${existing.cmd.name}, ${c.name}`);
           }
           ret[c.hotkey] = { cmd: c, group: g.groupName };
         }

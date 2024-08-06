@@ -54,3 +54,7 @@ export const throttled = <T extends Record<string, (...args: never[]) => unknown
 
 export const wait = (milliseconds: number) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+export const nope = () => {
+  /* do nothing */
+};

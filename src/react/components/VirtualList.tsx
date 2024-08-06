@@ -40,7 +40,7 @@ const useRowEventHandler = <T,>(
     }
     return (event: React.MouseEvent) => {
       const index = parseInt((event.currentTarget as HTMLElement).dataset.index || "-1");
-      if (0 <= index) {
+      if (0 <= index && items[index] !== undefined) {
         handler(event, index, items[index]);
       }
     };
@@ -78,7 +78,7 @@ const VirtualListInner = <T,>(
   const renderRow = useCallback(
     ({ index, style }: { index: number; style: object }) => {
       const item = items[index];
-      return (
+      return item !== undefined ? (
         <div
           data-index={index}
           key={getItemKey(item)}
@@ -90,6 +90,8 @@ const VirtualListInner = <T,>(
         >
           {children({ index, item })}
         </div>
+      ) : (
+        <></>
       );
     },
     [
@@ -104,7 +106,8 @@ const VirtualListInner = <T,>(
   );
   const itemKey = useCallback(
     (index: number, data: unknown) => {
-      return getItemKey((data as T[])[index]);
+      const item = (data as T[])[index];
+      return item !== undefined ? getItemKey(item) : "";
     },
     [getItemKey]
   );

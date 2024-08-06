@@ -139,8 +139,8 @@ const expandItem = <T>(
   state: TreeModelState<T>,
   itemSpec: ActionPayload<T>["expandItem"]
 ): TreeModelState<T> => {
-  const item = "item" in itemSpec ? itemSpec.item : state.visibleItems[itemSpec.index].item;
-  if (!item.children) {
+  const item = "item" in itemSpec ? itemSpec.item : state.visibleItems[itemSpec.index]?.item;
+  if (!item?.children) {
     return state;
   }
   if (state.expandedItems.has(item.data)) {
@@ -154,8 +154,8 @@ const collapseItem = <T>(
   state: TreeModelState<T>,
   itemSpec: ActionPayload<T>["collapseItem"]
 ): TreeModelState<T> => {
-  const item = "item" in itemSpec ? itemSpec.item : state.visibleItems[itemSpec.index].item;
-  if (!item.children) {
+  const item = "item" in itemSpec ? itemSpec.item : state.visibleItems[itemSpec.index]?.item;
+  if (!item?.children) {
     return state;
   }
   if (!state.expandedItems.has(item.data)) {
@@ -170,8 +170,8 @@ const toggleItem = <T>(
   state: TreeModelState<T>,
   itemSpec: ActionPayload<T>["toggleItem"]
 ): TreeModelState<T> => {
-  const item = "item" in itemSpec ? itemSpec.item : state.visibleItems[itemSpec.index].item;
-  if (!item.children) {
+  const item = "item" in itemSpec ? itemSpec.item : state.visibleItems[itemSpec.index]?.item;
+  if (!item?.children) {
     return state;
   }
   const newExpandedItems = new Set(state.expandedItems);

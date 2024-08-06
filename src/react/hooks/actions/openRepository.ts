@@ -148,6 +148,7 @@ export const useLoadRepositoryIfNotYet = () => {
           const path = get(repoPathAtom);
           return reloadSpecifiedRepository(get, set, path);
         }
+        return Promise.resolve();
       },
       [],
       { loading: true }

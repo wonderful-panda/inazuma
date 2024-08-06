@@ -2,6 +2,7 @@ import { type Button, Dialog as RawDialog, Paper, PaperProps } from "@mui/materi
 import Draggable from "react-draggable";
 import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
+import { nope } from "@/util";
 
 const DRAGGABLE_ELEMENT_CLASS = "dialog-draggable-handle";
 
@@ -60,6 +61,7 @@ export const Dialog: React.FC<DialogProps> = ({
       commandGroup.suspend();
       return () => commandGroup.resume();
     }
+    return nope;
   }, [opened, commandGroup]);
   const handleClose = useCallback<OnCloseType>(
     (_, reason) => {

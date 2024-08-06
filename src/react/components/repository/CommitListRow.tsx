@@ -20,7 +20,7 @@ export const SetPinnedCommitContext = createContext<SetState<Commit | undefined>
 export interface CommitListRowProps {
   height: number;
   commit: Commit;
-  refs: Ref[];
+  refs: Ref[] | undefined;
   graph: GraphFragment;
   head: boolean;
   index: number;
@@ -91,7 +91,7 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
       </div>
       <div className="relative my-auto flex-col-nowrap flex-1 ml-2 overflow-hidden">
         <div className="flex-row-nowrap items-center text-lg leading-6">
-          {refs && refs.map((r) => <RefBadge key={`${r.type}:${r.fullname}`} r={r} />)}
+          {refs?.map((r) => <RefBadge key={`${r.type}:${r.fullname}`} r={r} />)}
           <span className={classNames("ellipsis", pinned && "text-secondary")}>
             {commit.summary}
           </span>
