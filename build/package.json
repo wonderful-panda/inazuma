@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "commonjs",
+  "description": "override type value because ts-node does not work when `type: module` specified"
+}

@@ -11,6 +11,7 @@ export default defineConfig({
   build: {
     sourcemap: "inline",
     outDir: "../../dist",
+    emptyOutDir: true,
     rollupOptions: {
       onwarn(warning, defaultHandler) {
         if (warning.code === "SOURCEMAP_ERROR") {
