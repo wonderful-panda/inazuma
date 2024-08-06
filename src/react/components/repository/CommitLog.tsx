@@ -148,6 +148,12 @@ const CommitLogInner: React.FC<{
     void selectLog(selectedIndex);
   }, [selectedIndex, selectLog]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      listRef.current?.scrollToItem(selectedIndexRef.current);
+    }, 0);
+  }, [repoPath, selectedIndexRef]);
+
   const detail = useCallback(
     (direction: Direction) => {
       const orientation = direction === "horiz" ? "portrait" : "landscape";
