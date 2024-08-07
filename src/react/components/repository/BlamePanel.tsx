@@ -134,7 +134,7 @@ export const BlamePanel: React.FC<BlamePanelProps> = ({
         )}
       >
         {showCommitAttrs && (
-          <div className={classNames("m-2 mb-auto", direction === "vert" && "max-w-2xl")}>
+          <div className={classNames("m-1 mb-3", direction === "vert" && "max-w-2xl")}>
             <div className={classNames("p-2 border border-greytext")}>
               <CommitAttributes commit={commit} showSummary />
             </div>

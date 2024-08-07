@@ -89,7 +89,7 @@ const LsTreeWithFilter: React.FC<{
   const content = (
     <div
       className={classNames(
-        "flex-1 m-1",
+        "flex-1",
         orientation === "portrait" ? "flex-col-nowrap" : "flex-row-nowrap"
       )}
     >
