@@ -45,7 +45,7 @@ const DiffViewer_: React.FC<DiffViewerProps> = ({ left, right }) => {
   const leftContent = useDiffContent(left);
   const rightContent = useDiffContent(right);
   return (
-    <div className="relative flex-1 overflow-hidden border border-solid border-paper">
+    <div className="relative flex-1 overflow-hidden border border-paper">
       <AutoSizer className="flex flex-1 overflow-hidden p-2" onResize={onResize}>
         {() => (
           <MonacoDiffEditor

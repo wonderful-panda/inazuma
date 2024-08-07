@@ -49,7 +49,7 @@ const FileCommitListRow_: React.FC<FileCommitListRowProps> = ({
     <div
       className={classNames(
         "flex box-border cursor-pointer py-1",
-        "border-b border-solid border-paper",
+        "border-b border-paper",
         index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
       style={{ height }}

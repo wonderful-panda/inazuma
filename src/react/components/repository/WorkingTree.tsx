@@ -156,7 +156,7 @@ const UdiffViewer: React.FC<{ udiff: Udiff | undefined }> = ({ udiff }) => {
   }, [editor]);
   const content = getUdiffContent(udiff);
   return (
-    <div className="relative flex-1 overflow-hidden m-1 border border-solid border-paper">
+    <div className="relative flex-1 overflow-hidden m-1 border border-paper">
       <AutoSizer className="flex flex-1 overflow-hidden" onResize={handleResize}>
         {() => (
           <MonacoEditor

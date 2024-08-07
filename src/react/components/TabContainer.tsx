@@ -41,12 +41,9 @@ const TabButton: React.FC<{
 }> = (p) => {
   return (
     <div
-      className={classNames(
-        "relative h-7 leading-7 border-r-2 border-solid border-background m-0",
-        {
-          ["text-primary bg-background " + CURRENT_TABBUTTON_CLASS]: p.current
-        }
-      )}
+      className={classNames("relative h-7 leading-7 border-r-2 border-background m-0", {
+        ["text-primary bg-background " + CURRENT_TABBUTTON_CLASS]: p.current
+      })}
     >
       <LazyTooltip
         renderTooltip={p.renderTooltop}
@@ -130,7 +127,7 @@ export const TabContainer = <T,>(p: TabContainerProps<T>) => {
   return (
     <div ref={ref} className="flex-col-nowrap flex-1 items-stretch overflow-hidden p-0">
       <TabBar
-        className="flex-row-nowrap overflow-x-auto overflow-y-hidden h-7 m-0 min-w-full bg-paper border-b border-solid border-background"
+        className="flex-row-nowrap overflow-x-auto overflow-y-hidden h-7 m-0 min-w-full bg-paper border-b border-background"
         ref={tabBarRef}
       >
         {p.tabs.map((t, index) => (

@@ -19,9 +19,7 @@ const Branch: React.FC<{ r: BranchRef }> = ({ r }) => (
   <Badge
     className={classNames(
       "rounded-xl",
-      r.current
-        ? "text-secondary border-2 border-solid border-current"
-        : "text-[cyan] border border-solid border-current"
+      r.current ? "text-secondary border-2 border-current" : "text-[cyan] border border-current"
     )}
   >
     {r.name}
@@ -29,15 +27,15 @@ const Branch: React.FC<{ r: BranchRef }> = ({ r }) => (
 );
 
 const Tag: React.FC<{ r: TagRef }> = ({ r }) => (
-  <Badge className="text-[cyan] border border-solid border-current">{r.name}</Badge>
+  <Badge className="text-[cyan] border border-current">{r.name}</Badge>
 );
 
 const Remote: React.FC<{ r: RemoteRef }> = ({ r }) => (
-  <Badge className="text-[grey] border border-solid border-current rounded-xl">{`${r.remote}/${r.name}`}</Badge>
+  <Badge className="text-[grey] border border-current rounded-xl">{`${r.remote}/${r.name}`}</Badge>
 );
 
 const Reflog: React.FC<{ r: ReflogRef }> = ({ r }) => (
-  <Badge className="text-[grey] border border-solid border-current">{r.name}</Badge>
+  <Badge className="text-[grey] border border-current">{r.name}</Badge>
 );
 
 export const RefBadge: React.FC<{ r: Ref }> = ({ r }) => {

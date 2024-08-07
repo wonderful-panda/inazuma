@@ -45,7 +45,7 @@ const FileListRow_: React.FC<FileListRowProps> = ({
     <div
       className={classNames(
         "group relative flex flex-1 overflow-hidden box-border cursor-pointer py-1",
-        "border-b border-solid border-highlight",
+        "border-b border-highlight",
         index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
       style={{ height }}

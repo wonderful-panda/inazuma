@@ -12,7 +12,7 @@ const FlexCard_: React.FC<FlexCardProps> = ({ title, content, actions }) => {
     <Card className="flex-col-nowrap flex-1">
       <CardContent className="flex-col-nowrap flex-1 overflow-y-hidden p-j4">
         {title && (
-          <div className="flex-row-nowrap border-b mb-1 border-solid border-current text-xl font-bold">
+          <div className="flex-row-nowrap border-b mb-1 border-current text-xl font-bold">
             {title}
           </div>
         )}

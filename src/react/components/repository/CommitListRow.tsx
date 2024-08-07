@@ -78,7 +78,7 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
     <div
       className={classNames(
         "flex h-full box-border cursor-pointer overflow-hidden group",
-        "pl-4 border-b border-solid border-paper",
+        "pl-4 border-b border-paper",
         selected ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
     >

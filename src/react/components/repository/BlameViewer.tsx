@@ -233,7 +233,7 @@ const BlameViewer_: React.FC<BlameViewerProps> = ({
   useDecorationEffect(editor, selectedCommitLineNumbers, selectedCommitDecorationOptions);
 
   return (
-    <div className="relative flex-1 overflow-hidden border border-solid border-paper">
+    <div className="relative flex-1 overflow-hidden border border-paper">
       <AutoSizer className="flex flex-1 overflow-hidden" onResize={onResize}>
         {() => (
           <StyledMonacoEditor
