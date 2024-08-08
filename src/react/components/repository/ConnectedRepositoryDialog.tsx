@@ -5,7 +5,7 @@ import { NewBranchDialogBody } from "./NewBranchDialogBody";
 import { assertNever } from "@/util";
 import { DeleteBranchDialogBody } from "./DeleteBranchDialogBody";
 import { useAtomValue, useSetAtom } from "jotai";
-import { activeDialogAtom, closeDialogAtom } from "@/state/repository/dialog";
+import { activeDialogAtom, closeDialogAtom } from "@/state/repository/repositoryDialog";
 
 export const ConnectedRepositoryDialog: React.FC = () => {
   const dialog = useAtomValue(activeDialogAtom);

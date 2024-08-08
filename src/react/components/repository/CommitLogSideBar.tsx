@@ -4,7 +4,7 @@ import { Icon } from "../Icon";
 import classNames from "classnames";
 import { useSwitchBranch } from "@/hooks/actions/branch";
 import { useSetAtom } from "jotai";
-import { openDialogAtom } from "@/state/repository/dialog";
+import { openDialogAtom } from "@/state/repository/repositoryDialog";
 
 const HeaderItem: React.FC<{ text: string; expanded: boolean; onClick: () => void }> = ({
   text,

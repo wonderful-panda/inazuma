@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { openDialogAtom } from "../../state/repository/dialog";
+import { openDialogAtom } from "../../state/repository/repositoryDialog";
 import { useCallback } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useShowConfirmDialog, useShowWarning } from "../../state/root";

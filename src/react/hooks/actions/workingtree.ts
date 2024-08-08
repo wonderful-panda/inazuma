@@ -5,7 +5,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useShowConfirmDialog, useShowWarning } from "@/state/root";
-import { openDialogAtom } from "@/state/repository/dialog";
+import { openDialogAtom } from "@/state/repository/repositoryDialog";
 import { useReloadRepository } from "./openRepository";
 
 export const useReloadWorkingTree = () => {

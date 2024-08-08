@@ -1,7 +1,7 @@
 import { GraphFragment } from "@/grapher";
 import { atom, createStore } from "jotai";
 import { resetRepoTabsAtom } from "./tabs";
-import { resetDialogAtom } from "./dialog";
+import { resetDialogAtom } from "./repositoryDialog";
 import { workingTreeAtom } from "./workingtree";
 import { atomFamily } from "jotai/utils";
 
