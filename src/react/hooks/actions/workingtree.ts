@@ -4,9 +4,10 @@ import { workingTreeAtom } from "@/state/repository/workingtree";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useShowConfirmDialog, useShowWarning } from "@/state/root";
+import { useShowWarning } from "@/state/root";
 import { openDialogAtom } from "@/state/repository/repositoryDialog";
 import { useReloadRepository } from "./openRepository";
+import { useConfirmDialog } from "@/context/ConfirmDialogContext";
 
 export const useReloadWorkingTree = () => {
   const repoPath = useAtomValue(repoPathAtom);
@@ -77,23 +78,23 @@ export const useUnstage = () => {
 export const useRestore = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const reloadWorkingTree = useReloadWorkingTree();
-  const showConfirmDialog = useShowConfirmDialog();
+  const confirm = useConfirmDialog();
   return useCallbackWithErrorHandler(
     async (relPath: string) => {
       if (!repoPath) {
         return;
       }
-      const ret = await showConfirmDialog({
+      const ret = await confirm.showModal({
         title: "Restore",
         content: "Discard unstaged changes of selected file"
       });
-      if (!ret) {
+      if (ret !== "accepted") {
         return;
       }
       await invokeTauriCommand("restore", { repoPath, relPath });
       await reloadWorkingTree();
     },
-    [repoPath, showConfirmDialog, reloadWorkingTree]
+    [repoPath, confirm, reloadWorkingTree]
   );
 };
 
@@ -141,19 +142,19 @@ export const useCommit = () => {
 
 export const useFixup = () => {
   const repoPath = useAtomValue(repoPathAtom);
-  const showConfirmDialog = useShowConfirmDialog();
+  const confirm = useConfirmDialog();
   const commit = useCommit();
   return useCallback(async () => {
     if (!repoPath) {
       return;
     }
-    const ret = await showConfirmDialog({
+    const ret = await confirm.showModal({
       title: "Fixup",
       content: "Meld staged changes into last commit without changing message"
     });
-    if (!ret) {
+    if (ret !== "accepted") {
       return;
     }
     await commit({ commitType: "amend" });
-  }, [repoPath, showConfirmDialog, commit]);
+  }, [repoPath, confirm, commit]);
 };

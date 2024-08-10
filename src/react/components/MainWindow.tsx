@@ -25,7 +25,6 @@ import { Loading } from "./Loading";
 import { Alert as RawAlert } from "./Alert";
 import { CommandGroup, Cmd } from "./CommandGroup";
 import { IconActionItem } from "@/commands/types";
-import { ConnectedConfirmDialog } from "./ConnectedConfirmDialog";
 import { useAlertValue, useConfig, useHideAlert, useIsLoadingValue } from "@/state/root";
 import { nope } from "@/util";
 
@@ -190,7 +189,6 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
           <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={setConfig} />
           <AboutDialog ref={aboutDialogRef} />
           <Loading open={isLoading} />
-          <ConnectedConfirmDialog />
           <Alert />
         </div>
       </MainWindowPropsSetterContext.Provider>

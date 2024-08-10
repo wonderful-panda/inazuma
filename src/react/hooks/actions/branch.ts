@@ -2,11 +2,12 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { openDialogAtom } from "../../state/repository/repositoryDialog";
 import { useCallback } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useShowConfirmDialog, useShowWarning } from "../../state/root";
+import { useShowWarning } from "../../state/root";
 import { useWithRef } from "@/hooks/useWithRef";
 import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
 import { repoPathAtom } from "../../state/repository";
 import { useReloadRepository } from "@/hooks/actions/openRepository";
+import { useConfirmDialog } from "@/context/ConfirmDialogContext";
 
 export const useBeginCreateBranch = () => {
   const repoPath = useAtomValue(repoPathAtom);
@@ -61,7 +62,7 @@ export const useDeleteBranch = () => {
 
 export const useSwitchBranch = () => {
   const repoPath = useAtomValue(repoPathAtom);
-  const showConfirmDialog = useShowConfirmDialog();
+  const confirm = useConfirmDialog();
   const [, reloadRepository] = useWithRef(useReloadRepository());
   const showWarning = useShowWarning();
   return useCallbackWithErrorHandler(
@@ -73,11 +74,11 @@ export const useSwitchBranch = () => {
         showWarning("Branch name is not specified");
         return false;
       }
-      const ret = await showConfirmDialog({
+      const ret = await confirm.showModal({
         title: "Switch branch",
         content: `Switch to branch [${options.branchName}]`
       });
-      if (!ret) {
+      if (ret !== "accepted") {
         return;
       }
 
@@ -85,6 +86,6 @@ export const useSwitchBranch = () => {
       await reloadRepository.current();
       return true;
     },
-    [repoPath, reloadRepository, showConfirmDialog, showWarning]
+    [repoPath, reloadRepository, confirm, showWarning]
   );
 };
