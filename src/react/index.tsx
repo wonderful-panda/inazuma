@@ -38,6 +38,7 @@ import {
 import { TabContainer, TabContainerProps, TooltipTitle } from "./components/TabContainer";
 import { assertNever } from "./util";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
+import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 
 const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
 
@@ -226,7 +227,9 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
         <CommandGroupProvider>
           <ContextMenuProvider>
             <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
-              <MainWindow>{content}</MainWindow>
+              <ConfirmDialogProvider>
+                <MainWindow>{content}</MainWindow>
+              </ConfirmDialogProvider>
             </PersistStateProvider>
           </ContextMenuProvider>
         </CommandGroupProvider>
