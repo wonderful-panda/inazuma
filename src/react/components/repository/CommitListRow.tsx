@@ -6,13 +6,13 @@ import { RefBadge } from "./RefBadge";
 import { formatDateTimeLong } from "@/date";
 import { GitHash } from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import { Icon } from "@iconify/react";
 import { CommitCommand } from "@/commands/types";
 import { RowActionButtons, RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
 import { Avatar } from "./Avatar";
 import { useConfigValue } from "@/state/root";
 import { nope } from "@/util";
+import { Icon } from "../Icon";
 
 export const PinnedCommitContext = createContext<Commit | undefined>(undefined);
 

@@ -6,7 +6,7 @@ import { FileStatusIcon } from "./FileStatusIcon";
 import { GitHash } from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { FileStat } from "./FileStat";
-import { Icon } from "@iconify/react";
+import { Icon } from "../Icon";
 
 export const getRowHeightClass = (commit: FileCommit) => (commit.oldPath ? "h-[76px]" : "h-[52px]");
 
