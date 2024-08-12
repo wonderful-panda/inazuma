@@ -7,14 +7,14 @@ const preloadedFactory = <T,>(factory: () => T): (() => T) => {
 };
 
 export const lazy = <P extends object>(
-  factory: () => Promise<{ default: React.ComponentType<P> }>,
+  factory: () => Promise<React.ComponentType<P>>,
   options?: { preload: boolean }
 ): React.ComponentType<P> => {
   const factory_ = options?.preload ? preloadedFactory(factory) : factory;
   const Lazy = (props: P) => {
     const [Component, setComponent] = useState<React.ComponentType<P> | undefined>(undefined);
     useEffect(() => {
-      void factory_().then((value) => setComponent(() => value.default));
+      void factory_().then((value) => setComponent(() => value));
     }, []);
     if (Component) {
       return <Component {...props} />;

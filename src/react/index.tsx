@@ -40,7 +40,9 @@ import { assertNever } from "./util";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 
-const RepositoryPage = lazy(() => import("./components/repository"), { preload: true });
+const RepositoryPage = lazy(async () => (await import("./components/repository")).default, {
+  preload: true
+});
 
 const defaultFontfamily = getCssVariable("--inazuma-standard-fontfamily");
 const monospaceFontfamily = getCssVariable("--inazuma-monospace-fontfamily");

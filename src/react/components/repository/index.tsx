@@ -34,9 +34,10 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DevTools } from "jotai-devtools";
 import "jotai-devtools/styles.css";
 
-const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
-const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
-const CommitDiffTab = lazy(() => import("./CommitDiffTab"), { preload: true });
+const opt = { preload: true };
+const BlameTab = lazy(async () => (await import("./BlameTab")).default, opt);
+const LsTreeTab = lazy(async () => (await import("./LsTreeTab")).default, opt);
+const CommitDiffTab = lazy(async () => (await import("./CommitDiffTab")).default, opt);
 
 const renderTabTooltip: TabContainerProps<TabType>["renderTabTooltip"] = (tab) => {
   switch (tab.type) {
