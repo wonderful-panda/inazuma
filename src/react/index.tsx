@@ -40,6 +40,10 @@ import { assertNever } from "./util";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 
+if (import.meta.env.DEV) {
+  void import("./jotai-devtools-styles");
+}
+
 const RepositoryPage = lazy(async () => (await import("./components/repository")).default, {
   preload: true
 });

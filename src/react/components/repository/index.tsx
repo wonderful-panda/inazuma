@@ -32,7 +32,6 @@ import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/hooks/actions/
 import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DevTools } from "jotai-devtools";
-import "jotai-devtools/styles.css";
 
 const opt = { preload: true };
 const BlameTab = lazy(async () => (await import("./BlameTab")).default, opt);

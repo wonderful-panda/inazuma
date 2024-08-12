@@ -4,6 +4,17 @@ declare global {
   interface Window {
     StringDecoder: typeof import("string_decoder").StringDecoder;
   }
+
+  // from vite
+  interface ImportMeta {
+    env: {
+      DEV: boolean;
+      PROD: boolean;
+      MODE: string;
+      BASE_URL: string;
+    };
+  }
+
   type ComponentRef<C> =
     C extends React.ForwardRefExoticComponent<infer P>
       ? P extends React.RefAttributes<infer T>
