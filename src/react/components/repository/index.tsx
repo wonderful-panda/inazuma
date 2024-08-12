@@ -1,5 +1,4 @@
 import { IconActionItem } from "@/commands/types";
-import { DevTools } from "jotai-devtools";
 import { assertNever } from "@/util";
 import { useCallback, useMemo, useEffect } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
@@ -32,6 +31,8 @@ import {
 import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/hooks/actions/openRepository";
 import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { DevTools } from "jotai-devtools";
+import "jotai-devtools/styles.css";
 
 const BlameTab = lazy(() => import("./BlameTab"), { preload: true });
 const LsTreeTab = lazy(() => import("./LsTreeTab"), { preload: true });
