@@ -65,6 +65,7 @@
     "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^4.3.1",
     "env-cmd": "^10.1.0",
+    "eslint": "8.57.0",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "handlebars": "^4.7.7",
