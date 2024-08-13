@@ -71,8 +71,8 @@ const Dialog_: React.ForwardRefRenderFunction<
             <Icon icon="mdi:close" />
           </IconButton>
           <div className="drag-handle cursor-move px-4 pb-2 border-b border-highlight">{title}</div>
-          <div className="p-4">{content}</div>
-          <div className="flex-row-nowrap">
+          <div className="p-4 text-lg border-b border-highlight">{content}</div>
+          <div className="flex-row-nowrap mt-2">
             <div className="flex-1" />
             <Button key="1" className="mr-4 text-xl _accept" onClick={accept} color="primary">
               {buttons[0]}
