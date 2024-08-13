@@ -884,7 +884,7 @@
   resolved "https://registry.yarnpkg.com/@tauri-apps/cli-win32-x64-msvc/-/cli-win32-x64-msvc-2.0.0-rc.3.tgz#f1d22c1bcf80dba646b3e1ec77e50f9d6012fadf"
   integrity sha512-qeBRJYalahxEXolekcpZJ/HBrIJacG2NWJBGhhi797mIwnbmlpbHMc8blIJtNNNwVUb2BjXuxKQVfojQ5YYrcg==
 
-"@tauri-apps/cli@^2.0.0-beta.22":
+"@tauri-apps/cli@^2.0.0-rc.3":
   version "2.0.0-rc.3"
   resolved "https://registry.yarnpkg.com/@tauri-apps/cli/-/cli-2.0.0-rc.3.tgz#760a518492a0befced7ff623375424960152e724"
   integrity sha512-iNF95pieBmverl1EmQyqh+fhcIClS544fN5Ex5lAbYLTiHZ/gm3lOfVBhF6NPaKd/sfLuy7K1tfDXlHztBfANw==

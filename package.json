@@ -56,7 +56,7 @@
     "@iconify/react": "^5.0.2",
     "@iconify/utils": "^2.1.29",
     "@mui/material": "^5.16.6",
-    "@tauri-apps/cli": "^2.0.0-beta.22",
+    "@tauri-apps/cli": "^2.0.0-rc.3",
     "@types/chardet": "^0.8.3",
     "@types/lodash": "^4.17.7",
     "@types/react": "^18.3.3",
