@@ -12,15 +12,12 @@ import { CommandGroup, Cmd } from "../CommandGroup";
 import { useBrowseSourceTreeCommand } from "@/commands/browseSourceTree";
 import { CommitCommand } from "@/commands/types";
 import { KeyDownTrapper } from "../KeyDownTrapper";
-import { PinnedCommitContext, SetPinnedCommitContext } from "./CommitListRow";
 import { useStateWithRef } from "@/hooks/useStateWithRef";
-import { shortHash } from "@/util";
 import { CommitLogSideBar } from "./CommitLogSideBar";
 import { useCreateBranchCommand } from "@/commands/createBranch";
 import { ConnectedRepositoryDialog } from "./ConnectedRepositoryDialog";
 import { CommitLogItems, commitDetailAtom, logAtom, repoPathAtom } from "@/state/repository";
 import { useAtomValue } from "jotai";
-import { useShowWarning } from "@/state/root";
 import { useWithRef } from "@/hooks/useWithRef";
 import { useBeginCommit, useReloadWorkingTree } from "@/hooks/actions/workingtree";
 import { useShowCommitDiff } from "@/hooks/actions/showCommitDiff";
@@ -60,31 +57,6 @@ const useCompareWithParentCommand = () => {
   );
 };
 
-const useCompareWithPinnedCommitCommand = (pinnedCommit: Commit | undefined) => {
-  const [, showCommitDiff] = useWithRef(useShowCommitDiff());
-  const showWarning = useShowWarning();
-  return useMemo<CommitCommand>(
-    () => ({
-      type: "commit",
-      id: "CompareCommitWithPinnedCommit",
-      label: `Compare with Compare-BASE commit (${
-        pinnedCommit ? shortHash(pinnedCommit.id) : "NOT SELECTED"
-      })`,
-      icon: "mdi:map-marker-distance",
-      hidden: (commit) => commit.id === "--",
-      disabled: (commit) => !pinnedCommit || pinnedCommit.id === commit.id,
-      handler: (commit) => {
-        if (!pinnedCommit) {
-          showWarning("No commit is pinned");
-          return;
-        }
-        void showCommitDiff.current(pinnedCommit, commit);
-      }
-    }),
-    [pinnedCommit, showCommitDiff, showWarning]
-  );
-};
-
 const CommitLogInner: React.FC<{
   repoPath: string;
   log: CommitLogItems;
@@ -95,8 +67,6 @@ const CommitLogInner: React.FC<{
   const [selectedIndex, setSelectedIndex, selectedIndexRef] = useStateWithRef(0);
   // selected item id, updated lazily (after data-fetching completed)
   const [loadedId, setLoadedId] = useState("");
-
-  const [pinnedCommit, setPinnedCommit] = useState<Commit | undefined>(undefined);
 
   const { moveNext, movePrevious, handleKeyDown, handleRowMouseDown } = useListIndexChanger(
     log.commits.length,
@@ -111,16 +81,9 @@ const CommitLogInner: React.FC<{
   const browseSourceTree = useBrowseSourceTreeCommand();
   const beginCommit = useBeginCommitCommand();
   const compareWithParent = useCompareWithParentCommand();
-  const compareWithPinnedCommit = useCompareWithPinnedCommitCommand(pinnedCommit);
   const actionCommands = useMemo<CommitCommand[]>(() => {
-    return [
-      createBranch,
-      browseSourceTree,
-      beginCommit,
-      compareWithParent,
-      compareWithPinnedCommit
-    ];
-  }, [createBranch, browseSourceTree, beginCommit, compareWithParent, compareWithPinnedCommit]);
+    return [createBranch, browseSourceTree, beginCommit, compareWithParent];
+  }, [createBranch, browseSourceTree, beginCommit, compareWithParent]);
   const reloadWorkingTree = useReloadWorkingTree();
   const fetchCommitDetail = useFetchCommitDetail();
   const selectLog = useMemo(
@@ -205,19 +168,15 @@ const CommitLogInner: React.FC<{
           secondPanelMinSize="20%"
           first={
             <SelectedIndexProvider value={selectedIndex}>
-              <PinnedCommitContext.Provider value={pinnedCommit}>
-                <SetPinnedCommitContext.Provider value={setPinnedCommit}>
-                  <KeyDownTrapper className="mx-3 my-2" onKeyDown={handleKeyDown}>
-                    <CommitList
-                      ref={listRef}
-                      {...log}
-                      actionCommands={actionCommands}
-                      onRowMouseDown={handleRowMouseDown}
-                      onRowContextMenu={handleContextMenu}
-                    />
-                  </KeyDownTrapper>
-                </SetPinnedCommitContext.Provider>
-              </PinnedCommitContext.Provider>
+              <KeyDownTrapper className="mx-3 my-2" onKeyDown={handleKeyDown}>
+                <CommitList
+                  ref={listRef}
+                  {...log}
+                  actionCommands={actionCommands}
+                  onRowMouseDown={handleRowMouseDown}
+                  onRowContextMenu={handleContextMenu}
+                />
+              </KeyDownTrapper>
             </SelectedIndexProvider>
           }
           second={detail}

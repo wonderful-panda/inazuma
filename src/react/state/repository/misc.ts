@@ -11,3 +11,5 @@ export const toggleInteractiveShellAtom = atom(null, (_get, set) =>
 
 export const reflogAtom = atom(false);
 export const toggleReflogAtom = atom(null, (_get, set) => set(reflogAtom, (prev) => !prev));
+
+export const pinnedCommitAtom = atom<Commit | undefined>(undefined);

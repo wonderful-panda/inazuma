@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { GraphFragment } from "@/grapher";
-import { createContext, memo, useContext, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { GraphCell } from "./GraphCell";
 import { RefBadge } from "./RefBadge";
 import { formatDateTimeLong } from "@/date";
@@ -10,13 +10,12 @@ import { CommitCommand } from "@/commands/types";
 import { RowActionButtons, RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
 import { Avatar } from "./Avatar";
-import { useConfigValue } from "@/state/root";
-import { nope } from "@/util";
+import { useConfigValue, useShowWarning } from "@/state/root";
 import { Icon } from "../Icon";
-
-export const PinnedCommitContext = createContext<Commit | undefined>(undefined);
-
-export const SetPinnedCommitContext = createContext<SetState<Commit | undefined>>(() => nope);
+import { useAtom } from "jotai";
+import { pinnedCommitAtom } from "@/state/repository/misc";
+import { useShowCommitDiff } from "@/hooks/actions/showCommitDiff";
+import { useWithRef } from "@/hooks/useWithRef";
 
 export interface CommitListRowProps {
   height: number;
@@ -32,21 +31,48 @@ export interface CommitListRowProps {
 const setCompareBaseAction = (
   commit: Commit,
   pinned: boolean,
-  setPinnedCommit: SetState<Commit | undefined>
+  setPinnedCommitId: (value: Commit | undefined) => void
 ): RowActionItem => ({
   id: "SetCompareBase",
   icon: "mdi:map-marker",
-  label: "Mark this commit as Compare-BASE",
+  label: "Set pin to this commit. (mark this commit as Compare-BASE)",
   alwaysVisible: pinned,
   className: pinned ? "text-secondary" : undefined,
   handler: () => {
     if (pinned) {
-      setPinnedCommit(undefined);
+      setPinnedCommitId(undefined);
     } else {
-      setPinnedCommit(commit);
+      setPinnedCommitId(commit);
     }
   }
 });
+
+export const useCompareWithPinnedCommitAction = (
+  commit: Commit,
+  pinned: boolean,
+  pinnedCommit: Commit | undefined
+): RowActionItem => {
+  const [, showCommitDiff] = useWithRef(useShowCommitDiff());
+  const [, pinnedCommitRef] = useWithRef(pinnedCommit);
+  const showWarning = useShowWarning();
+  return useMemo<RowActionItem>(
+    () => ({
+      id: "CompareCommitWithPinnedCommit",
+      label: `Compare with pinned commit (Compare-BASE commit)`,
+      icon: "mdi:map-marker-distance",
+      hidden: () => commit.id === "--",
+      disabled: pinned,
+      handler: () => {
+        if (!pinnedCommitRef.current) {
+          showWarning("No commit is pinned");
+          return;
+        }
+        void showCommitDiff.current(pinnedCommitRef.current, commit);
+      }
+    }),
+    [commit, pinned, pinnedCommitRef, showCommitDiff, showWarning]
+  );
+};
 
 const CommitListRow_: React.FC<CommitListRowProps> = ({
   height,
@@ -59,21 +85,22 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
   actionCommands
 }) => {
   const selectedIndex = useSelectedIndex();
-  const pinnedCommit = useContext(PinnedCommitContext);
-  const setPinnedCommit = useContext(SetPinnedCommitContext);
+  const [pinnedCommit, setPinnedCommit] = useAtom(pinnedCommitAtom);
   const config = useConfigValue();
   const selected = selectedIndex === index;
   const pinned = pinnedCommit?.id === commit.id;
   const workingTree = commit.id === "--";
+  const compareWithPinnedCommit = useCompareWithPinnedCommitAction(commit, pinned, pinnedCommit);
   const actions = useMemo(() => {
     const ret = commitCommandsToActions(actionCommands, commit).filter(
       (a) => a.icon
     ) as RowActionItem[];
     if (!workingTree) {
+      ret.push(compareWithPinnedCommit);
       ret.push(setCompareBaseAction(commit, pinned, setPinnedCommit));
     }
     return ret;
-  }, [actionCommands, commit, pinned, setPinnedCommit, workingTree]);
+  }, [actionCommands, commit, pinned, setPinnedCommit, workingTree, compareWithPinnedCommit]);
   return (
     <div
       className={classNames(
