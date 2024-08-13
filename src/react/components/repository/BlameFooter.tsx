@@ -1,7 +1,7 @@
 import { formatDate } from "@/date";
 import { shortHash } from "@/util";
 
-const className = "flex-row-nowrap flex-grow-0 flex-shrink-0 px-2 h-8 items-center";
+const className = "flex-row-nowrap flex-none px-2 h-8 items-center";
 
 export const BlameFooter: React.FC<{ commit?: Commit }> = ({ commit }) => {
   if (!commit) {

@@ -127,16 +127,16 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
         <div className="flex-row-nowrap leading-5 text-greytext whitespace-nowrap">
           {workingTree ? (
             <>
-              <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:account" />
+              <Icon className="ml-3 mr-0.5 my-auto flex-none" icon="mdi:account" />
               {commit.author}
             </>
           ) : (
             <>
-              <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:hashtag-box" />
+              <Icon className="ml-3 mr-0.5 my-auto flex-none" icon="mdi:hashtag-box" />
               <GitHash hash={workingTree ? "-------" : commit.id} />
-              <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:account" />
+              <Icon className="ml-3 mr-0.5 my-auto flex-none" icon="mdi:account" />
               {commit.author}
-              <Icon className="ml-3 mr-0.5 my-auto" icon="mdi:clock-outline" />
+              <Icon className="ml-3 mr-0.5 my-auto flex-none" icon="mdi:clock-outline" />
               {formatDateTimeLong(commit.date)}
             </>
           )}

@@ -65,10 +65,11 @@ const FileCommitListRow_: React.FC<FileCommitListRowProps> = ({
         </div>
         <div className="flex-row-nowrap items-center leading-5 pl-2 text-greytext ellipsis">
           <FileStat className="text-base min-w-[6.5rem] mr-1" file={commit} />
+          <Icon className="ml-3 mr-0.5 my-auto flex-none" icon="mdi:hashtag-box" />
           <GitHash hash={commit.id} />
-          <Icon className="ml-3 mr-0.5 my-auto flex-shrink-0" icon="mdi:account" />
+          <Icon className="ml-3 mr-0.5 my-auto flex-none" icon="mdi:account" />
           {commit.author}
-          <Icon className="ml-3 mr-0.5 my-auto flex-shrink-0" icon="mdi:clock-outline" />
+          <Icon className="ml-3 mr-0.5 my-auto flex-none" icon="mdi:clock-outline" />
           {formatDateTimeLong(commit.date)}
         </div>
         {commit.oldPath && (
