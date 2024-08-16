@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { PreferenceDialog } from "./PreferenceDialog";
 import { AboutDialog } from "./AboutDialog";
-import { Loading } from "./Loading";
+import { TopLayerLoading } from "./Loading";
 import { Alert as RawAlert } from "./Alert";
 import { CommandGroup, Cmd } from "./CommandGroup";
 import { IconActionItem } from "@/commands/types";
@@ -188,7 +188,7 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
           </div>
           <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={setConfig} />
           <AboutDialog ref={aboutDialogRef} />
-          <Loading open={isLoading} />
+          <TopLayerLoading open={isLoading} />
           <Alert />
         </div>
       </MainWindowPropsSetterContext.Provider>

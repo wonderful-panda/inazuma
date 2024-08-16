@@ -1,4 +1,5 @@
 import { useStateWithRef } from "@/hooks/useStateWithRef";
+import { bringOverlayDivToTop } from "@/overlay";
 import { assertNever, nope, wait } from "@/util";
 import { Icon } from "@iconify/react";
 import { Button, IconButton, Paper } from "@mui/material";
@@ -221,6 +222,7 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
         await wait(0); // rerender dialog with new props
         dlg.returnValue = "";
         dlg.showModal();
+        bringOverlayDivToTop();
         const button = dlg.querySelector<HTMLButtonElement>(".__default");
         button?.focus();
         return new Promise<DialogResult>((resolve) => {

@@ -40,6 +40,7 @@ import { assertNever } from "./util";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 import { DialogProvider } from "./context/DialogContext";
+import { bringOverlayDivToTop } from "./overlay";
 
 if (import.meta.env.DEV) {
   void import("./jotai-devtools-styles");
@@ -280,6 +281,9 @@ void (async () => {
   const hash = window.location.hash ? decodeURI(window.location.hash.slice(1)) : undefined;
   window.location.hash = "#home";
   const startupRepository = await getInitialRepository(hash);
+
+  bringOverlayDivToTop();
+
   const root = createRoot(document.getElementById("app")!);
 
   root.render(<App startupRepository={startupRepository} />);

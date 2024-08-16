@@ -1,5 +1,6 @@
 import {
   IconButton,
+  Portal,
   Slide,
   SlideProps,
   Snackbar,
@@ -10,6 +11,7 @@ import { Icon } from "./Icon";
 import { memo, useEffect, useState } from "react";
 import { assertNever } from "@/util";
 import { IconName } from "@/types/IconName";
+import { getOverlayDiv } from "@/overlay";
 
 const Transition = (props: SlideProps) => <Slide {...props} direction="up" />;
 
@@ -54,33 +56,35 @@ const Alert_: React.FC<{
     }
   }, [props.open, props.type, props.message]);
   return (
-    <Snackbar
-      className="max-w-[95%]"
-      open={props.open}
-      onClose={props.onClose}
-      anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-      TransitionComponent={Transition}
-      autoHideDuration={5000}
-    >
-      <SnackbarContent
-        classes={{ root: bg[type], message: "flex text-white" }}
-        message={
-          <>
-            <div className="m-auto text-2xl">
-              <Icon icon={iconName(type)} />
-            </div>
-            <Typography className="ml-4" variant="body1">
-              {message}
-            </Typography>
-          </>
-        }
-        action={
-          <IconButton size="small" onClick={props.onClose}>
-            <Icon icon="mdi:close" />
-          </IconButton>
-        }
-      />
-    </Snackbar>
+    <Portal container={getOverlayDiv}>
+      <Snackbar
+        className="max-w-[95%]"
+        open={props.open}
+        onClose={props.onClose}
+        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+        TransitionComponent={Transition}
+        autoHideDuration={5000}
+      >
+        <SnackbarContent
+          classes={{ root: bg[type], message: "flex text-white" }}
+          message={
+            <>
+              <div className="m-auto text-2xl">
+                <Icon icon={iconName(type)} />
+              </div>
+              <Typography className="ml-4" variant="body1">
+                {message}
+              </Typography>
+            </>
+          }
+          action={
+            <IconButton size="small" onClick={props.onClose}>
+              <Icon icon="mdi:close" />
+            </IconButton>
+          }
+        />
+      </Snackbar>
+    </Portal>
   );
 };
 
