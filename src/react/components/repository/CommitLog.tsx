@@ -15,7 +15,6 @@ import { KeyDownTrapper } from "../KeyDownTrapper";
 import { useStateWithRef } from "@/hooks/useStateWithRef";
 import { CommitLogSideBar } from "./CommitLogSideBar";
 import { useCreateBranchCommand } from "@/commands/createBranch";
-import { ConnectedRepositoryDialog } from "./ConnectedRepositoryDialog";
 import { CommitLogItems, commitDetailAtom, logAtom, repoPathAtom } from "@/state/repository";
 import { useAtomValue } from "jotai";
 import { useWithRef } from "@/hooks/useWithRef";
@@ -181,7 +180,6 @@ const CommitLogInner: React.FC<{
           }
           second={detail}
         />
-        <ConnectedRepositoryDialog />
       </div>
     </>
   );

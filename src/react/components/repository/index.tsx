@@ -32,6 +32,7 @@ import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/hooks/actions/
 import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DevTools } from "jotai-devtools";
+import { DialogProvider } from "@/context/DialogContext";
 
 const opt = { preload: true };
 const BlameTab = lazy(async () => (await import("./BlameTab")).default, opt);
@@ -183,7 +184,9 @@ const RepositoryPageTab: React.FC<{ path: string; active: boolean }> = ({ path, 
   return (
     <Provider store={store}>
       <DevTools store={store} />
-      <RepositoryPage active={active} />
+      <DialogProvider>
+        <RepositoryPage active={active} />
+      </DialogProvider>
     </Provider>
   );
 };

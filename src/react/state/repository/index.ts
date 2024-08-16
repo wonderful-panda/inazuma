@@ -1,7 +1,6 @@
 import { GraphFragment } from "@/grapher";
 import { atom, createStore } from "jotai";
 import { resetRepoTabsAtom } from "./tabs";
-import { resetDialogAtom } from "./repositoryDialog";
 import { workingTreeAtom } from "./workingtree";
 import { atomFamily } from "jotai/utils";
 
@@ -44,7 +43,6 @@ export const setLogAtom = atom(
     set(logAtom, { commits, refs, graph });
     set(commitDetailAtom, undefined);
     set(workingTreeAtom, undefined);
-    set(resetDialogAtom);
     if (!keepTabs) {
       set(resetRepoTabsAtom);
     }

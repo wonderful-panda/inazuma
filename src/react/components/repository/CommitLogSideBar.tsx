@@ -2,9 +2,7 @@ import { Collapse, IconButton, List, ListItem, ListItemButton, ListItemText } fr
 import React, { useCallback, useMemo, useState } from "react";
 import { Icon } from "../Icon";
 import classNames from "classnames";
-import { useSwitchBranch } from "@/hooks/actions/branch";
-import { useSetAtom } from "jotai";
-import { openDialogAtom } from "@/state/repository/repositoryDialog";
+import { useBeginDeleteBranch, useSwitchBranch } from "@/hooks/actions/branch";
 
 const HeaderItem: React.FC<{ text: string; expanded: boolean; onClick: () => void }> = ({
   text,
@@ -96,7 +94,7 @@ export const CommitLogSideBar: React.FC<{
   onItemClick: (r: Ref) => void;
 }> = ({ refs, onItemClick }) => {
   const switchBranch = useSwitchBranch();
-  const openDialog = useSetAtom(openDialogAtom);
+  const deleteBranch = useBeginDeleteBranch();
   const refMap = useMemo(() => {
     const ret = {} as Record<string, Ref>;
     refs.branches.forEach((b) => (ret[b.fullname] = b));
@@ -129,11 +127,11 @@ export const CommitLogSideBar: React.FC<{
       e.stopPropagation();
       const fullname = e.currentTarget.dataset.fullname!;
       const r = refMap[fullname];
-      if (r && r.type === "branch") {
-        openDialog({ type: "DeleteBranch", branchName: r.name });
+      if (r && r.type === "branch" && !r.current) {
+        void deleteBranch(r.name);
       }
     },
-    [refMap, openDialog]
+    [refMap, deleteBranch]
   );
 
   return (

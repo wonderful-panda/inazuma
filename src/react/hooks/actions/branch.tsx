@@ -1,5 +1,4 @@
-import { useAtomValue, useSetAtom } from "jotai";
-import { openDialogAtom } from "../../state/repository/repositoryDialog";
+import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useShowWarning } from "../../state/root";
@@ -8,18 +7,25 @@ import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler
 import { repoPathAtom } from "../../state/repository";
 import { useReloadRepository } from "@/hooks/actions/openRepository";
 import { useConfirmDialog } from "@/context/ConfirmDialogContext";
+import { useDialog } from "@/context/DialogContext";
+import { NewBranchDialogBody } from "@/components/repository/NewBranchDialogBody";
+import { DeleteBranchDialogBody } from "@/components/repository/DeleteBranchDialogBody";
 
 export const useBeginCreateBranch = () => {
   const repoPath = useAtomValue(repoPathAtom);
-  const openDialog = useSetAtom(openDialogAtom);
+  const dialog = useDialog();
+
   return useCallback(
-    (commitId: string) => {
+    async (commitId: string) => {
       if (!repoPath) {
         return;
       }
-      openDialog({ type: "NewBranch", commitId });
+      return await dialog.showModal({
+        content: <NewBranchDialogBody commitId={commitId} />,
+        defaultActionKey: "Enter"
+      });
     },
-    [repoPath, openDialog]
+    [repoPath, dialog]
   );
 };
 
@@ -41,6 +47,22 @@ export const useCreateBranch = () => {
       return true;
     },
     [repoPath, reloadRepository, showWarning]
+  );
+};
+
+export const useBeginDeleteBranch = () => {
+  const repoPath = useAtomValue(repoPathAtom);
+  const dialog = useDialog();
+  return useCallback(
+    async (branchName: string) => {
+      if (!repoPath) {
+        return;
+      }
+      return await dialog.showModal({
+        content: <DeleteBranchDialogBody branchName={branchName} />
+      });
+    },
+    [repoPath, dialog]
   );
 };
 

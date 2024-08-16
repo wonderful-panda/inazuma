@@ -1,13 +1,18 @@
 import { clamp } from "@/util";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { DialogActionHandler } from "../Dialog";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { DialogBody } from "../DialogBody";
 import { useReportError } from "@/state/root";
 import { useAtomValue } from "jotai";
 import { repoPathAtom } from "@/state/repository";
 import { useCommit } from "@/hooks/actions/workingtree";
+import {
+  AcceptButton,
+  CancelButton,
+  DialogActions,
+  DialogContent,
+  DialogTitle
+} from "@/context/DialogContext";
 
 export const CommitDialogBody: React.FC = () => {
   const repoPath = useAtomValue(repoPathAtom);
@@ -15,6 +20,19 @@ export const CommitDialogBody: React.FC = () => {
   const amendRef = useRef<HTMLInputElement>(null);
   const reportError = useReportError();
   const [rows, setRows] = useState(6);
+
+  const commit = useCommit();
+
+  const invokeCommit = useCallback(async () => {
+    if (!messageRef.current) {
+      return "failed";
+    }
+    const opt: CommitOptions = {
+      commitType: amendRef.current?.checked ? "amend" : "normal",
+      message: messageRef.current.value ?? ""
+    };
+    return await commit(opt);
+  }, [commit]);
 
   useEffect(() => {
     setRows(6);
@@ -40,7 +58,6 @@ export const CommitDialogBody: React.FC = () => {
           repoPath,
           revspec: "HEAD"
         });
-        // always true
         messageRef.current.value =
           commitDetail.summary + (commitDetail.body ? "\n\n" + commitDetail.body : "");
         handleChange();
@@ -50,61 +67,36 @@ export const CommitDialogBody: React.FC = () => {
     },
     [reportError, repoPath, handleChange]
   );
-  const commit = useCommit();
-  const invokeCommit = useCallback(
-    async (close: () => void) => {
-      if (!amendRef.current) {
-        return;
-      }
-      const message = messageRef.current?.value ?? "";
-      const options: CommitOptions = {
-        commitType: amendRef.current.checked ? "amend" : "normal",
-        message
-      };
-      const ret = await commit(options);
-      if (ret !== "failed" && ret) {
-        close();
-      }
-    },
-    [commit]
-  );
-  const actions = useMemo<DialogActionHandler[]>(
-    () => [
-      {
-        text: "Commit",
-        color: "primary",
-        default: true,
-        onClick: invokeCommit
-      }
-    ],
-    [invokeCommit]
-  );
   return (
-    <DialogBody
-      className="w-[50rem]"
-      title="Commit"
-      actions={actions}
-      defaultActionKey="Ctrl+Enter"
-    >
-      <TextField
-        inputRef={messageRef}
-        className="h-auto w-full"
-        rows={rows}
-        multiline
-        label="Commit message"
-        InputLabelProps={{ shrink: true }}
-        placeholder="Input commit message"
-        onChange={handleChange}
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            inputRef={amendRef}
-            onChange={handleAmendChange as VoidReturn<typeof handleAmendChange>}
+    <>
+      <DialogTitle>Commit</DialogTitle>
+      <DialogContent>
+        <div className="flex-col-nowrap min-w-[48rem]">
+          <TextField
+            inputRef={messageRef}
+            className="h-auto w-full"
+            rows={rows}
+            multiline
+            label="Commit message"
+            InputLabelProps={{ shrink: true }}
+            placeholder="Input commit message"
+            onChange={handleChange}
           />
-        }
-        label="amend last commit"
-      />
-    </DialogBody>
+          <FormControlLabel
+            control={
+              <Checkbox
+                inputRef={amendRef}
+                onChange={handleAmendChange as VoidReturn<typeof handleAmendChange>}
+              />
+            }
+            label="amend last commit"
+          />
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <AcceptButton onClick={invokeCommit} default />
+        <CancelButton />
+      </DialogActions>
+    </>
   );
 };

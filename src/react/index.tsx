@@ -39,6 +39,7 @@ import { TabContainer, TabContainerProps, TooltipTitle } from "./components/TabC
 import { assertNever } from "./util";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
+import { DialogProvider } from "./context/DialogContext";
 
 if (import.meta.env.DEV) {
   void import("./jotai-devtools-styles");
@@ -234,7 +235,9 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
           <ContextMenuProvider>
             <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
               <ConfirmDialogProvider>
-                <MainWindow>{content}</MainWindow>
+                <DialogProvider>
+                  <MainWindow>{content}</MainWindow>
+                </DialogProvider>
               </ConfirmDialogProvider>
             </PersistStateProvider>
           </ContextMenuProvider>

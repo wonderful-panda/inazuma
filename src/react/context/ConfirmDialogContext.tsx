@@ -1,17 +1,13 @@
-import { useStateWithRef } from "@/hooks/useStateWithRef";
-import { Icon } from "@iconify/react";
-import { Button, IconButton, Paper } from "@mui/material";
+import { createContext, useContext, useMemo, useRef } from "react";
 import {
-  createContext,
-  forwardRef,
-  useCallback,
-  useContext,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState
-} from "react";
-import Draggable from "react-draggable";
+  AcceptButton,
+  CancelButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogMethods,
+  DialogTitle
+} from "./DialogContext";
 
 export interface ConfirmDialogProps {
   title: string;
@@ -20,120 +16,55 @@ export interface ConfirmDialogProps {
   defaultButton?: "accept" | "reject";
 }
 
-const defaultProps: ConfirmDialogProps = {
-  title: "",
-  content: <></>
-};
-
 export type ConfirmDialogResult = "accepted" | "rejected" | "notready";
 
 export interface ConfirmDialogMethods {
   showModal: (props: ConfirmDialogProps) => Promise<ConfirmDialogResult>;
 }
 
-const ConfirmDialogContext = createContext<ConfirmDialogMethods>({
-  showModal: () => Promise.resolve("rejected")
-});
-
-export const useConfirmDialog = () => useContext(ConfirmDialogContext);
-
-const Dialog_: React.ForwardRefRenderFunction<
-  HTMLDialogElement,
-  Omit<ConfirmDialogProps, "defaultButton">
-> = ({ title, content, buttons = ["OK", "Cancel"] }, outerRef) => {
-  const ref = useRef<HTMLDialogElement>(null);
-
-  const accept = useCallback(() => {
-    ref.current?.close("accept");
-  }, []);
-
-  const reject = useCallback(() => {
-    ref.current?.close();
-  }, []);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key !== "Esc") {
-      e.stopPropagation();
-    }
-  }, []);
-
-  useImperativeHandle(outerRef, () => ref.current!);
-
-  return (
-    <Draggable handle=".drag-handle">
-      <dialog
-        ref={ref}
-        className="overflow-visible bg-inherit min-w-96 text-xl"
-        onKeyDown={handleKeyDown}
-      >
-        <Paper className="relative flex-col-nowrap pt-4 pb-2" elevation={2}>
-          <IconButton className="absolute top-1 right-1" onClick={reject} size="medium">
-            <Icon icon="mdi:close" />
-          </IconButton>
-          <div className="drag-handle cursor-move px-4 pb-2 border-b border-highlight">{title}</div>
-          <div className="p-4 text-lg border-b border-highlight">{content}</div>
-          <div className="flex-row-nowrap mt-2">
-            <div className="flex-1" />
-            <Button key="1" className="mr-4 text-xl _accept" onClick={accept} color="primary">
-              {buttons[0]}
-            </Button>
-            <Button key="2" className="mr-4 text-xl _reject" onClick={reject} color="inherit">
-              {buttons[1]}
-            </Button>
-          </div>
-        </Paper>
-      </dialog>
-    </Draggable>
-  );
+const defaultMethods: ConfirmDialogMethods = {
+  showModal: () => Promise.resolve("notready")
 };
-const Dialog = forwardRef(Dialog_);
+
+const ctx = createContext<ConfirmDialogMethods>(defaultMethods);
+
+export const useConfirmDialog = () => useContext(ctx);
 
 export const ConfirmDialogProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [props, setProps] = useState<ConfirmDialogProps>(defaultProps);
-  const ref = useRef<HTMLDialogElement>(null);
-  const [, setStatus, statusRef] = useStateWithRef<"opened" | "closed" | "disposed">("disposed");
-
-  const dispose = useCallback(() => {
-    if (statusRef.current === "closed") {
-      setProps(defaultProps);
-      statusRef.current = "disposed";
-    }
-  }, [setProps, statusRef]);
-
-  const methods = useMemo<ConfirmDialogMethods>(() => {
-    return {
-      showModal: async (p) => {
-        const dlg = ref.current;
-        if (!dlg || statusRef.current === "opened") {
+  const ref = useRef<DialogMethods>(null);
+  const methods = useMemo<ConfirmDialogMethods>(
+    () => ({
+      showModal: async ({ title, content, buttons = ["OK", "Cancel"], defaultButton }) => {
+        if (!ref.current) {
           return Promise.resolve("notready");
         }
-        setStatus("opened");
-        setProps(p);
-        dlg.returnValue = "";
-        dlg.showModal();
-        const button = dlg.querySelector<HTMLButtonElement>(
-          p.defaultButton === "reject" ? "button._reject" : "button._accept"
-        )!;
-        button.focus();
-        return new Promise<ConfirmDialogResult>((resolve) => {
-          const handleClose = () => {
-            dlg.removeEventListener("close", handleClose);
-            setStatus("closed");
-            resolve(dlg.returnValue === "accept" ? "accepted" : "rejected");
-            setTimeout(dispose, 500); // dispose after tansition
-          };
-          dlg.addEventListener("close", handleClose);
-        });
+        const content_ = (
+          <>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent>{content}</DialogContent>
+            <DialogActions>
+              <AcceptButton
+                key="1"
+                text={buttons[0]}
+                default={defaultButton !== "reject"}
+                onClick={() => Promise.resolve(true)}
+              />
+              <CancelButton key="2" text={buttons[1]} default={defaultButton === "reject"} />
+            </DialogActions>
+          </>
+        );
+        const ret = await ref.current.showModal({ content: content_ });
+        return ret.result;
       }
-    };
-  }, [setProps, setStatus, statusRef, dispose]);
-
+    }),
+    []
+  );
   return (
-    <ConfirmDialogContext.Provider value={methods}>
+    <ctx.Provider value={methods}>
       <div className="flex flex-1">
-        <Dialog ref={ref} {...props} />
+        <Dialog ref={ref} />
         {children}
       </div>
-    </ConfirmDialogContext.Provider>
+    </ctx.Provider>
   );
 };

@@ -1,50 +1,45 @@
-import { Checkbox, FormControlLabel } from "@mui/material";
-import { useMemo, useRef } from "react";
-import { DialogBody } from "../DialogBody";
-import { DialogActionHandler } from "../Dialog";
+import {
+  AcceptButton,
+  CancelButton,
+  DialogActions,
+  DialogContent,
+  DialogTitle
+} from "@/context/DialogContext";
 import { useDeleteBranch } from "@/hooks/actions/branch";
 import { useShowWarning } from "@/state/root";
+import { Checkbox, FormControlLabel } from "@mui/material";
+import { useCallback, useRef } from "react";
 
 export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branchName }) => {
-  const deleteBranch = useDeleteBranch();
   const forceRef = useRef<HTMLInputElement>(null);
   const showWarning = useShowWarning();
+  const deleteBranch = useDeleteBranch();
+  const invokeDeleteBranch = useCallback(async () => {
+    if (!branchName) {
+      showWarning("Branch name is not specified");
+      return "failed";
+    }
+    const force = forceRef.current?.checked ?? false;
+    return await deleteBranch({ branchName, force });
+  }, [branchName, forceRef, deleteBranch, showWarning]);
 
-  const actions = useMemo<DialogActionHandler[]>(
-    () => [
-      {
-        text: "Delete branch",
-        color: "primary",
-        default: true,
-        onClick: async (close: () => void) => {
-          if (!branchName) {
-            showWarning("Branch name is not specified");
-            return;
-          }
-          const ret = await deleteBranch({ branchName, force: forceRef.current?.checked });
-          if (ret && ret !== "failed") {
-            close();
-          }
-        }
-      }
-    ],
-    [showWarning, branchName, deleteBranch]
-  );
   return (
-    <DialogBody
-      title="Delete branch"
-      className="w-[40rem]"
-      actions={actions}
-      defaultActionKey="Enter"
-    >
-      <>
-        <div className="text-xl my-2">{`Delete branch [${branchName}]`}</div>
-        <FormControlLabel
-          className="ml-2"
-          control={<Checkbox inputRef={forceRef} />}
-          label="Force delete"
-        />
-      </>
-    </DialogBody>
+    <>
+      <DialogTitle>Delete branch</DialogTitle>
+      <DialogContent>
+        <div className="flex-col-nowrap w-[40rem]">
+          <div className="text-xl my-2">{`Delete branch [${branchName}]`}</div>
+          <FormControlLabel
+            className="ml-2"
+            control={<Checkbox inputRef={forceRef} />}
+            label="Force delete"
+          />
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <AcceptButton onClick={invokeDeleteBranch} default />
+        <CancelButton />
+      </DialogActions>
+    </>
   );
 };
