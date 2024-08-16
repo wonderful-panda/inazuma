@@ -108,13 +108,13 @@ const GroupHeader: React.FC<{
   return (
     <div
       className={classNames(
-        "flex-row-nowrap items-center pl-2 flex-1 text-lg font-bold cursor-pointer overflow-hidden select-none group",
+        "relative flex-row-nowrap items-center pl-2 flex-1 text-lg font-bold cursor-pointer overflow-hidden select-none group",
         selectedIndex === index ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
       style={{ height }}
     >
       <span className="flex-1">{type}</span>
-      <span className="text-base">
+      <span className="absolute right-12 text-base">
         <NumStat files={files} />
       </span>
       <RowActionButtons actions={headerActions} size={height} />
