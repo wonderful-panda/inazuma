@@ -5,7 +5,6 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
   createContext,
   useContext,
@@ -19,8 +18,8 @@ import {
   ListItemText,
   Typography
 } from "@mui/material";
-import { PreferenceDialog } from "./PreferenceDialog";
-import { AboutDialog } from "./AboutDialog";
+import { usePreferenceDialog } from "./PreferenceDialog";
+import { useAboutDialog } from "./AboutDialog";
 import { TopLayerLoading } from "./Loading";
 import { Alert as RawAlert } from "./Alert";
 import { CommandGroup, Cmd } from "./CommandGroup";
@@ -107,13 +106,13 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
     setDrawerOpened(false);
   }, []);
   const [config, setConfig] = useConfig();
-  const preferenceDialogRef = useRef({} as ComponentRef<typeof PreferenceDialog>);
-  const aboutDialogRef = useRef({} as ComponentRef<typeof AboutDialog>);
   const [props, setProps] = useState<MainWindowProps>({ title: "" });
+  const openPreference = usePreferenceDialog();
+  const openAbout = useAboutDialog();
   const callbacks = useMemo(
     () => ({
-      openPreference: () => preferenceDialogRef.current.open(),
-      openAbout: () => aboutDialogRef.current.open(),
+      openPreference: () => void openPreference({ config, onConfigChange: setConfig }),
+      openAbout: () => void openAbout(),
       changeFontSize: () => {
         setConfig((prev) => {
           const fontSizeList: FontSize[] = ["x-small", "small", "medium"];
@@ -122,7 +121,7 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
         });
       }
     }),
-    [setConfig]
+    [config, setConfig, openPreference, openAbout]
   );
 
   const drawerItems = useMemo<readonly IconActionItem[]>(
@@ -186,8 +185,6 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
           <div className="absolute left-0 right-0 top-9 bottom-0 flex box-border p-1">
             {children}
           </div>
-          <PreferenceDialog ref={preferenceDialogRef} config={config} onConfigChange={setConfig} />
-          <AboutDialog ref={aboutDialogRef} />
           <TopLayerLoading open={isLoading} />
           <Alert />
         </div>

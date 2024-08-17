@@ -19,10 +19,16 @@ import {
   useRef,
   useState
 } from "react";
-import { DialogMethods } from "./Dialog";
-import { FullscreenDialog } from "./FullscreenDialog";
 import classNames from "classnames";
 import { useReportError } from "@/state/root";
+import {
+  AcceptButton,
+  CancelButton,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  useDialog
+} from "@/context/DialogContext";
 
 const SectionHeader: React.FC<{ text: string }> = ({ text }) => (
   <Typography variant="h6" component="div" color="primary">
@@ -125,6 +131,7 @@ const FontSelector: React.FC<{
       autoHighlight
       onChange={(_e, value) => onChange(value)}
       freeSolo
+      disablePortal
       renderInput={(params) => (
         <TextField
           {...params}
@@ -135,8 +142,8 @@ const FontSelector: React.FC<{
           onChange={({ target }) => onChange(target.value)}
         />
       )}
-      renderOption={(props, option) => (
-        <li {...props} className={classNames("flex-row-nowrap pr-4", props.className)}>
+      renderOption={({ key, className, ...rest }, option) => (
+        <li {...rest} key={key as string} className={classNames("flex-row-nowrap pr-4", className)}>
           <span className="flex-1">{option}</span>
           <span style={{ fontFamily: option, color: "gray" }}>ABC</span>
         </li>
@@ -258,38 +265,36 @@ const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialo
   }
 );
 
-const PreferenceDialogInner: React.ForwardRefRenderFunction<
-  DialogMethods,
-  PreferenceDialogProps
-> = (props, ref) => {
-  const [opened, setOpened] = useState(false);
-  useImperativeHandle(ref, () => ({
-    open: () => setOpened(true),
-    close: () => setOpened(false)
-  }));
+export const PreferenceDialogBody: React.FC<PreferenceDialogProps> = (props) => {
   const contentRef = useRef({} as ComponentRef<typeof PreferenceDialogContent>);
-  const close = useCallback(() => setOpened(false), []);
   const handleSave = useCallback(() => {
     contentRef.current.save();
-    setOpened(false);
+    return Promise.resolve(true);
   }, []);
   return (
-    <FullscreenDialog
-      title="PREFERENCE"
-      opened={opened}
-      close={close}
-      actions={[
-        {
-          text: "Save",
-          color: "primary",
-          default: true,
-          onClick: handleSave
-        }
-      ]}
-    >
-      {opened && <PreferenceDialogContent ref={contentRef} {...props} />}
-    </FullscreenDialog>
+    <>
+      <DialogTitle>PREFERENCE</DialogTitle>
+      <DialogContent>
+        <PreferenceDialogContent ref={contentRef} {...props} />
+      </DialogContent>
+      <DialogActions>
+        <AcceptButton text="Save" onClick={handleSave} default />
+        <CancelButton />
+      </DialogActions>
+    </>
   );
 };
 
-export const PreferenceDialog = forwardRef(PreferenceDialogInner);
+export const usePreferenceDialog = () => {
+  const dialog = useDialog();
+  return useCallback(
+    async (props: PreferenceDialogProps) => {
+      return await dialog.showModal({
+        content: <PreferenceDialogBody {...props} />,
+        defaultActionKey: "Ctrl+Enter",
+        fullscreen: true
+      });
+    },
+    [dialog]
+  );
+};

@@ -1,25 +1,34 @@
-import {
-  forwardRef,
-  ForwardRefRenderFunction,
-  useCallback,
-  useImperativeHandle,
-  useState
-} from "react";
-import { DialogMethods } from "./Dialog";
-import { FullscreenDialog } from "./FullscreenDialog";
+import { useCallback } from "react";
 import { version } from "../../../package.json";
+import {
+  CancelButton,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  useDialog
+} from "@/context/DialogContext";
 
-const AboutDialogInner: ForwardRefRenderFunction<DialogMethods> = (_, ref) => {
-  const [opened, setOpened] = useState(false);
-  const close = useCallback(() => setOpened(false), []);
-  useImperativeHandle(ref, () => ({
-    open: () => setOpened(true),
-    close: () => setOpened(false)
-  }));
+export const useAboutDialog = () => {
+  const dialog = useDialog();
+  return useCallback(async () => {
+    return dialog.showModal({
+      content: <AboutDialogBody />,
+      defaultActionKey: "Enter",
+      fullscreen: true
+    });
+  }, [dialog]);
+};
+
+export const AboutDialogBody: React.FC = () => {
   return (
-    <FullscreenDialog title="ABOUT" opened={opened} close={close}>
-      <div>Inazuma {version}</div>
-    </FullscreenDialog>
+    <>
+      <DialogTitle>ABOUT</DialogTitle>
+      <DialogContent>
+        <div>Inazuma {version}</div>
+      </DialogContent>
+      <DialogActions>
+        <CancelButton />
+      </DialogActions>
+    </>
   );
 };
-export const AboutDialog = forwardRef(AboutDialogInner);
