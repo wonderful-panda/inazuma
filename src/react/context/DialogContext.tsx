@@ -32,6 +32,7 @@ export const cancelAction = (opt?: { text?: string; default?: boolean }): Dialog
 
 export interface DialogProps {
   content: React.ReactNode;
+  fullscreen?: boolean;
   defaultActionKey?: "Enter" | "Ctrl+Enter";
 }
 
@@ -102,15 +103,43 @@ const ctx = createContext<DialogMethods>(defaultMethods);
 
 export const useDialog = () => useContext(ctx);
 
-const closeCtx = createContext<(ret: DialogResult) => void>(nope);
+const innerCtx = createContext<{
+  fullscreen: boolean;
+  draggable: boolean;
+  close: (ret: DialogResult) => void;
+}>({
+  fullscreen: false,
+  draggable: false,
+  close: nope
+});
 
-export const DialogTitle: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <div className="drag-handle cursor-move px-4 pb-2 border-b border-highlight">{children}</div>
-);
+export const DialogTitle: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const { draggable } = useContext(innerCtx);
+  return (
+    <div
+      className={classNames(
+        "px-4 pb-2 border-b border-highlight",
+        draggable && "drag-handle cursor-move"
+      )}
+    >
+      {children}
+    </div>
+  );
+};
 
-export const DialogContent: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <div className="p-4 text-lg border-b border-highlight">{children}</div>
-);
+export const DialogContent: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const { fullscreen } = useContext(innerCtx);
+  return (
+    <div
+      className={classNames(
+        "flex-col-nowrap p-4 text-lg border-b border-highlight",
+        fullscreen && "flex-1"
+      )}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const DialogActions: React.FC<React.PropsWithChildren> = ({ children }) => (
   <div className="flex-row-nowrap mt-2">
@@ -125,7 +154,7 @@ export const DialogButton: React.FC<DialogAction> = ({
   onClick,
   default: default_
 }) => {
-  const close = useContext(closeCtx);
+  const { close } = useContext(innerCtx);
   const handleClick = useCallback(() => onClick(close), [onClick, close]);
   return (
     <Button
@@ -167,13 +196,21 @@ export const CancelButton: React.FC<{ text?: string; default?: boolean }> = ({
 };
 
 const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef) => {
-  const [{ content, defaultActionKey }, setProps] = useState<DialogProps>(defaultProps);
+  const [{ content, defaultActionKey, fullscreen }, setProps] = useState<DialogProps>(defaultProps);
   const ref = useRef<HTMLDialogElement>(null);
   const [, setStatus, statusRef] = useStateWithRef<"opened" | "closed" | "disposed">("disposed");
 
-  const close = useCallback((ret: DialogResult) => {
-    ref.current?.close(dialogResultToReturnValue(ret));
-  }, []);
+  const draggable = !fullscreen;
+  const innerState = useMemo(
+    () => ({
+      fullscreen: fullscreen ?? false,
+      draggable,
+      close: (ret: DialogResult) => {
+        ref.current?.close(dialogResultToReturnValue(ret));
+      }
+    }),
+    [fullscreen, draggable]
+  );
 
   const reject = useCallback(() => {
     ref.current?.close();
@@ -241,15 +278,24 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
   useImperativeHandle(outerRef, () => methods, [methods]);
 
   return (
-    <closeCtx.Provider value={close}>
-      <Draggable handle=".drag-handle">
+    <innerCtx.Provider value={innerState}>
+      <Draggable handle=".drag-handle" disabled={!draggable}>
         <dialog
           ref={ref}
-          className="overflow-visible bg-inherit min-w-96 text-xl backdrop:bg-backdrop"
+          className={classNames(
+            "overflow-visible bg-inherit min-w-96 text-xl backdrop:bg-backdrop",
+            fullscreen && "min-w-full min-h-full"
+          )}
           onKeyDown={handleKeyDown}
           onKeyDownCapture={handleKeyDownCapture}
         >
-          <Paper className="relative flex-col-nowrap pt-4 pb-2" elevation={6}>
+          <Paper
+            className={classNames(
+              "relative flex-col-nowrap pt-4 pb-2",
+              fullscreen && "w-screen h-screen"
+            )}
+            elevation={6}
+          >
             <IconButton className="absolute top-1 right-1" onClick={reject} size="medium">
               <Icon icon="mdi:close" />
             </IconButton>
@@ -257,7 +303,7 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
           </Paper>
         </dialog>
       </Draggable>
-    </closeCtx.Provider>
+    </innerCtx.Provider>
   );
 };
 export const Dialog = forwardRef(Dialog_);
