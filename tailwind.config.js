@@ -29,7 +29,7 @@ module.exports = {
         tooltip: "#333",
         greytext: colors.grey[500],
         gray: colors.grey,
-        backdrop: "#0002"
+        backdrop: "#0003"
       },
       zIndex: {
         9999: 9999,
