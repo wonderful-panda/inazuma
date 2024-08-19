@@ -118,7 +118,7 @@ export const DialogTitle: React.FC<React.PropsWithChildren> = ({ children }) => 
   return (
     <div
       className={classNames(
-        "px-4 pb-2 border-b border-highlight",
+        "px-4 pb-2 border-b border-highlight pt-3",
         draggable && "drag-handle cursor-move"
       )}
     >
@@ -142,7 +142,7 @@ export const DialogContent: React.FC<React.PropsWithChildren> = ({ children }) =
 };
 
 export const DialogActions: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <div className="flex-row-nowrap mt-2">
+  <div className="flex-row-nowrap my-2">
     <div className="flex-1" />
     {children}
   </div>
@@ -284,14 +284,14 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
           ref={ref}
           className={classNames(
             "overflow-visible bg-inherit min-w-96 text-xl backdrop:bg-backdrop",
-            fullscreen && "min-w-full min-h-full"
+            fullscreen && "m-0"
           )}
           onKeyDown={handleKeyDown}
           onKeyDownCapture={handleKeyDownCapture}
         >
           <Paper
             className={classNames(
-              "relative flex-col-nowrap pt-4 pb-2",
+              "relative flex-col-nowrap p-0",
               fullscreen && "w-screen h-screen"
             )}
             elevation={6}
