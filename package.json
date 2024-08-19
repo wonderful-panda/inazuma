@@ -8,6 +8,7 @@
   "scripts": {
     "clean": "rimraf --glob node_modules/.cache dist/* src/react/generated/* src-tauri/target",
     "prebuild:iconbundle": "ts-node build/create-iconbundle.ts",
+    "prebuild:gitinfo": "ts-node build/generate-gitinfo.ts",
     "generate-dts:bindings": "ts-node build/generate-bindings.ts",
     "generate-dts:invoke": "ts-node build/generate-invoke.ts",
     "generate-dts": "run-s generate-dts:*",

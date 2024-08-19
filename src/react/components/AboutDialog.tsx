@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { version } from "../../../package.json";
+import { sha } from "@/generated/gitinfo.json";
 import {
   CancelButton,
   DialogActions,
@@ -24,7 +25,9 @@ export const AboutDialogBody: React.FC = () => {
     <>
       <DialogTitle>ABOUT</DialogTitle>
       <DialogContent>
-        <div>Inazuma {version}</div>
+        <div>
+          Inazuma {version} ({sha})
+        </div>
       </DialogContent>
       <DialogActions>
         <CancelButton />
