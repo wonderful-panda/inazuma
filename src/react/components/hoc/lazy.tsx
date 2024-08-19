@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Loading } from "../Loading";
 
 const preloadedFactory = <T,>(factory: () => T): (() => T) => {
   const value = factory();
@@ -19,7 +18,7 @@ export const lazy = <P extends object>(
     if (Component) {
       return <Component {...props} />;
     } else {
-      return <Loading open />;
+      return <></>;
     }
   };
   return Lazy;

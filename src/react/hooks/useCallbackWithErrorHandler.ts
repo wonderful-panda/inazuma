@@ -1,5 +1,6 @@
 import { useCallback } from "react";
-import { useLoading, useReportError } from "@/state/root";
+import { useReportError } from "@/state/root";
+import { useLoading } from "@/context/LoadingContext";
 
 type TryUnwrapProimse<T> = T extends Promise<infer U> ? U : T;
 

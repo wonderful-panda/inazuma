@@ -1,6 +1,6 @@
-import { getOverlayDiv } from "@/overlay";
-import { Backdrop, CircularProgress, Portal } from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
 import classNames from "classnames";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 
 export const Loading: React.FC<{ className?: string; open: boolean }> = ({ className, open }) => {
   return (
@@ -10,10 +10,33 @@ export const Loading: React.FC<{ className?: string; open: boolean }> = ({ class
   );
 };
 
-export const TopLayerLoading: React.FC<{ open: boolean }> = ({ open }) => {
+export interface FullscreenLoadingMethods {
+  show: () => void;
+  hide: () => void;
+}
+
+const FullscreenLoading_: React.ForwardRefRenderFunction<FullscreenLoadingMethods> = (_, ref) => {
+  const innerRef = useRef<HTMLDialogElement>(null);
+  useImperativeHandle(ref, () => ({
+    show: () => {
+      console.log("show loading", innerRef.current);
+      innerRef.current?.showModal();
+    },
+    hide: () => {
+      console.log("hide loading", innerRef.current);
+      innerRef.current?.close();
+    }
+  }));
   return (
-    <Portal container={getOverlayDiv}>
-      <Loading className="w-screen h-screen" open={open} />
-    </Portal>
+    <dialog
+      ref={innerRef}
+      className="absolute bg-transparent backdrop:bg-backdrop w-screen h-screen m-0"
+    >
+      <div className="w-full h-full flex">
+        <CircularProgress className="m-auto" color="primary" size={64} />
+      </div>
+    </dialog>
   );
 };
+
+export const FullscreenLoading = forwardRef(FullscreenLoading_);

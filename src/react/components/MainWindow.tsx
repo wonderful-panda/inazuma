@@ -20,11 +20,10 @@ import {
 } from "@mui/material";
 import { usePreferenceDialog } from "./PreferenceDialog";
 import { useAboutDialog } from "./AboutDialog";
-import { TopLayerLoading } from "./Loading";
 import { Alert as RawAlert } from "./Alert";
 import { CommandGroup, Cmd } from "./CommandGroup";
 import { IconActionItem } from "@/commands/types";
-import { useAlertValue, useConfig, useHideAlert, useIsLoadingValue } from "@/state/root";
+import { useAlertValue, useConfig, useHideAlert } from "@/state/root";
 import { nope } from "@/util";
 
 export interface MainWindowProps {
@@ -97,7 +96,6 @@ export const MainWindowProperty: React.FC<MainWindowProps> = ({
 };
 
 export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const isLoading = useIsLoadingValue();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const openDrawer = useCallback(() => {
     setDrawerOpened(true);
@@ -142,22 +140,10 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
     ],
     [props.drawerItems, callbacks]
   );
-  const onKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (isLoading) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    },
-    [isLoading]
-  );
   return (
     <MainWindowPropsValueContext.Provider value={props}>
       <MainWindowPropsSetterContext.Provider value={setProps}>
-        <div
-          className="absolute left-0 right-0 top-0 bottom-0 flex box-border m-0"
-          onKeyDown={onKeyDown}
-        >
+        <div className="absolute left-0 right-0 top-0 bottom-0 flex box-border m-0">
           <CommandGroup name="main">
             <Cmd name="ChangeFontSize" hotkey="Ctrl+Alt+F" handler={callbacks.changeFontSize} />
             <Cmd name="Preference" hotkey="Ctrl+Shift+P" handler={callbacks.openPreference} />
@@ -185,7 +171,6 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
           <div className="absolute left-0 right-0 top-9 bottom-0 flex box-border p-1">
             {children}
           </div>
-          <TopLayerLoading open={isLoading} />
           <Alert />
         </div>
       </MainWindowPropsSetterContext.Provider>

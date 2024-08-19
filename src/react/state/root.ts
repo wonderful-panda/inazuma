@@ -1,6 +1,5 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { createWacher } from "./util";
-import { useMemo } from "react";
 import { serializeError } from "@/util";
 import { getRootStore } from "./rootStore";
 
@@ -62,24 +61,6 @@ export const setInitialValue = (config: Config, recentOpendRepositories: string[
   rootStore.set(configAtom, config);
   rootStore.set(recentOpenedRepositoriesAtom, recentOpendRepositories);
 };
-
-/**
- * Loading
- */
-const loadingAtom = atom(0);
-const showLoadingAtom = atom(null, (_get, set) => set(loadingAtom, (prev) => prev + 1));
-const hideLoadingAtom = atom(null, (_get, set) =>
-  set(loadingAtom, (prev) => Math.max(prev - 1, 0))
-);
-const isLoadingAtom = atom((get) => get(loadingAtom) > 0);
-
-export const useLoading = () => {
-  const show = useSetAtom(showLoadingAtom, opt);
-  const hide = useSetAtom(hideLoadingAtom, opt);
-  return useMemo(() => ({ show, hide }), [show, hide]);
-};
-
-export const useIsLoadingValue = () => useAtomValue(isLoadingAtom, opt);
 
 /**
  * Alert
