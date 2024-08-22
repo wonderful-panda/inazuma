@@ -13,10 +13,10 @@ import { KeyDownTrapper } from "../KeyDownTrapper";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useBlame } from "@/hooks/useBlame";
 import PathFilter from "./PathFilter";
-import { useReportError } from "@/state/root";
 import { CommitAttributes } from "./CommitAttributes";
 import classNames from "classnames";
 import { FlexCard } from "../FlexCard";
+import { useAlert } from "@/context/AlertContext";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -141,7 +141,7 @@ const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
   const [blamePath, setBlamePath] = useState<string | undefined>(undefined);
   const revspec = commit.id;
   const blame = useBlame(repoPath, blamePath, revspec);
-  const reportError = useReportError();
+  const { reportError } = useAlert();
   const lstree = useCallback(
     (direction: Direction) => (
       <LsTreeWithFilter

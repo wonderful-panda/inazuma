@@ -3,7 +3,6 @@ import { Icon } from "./Icon";
 import React, {
   memo,
   useCallback,
-  useEffect,
   useMemo,
   useState,
   createContext,
@@ -20,10 +19,9 @@ import {
 } from "@mui/material";
 import { usePreferenceDialog } from "./PreferenceDialog";
 import { useAboutDialog } from "./AboutDialog";
-import { Alert as RawAlert } from "./Alert";
 import { CommandGroup, Cmd } from "./CommandGroup";
 import { IconActionItem } from "@/commands/types";
-import { useAlertValue, useConfig, useHideAlert } from "@/state/root";
+import { useConfig } from "@/state/root";
 import { nope } from "@/util";
 
 export interface MainWindowProps {
@@ -59,26 +57,6 @@ const ApplicationDrawerInner: React.FC<ApplicationDrawerProps> = ({ opened, clos
   );
 };
 const ApplicationDrawer = memo(ApplicationDrawerInner);
-
-const Alert: React.FC = () => {
-  const hideAlert = useHideAlert();
-  const [open, setOpen] = useState(false);
-  const [type, setType] = useState<AlertType>("info");
-  const [message, setMessage] = useState("");
-  const alert = useAlertValue();
-  useEffect(() => {
-    setOpen(false);
-    if (!alert) {
-      return;
-    }
-    setTimeout(() => {
-      setType(alert.type);
-      setMessage(alert.message);
-      setOpen(true);
-    }, 200);
-  }, [alert]);
-  return <RawAlert open={open} type={type} message={message} onClose={hideAlert} />;
-};
 
 const MainWindowPropsValueContext = createContext<MainWindowProps>({ title: "" });
 const MainWindowPropsSetterContext = createContext<(value: MainWindowProps) => void>(nope);
@@ -171,7 +149,6 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
           <div className="absolute left-0 right-0 top-9 bottom-0 flex box-border p-1">
             {children}
           </div>
-          <Alert />
         </div>
       </MainWindowPropsSetterContext.Provider>
     </MainWindowPropsValueContext.Provider>

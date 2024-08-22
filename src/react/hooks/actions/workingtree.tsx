@@ -4,11 +4,11 @@ import { workingTreeAtom } from "@/state/repository/workingtree";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useShowWarning } from "@/state/root";
 import { useReloadRepository } from "./openRepository";
 import { useConfirmDialog } from "@/context/ConfirmDialogContext";
 import { useDialog } from "@/context/DialogContext";
 import { CommitDialogBody } from "@/components/repository/CommitDialogBody";
+import { useAlert } from "@/context/AlertContext";
 
 export const useReloadWorkingTree = () => {
   const repoPath = useAtomValue(repoPathAtom);
@@ -116,7 +116,7 @@ export const useBeginCommit = () => {
 export const useCommit = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const reloadRepository = useReloadRepository();
-  const showWarning = useShowWarning();
+  const { showWarning } = useAlert();
   return useCallbackWithErrorHandler(
     async (options: CommitOptions) => {
       if (options.commitType === "normal" && !options.message) {

@@ -20,7 +20,6 @@ import {
   useState
 } from "react";
 import classNames from "classnames";
-import { useReportError } from "@/state/root";
 import {
   AcceptButton,
   CancelButton,
@@ -29,6 +28,7 @@ import {
   DialogTitle,
   useDialog
 } from "@/context/DialogContext";
+import { useAlert } from "@/context/AlertContext";
 
 const SectionHeader: React.FC<{ text: string }> = ({ text }) => (
   <Typography variant="h6" component="div" color="primary">
@@ -154,7 +154,7 @@ const FontSelector: React.FC<{
 
 const PreferenceDialogContent = forwardRef<{ save: () => void }, PreferenceDialogProps>(
   function PreferenceDialogContent(props, ref) {
-    const reportError = useReportError();
+    const { reportError } = useAlert();
     const [state, dispatch] = useReducer(reducer, props.config);
     useImperativeHandle(ref, () => ({
       save: () => props.onConfigChange(state)

@@ -2,10 +2,10 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { shortHash } from "@/util";
 import { CommitCommand } from "./types";
 import { useMemo } from "react";
-import { useShowSuccess } from "@/state/root";
+import { useAlert } from "@/context/AlertContext";
 
 export const useCopyFullHashCommand = () => {
-  const showSuccess = useShowSuccess();
+  const { showSuccess } = useAlert();
   return useMemo<CommitCommand>(
     () => ({
       type: "commit",
@@ -22,7 +22,7 @@ export const useCopyFullHashCommand = () => {
 };
 
 export const useCopyShortHashCommand = () => {
-  const showSuccess = useShowSuccess();
+  const { showSuccess } = useAlert();
   return useMemo<CommitCommand>(
     () => ({
       type: "commit",

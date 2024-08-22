@@ -1,10 +1,10 @@
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { FileCommand } from "./types";
 import { useMemo } from "react";
-import { useShowSuccess } from "@/state/root";
+import { useAlert } from "@/context/AlertContext";
 
 export const useCopyRelativePathCommand = () => {
-  const showSuccess = useShowSuccess();
+  const { showSuccess } = useAlert();
   return useMemo<FileCommand>(
     () => ({
       type: "file",

@@ -14,8 +14,8 @@ import PathFilter from "./PathFilter";
 import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
 import { useDiffAgainstCommand } from "@/commands/diff";
 import { DiffViewer } from "./DiffViewer";
-import { useReportError } from "@/state/root";
 import { CommitAttributes } from "./CommitAttributes";
+import { useAlert } from "@/context/AlertContext";
 
 export interface CommitDiffTabProps {
   repoPath: string;
@@ -88,7 +88,7 @@ const CommitDiffContent: React.FC<{
   useEffect(() => {
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
-  const reportError = useReportError();
+  const { reportError } = useAlert();
   const diffAgainst = useDiffAgainstCommand(commitFrom);
   const actionCommands = useMemo(() => [diffAgainst] as const, [diffAgainst]);
   const handleRowDoubleClick = useFileListRowEventHandler(actionCommands[0], commitTo);
@@ -168,7 +168,7 @@ const CommitDiffContent: React.FC<{
 
 const CommitDiffTab: React.FC<CommitDiffTabProps> = ({ repoPath, commitFrom, commitTo }) => {
   const [files, setFiles] = useState<FileEntry[] | undefined>(undefined);
-  const reportError = useReportError();
+  const { reportError } = useAlert();
   useEffect(() => {
     (commitFrom !== "parent"
       ? invokeTauriCommand("get_changes_between", {

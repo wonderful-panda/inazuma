@@ -17,8 +17,7 @@ import {
   registerConfigWatcher,
   registerRecentOpenedRepositoriesWatcher,
   setInitialValue,
-  useConfigValue,
-  useReportError
+  useConfigValue
 } from "./state/root";
 import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions/openRepository";
 import { useWithRef } from "./hooks/useWithRef";
@@ -40,8 +39,8 @@ import { assertNever } from "./util";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 import { DialogProvider } from "./context/DialogContext";
-import { bringOverlayDivToTop } from "./overlay";
 import { LoadingProvider } from "./context/LoadingContext";
+import { AlertProvider, useAlert } from "./context/AlertContext";
 
 if (import.meta.env.DEV) {
   void import("./jotai-devtools-styles");
@@ -203,7 +202,7 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
   const [, openRepository] = useWithRef(useOpenRepository());
   const reloadRepository = useReloadSpecifiedRepository();
   const theme = useMemo(() => createMuiTheme(config.fontSize), [config.fontSize]);
-  const [, reportError] = useWithRef(useReportError());
+  const [, reportError] = useWithRef(useAlert().reportError);
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
     void listen<string>("request_reload", (e) => {
@@ -239,7 +238,9 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
               <ConfirmDialogProvider>
                 <DialogProvider>
                   <LoadingProvider>
-                    <MainWindow>{content}</MainWindow>
+                    <AlertProvider>
+                      <MainWindow>{content}</MainWindow>
+                    </AlertProvider>
                   </LoadingProvider>
                 </DialogProvider>
               </ConfirmDialogProvider>
@@ -284,8 +285,6 @@ void (async () => {
   const hash = window.location.hash ? decodeURI(window.location.hash.slice(1)) : undefined;
   window.location.hash = "#home";
   const startupRepository = await getInitialRepository(hash);
-
-  bringOverlayDivToTop();
 
   const root = createRoot(document.getElementById("app")!);
 

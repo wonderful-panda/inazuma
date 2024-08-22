@@ -1,5 +1,4 @@
 import { useStateWithRef } from "@/hooks/useStateWithRef";
-import { bringOverlayDivToTop } from "@/overlay";
 import { assertNever, nope, wait } from "@/util";
 import { Icon } from "@iconify/react";
 import { Button, IconButton, Paper } from "@mui/material";
@@ -132,7 +131,7 @@ export const DialogContent: React.FC<React.PropsWithChildren> = ({ children }) =
   return (
     <div
       className={classNames(
-        "flex-col-nowrap p-4 text-lg border-b border-highlight",
+        "flex-col-nowrap p-4 text-lg border-b border-highlight min-w-[40rem]",
         fullscreen && "flex-1"
       )}
     >
@@ -259,7 +258,6 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
         await wait(0); // rerender dialog with new props
         dlg.returnValue = "";
         dlg.showModal();
-        bringOverlayDivToTop();
         const button = dlg.querySelector<HTMLButtonElement>(".__default");
         button?.focus();
         return new Promise<DialogResult>((resolve) => {

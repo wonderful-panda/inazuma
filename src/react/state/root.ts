@@ -1,6 +1,5 @@
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { createWacher } from "./util";
-import { serializeError } from "@/util";
 import { getRootStore } from "./rootStore";
 
 const rootStore = getRootStore();
@@ -61,37 +60,3 @@ export const setInitialValue = (config: Config, recentOpendRepositories: string[
   rootStore.set(configAtom, config);
   rootStore.set(recentOpenedRepositoriesAtom, recentOpendRepositories);
 };
-
-/**
- * Alert
- */
-const alertAtom = atom<{ type: AlertType; message: string } | undefined>(undefined);
-const reportErrorAtom = atom(null, (_get, set, payload: { error: unknown }) => {
-  const error = serializeError(payload.error);
-  set(alertAtom, { type: "error", message: `[${error.name}] ${error.message}` });
-});
-
-const showWarningAtom = atom(null, (_get, set, message: string) => {
-  set(alertAtom, { type: "warning", message });
-});
-const showErrorAtom = atom(null, (_get, set, message: string) => {
-  set(alertAtom, { type: "error", message });
-});
-const showSuccessAtom = atom(null, (_get, set, message: string) => {
-  set(alertAtom, { type: "success", message });
-});
-const showInfoAtom = atom(null, (_get, set, message: string) => {
-  set(alertAtom, { type: "info", message });
-});
-
-const hideAlertAtom = atom(null, (_get, set) => {
-  set(alertAtom, undefined);
-});
-
-export const useAlertValue = () => useAtomValue(alertAtom, opt);
-export const useReportError = () => useSetAtom(reportErrorAtom, opt);
-export const useShowWarning = () => useSetAtom(showWarningAtom, opt);
-export const useShowError = () => useSetAtom(showErrorAtom, opt);
-export const useShowSuccess = () => useSetAtom(showSuccessAtom, opt);
-export const useShowInfo = () => useSetAtom(showInfoAtom, opt);
-export const useHideAlert = () => useSetAtom(hideAlertAtom, opt);

@@ -2,7 +2,6 @@ import { clamp } from "@/util";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useReportError } from "@/state/root";
 import { useAtomValue } from "jotai";
 import { repoPathAtom } from "@/state/repository";
 import { useCommit } from "@/hooks/actions/workingtree";
@@ -13,12 +12,13 @@ import {
   DialogContent,
   DialogTitle
 } from "@/context/DialogContext";
+import { useAlert } from "@/context/AlertContext";
 
 export const CommitDialogBody: React.FC = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const messageRef = useRef<HTMLInputElement>(null);
   const amendRef = useRef<HTMLInputElement>(null);
-  const reportError = useReportError();
+  const { reportError } = useAlert();
   const [rows, setRows] = useState(6);
 
   const commit = useCommit();

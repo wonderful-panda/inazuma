@@ -10,12 +10,13 @@ import { CommitCommand } from "@/commands/types";
 import { RowActionButtons, RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
 import { Avatar } from "./Avatar";
-import { useConfigValue, useShowWarning } from "@/state/root";
+import { useConfigValue } from "@/state/root";
 import { Icon } from "../Icon";
 import { useAtom } from "jotai";
 import { pinnedCommitAtom } from "@/state/repository/misc";
 import { useShowCommitDiff } from "@/hooks/actions/showCommitDiff";
 import { useWithRef } from "@/hooks/useWithRef";
+import { useAlert } from "@/context/AlertContext";
 
 export interface CommitListRowProps {
   height: number;
@@ -54,7 +55,7 @@ export const useCompareWithPinnedCommitAction = (
 ): RowActionItem => {
   const [, showCommitDiff] = useWithRef(useShowCommitDiff());
   const [, pinnedCommitRef] = useWithRef(pinnedCommit);
-  const showWarning = useShowWarning();
+  const { showWarning } = useAlert();
   return useMemo<RowActionItem>(
     () => ({
       id: "CompareCommitWithPinnedCommit",

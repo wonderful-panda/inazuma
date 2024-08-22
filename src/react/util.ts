@@ -27,6 +27,11 @@ export const serializeError = (error: unknown): ErrorLike => {
       message: "message" in error ? (error.message as string) : JSON.stringify(error),
       stack: "stack" in error ? (error.stack as string) : undefined
     };
+  } else if (typeof error === "string") {
+    return {
+      message: error,
+      stack: undefined
+    };
   } else {
     return {
       name: "Unknown",

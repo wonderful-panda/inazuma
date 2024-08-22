@@ -1,7 +1,7 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useXterm } from "@/hooks/useXterm";
-import { useReportError } from "@/state/root";
+import { useAlert } from "@/context/AlertContext";
 
 export interface InteractiveShellProps {
   open: boolean;
@@ -35,7 +35,7 @@ const InteractiveShellInner: React.FC<
     }
   }, [width, height, fit, open]);
 
-  const reportError = useReportError();
+  const { reportError } = useAlert();
   const openShell = useCallback(async () => {
     try {
       await openXterm(wrapperRef.current!, {

@@ -1,5 +1,5 @@
+import { useAlert } from "@/context/AlertContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useReportError } from "@/state/root";
 import { decodeBase64, decodeToString } from "@/strings";
 import { useEffect, useState } from "react";
 
@@ -9,7 +9,7 @@ export const useBlame = (
   revspec: string
 ) => {
   const [blame, setBlame] = useState<{ blame?: Blame; path: string } | undefined>(undefined);
-  const reportError = useReportError();
+  const { reportError } = useAlert();
   useEffect(() => {
     void (async () => {
       setBlame(undefined);

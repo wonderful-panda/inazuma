@@ -30,11 +30,11 @@ import {
   useDiffWithParent2Command,
   useDiffWithParentCommand
 } from "@/commands/diff";
-import { useReportError } from "@/state/root";
 import { useBeginCommit, useFixup, useStage, useUnstage } from "@/hooks/actions/workingtree";
 import { useAtomValue } from "jotai";
 import { repoPathAtom } from "@/state/repository";
 import { NumStat } from "./NumStat";
+import { useAlert } from "@/context/AlertContext";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -223,7 +223,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     ],
     [copyRelativePath, restore, diffUnstaged, diffWithParent, diffWithParent2, stage, unstage]
   );
-  const reportError = useReportError();
+  const { reportError } = useAlert();
 
   const beginCommit = useBeginCommit();
   const fixup = useFixup();

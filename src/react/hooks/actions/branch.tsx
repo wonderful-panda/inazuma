@@ -1,7 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useShowWarning } from "../../state/root";
 import { useWithRef } from "@/hooks/useWithRef";
 import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
 import { repoPathAtom } from "../../state/repository";
@@ -10,6 +9,7 @@ import { useConfirmDialog } from "@/context/ConfirmDialogContext";
 import { useDialog } from "@/context/DialogContext";
 import { NewBranchDialogBody } from "@/components/repository/NewBranchDialogBody";
 import { DeleteBranchDialogBody } from "@/components/repository/DeleteBranchDialogBody";
+import { useAlert } from "@/context/AlertContext";
 
 export const useBeginCreateBranch = () => {
   const repoPath = useAtomValue(repoPathAtom);
@@ -32,7 +32,7 @@ export const useBeginCreateBranch = () => {
 export const useCreateBranch = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const [, reloadRepository] = useWithRef(useReloadRepository());
-  const showWarning = useShowWarning();
+  const { showWarning } = useAlert();
   return useCallbackWithErrorHandler(
     async (options: CreateBranchOptions) => {
       if (!repoPath) {
@@ -86,7 +86,7 @@ export const useSwitchBranch = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const confirm = useConfirmDialog();
   const [, reloadRepository] = useWithRef(useReloadRepository());
-  const showWarning = useShowWarning();
+  const { showWarning } = useAlert();
   return useCallbackWithErrorHandler(
     async (options: DeleteBranchOptions) => {
       if (!repoPath) {

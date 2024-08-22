@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useReportError } from "@/state/root";
 import { useLoading } from "@/context/LoadingContext";
+import { useAlert } from "@/context/AlertContext";
 
 type TryUnwrapProimse<T> = T extends Promise<infer U> ? U : T;
 
@@ -10,7 +10,7 @@ export function useCallbackWithErrorHandler<T extends (...args: never[]) => unkn
   opt?: { loading?: boolean }
 ): (...args: Parameters<T>) => Promise<TryUnwrapProimse<ReturnType<T>> | "failed"> {
   const loading = useLoading();
-  const reportError = useReportError();
+  const { reportError } = useAlert();
   return useCallback(
     async (...args: Parameters<T>) => {
       try {

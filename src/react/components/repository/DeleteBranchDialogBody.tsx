@@ -1,3 +1,4 @@
+import { useAlert } from "@/context/AlertContext";
 import {
   AcceptButton,
   CancelButton,
@@ -6,13 +7,12 @@ import {
   DialogTitle
 } from "@/context/DialogContext";
 import { useDeleteBranch } from "@/hooks/actions/branch";
-import { useShowWarning } from "@/state/root";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { useCallback, useRef } from "react";
 
 export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branchName }) => {
   const forceRef = useRef<HTMLInputElement>(null);
-  const showWarning = useShowWarning();
+  const { showWarning } = useAlert();
   const deleteBranch = useDeleteBranch();
   const invokeDeleteBranch = useCallback(async () => {
     if (!branchName) {
