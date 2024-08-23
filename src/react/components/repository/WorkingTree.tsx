@@ -35,6 +35,7 @@ import { useAtomValue } from "jotai";
 import { repoPathAtom } from "@/state/repository";
 import { NumStat } from "./NumStat";
 import { useAlert } from "@/context/AlertContext";
+import { useWithRef } from "@/hooks/useWithRef";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;
@@ -74,12 +75,14 @@ const GroupHeader: React.FC<{
   const selectedIndex = useSelectedIndex();
   const stage = useStage();
   const unstage = useUnstage();
-  const files = useMemo(
-    () =>
-      (childItems ?? [])
-        .filter((c) => typeof c.data !== "string")
-        .map((c) => c.data as WorkingTreeFileEntry),
-    [childItems]
+  const [files, filesRef] = useWithRef(
+    useMemo(
+      () =>
+        (childItems ?? [])
+          .filter((c) => typeof c.data !== "string")
+          .map((c) => c.data as WorkingTreeFileEntry),
+      [childItems]
+    )
   );
   const headerActions = useMemo<IconActionItem[]>(() => {
     if (type === "unstaged") {
@@ -88,7 +91,7 @@ const GroupHeader: React.FC<{
           id: "StageAll",
           label: "Stage all files",
           icon: "mdi:plus",
-          handler: () => void stage("*")
+          handler: () => void stage(filesRef.current.map((f) => f.path))
         }
       ];
     } else if (type === "staged") {
@@ -97,13 +100,13 @@ const GroupHeader: React.FC<{
           id: "UnstageAll",
           label: "Unstage all files",
           icon: "mdi:minus",
-          handler: () => void unstage("*")
+          handler: () => void unstage(filesRef.current.map((f) => f.path))
         }
       ];
     } else {
       return [];
     }
-  }, [type, stage, unstage]);
+  }, [type, stage, unstage, filesRef]);
 
   return (
     <div

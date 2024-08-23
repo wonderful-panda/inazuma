@@ -50,11 +50,11 @@ export const useStage = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const reloadWorkingTree = useReloadWorkingTree();
   return useCallbackWithErrorHandler(
-    async (relPath: string) => {
+    async (relPaths: string[]) => {
       if (!repoPath) {
         return;
       }
-      await invokeTauriCommand("stage", { repoPath, relPath });
+      await invokeTauriCommand("stage", { repoPath, relPaths });
       await reloadWorkingTree();
     },
     [repoPath, reloadWorkingTree]
@@ -65,11 +65,11 @@ export const useUnstage = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const reloadWorkingTree = useReloadWorkingTree();
   return useCallbackWithErrorHandler(
-    async (relPath: string) => {
+    async (relPaths: string[]) => {
       if (!repoPath) {
         return;
       }
-      await invokeTauriCommand("unstage", { repoPath, relPath });
+      await invokeTauriCommand("unstage", { repoPath, relPaths });
       await reloadWorkingTree();
     },
     [repoPath, reloadWorkingTree]

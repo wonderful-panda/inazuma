@@ -14,7 +14,7 @@ export const useStageCommand = () => {
         return commit.id !== "--" || file.kind?.type === "staged";
       },
       handler(_, file) {
-        void stage(file.path);
+        void stage([file.path]);
       }
     }),
     [stage]
@@ -33,7 +33,7 @@ export const useUnstageCommand = () => {
         return commit.id !== "--" || file.kind?.type !== "staged";
       },
       handler(_, file) {
-        void unstage(file.path);
+        void unstage([file.path]);
       }
     }),
     [unstage]

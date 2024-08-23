@@ -3,21 +3,24 @@ use regex::Regex;
 use super::{exec, exec_with_stdin, rev_parse, GitError};
 use std::path::Path;
 
-pub async fn stage(repo_path: &Path, rel_path: &str) -> Result<(), GitError> {
-    let args = vec!["--", rel_path];
-    let output = exec(repo_path, "add", &args, &[]).await?;
+pub async fn stage(repo_path: &Path, rel_paths: &[&str]) -> Result<(), GitError> {
+    let args = vec!["--pathspec-from-file=-"];
+    let stdin_data = rel_paths.join("\n");
+
+    let output = exec_with_stdin(repo_path, "add", &args, &[], stdin_data.as_bytes()).await?;
     GitError::assert_process_output("add", &output)?;
     Ok(())
 }
 
-pub async fn unstage(repo_path: &Path, rel_path: &str) -> Result<(), GitError> {
+pub async fn unstage(repo_path: &Path, rel_paths: &[&str]) -> Result<(), GitError> {
+    let stdin_data = rel_paths.join("\n");
     if let Some(sha) = rev_parse::rev_parse(repo_path, "HEAD").await? {
-        let args = vec![sha.as_str(), "--", rel_path];
-        let output = exec(repo_path, "reset", &args, &[]).await?;
+        let args = vec![sha.as_str(), "--pathspec-from-file=-"];
+        let output = exec_with_stdin(repo_path, "reset", &args, &[], stdin_data.as_bytes()).await?;
         GitError::assert_process_output("reset", &output)?;
     } else {
-        let args = vec!["--cached", "--", rel_path];
-        let output = exec(repo_path, "rm", &args, &[]).await?;
+        let args = vec!["--cached", "--pathspec-from-file=-"];
+        let output = exec_with_stdin(repo_path, "rm", &args, &[], stdin_data.as_bytes()).await?;
         GitError::assert_process_output("rm", &output)?;
     }
     Ok(())
