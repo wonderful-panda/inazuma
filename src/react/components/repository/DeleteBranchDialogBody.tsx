@@ -5,7 +5,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle
-} from "@/context/DialogContext";
+} from "@/components/Dialog";
 import { useDeleteBranch } from "@/hooks/actions/branch";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { useCallback, useRef } from "react";

@@ -11,7 +11,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle
-} from "@/context/DialogContext";
+} from "@/components/Dialog";
 import { useAlert } from "@/context/AlertContext";
 
 export const CommitDialogBody: React.FC = () => {

@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogMethods,
   DialogTitle
-} from "./DialogContext";
+} from "@/components/Dialog";
 
 export interface ConfirmDialogProps {
   title: string;

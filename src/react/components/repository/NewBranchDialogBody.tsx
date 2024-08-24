@@ -1,4 +1,4 @@
-import { AcceptButton, CancelButton, DialogContent, DialogTitle } from "@/context/DialogContext";
+import { AcceptButton, CancelButton, DialogContent, DialogTitle } from "@/components/Dialog";
 import { useCreateBranch } from "@/hooks/actions/branch";
 import { Checkbox, DialogActions, FormControlLabel, TextField } from "@mui/material";
 import { useCallback, useEffect, useRef } from "react";

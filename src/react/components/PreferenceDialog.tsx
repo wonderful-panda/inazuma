@@ -25,9 +25,10 @@ import {
   CancelButton,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  useDialog
-} from "@/context/DialogContext";
+  DialogTitle
+} from "@/components/Dialog";
+
+import { useDialog } from "@/context/DialogContext";
 import { useAlert } from "@/context/AlertContext";
 
 const SectionHeader: React.FC<{ text: string }> = ({ text }) => (
