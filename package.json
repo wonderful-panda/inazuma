@@ -28,6 +28,7 @@
     "all": "run-s format lint clean build"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.1.0",
     "@tauri-apps/api": "^2.0.0-beta.15",
     "@types/node": "^22.2.0",
     "@xterm/addon-fit": "^0.10.0",
@@ -42,7 +43,6 @@
     "monaco-editor": "^0.50.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-draggable": "^4.4.6",
     "react-transition-group": "^4.4.5",
     "react-virtualized-auto-sizer": "^1.0.24",
     "react-window": "^1.8.10",

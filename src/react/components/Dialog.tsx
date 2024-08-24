@@ -1,10 +1,13 @@
 import { useStateWithRef } from "@/hooks/useStateWithRef";
 import { assertNever, nope, wait } from "@/util";
+import { DndContext, DragEndEvent, DraggableAttributes, useDraggable } from "@dnd-kit/core";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { Icon } from "@iconify/react";
 import { Button, IconButton, Paper } from "@mui/material";
 import classNames from "classnames";
-import {
+import React, {
   createContext,
+  CSSProperties,
   forwardRef,
   useCallback,
   useContext,
@@ -13,7 +16,6 @@ import {
   useRef,
   useState
 } from "react";
-import Draggable from "react-draggable";
 
 export interface DialogAction {
   text: string;
@@ -98,21 +100,27 @@ export interface DialogMethods {
 const innerCtx = createContext<{
   fullscreen: boolean;
   draggable: boolean;
+  attributes: DraggableAttributes | undefined;
+  listeners: SyntheticListenerMap | undefined;
   close: (ret: DialogResult) => void;
 }>({
   fullscreen: false,
   draggable: false,
+  attributes: undefined,
+  listeners: undefined,
   close: nope
 });
 
 export const DialogTitle: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { draggable } = useContext(innerCtx);
+  const { draggable, attributes, listeners } = useContext(innerCtx);
+  const dragProps = draggable ? { ...attributes, ...listeners } : {};
   return (
     <div
       className={classNames(
         "px-4 pb-2 border-b border-highlight pt-3",
         draggable && "drag-handle cursor-move"
       )}
+      {...dragProps}
     >
       {children}
     </div>
@@ -187,27 +195,62 @@ export const CancelButton: React.FC<{ text?: string; default?: boolean }> = ({
   return <DialogButton text={text} onClick={onClick} color="inherit" default={default_} />;
 };
 
+const DialogInner: React.FC<
+  React.PropsWithChildren<{
+    fullscreen: boolean;
+    draggable: boolean;
+    pos: { x: number; y: number };
+    close: (ret: DialogResult) => void;
+  }>
+> = ({ fullscreen, draggable, pos, close, children }) => {
+  const reject = useCallback(() => close({ result: "rejected" }), [close]);
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: "__dialogbody__",
+    disabled: !draggable
+  });
+
+  const innerState = useMemo(
+    () => ({
+      fullscreen,
+      draggable,
+      attributes,
+      listeners,
+      close
+    }),
+    [fullscreen, draggable, attributes, listeners]
+  );
+
+  const style = useMemo<CSSProperties>(
+    () => ({
+      transform: `translate3d(${(transform?.x ?? 0) + pos.x}px, ${(transform?.y ?? 0) + pos.y}px, 0)`
+    }),
+    [transform, pos]
+  );
+
+  return (
+    <innerCtx.Provider value={innerState}>
+      <Paper
+        ref={setNodeRef}
+        style={style}
+        className={classNames("relative flex-col-nowrap p-0", fullscreen && "w-screen h-screen")}
+        elevation={6}
+      >
+        <IconButton className="absolute top-1 right-1" onClick={reject} size="medium">
+          <Icon icon="mdi:close" />
+        </IconButton>
+        {children}
+      </Paper>
+    </innerCtx.Provider>
+  );
+};
+
 const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef) => {
   const [{ content, defaultActionKey, fullscreen }, setProps] = useState<DialogProps>(defaultProps);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const ref = useRef<HTMLDialogElement>(null);
   const [, setStatus, statusRef] = useStateWithRef<"opened" | "closed" | "disposed">("disposed");
 
   const draggable = !fullscreen;
-  const innerState = useMemo(
-    () => ({
-      fullscreen: fullscreen ?? false,
-      draggable,
-      close: (ret: DialogResult) => {
-        ref.current?.close(dialogResultToReturnValue(ret));
-      }
-    }),
-    [fullscreen, draggable]
-  );
-
-  const reject = useCallback(() => {
-    ref.current?.close();
-  }, []);
-
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key !== "Esc") {
       e.stopPropagation();
@@ -232,6 +275,10 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
     [defaultActionKey]
   );
 
+  const close = useCallback((ret: DialogResult) => {
+    ref.current?.close(dialogResultToReturnValue(ret));
+  }, []);
+
   const dispose = useCallback(() => {
     if (statusRef.current === "closed") {
       setProps(defaultProps);
@@ -246,6 +293,7 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
         if (!dlg || statusRef.current === "opened") {
           return Promise.resolve({ result: "notready" });
         }
+        setPos({ x: 0, y: 0 });
         setStatus("opened");
         setProps(p);
         await wait(0); // rerender dialog with new props
@@ -255,12 +303,11 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
         button?.focus();
         return new Promise<DialogResult>((resolve) => {
           const handleClose = () => {
-            dlg.removeEventListener("close", handleClose);
             setStatus("closed");
             resolve(returnValueToDialogResult(dlg.returnValue));
             setTimeout(dispose, 500); // dispose after tansition
           };
-          dlg.addEventListener("close", handleClose);
+          dlg.addEventListener("close", handleClose, { once: true });
         });
       }
     };
@@ -268,33 +315,25 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
 
   useImperativeHandle(outerRef, () => methods, [methods]);
 
+  const handleDragEnd = useCallback((e: DragEndEvent) => {
+    setPos(({ x, y }) => ({ x: x + e.delta.x, y: y + e.delta.y }));
+  }, []);
   return (
-    <innerCtx.Provider value={innerState}>
-      <Draggable handle=".drag-handle" disabled={!draggable}>
-        <dialog
-          ref={ref}
-          className={classNames(
-            "overflow-visible bg-inherit min-w-96 text-xl backdrop:bg-backdrop",
-            fullscreen && "m-0"
-          )}
-          onKeyDown={handleKeyDown}
-          onKeyDownCapture={handleKeyDownCapture}
-        >
-          <Paper
-            className={classNames(
-              "relative flex-col-nowrap p-0",
-              fullscreen && "w-screen h-screen"
-            )}
-            elevation={6}
-          >
-            <IconButton className="absolute top-1 right-1" onClick={reject} size="medium">
-              <Icon icon="mdi:close" />
-            </IconButton>
-            {content}
-          </Paper>
-        </dialog>
-      </Draggable>
-    </innerCtx.Provider>
+    <DndContext onDragEnd={handleDragEnd}>
+      <dialog
+        ref={ref}
+        className={classNames(
+          "overflow-visible bg-inherit min-w-96 text-xl backdrop:bg-backdrop translate-x-0 translate-y-0",
+          fullscreen && "m-0"
+        )}
+        onKeyDown={handleKeyDown}
+        onKeyDownCapture={handleKeyDownCapture}
+      >
+        <DialogInner fullscreen={fullscreen ?? false} draggable={draggable} pos={pos} close={close}>
+          {content}
+        </DialogInner>
+      </dialog>
+    </DndContext>
   );
 };
 export const Dialog = forwardRef(Dialog_);
