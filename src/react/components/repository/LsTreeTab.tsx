@@ -63,11 +63,15 @@ const LsTreeWithFilter: React.FC<{
 
   const handleRowDoubleClick = useCallback(
     (event: React.MouseEvent, _index: number, { item }: TreeItemVM<LstreeData>) => {
-      if (event.button === 0 && item.data.type === "blob") {
-        onUpdateBlamePath(item.data.path);
+      if (event.button === 0) {
+        if (item.data.type === "blob") {
+          onUpdateBlamePath(item.data.path);
+        } else {
+          dispatch({ type: "toggleItem", payload: { item } });
+        }
       }
     },
-    [onUpdateBlamePath]
+    [onUpdateBlamePath, dispatch]
   );
 
   const selectedData = useRef<LstreeData | undefined>(undefined);
