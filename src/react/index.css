@@ -38,6 +38,10 @@ body {
   display: flex;
 }
 
+dialog:focus, :focus-visible {
+  outline: 0px;
+}
+
 dialog button:focus, :focus-visible {
   outline: #ffd600 solid 1px;
 }
