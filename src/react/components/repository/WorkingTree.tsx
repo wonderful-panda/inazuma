@@ -42,10 +42,14 @@ export interface WorkingTreeProps {
   orientation: Orientation;
 }
 type GroupHeaderType = "staged" | "unstaged" | "conflict";
-type RowType = WorkingTreeFileEntry | GroupHeaderType;
+interface HeaderRowType {
+  headerType: GroupHeaderType;
+  files: readonly WorkingTreeFileEntry[];
+}
+type RowType = WorkingTreeFileEntry | HeaderRowType;
 
 const getItemKey = (item: RowType) =>
-  typeof item === "string" ? item : `${item.path}:${item.kind.type}`;
+  "headerType" in item ? item.headerType : `${item.path}:${item.kind.type}`;
 
 const getUdiff = async (repoPath: string, relPath: string, cached: boolean): Promise<Udiff> => {
   const udiffBase64 = await invokeTauriCommand("get_workingtree_udiff_base64", {
@@ -67,46 +71,46 @@ const getUdiff = async (repoPath: string, relPath: string, cached: boolean): Pro
 };
 
 const GroupHeader: React.FC<{
-  type: GroupHeaderType;
+  header: HeaderRowType;
   index: number;
   height: number;
   childItems?: readonly TreeItem<RowType>[];
-}> = ({ type, index, height, childItems }) => {
+}> = ({ header, index, height, childItems }) => {
   const selectedIndex = useSelectedIndex();
   const stage = useStage();
   const unstage = useUnstage();
-  const [files, filesRef] = useWithRef(
+  const [, visibleFilesRef] = useWithRef(
     useMemo(
       () =>
         (childItems ?? [])
-          .filter((c) => typeof c.data !== "string")
+          .filter((c) => !("headerType" in c.data))
           .map((c) => c.data as WorkingTreeFileEntry),
       [childItems]
     )
   );
   const headerActions = useMemo<IconActionItem[]>(() => {
-    if (type === "unstaged") {
+    if (header.headerType === "unstaged") {
       return [
         {
           id: "StageAll",
           label: "Stage all files",
           icon: "mdi:plus",
-          handler: () => void stage(filesRef.current.map((f) => f.path))
+          handler: () => void stage(visibleFilesRef.current.map((f) => f.path))
         }
       ];
-    } else if (type === "staged") {
+    } else if (header.headerType === "staged") {
       return [
         {
           id: "UnstageAll",
           label: "Unstage all files",
           icon: "mdi:minus",
-          handler: () => void unstage(filesRef.current.map((f) => f.path))
+          handler: () => void unstage(visibleFilesRef.current.map((f) => f.path))
         }
       ];
     } else {
       return [];
     }
-  }, [type, stage, unstage, filesRef]);
+  }, [header.headerType, stage, unstage, visibleFilesRef]);
 
   return (
     <div
@@ -116,9 +120,9 @@ const GroupHeader: React.FC<{
       )}
       style={{ height }}
     >
-      <span className="flex-1">{type}</span>
+      <span className="flex-1">{header.headerType}</span>
       <span className="absolute right-12 text-base">
-        <NumStat files={files} />
+        <NumStat files={header.files} />
       </span>
       <RowActionButtons actions={headerActions} size={height} />
     </div>
@@ -182,6 +186,20 @@ const filesToItems = (files: readonly WorkingTreeFileEntry[], filterText: string
     .map((data) => ({ data }));
 };
 
+const getGroupHeaderItem = (
+  headerType: GroupHeaderType,
+  files: readonly WorkingTreeFileEntry[],
+  filterText: string
+) => {
+  return {
+    data: {
+      headerType,
+      files
+    },
+    children: filesToItems(files, filterText)
+  };
+};
+
 export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) => {
   const repoPath = useAtomValue(repoPathAtom);
   const theme = useTheme();
@@ -189,7 +207,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
   const headerRowHeight = rowHeight * 0.75;
   const itemSize = useCallback(
     (data: RowType) => {
-      if (typeof data === "string") {
+      if ("headerType" in data) {
         return headerRowHeight;
       } else {
         return rowHeight;
@@ -240,7 +258,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         if (!repoPath) {
           return;
         }
-        if (!data || typeof data === "string") {
+        if (!data || "headerType" in data) {
           setUdiff(undefined);
         } else {
           try {
@@ -263,47 +281,31 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
 
   const [filterText, setFilterText] = useState("");
 
-  const unmerged = useMemo(() => {
-    if (!stat) {
-      return [];
-    }
-    return filesToItems(stat.unmergedFiles, filterText);
-  }, [stat, filterText]);
-
-  const unstaged = useMemo(() => {
-    if (!stat) {
-      return [];
-    }
-    return filesToItems(stat.unstagedFiles, filterText);
-  }, [stat, filterText]);
-
-  const staged = useMemo(() => {
-    if (!stat) {
-      return [];
-    }
-    return filesToItems(stat.stagedFiles, filterText);
-  }, [stat, filterText]);
-
   useEffect(() => {
     const items: TreeItem<RowType>[] = [];
-    items.push({ data: "conflict", children: [] });
-    items.push({ data: "unstaged", children: [] });
-    items.push({ data: "staged", children: [] });
+    items.push({ data: { headerType: "conflict", files: [] }, children: [] });
+    items.push({ data: { headerType: "unstaged", files: [] }, children: [] });
+    items.push({ data: { headerType: "staged", files: [] }, children: [] });
     treeModelDispatch({ type: "reset", payload: { items } });
     treeModelDispatch({ type: "expandAll" });
   }, [treeModelDispatch]);
 
+  const unmergedHeader = useMemo(
+    () => getGroupHeaderItem("conflict", stat?.unmergedFiles ?? [], filterText),
+    [stat?.unmergedFiles, filterText]
+  );
+  const unstagedHeader = useMemo(
+    () => getGroupHeaderItem("unstaged", stat?.unstagedFiles ?? [], filterText),
+    [stat?.unstagedFiles, filterText]
+  );
+  const stagedHeader = useMemo(
+    () => getGroupHeaderItem("staged", stat?.stagedFiles ?? [], filterText),
+    [stat?.stagedFiles, filterText]
+  );
   useEffect(() => {
-    const rootItems: TreeItem<RowType>[] = [];
-    if (unmerged.length > 0) {
-      rootItems.push({ data: "conflict", children: unmerged });
-    }
-    if (unstaged.length > 0) {
-      rootItems.push({ data: "unstaged", children: unstaged });
-    }
-    if (staged.length > 0) {
-      rootItems.push({ data: "staged", children: staged });
-    }
+    const rootItems = [unmergedHeader, unstagedHeader, stagedHeader].filter(
+      (h) => h.children.length > 0
+    );
     treeModelDispatch({ type: "reset", payload: { items: rootItems } });
     if (selectedRowDataRef.current) {
       const key = getItemKey(selectedRowDataRef.current);
@@ -312,11 +314,11 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         payload: (v) => getItemKey(v.item.data) === key
       });
     }
-  }, [treeModelDispatch, unmerged, unstaged, staged]);
+  }, [treeModelDispatch, unmergedHeader, unstagedHeader, stagedHeader]);
 
   const handleRowDoubleClick = useCallback(
     (_e: unknown, _index: unknown, { item }: TreeItemVM<RowType>) => {
-      if (typeof item.data === "string") {
+      if ("headerType" in item.data) {
         treeModelDispatch({ type: "toggleItem", payload: { item } });
       } else {
         if (stat) {
@@ -330,15 +332,15 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
 
   const handleRowContextMenu = useFileContextMenuT<TreeItemVM<RowType>>(
     stat,
-    useCallback((vm) => (typeof vm.item.data === "string" ? undefined : vm.item.data), [])
+    useCallback((vm) => ("headerType" in vm.item.data ? undefined : vm.item.data), [])
   );
 
   const renderRow = useCallback<VirtualTreeProps<RowType>["renderRow"]>(
     (item, index) => {
-      if (typeof item.data === "string") {
+      if ("headerType" in item.data) {
         return (
           <GroupHeader
-            type={item.data}
+            header={item.data}
             index={index}
             height={headerRowHeight}
             childItems={item.children}
@@ -394,7 +396,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
             <>
               <Button
                 title="Meld staged changes into last commit without changing message"
-                disabled={staged.length === 0}
+                disabled={stagedHeader.data.files.length === 0}
                 onClick={fixup as VoidReturn<typeof fixup>}
                 color="inherit"
               >
