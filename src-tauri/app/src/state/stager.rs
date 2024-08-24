@@ -60,6 +60,7 @@ fn handle_event<R: Runtime>(
         .chunks_timeout(100, Duration::from_millis(500));
 
     spawn(async move {
+        println!("Stager: start watching");
         tokio::pin!(chunk_stream);
         while let Some(res) = chunk_stream.next().await {
             let mut seen = HashSet::<&PathBuf>::new();
@@ -73,7 +74,7 @@ fn handle_event<R: Runtime>(
                 }
             }
         }
-        println!("Finish watching");
+        println!("Stager: finish watching");
     });
 
     spawn(async move {
