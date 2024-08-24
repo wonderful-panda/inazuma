@@ -32,20 +32,22 @@ export type Action<T, A = ActionPayload<T>> = {
 }[keyof A];
 
 export interface TreeModelState<D> {
+  getItemKey: (item: D) => string;
   rootItems: readonly TreeItem<D>[];
   visibleItems: readonly TreeItemVM<D>[];
-  expandedItems: Set<D>;
+  expandedItems: Set<string>;
   selectedIndex: number;
   selectedItem: TreeItemVM<D> | undefined;
 }
 
-const initialState: TreeModelState<never> = {
+const initialState = <D>(getItemKey: (item: D) => string): TreeModelState<D> => ({
+  getItemKey,
   rootItems: [],
   visibleItems: [],
   expandedItems: new Set(),
   selectedIndex: -1,
   selectedItem: undefined
-};
+});
 
 const getBacktrackToRootItem = <D>(itemVm: TreeItemVM<D>): TreeItemVM<D>[] => {
   let cur: TreeItemVM<D> | undefined = itemVm;
@@ -70,15 +72,16 @@ function* gatherVisibleItems<D>(
   level: number,
   parent: TreeItemVM<D> | undefined,
   rootItems: readonly TreeItem<D>[],
-  expandedItems: Set<D>
+  getItemKey: (item: D) => string,
+  expandedItems: Set<string>
 ): Generator<TreeItemVM<D>> {
   for (const item of rootItems) {
     if (item.children) {
-      const expanded = expandedItems.has(item.data);
+      const expanded = expandedItems.has(getItemKey(item.data));
       const vm: TreeItemVM<D> = { item, parent, level, expanded };
       yield vm;
       if (expanded) {
-        yield* gatherVisibleItems(level + 1, vm, item.children, expandedItems);
+        yield* gatherVisibleItems(level + 1, vm, item.children, getItemKey, expandedItems);
       }
     } else {
       yield { item, parent, level, expanded: false };
@@ -88,10 +91,10 @@ function* gatherVisibleItems<D>(
 
 const recomputeStateAfterExpandOrCollapse = <D>(
   state: TreeModelState<D>,
-  expandedItems: Set<D>
+  expandedItems: Set<string>
 ): TreeModelState<D> => {
-  const { selectedIndex, selectedItem, rootItems } = state;
-  const visibleItems = [...gatherVisibleItems(0, undefined, rootItems, expandedItems)];
+  const { selectedIndex, selectedItem, rootItems, getItemKey } = state;
+  const visibleItems = [...gatherVisibleItems(0, undefined, rootItems, getItemKey, expandedItems)];
   if (!selectedItem) {
     return { ...state, expandedItems, visibleItems };
   } else if (
@@ -143,10 +146,11 @@ const expandItem = <T>(
   if (!item?.children) {
     return state;
   }
-  if (state.expandedItems.has(item.data)) {
+  const key = state.getItemKey(item.data);
+  if (state.expandedItems.has(key)) {
     return state;
   }
-  const newExpandedItems = new Set(state.expandedItems).add(item.data);
+  const newExpandedItems = new Set(state.expandedItems).add(key);
   return recomputeStateAfterExpandOrCollapse(state, newExpandedItems);
 };
 
@@ -158,11 +162,12 @@ const collapseItem = <T>(
   if (!item?.children) {
     return state;
   }
-  if (!state.expandedItems.has(item.data)) {
+  const key = state.getItemKey(item.data);
+  if (!state.expandedItems.has(key)) {
     return state;
   }
   const newExpandedItems = new Set(state.expandedItems);
-  newExpandedItems.delete(item.data);
+  newExpandedItems.delete(key);
   return recomputeStateAfterExpandOrCollapse(state, newExpandedItems);
 };
 
@@ -175,10 +180,11 @@ const toggleItem = <T>(
     return state;
   }
   const newExpandedItems = new Set(state.expandedItems);
-  if (newExpandedItems.has(item.data)) {
-    newExpandedItems.delete(item.data);
+  const key = state.getItemKey(item.data);
+  if (newExpandedItems.has(key)) {
+    newExpandedItems.delete(key);
   } else {
-    newExpandedItems.add(item.data);
+    newExpandedItems.add(key);
   }
   return recomputeStateAfterExpandOrCollapse(state, newExpandedItems);
 };
@@ -213,17 +219,18 @@ const selectByPredicate = <T>(
 };
 
 const expandAll = <T>(state: TreeModelState<T>): TreeModelState<T> => {
-  const expandedItems = new Set<T>();
-  for (const item of walkTree(state.rootItems)) {
+  const expandedItems = new Set<string>();
+  const { rootItems, getItemKey } = state;
+  for (const item of walkTree(rootItems)) {
     if (item.children) {
-      expandedItems.add(item.data);
+      expandedItems.add(getItemKey(item.data));
     }
   }
   return recomputeStateAfterExpandOrCollapse(state, expandedItems);
 };
 
 const collapseAll = <T>(state: TreeModelState<T>): TreeModelState<T> => {
-  const expandedItems = new Set<T>();
+  const expandedItems = new Set<string>();
   return recomputeStateAfterExpandOrCollapse(state, expandedItems);
 };
 
@@ -287,7 +294,7 @@ const reducer = <T>(state: TreeModelState<T>, action: Action<T>) => {
   }
 };
 
-export const useTreeModel = <T>() => {
-  return useReducer<Reducer<TreeModelState<T>, Action<T>>>(reducer, initialState);
+export const useTreeModel = <T>(getItemKey: (item: T) => string) => {
+  return useReducer<Reducer<TreeModelState<T>, Action<T>>>(reducer, initialState(getItemKey));
 };
 export type TreeModelDispatch<T> = React.Dispatch<Action<T>>;

@@ -24,6 +24,8 @@ export interface LsTreeTabProps {
   refs: Refs | undefined;
 }
 
+const getItemKey = (item: LstreeData) => item.path;
+
 const LsTreeWithFilter: React.FC<{
   orientation: Orientation;
   commit: Commit;
@@ -39,7 +41,7 @@ const LsTreeWithFilter: React.FC<{
     return filterTreeItems(entries, (data) => data.path.includes(filterText));
   }, [entries, filterText]);
 
-  const [state, dispatch] = useTreeModel<LstreeData>();
+  const [state, dispatch] = useTreeModel<LstreeData>(getItemKey);
   const { handleKeyDown, handleRowMouseDown } = useTreeIndexChanger(state, dispatch);
 
   useEffect(() => {

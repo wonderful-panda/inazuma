@@ -200,7 +200,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
   const treeRef = useRef<VirtualListMethods>(null);
   const [udiff, setUdiff] = useState<Udiff | undefined>(undefined);
   const selectedRowDataRef = useRef<RowType | undefined>(undefined);
-  const [treeModelState, treeModelDispatch] = useTreeModel<RowType>();
+  const [treeModelState, treeModelDispatch] = useTreeModel<RowType>(getItemKey);
   const { handleKeyDown, handleRowMouseDown } = useTreeIndexChanger(
     treeModelState,
     treeModelDispatch
