@@ -30,7 +30,13 @@ import {
   useDiffWithParent2Command,
   useDiffWithParentCommand
 } from "@/commands/diff";
-import { useBeginCommit, useFixup, useStage, useUnstage } from "@/hooks/actions/workingtree";
+import {
+  useBeginCommit,
+  useFixup,
+  useRestore,
+  useStage,
+  useUnstage
+} from "@/hooks/actions/workingtree";
 import { useAtomValue } from "jotai";
 import { repoPathAtom } from "@/state/repository";
 import { NumStat } from "./NumStat";
@@ -79,6 +85,7 @@ const GroupHeader: React.FC<{
   const selectedIndex = useSelectedIndex();
   const stage = useStage();
   const unstage = useUnstage();
+  const restore = useRestore();
   const [, visibleFilesRef] = useWithRef(
     useMemo(
       () =>
@@ -91,6 +98,15 @@ const GroupHeader: React.FC<{
   const headerActions = useMemo<IconActionItem[]>(() => {
     if (header.headerType === "unstaged") {
       return [
+        {
+          id: "RestoreAll",
+          label: "Restore all files(discard all unstaged changes)",
+          icon: "mdi:undo",
+          handler: () =>
+            void restore(
+              visibleFilesRef.current.filter((f) => f.statusCode !== "?").map((f) => f.path)
+            )
+        },
         {
           id: "StageAll",
           label: "Stage all files",
@@ -121,10 +137,10 @@ const GroupHeader: React.FC<{
       style={{ height }}
     >
       <span className="flex-1">{header.headerType}</span>
-      <span className="absolute right-12 text-base">
+      <RowActionButtons actions={headerActions} size={height} />
+      <span className="ml-4 text-base">
         <NumStat files={header.files} />
       </span>
-      <RowActionButtons actions={headerActions} size={height} />
     </div>
   );
 };

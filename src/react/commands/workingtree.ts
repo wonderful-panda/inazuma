@@ -52,7 +52,7 @@ export const useRestoreCommand = () => {
         return commit.id !== "--" || file.kind?.type !== "unstaged" || file.statusCode === "?";
       },
       handler(_, file) {
-        void restore(file.path);
+        void restore([file.path]);
       }
     }),
     [restore]

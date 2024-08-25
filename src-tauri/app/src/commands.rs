@@ -251,8 +251,8 @@ pub async fn unstage(repo_path: &Path, rel_paths: Vec<&str>) -> Result<(), Strin
 }
 
 #[tauri::command]
-pub async fn restore(repo_path: &Path, rel_path: &str) -> Result<(), String> {
-    Ok(git::workingtree::restore(repo_path, rel_path).await?)
+pub async fn restore(repo_path: &Path, rel_paths: Vec<&str>) -> Result<(), String> {
+    Ok(git::workingtree::restore(repo_path, &rel_paths).await?)
 }
 
 #[tauri::command]

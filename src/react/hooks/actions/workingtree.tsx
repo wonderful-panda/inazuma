@@ -81,18 +81,19 @@ export const useRestore = () => {
   const reloadWorkingTree = useReloadWorkingTree();
   const confirm = useConfirmDialog();
   return useCallbackWithErrorHandler(
-    async (relPath: string) => {
+    async (relPaths: string[]) => {
       if (!repoPath) {
         return;
       }
       const ret = await confirm.showModal({
         title: "Restore",
-        content: "Discard unstaged changes of selected file"
+        content: "Discard unstaged changes of selected file(s)",
+        defaultButton: "reject"
       });
       if (ret !== "accepted") {
         return;
       }
-      await invokeTauriCommand("restore", { repoPath, relPath });
+      await invokeTauriCommand("restore", { repoPath, relPaths });
       await reloadWorkingTree();
     },
     [repoPath, confirm, reloadWorkingTree]
