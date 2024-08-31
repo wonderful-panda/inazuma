@@ -113,12 +113,12 @@ const innerCtx = createContext<{
 
 export const DialogTitle: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { draggable, attributes, listeners } = useContext(innerCtx);
-  const dragProps = draggable ? { ...attributes, ...listeners } : {};
+  const dragProps = draggable ? { ...attributes, ...listeners, tabIndex: undefined } : {};
   return (
     <div
       className={classNames(
-        "px-4 pb-2 border-b border-highlight pt-3",
-        draggable && "drag-handle cursor-move"
+        "px-4 pb-2 border-b border-highlight pt-3 font-bold",
+        draggable && "cursor-move"
       )}
       {...dragProps}
     >
@@ -217,7 +217,7 @@ const DialogInner: React.FC<
       listeners,
       close
     }),
-    [fullscreen, draggable, attributes, listeners]
+    [fullscreen, draggable, attributes, listeners, close]
   );
 
   const style = useMemo<CSSProperties>(
