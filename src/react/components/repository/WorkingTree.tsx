@@ -126,7 +126,7 @@ const GroupHeader: React.FC<{
     } else {
       return [];
     }
-  }, [header.headerType, stage, unstage, visibleFilesRef]);
+  }, [header.headerType, stage, unstage, restore, visibleFilesRef]);
 
   return (
     <div
