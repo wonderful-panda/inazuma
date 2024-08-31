@@ -1,12 +1,12 @@
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
-import { useWithRef } from "@/hooks/useWithRef";
 import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
 import { currentBranchAtom, repoPathAtom } from "../../state/repository";
 import { useReloadRepository } from "@/hooks/actions/openRepository";
 import { useDialog } from "@/context/DialogContext";
 import { ResetDialogBody } from "@/components/repository/ResetBranchDialogBody";
-import { useConfirmDialog } from "@/context/ConfirmDialogContext";
+import { ResetOptions } from "@backend/ResetOptions";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 export const useBeginReset = () => {
   const repoPath = useAtomValue(repoPathAtom);
@@ -33,21 +33,16 @@ export const useBeginReset = () => {
 
 export const useReset = () => {
   const repoPath = useAtomValue(repoPathAtom);
-  const [, reloadRepository] = useWithRef(useReloadRepository());
-  const confirm = useConfirmDialog();
-  return useCallbackWithErrorHandler(async () => {
-    if (!repoPath) {
-      return false;
-    }
-    const ret = await confirm.showModal({
-      title: "Reset",
-      content: "Not implemented"
-    });
-    if (ret === "accepted") {
-      await reloadRepository.current();
+  const reloadRepository = useReloadRepository();
+  return useCallbackWithErrorHandler(
+    async (options: ResetOptions) => {
+      if (!repoPath) {
+        return false;
+      }
+      await invokeTauriCommand("reset", { repoPath, options });
+      await reloadRepository();
       return true;
-    } else {
-      return false;
-    }
-  }, [repoPath, reloadRepository, confirm]);
+    },
+    [repoPath, reloadRepository]
+  );
 };

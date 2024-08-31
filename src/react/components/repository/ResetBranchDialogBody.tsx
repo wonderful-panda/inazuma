@@ -5,22 +5,20 @@ import { Icon } from "../Icon";
 import { CommitAttributes } from "./CommitAttributes";
 import classNames from "classnames";
 import { useReset } from "@/hooks/actions/reset";
+import { useAlert } from "@/context/AlertContext";
+import { ResetMode } from "@backend/ResetMode";
 
-type SwitchMode = "soft" | "mixed" | "hard";
-const colors: Record<SwitchMode, string> = {
+const colors: Record<ResetMode, string> = {
   soft: "bg-success",
   mixed: "bg-info",
   hard: "bg-warning"
 };
-const ModeRadio: React.FC<{ value: SwitchMode; description: string }> = ({
-  value,
-  description
-}) => {
+const ModeRadio: React.FC<{ value: ResetMode; description: string }> = ({ value, description }) => {
   return (
     <FormControlLabel
       className="h-8"
       value={value}
-      control={<Radio tabIndex={0} />}
+      control={<Radio />}
       label={
         <div className="flex-row-nowrap">
           <span
@@ -39,18 +37,23 @@ export const ResetDialogBody: React.FC<{ branchName: string; destination: Commit
   branchName,
   destination
 }) => {
+  const alert = useAlert();
   const reset = useReset();
   const modeRef = useRef<HTMLDivElement>(null);
   const invokeReset = useCallback(async () => {
     if (!modeRef.current) {
       return false;
     }
-    const mode = [
+    const checkedRadio = [
       ...modeRef.current.querySelectorAll<HTMLInputElement>("input[type='radio']")
-    ].find((e) => e.checked)?.value;
-    console.log("mode:", mode);
-    return await reset();
-  }, [reset]);
+    ].find((e) => e.checked);
+    if (!checkedRadio) {
+      alert.showWarning("No mode selected");
+      return false;
+    }
+    const mode = checkedRadio.value as ResetMode;
+    return await reset({ commitId: destination.id, mode });
+  }, [alert, reset, destination]);
 
   return (
     <>
