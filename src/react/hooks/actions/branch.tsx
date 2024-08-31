@@ -16,12 +16,12 @@ export const useBeginCreateBranch = () => {
   const dialog = useDialog();
 
   return useCallback(
-    async (commitId: string) => {
+    async (commit: Commit) => {
       if (!repoPath) {
         return;
       }
       return await dialog.showModal({
-        content: <NewBranchDialogBody commitId={commitId} />,
+        content: <NewBranchDialogBody commit={commit} />,
         defaultActionKey: "Enter"
       });
     },

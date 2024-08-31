@@ -12,7 +12,7 @@ export const useCreateBranchCommand = () => {
       icon: "octicon:git-branch-16",
       hidden: (commit) => commit.id === "--",
       handler: (commit) => {
-        void beginCreateBranch(commit.id);
+        void beginCreateBranch(commit);
       }
     }),
     [beginCreateBranch]
