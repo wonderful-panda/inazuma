@@ -489,3 +489,20 @@ pub struct GitUser {
     pub name: String,
     pub email: String,
 }
+
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum ResetMode {
+    Soft,
+    Mixed,
+    Hard,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct ResetOptions {
+    pub mode: ResetMode,
+    pub commit_id: String,
+}

@@ -9,6 +9,7 @@ const icons: Record<string, string[]> = {
     "account",
     "alert-outline",
     "alert-circle-outline",
+    "arrow-left-top",
     "check-circle-outline",
     "chevron-down",
     "chevron-up",

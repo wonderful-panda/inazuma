@@ -291,6 +291,11 @@ pub async fn switch(repo_path: &Path, options: SwitchOptions) -> Result<(), Stri
 }
 
 #[tauri::command]
+pub async fn reset(repo_path: &Path, options: ResetOptions) -> Result<(), String> {
+    Ok(git::reset::reset(repo_path, &options).await?)
+}
+
+#[tauri::command]
 pub async fn show_external_diff(
     repo_path: &Path,
     left: FileSpec,

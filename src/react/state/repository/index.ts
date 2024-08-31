@@ -49,6 +49,10 @@ export const setLogAtom = atom(
   }
 );
 
+export const currentBranchAtom = atom((get) => {
+  return get(logAtom)?.refs.branches?.find((b) => b.current);
+});
+
 export const setCommitDetailAtom = atom(
   null,
   (get, set, update: { repoPath: string; value: CommitDetail }) => {
