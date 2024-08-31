@@ -23,6 +23,7 @@ import { useShowCommitDiff } from "@/hooks/actions/showCommitDiff";
 import { workingTreeAtom } from "@/state/repository/workingtree";
 import { useShowLsTree } from "@/hooks/actions/showLsTree";
 import { useFetchCommitDetail } from "@/hooks/actions/fetchCommitDetail";
+import { useResetCommand } from "@/commands/reset";
 
 const useBeginCommitCommand = () => {
   const beginCommit = useBeginCommit();
@@ -76,13 +77,14 @@ const CommitLogInner: React.FC<{
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
 
+  const reset = useResetCommand();
   const createBranch = useCreateBranchCommand();
   const browseSourceTree = useBrowseSourceTreeCommand();
   const beginCommit = useBeginCommitCommand();
   const compareWithParent = useCompareWithParentCommand();
   const actionCommands = useMemo<CommitCommand[]>(() => {
-    return [createBranch, browseSourceTree, beginCommit, compareWithParent];
-  }, [createBranch, browseSourceTree, beginCommit, compareWithParent]);
+    return [createBranch, reset, browseSourceTree, beginCommit, compareWithParent];
+  }, [createBranch, reset, browseSourceTree, beginCommit, compareWithParent]);
   const reloadWorkingTree = useReloadWorkingTree();
   const fetchCommitDetail = useFetchCommitDetail();
   const selectLog = useMemo(
