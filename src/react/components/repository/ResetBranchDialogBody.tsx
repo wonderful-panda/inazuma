@@ -1,12 +1,16 @@
 import { AcceptButton, CancelButton, DialogContent, DialogTitle } from "@/components/Dialog";
 import { DialogActions, FormControlLabel, Radio, RadioGroup } from "@mui/material";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import { Icon } from "../Icon";
 import { CommitAttributes } from "./CommitAttributes";
 import classNames from "classnames";
 import { useReset } from "@/hooks/actions/reset";
 import { useAlert } from "@/context/AlertContext";
 import { ResetMode } from "@backend/ResetMode";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { useAtomValue } from "jotai";
+import { repoPathAtom } from "@/state/repository";
+import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
 
 const colors: Record<ResetMode, string> = {
   soft: "bg-success",
@@ -39,8 +43,9 @@ export const ResetDialogBody: React.FC<{ branchName: string; destination: Commit
 }) => {
   const alert = useAlert();
   const reset = useReset();
+  const repoPath = useAtomValue(repoPathAtom);
   const modeRef = useRef<HTMLDivElement>(null);
-  const invokeReset = useCallback(async () => {
+  const invokeReset = useCallbackWithErrorHandler(async () => {
     if (!modeRef.current) {
       return false;
     }
@@ -52,8 +57,13 @@ export const ResetDialogBody: React.FC<{ branchName: string; destination: Commit
       return false;
     }
     const mode = checkedRadio.value as ResetMode;
+    const currentBranch = await invokeTauriCommand("get_current_branch", { repoPath });
+    if (currentBranch !== branchName) {
+      alert.showError(`"${branchName}" is not current branch`);
+      return false;
+    }
     return await reset({ commitId: destination.id, mode });
-  }, [alert, reset, destination]);
+  }, [alert, reset, repoPath, branchName, destination]);
 
   return (
     <>
