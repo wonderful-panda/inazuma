@@ -131,6 +131,13 @@ pub async fn fetch_history(
 }
 
 #[tauri::command]
+pub async fn get_current_branch(repo_path: &Path) -> Result<String, String> {
+    git::branch::get_current_branch(repo_path)
+        .await
+        .map_err(|e| e.into())
+}
+
+#[tauri::command]
 pub async fn get_reflog(repo_path: &Path, count: u32) -> Result<Vec<(String, String)>, String> {
     git::refs::get_reflog(repo_path, count)
         .await

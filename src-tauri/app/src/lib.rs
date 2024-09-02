@@ -121,6 +121,7 @@ pub fn run() {
             commands::commit,
             commands::create_branch,
             commands::delete_branch,
+            commands::get_current_branch,
             commands::get_blame,
             commands::get_changes,
             commands::get_changes_between,

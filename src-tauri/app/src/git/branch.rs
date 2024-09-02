@@ -45,3 +45,14 @@ pub async fn delete_branch(
     GitError::assert_process_output("branch", &output)?;
     Ok(())
 }
+
+pub async fn get_current_branch(repo_path: &Path) -> Result<String, GitError> {
+    let args = ["--show-current"];
+    let output = exec(repo_path, "branch", &args, &[]).await?;
+    GitError::assert_process_output("branch", &output)?;
+    let branch_name = std::str::from_utf8(&output.stdout)
+        .unwrap()
+        .trim_end_matches('\n')
+        .to_owned();
+    Ok(branch_name)
+}
