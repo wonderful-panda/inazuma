@@ -14,16 +14,15 @@ export const useBeginReset = () => {
   const dialog = useDialog();
 
   return useCallback(
-    async (commit: Commit, branchName?: string) => {
+    async (commit: Commit) => {
       if (!repoPath) {
         return;
       }
-      const actualBranchName = branchName ?? currentBranch?.name;
-      if (!actualBranchName) {
+      if (!currentBranch) {
         return;
       }
       return await dialog.showModal({
-        content: <ResetDialogBody branchName={actualBranchName} destination={commit} />,
+        content: <ResetDialogBody branchName={currentBranch.name} destination={commit} />,
         defaultActionKey: "Enter"
       });
     },
