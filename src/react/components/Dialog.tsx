@@ -1,5 +1,5 @@
 import { useStateWithRef } from "@/hooks/useStateWithRef";
-import { assertNever, nope, wait } from "@/util";
+import { assertNever, wait } from "@/util";
 import { DndContext, DragEndEvent, DraggableAttributes, useDraggable } from "@dnd-kit/core";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { Icon } from "@iconify/react";
@@ -20,7 +20,7 @@ import React, {
 export interface DialogAction {
   text: string;
   color?: React.ComponentProps<typeof Button>["color"];
-  onClick: (close: (ret: DialogResult) => void) => unknown;
+  onClick: (close: (ret: DialogResult) => Promise<boolean>) => unknown;
   default?: boolean;
 }
 
@@ -34,6 +34,7 @@ export const cancelAction = (opt?: { text?: string; default?: boolean }): Dialog
 export interface DialogProps {
   content: React.ReactNode;
   fullscreen?: boolean;
+  onBeforeClose?: (ret: DialogResult) => Promise<boolean>;
   defaultActionKey?: "Enter" | "Ctrl+Enter";
 }
 
@@ -102,13 +103,13 @@ const innerCtx = createContext<{
   draggable: boolean;
   attributes: DraggableAttributes | undefined;
   listeners: SyntheticListenerMap | undefined;
-  close: (ret: DialogResult) => void;
+  close: (ret: DialogResult) => Promise<boolean>;
 }>({
   fullscreen: false,
   draggable: false,
   attributes: undefined,
   listeners: undefined,
-  close: nope
+  close: () => Promise.resolve(false)
 });
 
 export const DialogTitle: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -200,10 +201,10 @@ const DialogInner: React.FC<
     fullscreen: boolean;
     draggable: boolean;
     pos: { x: number; y: number };
-    close: (ret: DialogResult) => void;
+    close: (ret: DialogResult) => Promise<boolean>;
   }>
 > = ({ fullscreen, draggable, pos, close, children }) => {
-  const reject = useCallback(() => close({ result: "rejected" }), [close]);
+  const reject = useCallback(() => void close({ result: "rejected" }), [close]);
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: "__dialogbody__",
     disabled: !draggable
@@ -245,17 +246,37 @@ const DialogInner: React.FC<
 };
 
 const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef) => {
-  const [{ content, defaultActionKey, fullscreen }, setProps] = useState<DialogProps>(defaultProps);
+  const [{ content, defaultActionKey, fullscreen, onBeforeClose }, setProps] =
+    useState<DialogProps>(defaultProps);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const ref = useRef<HTMLDialogElement>(null);
   const [, setStatus, statusRef] = useStateWithRef<"opened" | "closed" | "disposed">("disposed");
 
   const draggable = !fullscreen;
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key !== "Esc") {
-      e.stopPropagation();
-    }
-  }, []);
+
+  const close = useCallback(
+    async (ret: DialogResult) => {
+      if (!onBeforeClose || (await onBeforeClose(ret))) {
+        ref.current?.close(dialogResultToReturnValue(ret));
+        return true;
+      } else {
+        return false;
+      }
+    },
+    [onBeforeClose]
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        void close({ result: "rejected" });
+      } else {
+        e.stopPropagation();
+      }
+    },
+    [close]
+  );
 
   const handleKeyDownCapture = useCallback(
     (e: React.KeyboardEvent) => {
@@ -274,10 +295,6 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
     },
     [defaultActionKey]
   );
-
-  const close = useCallback((ret: DialogResult) => {
-    ref.current?.close(dialogResultToReturnValue(ret));
-  }, []);
 
   const dispose = useCallback(() => {
     if (statusRef.current === "closed") {
