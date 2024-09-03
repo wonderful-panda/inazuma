@@ -10,6 +10,7 @@ import { useDialog } from "@/context/DialogContext";
 import { NewBranchDialogBody } from "@/components/repository/NewBranchDialogBody";
 import { DeleteBranchDialogBody } from "@/components/repository/DeleteBranchDialogBody";
 import { useAlert } from "@/context/AlertContext";
+import { MoveBranchDialogBody } from "@/components/repository/MoveBranchDialogBody";
 
 export const useBeginCreateBranch = () => {
   const repoPath = useAtomValue(repoPathAtom);
@@ -22,6 +23,24 @@ export const useBeginCreateBranch = () => {
       }
       return await dialog.showModal({
         content: <NewBranchDialogBody commit={commit} />,
+        defaultActionKey: "Enter"
+      });
+    },
+    [repoPath, dialog]
+  );
+};
+
+export const useBeginMoveBranch = () => {
+  const repoPath = useAtomValue(repoPathAtom);
+  const dialog = useDialog();
+
+  return useCallback(
+    async (branchName: string, destination: Commit) => {
+      if (!repoPath) {
+        return;
+      }
+      return await dialog.showModal({
+        content: <MoveBranchDialogBody branchName={branchName} destination={destination} />,
         defaultActionKey: "Enter"
       });
     },

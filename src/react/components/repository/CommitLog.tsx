@@ -24,6 +24,9 @@ import { workingTreeAtom } from "@/state/repository/workingtree";
 import { useShowLsTree } from "@/hooks/actions/showLsTree";
 import { useFetchCommitDetail } from "@/hooks/actions/fetchCommitDetail";
 import { useResetCommand } from "@/commands/reset";
+import { getDragData, isDragDataPresent } from "@/dragdrop";
+import { useBeginReset } from "@/hooks/actions/reset";
+import { useBeginMoveBranch } from "@/hooks/actions/branch";
 
 const useBeginCommitCommand = () => {
   const beginCommit = useBeginCommit();
@@ -80,6 +83,8 @@ const CommitLogInner: React.FC<{
   const reset = useResetCommand();
   const createBranch = useCreateBranchCommand();
   const browseSourceTree = useBrowseSourceTreeCommand();
+  const beginReset = useBeginReset();
+  const beginMoveBranch = useBeginMoveBranch();
   const beginCommit = useBeginCommitCommand();
   const compareWithParent = useCompareWithParentCommand();
   const actionCommands = useMemo<CommitCommand[]>(() => {
@@ -139,6 +144,31 @@ const CommitLogInner: React.FC<{
     [loadedId, commitDetail, showLsTree]
   );
   const handleContextMenu = useCommitContextMenu();
+  const handleRowDragOver = useCallback((e: React.DragEvent, _: number, item: Commit) => {
+    if (item.id !== "--" && isDragDataPresent(e, "git/branch")) {
+      e.dataTransfer.dropEffect = "move";
+      e.preventDefault();
+    }
+  }, []);
+
+  const handleRowDrop = useCallback(
+    (e: React.DragEvent, _: number, item: Commit) => {
+      if (item.id === "--") {
+        return;
+      }
+      const data = getDragData(e, "git/branch");
+      if (!data) {
+        return;
+      }
+      if (data.current) {
+        void beginReset(item);
+      } else {
+        void beginMoveBranch(data.name, item);
+      }
+      e.preventDefault();
+    },
+    [beginReset, beginMoveBranch]
+  );
 
   const handleSideBarItemClick = useCallback(
     (r: Ref) => {
@@ -176,6 +206,9 @@ const CommitLogInner: React.FC<{
                   actionCommands={actionCommands}
                   onRowMouseDown={handleRowMouseDown}
                   onRowContextMenu={handleContextMenu}
+                  onRowDragEnter={handleRowDragOver}
+                  onRowDragOver={handleRowDragOver}
+                  onRowDrop={handleRowDrop}
                 />
               </KeyDownTrapper>
             </SelectedIndexProvider>

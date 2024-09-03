@@ -18,6 +18,10 @@ export interface VirtualListEvents<T> {
   onRowMouseDown?: (event: React.MouseEvent, index: number, item: T) => void;
   onRowDoubleClick?: (event: React.MouseEvent, index: number, item: T) => void;
   onRowContextMenu?: (event: React.MouseEvent, index: number, item: T) => void;
+  onRowDragEnter?: (event: React.DragEvent, index: number, item: T) => void;
+  onRowDragLeave?: (event: React.DragEvent, index: number, item: T) => void;
+  onRowDragOver?: (event: React.DragEvent, index: number, item: T) => void;
+  onRowDrop?: (event: React.DragEvent, index: number, item: T) => void;
 }
 export interface VirtualListProps<T> extends VirtualListEvents<T> {
   itemSize: number | ((index: number) => number);
@@ -30,15 +34,15 @@ export interface VirtualListMethods {
   scrollToItem: (index: number) => void;
 }
 
-const useRowEventHandler = <T,>(
+const useRowEventHandler = <T, E extends React.SyntheticEvent>(
   items: readonly T[],
-  handler?: (event: React.MouseEvent, index: number, item: T) => void
+  handler?: (event: E, index: number, item: T) => void
 ) => {
   return useMemo(() => {
     if (!handler) {
       return undefined;
     }
-    return (event: React.MouseEvent) => {
+    return (event: E) => {
       const index = parseInt((event.currentTarget as HTMLElement).dataset.index ?? "-1");
       if (0 <= index && items[index] !== undefined) {
         handler(event, index, items[index]);
@@ -56,7 +60,11 @@ const VirtualListInner = <T,>(
     onRowClick,
     onRowMouseDown,
     onRowDoubleClick,
-    onRowContextMenu
+    onRowContextMenu,
+    onRowDragEnter,
+    onRowDragLeave,
+    onRowDragOver,
+    onRowDrop
   }: VirtualListProps<T>,
   ref: React.ForwardedRef<VirtualListMethods>
 ) => {
@@ -75,6 +83,10 @@ const VirtualListInner = <T,>(
   const handleRowMouseDown = useRowEventHandler(items, onRowMouseDown);
   const handleRowDoubleClick = useRowEventHandler(items, onRowDoubleClick);
   const handleRowContextMenu = useRowEventHandler(items, onRowContextMenu);
+  const handleRowDragEnter = useRowEventHandler(items, onRowDragEnter);
+  const handleRowDragLeave = useRowEventHandler(items, onRowDragLeave);
+  const handleRowDragOver = useRowEventHandler(items, onRowDragOver);
+  const handleRowDrop = useRowEventHandler(items, onRowDrop);
   const renderRow = useCallback(
     ({ index, style }: { index: number; style: object }) => {
       const item = items[index];
@@ -87,6 +99,10 @@ const VirtualListInner = <T,>(
           onMouseDown={handleRowMouseDown}
           onDoubleClick={handleRowDoubleClick}
           onContextMenu={handleRowContextMenu}
+          onDragEnter={handleRowDragEnter}
+          onDragLeave={handleRowDragLeave}
+          onDragOver={handleRowDragOver}
+          onDrop={handleRowDrop}
         >
           {children({ index, item })}
         </div>
@@ -101,6 +117,10 @@ const VirtualListInner = <T,>(
       handleRowMouseDown,
       handleRowDoubleClick,
       handleRowContextMenu,
+      handleRowDragEnter,
+      handleRowDragLeave,
+      handleRowDragOver,
+      handleRowDrop,
       children
     ]
   );

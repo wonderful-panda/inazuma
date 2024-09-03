@@ -1,30 +1,49 @@
 import classNames from "classnames";
 import { assertNever } from "@/util";
+import { useCallback } from "react";
+import { setDragData } from "@/dragdrop";
 
-const Badge: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
-  className,
-  children
-}) => (
+const Badge: React.FC<
+  React.PropsWithChildren<{
+    className?: string;
+    draggable?: boolean;
+    onDragStart?: (e: React.DragEvent) => void;
+  }>
+> = ({ className, draggable, onDragStart, children }) => (
   <span
     className={classNames(
       "align-middle h-4 leading-4 text-sm mr-1 my-auto px-2 box-content whitespace-nowrap cursor-default bg-background",
+      draggable && "cursor-move",
       className
     )}
+    draggable={draggable}
+    onDragStart={onDragStart}
   >
     {children}
   </span>
 );
 
-const Branch: React.FC<{ r: BranchRef }> = ({ r }) => (
-  <Badge
-    className={classNames(
-      "rounded-xl",
-      r.current ? "text-secondary border-2 border-current" : "text-[cyan] border border-current"
-    )}
-  >
-    {r.name}
-  </Badge>
-);
+const Branch: React.FC<{ r: BranchRef }> = ({ r }) => {
+  const handleDragStart = useCallback(
+    (e: React.DragEvent) => {
+      e.dataTransfer.effectAllowed = "move";
+      setDragData(e, "git/branch", { name: r.name, current: r.current });
+    },
+    [r]
+  );
+  return (
+    <Badge
+      className={classNames(
+        "rounded-xl",
+        r.current ? "text-secondary border-2 border-current" : "text-[cyan] border border-current"
+      )}
+      draggable
+      onDragStart={handleDragStart}
+    >
+      {r.name}
+    </Badge>
+  );
+};
 
 const Tag: React.FC<{ r: TagRef }> = ({ r }) => (
   <Badge className="text-[cyan] border border-current">{r.name}</Badge>
