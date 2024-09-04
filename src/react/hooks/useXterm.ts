@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useCallback, useRef } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { useWithRef } from "./useWithRef";
 
 interface Shell {
   id: number;
@@ -11,39 +12,41 @@ interface Shell {
 }
 
 export interface InteractiveShellOptions {
-  commandLine: string;
-  cwd: string;
+  openPty: (rows: number, cols: number) => Promise<number>;
   fontFamily: string;
   fontSize: number;
 }
 
-export const useXterm = (options: { onExit?: () => void }) => {
+export const useXterm = (options: { onExit?: (succeeded: boolean) => void }) => {
   const shell = useRef<Shell>();
-  const onExitRef = useRef<() => void>();
+  const [, onExitRef] = useWithRef(options.onExit);
   const closePtyRef = useRef<() => Promise<void>>();
-  const unlistenPtyData = useRef<() => void>();
-  const unlistenPtyExit = useRef<() => void>();
+  const disconnectRef = useRef<() => void>();
 
-  onExitRef.current = options.onExit;
+  const disconnect = useCallback(() => {
+    disconnectRef.current?.();
+    disconnectRef.current = undefined;
+    if (shell.current) {
+      shell.current.id = -1;
+    }
+  }, []);
+
+  const kill = useCallback(() => {
+    disconnect();
+    void closePtyRef.current?.();
+    closePtyRef.current = undefined;
+  }, [disconnect]);
 
   const dispose = useCallback(() => {
-    unlistenPtyData.current?.();
-    unlistenPtyData.current = undefined;
-    unlistenPtyExit.current?.();
-    unlistenPtyExit.current = undefined;
+    kill();
     shell.current?.fitAddon.dispose();
     shell.current?.term.dispose();
     shell.current = undefined;
-    void closePtyRef.current?.();
-    closePtyRef.current = undefined;
-  }, []);
+  }, [kill]);
 
   const open = useCallback(
-    async (
-      el: HTMLDivElement,
-      { commandLine, cwd, fontFamily, fontSize }: InteractiveShellOptions
-    ) => {
-      if (shell.current) {
+    async (el: HTMLDivElement, { openPty, fontFamily, fontSize }: InteractiveShellOptions) => {
+      if (shell.current && 0 < shell.current.id) {
         shell.current.term.focus();
         return;
       }
@@ -53,26 +56,32 @@ export const useXterm = (options: { onExit?: () => void }) => {
       term.loadAddon(fitAddon);
       term.open(el);
       fitAddon.fit();
-      const id = await invokeTauriCommand("open_pty", {
-        commandLine,
-        cwd,
-        rows: term.rows,
-        cols: term.cols
-      });
+      const id = await openPty(term.rows, term.cols);
+
       closePtyRef.current = () => invokeTauriCommand("close_pty", { id });
-      unlistenPtyData.current = await listen<string>(`pty-data:${id}`, ({ payload }) =>
+      const unlistenPtyData = await listen<string>(`pty-data:${id}`, ({ payload }) =>
         term.write(payload)
       );
-      unlistenPtyData.current = await listen<string>(`pty-exit:${id}`, () => {
-        dispose();
-        onExitRef.current?.();
+      const unlistenPtyExit = await listen<boolean>(`pty-exit:${id}`, ({ payload }) => {
+        closePtyRef.current = undefined;
+        disconnect();
+        onExitRef.current?.(payload);
       });
-      term.onData((data) => invokeTauriCommand("write_pty", { id, data }));
-      term.onResize(({ rows, cols }) => invokeTauriCommand("resize_pty", { id, rows, cols }));
+      const onDataDisposer = term.onData((data) => invokeTauriCommand("write_pty", { id, data }));
+      const onResizeDisposer = term.onResize(({ rows, cols }) =>
+        invokeTauriCommand("resize_pty", { id, rows, cols })
+      );
+
+      disconnectRef.current = () => {
+        unlistenPtyData();
+        unlistenPtyExit();
+        onDataDisposer.dispose();
+        onResizeDisposer.dispose();
+      };
       term.focus();
       shell.current = { id, term, fitAddon };
     },
-    [dispose]
+    [dispose, kill, onExitRef]
   );
 
   const fit = useCallback(() => {
@@ -91,5 +100,5 @@ export const useXterm = (options: { onExit?: () => void }) => {
     }
   }, []);
 
-  return { open, fit, changeFont, dispose };
+  return { open, fit, changeFont, kill, dispose };
 };

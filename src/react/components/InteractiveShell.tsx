@@ -2,6 +2,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useXterm } from "@/hooks/useXterm";
 import { useAlert } from "@/context/AlertContext";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 export interface InteractiveShellProps {
   open: boolean;
@@ -25,7 +26,14 @@ const InteractiveShellInner: React.FC<
   height
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { open: openXterm, fit, changeFont, dispose } = useXterm({ onExit: hide });
+  const handleExit = useCallback(
+    (succeeded: boolean) => {
+      console.log("pty-result:", succeeded);
+      hide();
+    },
+    [hide]
+  );
+  const { open: openXterm, fit, changeFont, dispose } = useXterm({ onExit: handleExit });
 
   useEffect(() => dispose, [dispose]);
 
@@ -37,10 +45,11 @@ const InteractiveShellInner: React.FC<
 
   const { reportError } = useAlert();
   const openShell = useCallback(async () => {
+    const openPty = (rows: number, cols: number) =>
+      invokeTauriCommand("open_pty", { commandLine, cwd: repoPath, rows, cols });
     try {
       await openXterm(wrapperRef.current!, {
-        commandLine,
-        cwd: repoPath,
+        openPty,
         fontFamily,
         fontSize
       });
