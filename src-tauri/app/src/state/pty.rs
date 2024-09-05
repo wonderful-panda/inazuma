@@ -32,7 +32,7 @@ impl PtyState {
         cols: u16,
         on_data: F1,
         on_exit: F2,
-    ) -> Result<PtyId, Box<dyn Error>> {
+    ) -> Result<PtyId, Box<dyn Error + Send + Sync>> {
         self.current_id += 1;
         let id = PtyId(self.current_id);
         let map = self.map.clone();

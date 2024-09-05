@@ -1,5 +1,4 @@
 use portable_pty::{native_pty_system, CommandBuilder, ExitStatus, PtyPair, PtySize};
-use shell_words;
 use std::error::Error;
 use std::io::Write;
 use std::path::Path;
@@ -7,6 +6,8 @@ use std::thread::sleep;
 use std::time::Duration;
 use tokio::sync::mpsc::{channel, Sender};
 use tokio::{spawn, task::spawn_blocking};
+
+use crate::platform::split_commandline;
 
 #[derive(Debug, Clone)]
 pub enum Message {
@@ -28,8 +29,8 @@ impl Pty {
         cols: u16,
         on_data: F1,
         on_exit: F2,
-    ) -> Result<Pty, Box<dyn Error>> {
-        let args = shell_words::split(command_line)?;
+    ) -> Result<Pty, Box<dyn Error + Send + Sync>> {
+        let args = split_commandline(command_line)?;
         let pty_system = native_pty_system();
         let PtyPair { master, slave } = pty_system.openpty(PtySize {
             rows,

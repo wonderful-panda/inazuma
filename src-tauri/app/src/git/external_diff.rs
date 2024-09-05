@@ -2,7 +2,7 @@ use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use tokio::{fs::create_dir_all, process::Command};
 
 use super::{rev_parse, GitError};
-use crate::state::repositories::Repository;
+use crate::{platform::split_commandline, state::repositories::Repository};
 use regex::Regex;
 use std::{
     error::Error,
@@ -76,7 +76,7 @@ pub async fn show_external_diff(
     if command_line.len() == 0 {
         return Ok(());
     }
-    let mut args = shell_words::split(command_line)?;
+    let mut args = split_commandline(command_line)?;
     let program = args.remove(0);
     replace_or_push(&mut args, "${left}", left.to_str().unwrap());
     replace_or_push(&mut args, "${right}", right.to_str().unwrap());

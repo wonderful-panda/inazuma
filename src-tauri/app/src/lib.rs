@@ -6,6 +6,7 @@ mod avatar_protocol_handler;
 pub mod commands;
 pub mod git;
 pub mod pty;
+pub mod platform;
 pub mod state;
 pub mod sync;
 
