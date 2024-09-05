@@ -1,5 +1,7 @@
+use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::str::FromStr;
 
 use font_kit::sources::fs::FsSource;
 use portable_pty::ExitStatus;
@@ -369,9 +371,9 @@ pub async fn open_pty<T: Runtime>(
     open_pty_internal(command_line, cwd, rows, cols, pty_state, app_handle).await
 }
 
-async fn open_pty_internal<T: Runtime>(
+async fn open_pty_internal<'a, T: Runtime, P: Into<Cow<'a, Path>>>(
     command_line: &str,
-    cwd: &Path,
+    cwd: P,
     rows: u16,
     cols: u16,
     pty_state: State<'_, PtyStateMutex>,
@@ -394,7 +396,7 @@ async fn open_pty_internal<T: Runtime>(
     };
     let mut pty = pty_state.0.lock().await;
     let id = pty
-        .open(command_line, cwd, rows, cols, on_data, on_exit)
+        .open(command_line, &cwd.into(), rows, cols, on_data, on_exit)
         .await
         .map_err(|e| format!("{}", e))?;
     return Ok(id.0);
@@ -432,8 +434,8 @@ pub async fn resize_pty(
 }
 
 #[tauri::command]
-pub async fn exect_git_with_pty<T: Runtime>(
-    repo_path: &Path,
+pub async fn exec_git_with_pty<T: Runtime>(
+    repo_path: Option<&Path>,
     command: &str,
     args: Vec<&str>,
     rows: u16,
@@ -442,6 +444,11 @@ pub async fn exect_git_with_pty<T: Runtime>(
     app_handle: AppHandle<T>,
 ) -> Result<usize, String> {
     let command_line = build_command_line(repo_path, command, &args[..]);
+    let repo_path = if let Some(p) = repo_path {
+        Cow::from(p)
+    } else {
+        Cow::from(PathBuf::from_str(".").unwrap())
+    };
     open_pty_internal(&command_line, repo_path, rows, cols, pty_state, app_handle).await
 }
 

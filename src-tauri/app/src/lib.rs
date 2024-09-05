@@ -150,6 +150,7 @@ pub fn run() {
             commands::write_pty,
             commands::resize_pty,
             commands::close_pty,
+            commands::exec_git_with_pty,
             commands::find_repository_root,
             commands::set_window_title,
         ])
