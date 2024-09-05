@@ -1,6 +1,6 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { useXterm } from "@/hooks/useXterm";
+import { PtyId, useXterm } from "@/hooks/useXterm";
 import { useAlert } from "@/context/AlertContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 
@@ -45,8 +45,8 @@ const InteractiveShellInner: React.FC<
 
   const { reportError } = useAlert();
   const openShell = useCallback(async () => {
-    const openPty = (rows: number, cols: number) =>
-      invokeTauriCommand("open_pty", { commandLine, cwd: repoPath, rows, cols });
+    const openPty = (id: PtyId, rows: number, cols: number) =>
+      invokeTauriCommand("open_pty", { id, commandLine, cwd: repoPath, rows, cols });
     try {
       await openXterm(wrapperRef.current!, {
         openPty,

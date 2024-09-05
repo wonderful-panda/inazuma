@@ -361,24 +361,26 @@ pub async fn yank_text<T: Runtime>(text: &str, app_handle: AppHandle<T>) -> Resu
 
 #[tauri::command]
 pub async fn open_pty<T: Runtime>(
+    id: usize,
     command_line: &str,
     cwd: &Path,
     rows: u16,
     cols: u16,
     pty_state: State<'_, PtyStateMutex>,
     app_handle: AppHandle<T>,
-) -> Result<usize, String> {
-    open_pty_internal(command_line, cwd, rows, cols, pty_state, app_handle).await
+) -> Result<(), String> {
+    open_pty_internal(id, command_line, cwd, rows, cols, pty_state, app_handle).await
 }
 
 async fn open_pty_internal<'a, T: Runtime, P: Into<Cow<'a, Path>>>(
+    id: usize,
     command_line: &str,
     cwd: P,
     rows: u16,
     cols: u16,
     pty_state: State<'_, PtyStateMutex>,
     app_handle: AppHandle<T>,
-) -> Result<usize, String> {
+) -> Result<(), String> {
     let handle_clone = AppHandle::clone(&app_handle);
     let on_data = move |id: PtyId, data: &[u8]| {
         let data = String::from_utf8(data.to_vec()).unwrap();
@@ -395,11 +397,18 @@ async fn open_pty_internal<'a, T: Runtime, P: Into<Cow<'a, Path>>>(
         }
     };
     let mut pty = pty_state.0.lock().await;
-    let id = pty
-        .open(command_line, &cwd.into(), rows, cols, on_data, on_exit)
-        .await
-        .map_err(|e| format!("{}", e))?;
-    return Ok(id.0);
+    pty.open(
+        PtyId(id),
+        command_line,
+        &cwd.into(),
+        rows,
+        cols,
+        on_data,
+        on_exit,
+    )
+    .await
+    .map_err(|e| format!("{}", e))?;
+    return Ok(());
 }
 
 #[tauri::command]
@@ -435,6 +444,7 @@ pub async fn resize_pty(
 
 #[tauri::command]
 pub async fn exec_git_with_pty<T: Runtime>(
+    id: usize,
     repo_path: Option<&Path>,
     command: &str,
     args: Vec<&str>,
@@ -442,14 +452,23 @@ pub async fn exec_git_with_pty<T: Runtime>(
     cols: u16,
     pty_state: State<'_, PtyStateMutex>,
     app_handle: AppHandle<T>,
-) -> Result<usize, String> {
+) -> Result<(), String> {
     let command_line = build_command_line(repo_path, command, &args[..]);
     let repo_path = if let Some(p) = repo_path {
         Cow::from(p)
     } else {
         Cow::from(PathBuf::from_str(".").unwrap())
     };
-    open_pty_internal(&command_line, repo_path, rows, cols, pty_state, app_handle).await
+    open_pty_internal(
+        id,
+        &command_line,
+        repo_path,
+        rows,
+        cols,
+        pty_state,
+        app_handle,
+    )
+    .await
 }
 
 #[tauri::command]

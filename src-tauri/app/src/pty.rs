@@ -2,12 +2,11 @@ use portable_pty::{native_pty_system, CommandBuilder, ExitStatus, PtyPair, PtySi
 use std::error::Error;
 use std::io::Write;
 use std::path::Path;
-use std::thread::sleep;
-use std::time::Duration;
 use tokio::sync::mpsc::{channel, Sender};
 use tokio::{spawn, task::spawn_blocking};
 
 use crate::platform::split_commandline;
+use crate::sync::get_sync;
 
 #[derive(Debug, Clone)]
 pub enum Message {
@@ -41,7 +40,9 @@ impl Pty {
 
         // spawn reader thread.
         let mut reader = master.try_clone_reader()?;
+        let (mut wait, mut notify) = get_sync();
         spawn_blocking(move || {
+            notify.notify();
             let mut buf = [0u8; 8162];
             while let Ok(len) = reader.read(&mut buf) {
                 if len == 0 {
@@ -52,7 +53,7 @@ impl Pty {
             debug!("pty reader thread has finished");
         });
 
-        sleep(Duration::from_millis(100)); // dirty hack to avoid lose first output from command.
+        wait.wait();
 
         let (tx, mut rx) = channel(100);
         // spawn command
@@ -102,17 +103,17 @@ impl Pty {
         Ok(Pty { tx })
     }
 
-    pub async fn write(&self, data: String) -> Result<(), Box<dyn Error>> {
+    pub async fn write(&self, data: String) -> Result<(), Box<dyn Error + Send + Sync>> {
         self.tx.send(Message::Write(data)).await?;
         Ok(())
     }
 
-    pub async fn resize(&self, rows: u16, cols: u16) -> Result<(), Box<dyn Error>> {
+    pub async fn resize(&self, rows: u16, cols: u16) -> Result<(), Box<dyn Error + Send + Sync>> {
         self.tx.send(Message::Resize { rows, cols }).await?;
         Ok(())
     }
 
-    pub async fn kill(&self) -> Result<(), Box<dyn Error>> {
+    pub async fn kill(&self) -> Result<(), Box<dyn Error + Send + Sync>> {
         self.tx.send(Message::Kill).await?;
         Ok(())
     }

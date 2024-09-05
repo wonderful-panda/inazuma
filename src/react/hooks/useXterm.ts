@@ -11,11 +11,20 @@ interface Shell {
   fitAddon: FitAddon;
 }
 
+export type PtyId = number & { readonly _PtyId: unique symbol };
+
 export interface InteractiveShellOptions {
-  openPty: (rows: number, cols: number) => Promise<number>;
+  openPty: (id: PtyId, rows: number, cols: number) => Promise<void>;
   fontFamily: string;
   fontSize: number;
 }
+
+let currentPtyId = 0;
+
+const getNextPtyId = () => {
+  currentPtyId += 1;
+  return currentPtyId as PtyId;
+};
 
 export const useXterm = (options: { onExit?: (succeeded: boolean) => void }) => {
   const shell = useRef<Shell>();
@@ -56,7 +65,7 @@ export const useXterm = (options: { onExit?: (succeeded: boolean) => void }) => 
       term.loadAddon(fitAddon);
       term.open(el);
       fitAddon.fit();
-      const id = await openPty(term.rows, term.cols);
+      const id = getNextPtyId();
 
       closePtyRef.current = () => invokeTauriCommand("close_pty", { id });
       const unlistenPtyData = await listen<string>(`pty-data:${id}`, ({ payload }) =>
@@ -71,6 +80,8 @@ export const useXterm = (options: { onExit?: (succeeded: boolean) => void }) => 
       const onResizeDisposer = term.onResize(({ rows, cols }) =>
         invokeTauriCommand("resize_pty", { id, rows, cols })
       );
+
+      await openPty(id, term.rows, term.cols);
 
       disconnectRef.current = () => {
         unlistenPtyData();
