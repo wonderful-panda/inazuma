@@ -30,21 +30,11 @@ export const useXterm = (options: { onExit?: (succeeded: boolean) => void }) => 
   const shell = useRef<Shell>();
   const [, onExitRef] = useWithRef(options.onExit);
   const closePtyRef = useRef<() => Promise<void>>();
-  const disconnectRef = useRef<() => void>();
-
-  const disconnect = useCallback(() => {
-    disconnectRef.current?.();
-    disconnectRef.current = undefined;
-    if (shell.current) {
-      shell.current.id = -1;
-    }
-  }, []);
 
   const kill = useCallback(() => {
-    disconnect();
     void closePtyRef.current?.();
     closePtyRef.current = undefined;
-  }, [disconnect]);
+  }, []);
 
   const dispose = useCallback(() => {
     kill();
@@ -67,32 +57,30 @@ export const useXterm = (options: { onExit?: (succeeded: boolean) => void }) => 
       fitAddon.fit();
       const id = getNextPtyId();
 
+      const onDataDisposer = term.onData((data) => invokeTauriCommand("write_pty", { id, data }));
+      const onResizeDisposer = term.onResize(({ rows, cols }) =>
+        invokeTauriCommand("resize_pty", { id, rows, cols })
+      );
       closePtyRef.current = () => invokeTauriCommand("close_pty", { id });
       const unlistenPtyData = await listen<string>(`pty-data:${id}`, ({ payload }) =>
         term.write(payload)
       );
       const unlistenPtyExit = await listen<boolean>(`pty-exit:${id}`, ({ payload }) => {
         closePtyRef.current = undefined;
-        disconnect();
-        onExitRef.current?.(payload);
-      });
-      const onDataDisposer = term.onData((data) => invokeTauriCommand("write_pty", { id, data }));
-      const onResizeDisposer = term.onResize(({ rows, cols }) =>
-        invokeTauriCommand("resize_pty", { id, rows, cols })
-      );
-
-      await openPty(id, term.rows, term.cols);
-
-      disconnectRef.current = () => {
-        unlistenPtyData();
-        unlistenPtyExit();
         onDataDisposer.dispose();
         onResizeDisposer.dispose();
-      };
+        unlistenPtyExit();
+        setTimeout(unlistenPtyData, 100); // sometimes pty-exit is received before last pty-data.
+        if (shell.current) {
+          shell.current.id = -1;
+        }
+        onExitRef.current?.(payload);
+      });
+      await openPty(id, term.rows, term.cols);
       term.focus();
       shell.current = { id, term, fitAddon };
     },
-    [dispose, kill, onExitRef]
+    [dispose, onExitRef]
   );
 
   const fit = useCallback(() => {
