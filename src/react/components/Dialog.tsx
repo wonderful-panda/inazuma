@@ -21,15 +21,9 @@ export interface DialogAction {
   text: string;
   color?: React.ComponentProps<typeof Button>["color"];
   onClick: (close: (ret: DialogResult) => Promise<boolean>) => unknown;
+  disabled?: boolean;
   default?: boolean;
 }
-
-export const cancelAction = (opt?: { text?: string; default?: boolean }): DialogAction => ({
-  text: opt?.text ?? "Cancel",
-  color: "inherit",
-  onClick: (close) => close({ result: "rejected" }),
-  default: opt?.default
-});
 
 export interface DialogProps {
   content: React.ReactNode;
@@ -153,6 +147,7 @@ export const DialogButton: React.FC<DialogAction> = ({
   text,
   color,
   onClick,
+  disabled,
   default: default_
 }) => {
   const { close } = useContext(innerCtx);
@@ -160,6 +155,7 @@ export const DialogButton: React.FC<DialogAction> = ({
   return (
     <Button
       className={classNames("mr-4 text-xl", default_ && "__default")}
+      disabled={disabled}
       color={color}
       onClick={handleClick}
     >
@@ -171,8 +167,9 @@ export const DialogButton: React.FC<DialogAction> = ({
 export const AcceptButton: React.FC<{
   text?: string;
   onClick: () => Promise<boolean | "failed">;
+  disabled?: boolean;
   default?: boolean;
-}> = ({ text = "OK", onClick, default: default_ }) => {
+}> = ({ text = "OK", onClick, disabled, default: default_ }) => {
   const handleClick = useCallback(
     async (close: (ret: DialogResult) => void) => {
       const ret = await onClick();
@@ -182,18 +179,35 @@ export const AcceptButton: React.FC<{
     },
     [onClick]
   );
-  return <DialogButton text={text} onClick={handleClick} color="primary" default={default_} />;
+  return (
+    <DialogButton
+      text={text}
+      onClick={handleClick}
+      disabled={disabled}
+      color="primary"
+      default={default_}
+    />
+  );
 };
 
-export const CancelButton: React.FC<{ text?: string; default?: boolean }> = ({
+export const CancelButton: React.FC<{ text?: string; disabled?: boolean; default?: boolean }> = ({
   text = "Cancel",
+  disabled,
   default: default_
 }) => {
   const onClick = useCallback(
     (close: (ret: DialogResult) => void) => close({ result: "rejected" }),
     []
   );
-  return <DialogButton text={text} onClick={onClick} color="inherit" default={default_} />;
+  return (
+    <DialogButton
+      text={text}
+      onClick={onClick}
+      disabled={disabled}
+      color="inherit"
+      default={default_}
+    />
+  );
 };
 
 const DialogInner: React.FC<
@@ -354,3 +368,5 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
   );
 };
 export const Dialog = forwardRef(Dialog_);
+
+export const useCloseDialog = () => useContext(innerCtx).close;
