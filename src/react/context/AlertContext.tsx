@@ -4,6 +4,7 @@ import { createContext, useContext, useMemo, useRef } from "react";
 
 const defaultMethods: AlertMethods = {
   show: nope,
+  clear: nope,
   showInfo: nope,
   showSuccess: nope,
   showWarning: nope,
@@ -19,6 +20,7 @@ export const AlertProvider: React.FC<React.PropsWithChildren> = ({ children }) =
   const methods = useMemo<AlertMethods>(
     () => ({
       show: (alert) => ref.current?.show(alert),
+      clear: () => ref.current?.clear(),
       showInfo: (message) => ref.current?.showInfo(message),
       showSuccess: (message) => ref.current?.showSuccess(message),
       showWarning: (message) => ref.current?.showWarning(message),

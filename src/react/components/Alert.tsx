@@ -33,6 +33,7 @@ const bg: Record<AlertType, string> = {
 
 export interface AlertMethods {
   show: (alert: { type: AlertType; message: string }) => void;
+  clear: () => void;
   showInfo: (message: string) => void;
   showSuccess: (message: string) => void;
   showWarning: (message: string) => void;
@@ -128,6 +129,7 @@ const Alert_: React.ForwardRefRenderFunction<AlertMethods> = (_, ref) => {
   }, []);
   useImperativeHandle(ref, () => ({
     show: (alert) => void show(alert),
+    clear: hide,
     showInfo: (message) => void show({ type: "info", message }),
     showSuccess: (message) => void show({ type: "success", message }),
     showWarning: (message) => void show({ type: "warning", message }),
