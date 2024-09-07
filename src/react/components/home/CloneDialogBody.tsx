@@ -1,5 +1,12 @@
 import { IconButton, TextField } from "@mui/material";
-import { DialogContent, DialogTitle, DialogActions, AcceptButton, CancelButton } from "../Dialog";
+import {
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  AcceptButton,
+  CancelButton,
+  DialogButton
+} from "../Dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "../Icon";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
@@ -11,7 +18,8 @@ export const CloneDialogBody: React.FC<{
     url: string,
     destinationFolder: string
   ) => Promise<boolean | "failed">;
-}> = ({ openXterm }) => {
+  killPty: () => void;
+}> = ({ openXterm, killPty }) => {
   const openFolderSelector = useCallback(async () => {
     const ret = await invokeTauriCommand("show_folder_selector");
     if (ret && destinationRef.current) {
@@ -83,6 +91,7 @@ export const CloneDialogBody: React.FC<{
       </DialogContent>
       <DialogActions>
         <AcceptButton onClick={handleOk} disabled={running} text="Execute" />
+        <DialogButton onClick={killPty} disabled={!running} text="Cancel" />
         <CancelButton text="Close" />
       </DialogActions>
     </>

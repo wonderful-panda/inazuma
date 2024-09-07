@@ -8,6 +8,7 @@ import { useOpenRepository } from "./openRepository";
 import { useWithRef } from "../useWithRef";
 import { assertNever } from "@/util";
 import { useAlert } from "@/context/AlertContext";
+import { BOLD, CRLF, RESET, ULINE, YELLOW } from "@/ansiEscape";
 
 export const useBeginClone = () => {
   const dialog = useDialog();
@@ -39,10 +40,12 @@ export const useBeginClone = () => {
                 await openRepositoryRef.current?.(destinationFolder);
                 break;
               case "failed":
-                alert.showError("Failed to clone repository");
+                alert.showError("Failed to clone repository.");
+                xterm.write(CRLF + BOLD + ULINE + YELLOW + "### FAILED ###" + RESET + CRLF);
                 break;
               case "aborted":
                 alert.showWarning("Cancelled.");
+                xterm.write(CRLF + BOLD + ULINE + YELLOW + "### CANCELLED ###" + RESET + CRLF);
                 break;
               default:
                 assertNever(status);
@@ -58,7 +61,7 @@ export const useBeginClone = () => {
 
   return useCallback(() => {
     return dialog.showModal({
-      content: <CloneDialogBody openXterm={openXterm} />,
+      content: <CloneDialogBody openXterm={openXterm} killPty={xterm.kill} />,
       onBeforeClose: async () => {
         await xterm.kill();
         return true;

@@ -145,7 +145,7 @@ export const DialogActions: React.FC<React.PropsWithChildren> = ({ children }) =
 
 export const DialogButton: React.FC<DialogAction> = ({
   text,
-  color,
+  color = "inherit",
   onClick,
   disabled,
   default: default_
