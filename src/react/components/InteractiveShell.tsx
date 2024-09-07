@@ -1,6 +1,6 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { PtyId, useXterm } from "@/hooks/useXterm";
+import { PtyExitStatus, PtyId, useXterm } from "@/hooks/useXterm";
 import { useAlert } from "@/context/AlertContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 
@@ -27,8 +27,8 @@ const InteractiveShellInner: React.FC<
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const handleExit = useCallback(
-    (succeeded: boolean) => {
-      console.log("pty-result:", succeeded);
+    (status: PtyExitStatus) => {
+      console.log("pty-result:", status);
       hide();
     },
     [hide]

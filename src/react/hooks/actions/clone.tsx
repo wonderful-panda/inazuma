@@ -6,10 +6,13 @@ import { useConfigValue } from "@/state/root";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useOpenRepository } from "./openRepository";
 import { useWithRef } from "../useWithRef";
+import { assertNever } from "@/util";
+import { useAlert } from "@/context/AlertContext";
 
 export const useBeginClone = () => {
   const dialog = useDialog();
   const xterm = useXterm();
+  const alert = useAlert();
   const [, openRepositoryRef] = useWithRef(useOpenRepository());
 
   const { fontFamily } = useConfigValue();
@@ -18,26 +21,39 @@ export const useBeginClone = () => {
     (el: HTMLDivElement, url: string, destinationFolder: string) => {
       return new Promise<boolean>((resolve) => {
         void xterm.open(el, {
-          openPty: (id, rows, cols) =>
-            invokeTauriCommand("exec_git_with_pty", {
+          openPty: (id, rows, cols) => {
+            alert.clear();
+            return invokeTauriCommand("exec_git_with_pty", {
               id,
               command: "clone",
               args: [url, destinationFolder],
               rows,
               cols
-            }),
+            });
+          },
           fontFamily: fontFamily.monospace ?? "monospace",
           fontSize: 16,
-          onExit: async (succeeded: boolean) => {
-            if (succeeded) {
-              await openRepositoryRef.current?.(destinationFolder);
+          onExit: async (status) => {
+            switch (status) {
+              case "succeeded":
+                await openRepositoryRef.current?.(destinationFolder);
+                break;
+              case "failed":
+                alert.showError("Failed to clone repository");
+                break;
+              case "aborted":
+                alert.showWarning("Cancelled.");
+                break;
+              default:
+                assertNever(status);
+                break;
             }
-            resolve(succeeded);
+            resolve(status === "succeeded");
           }
         });
       });
     },
-    [xterm, fontFamily.monospace, openRepositoryRef]
+    [xterm, fontFamily.monospace, openRepositoryRef, alert]
   );
 
   return useCallback(() => {

@@ -8,13 +8,16 @@ interface Shell {
   id: number;
   term: Terminal;
   fitAddon: FitAddon;
+  killed: boolean;
 }
 
 export type PtyId = number & { readonly _PtyId: unique symbol };
 
+export type PtyExitStatus = "succeeded" | "failed" | "aborted";
+
 export interface InteractiveShellOptions {
   openPty: (id: PtyId, rows: number, cols: number) => Promise<void>;
-  onExit?: (succeeded: boolean) => Promise<void> | void;
+  onExit?: (status: PtyExitStatus) => Promise<void> | void;
   fontFamily: string;
   fontSize: number;
 }
@@ -34,6 +37,9 @@ export const useXterm = () => {
     const closePty = closePtyRef.current;
     closePtyRef.current = undefined;
     if (closePty) {
+      if (shell.current) {
+        shell.current.killed = true;
+      }
       await closePty();
     }
   }, []);
@@ -79,11 +85,11 @@ export const useXterm = () => {
         if (shell.current) {
           shell.current.id = -1;
         }
-        void onExit?.(payload);
+        void onExit?.(shell.current?.killed ? "aborted" : payload ? "succeeded" : "failed");
       });
       await openPty(id, term.rows, term.cols);
       term.focus();
-      shell.current = { id, term, fitAddon };
+      shell.current = { id, term, fitAddon, killed: false };
     },
     [dispose]
   );
@@ -96,6 +102,7 @@ export const useXterm = () => {
     }
   }, []);
 
+  const write = (data: string) => shell.current?.term.write(data);
   const changeFont = useCallback((fontFamily: string, fontSize: number) => {
     if (shell.current) {
       shell.current.term.options.fontFamily = fontFamily;
@@ -104,5 +111,5 @@ export const useXterm = () => {
     }
   }, []);
 
-  return { open, fit, changeFont, kill, dispose };
+  return { open, fit, write, changeFont, kill, dispose };
 };
