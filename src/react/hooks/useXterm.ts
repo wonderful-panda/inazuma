@@ -81,11 +81,13 @@ export const useXterm = () => {
         onDataDisposer.dispose();
         onResizeDisposer.dispose();
         unlistenPtyExit();
-        setTimeout(unlistenPtyData, 100); // sometimes pty-exit is received before last pty-data.
         if (shell.current) {
           shell.current.id = -1;
         }
-        void onExit?.(shell.current?.killed ? "aborted" : payload ? "succeeded" : "failed");
+        setTimeout(() => {
+          unlistenPtyData();
+          void onExit?.(shell.current?.killed ? "aborted" : payload ? "succeeded" : "failed");
+        }, 100); // sometimes pty-exit arrives before last pty-data.
       });
       await openPty(id, term.rows, term.cols);
       term.focus();
