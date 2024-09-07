@@ -21,6 +21,7 @@ const icons: Record<string, string[]> = {
     "content-save",
     "delete",
     "download",
+    "download-outline",
     "email",
     "file-tree",
     "filter",
@@ -41,6 +42,7 @@ const icons: Record<string, string[]> = {
     "source-branch",
     "source-branch-plus",
     "undo",
+    "upload",
     "web"
   ],
   octicon: [
