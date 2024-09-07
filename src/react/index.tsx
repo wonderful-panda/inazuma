@@ -236,13 +236,13 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
           <ContextMenuProvider>
             <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
               <ConfirmDialogProvider>
-                <DialogProvider>
+                <AlertProvider>
                   <LoadingProvider>
-                    <AlertProvider>
+                    <DialogProvider>
                       <MainWindow>{content}</MainWindow>
-                    </AlertProvider>
+                    </DialogProvider>
                   </LoadingProvider>
-                </DialogProvider>
+                </AlertProvider>
               </ConfirmDialogProvider>
             </PersistStateProvider>
           </ContextMenuProvider>
