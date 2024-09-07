@@ -23,6 +23,7 @@ const icons: Record<string, string[]> = {
     "email",
     "file-tree",
     "filter",
+    "folder",
     "folder-download-outline",
     "folder-search-outline",
     "history",
