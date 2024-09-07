@@ -19,6 +19,7 @@ const icons: Record<string, string[]> = {
     "console",
     "content-copy",
     "delete",
+    "download",
     "email",
     "file-tree",
     "filter",
@@ -36,7 +37,8 @@ const icons: Record<string, string[]> = {
     "plus",
     "reload",
     "content-save",
-    "undo"
+    "undo",
+    "web"
   ],
   octicon: [
     "check-circle-16",

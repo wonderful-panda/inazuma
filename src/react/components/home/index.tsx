@@ -10,8 +10,10 @@ import {
   useVisibleRecentOpenedRepositoriesValue
 } from "@/state/root";
 import { useOpenRepository } from "@/hooks/actions/openRepository";
+import { useBeginClone } from "@/hooks/actions/clone";
 
 const Home: React.FC<{ active: boolean }> = ({ active }) => {
+  const beginClone = useBeginClone();
   const openRepository = useOpenRepository();
   const recentOpenedRepositories = useVisibleRecentOpenedRepositoriesValue();
   const handleOpen = useCallback(
@@ -61,6 +63,14 @@ const Home: React.FC<{ active: boolean }> = ({ active }) => {
               secondary="Select repository by folder browser"
               icon="mdi:folder-search-outline"
               action={handleBrowseClick}
+            />
+            <RepositoryListItem
+              itemId="__clone__"
+              key="__clone__"
+              primary="CLONE..."
+              secondary="Clone remote repository"
+              icon="mdi:download"
+              action={beginClone}
             />
           </List>
           <Divider className="mb-2" />
