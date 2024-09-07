@@ -18,6 +18,7 @@ const icons: Record<string, string[]> = {
     "cog",
     "console",
     "content-copy",
+    "content-save",
     "delete",
     "download",
     "email",
@@ -37,7 +38,8 @@ const icons: Record<string, string[]> = {
     "minus",
     "plus",
     "reload",
-    "content-save",
+    "source-branch",
+    "source-branch-plus",
     "undo",
     "web"
   ],
@@ -49,7 +51,6 @@ const icons: Record<string, string[]> = {
     "diff-removed-16",
     "diff-renamed-16",
     "file-code-16",
-    "git-branch-16",
     "git-compare-16"
   ],
   carbon: ["drag-horizontal", "drag-vertical"]

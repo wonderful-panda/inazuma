@@ -31,7 +31,7 @@ export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branc
         <div className="flex-col-nowrap w-[36rem]">
           <div className="text-primary">Branch name</div>
           <div className="ml-6 mb-2 px-2 flex-row-nowrap">
-            <Icon icon="octicon:git-branch-16" className="mr-2 my-auto" />
+            <Icon icon="mdi:source-branch" className="mr-2 my-auto" />
             {branchName}
           </div>
           <div className="text-primary">Options</div>

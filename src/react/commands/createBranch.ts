@@ -9,7 +9,7 @@ export const useCreateBranchCommand = () => {
       type: "commit",
       id: "CreateBranch",
       label: "Create new branch",
-      icon: "octicon:git-branch-16",
+      icon: "mdi:source-branch-plus",
       hidden: (commit) => commit.id === "--",
       handler: (commit) => {
         void beginCreateBranch(commit);
