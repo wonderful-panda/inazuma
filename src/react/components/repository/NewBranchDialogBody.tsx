@@ -36,7 +36,7 @@ export const NewBranchDialogBody: React.FC<{ commit: Commit }> = ({ commit }) =>
         <div className="m-0 flex flex-col-nowrap w-[44rem]">
           <div className="text-primary">New branch name</div>
           <div className="ml-6 mb-2 px-2 flex-row-nowrap">
-            <Icon icon="mdi:source-branch" className="mr-2 my-auto" />
+            <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
             <TextField
               inputRef={branchNameRef}
               className="w-80"

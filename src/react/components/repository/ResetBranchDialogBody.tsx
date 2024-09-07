@@ -72,7 +72,7 @@ export const ResetDialogBody: React.FC<{ branchName: string; destination: Commit
         <div className="m-0 flex flex-col-nowrap w-[44rem]">
           <div className="text-primary">Current branch</div>
           <div className="ml-6 mb-2 px-2 flex-row-nowrap">
-            <Icon icon="mdi:source-branch" className="mr-2 my-auto" />
+            <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
             <span>{branchName}</span>
           </div>
           <div className="text-primary">Reset to</div>
