@@ -72,7 +72,13 @@ const InteractiveShellInner: React.FC<
     changeFont(fontFamily, fontSize);
   }, [changeFont, fontFamily, fontSize]);
 
-  return <div ref={wrapperRef} className="relative flex-1 overflow-hidden p-0.5" tabIndex={0} />;
+  return (
+    <div
+      ref={wrapperRef}
+      className="relative flex-1 overflow-hidden border border-paper bg-console px-2 py-1 m-2"
+      tabIndex={0}
+    />
+  );
 };
 
 const nope = () => <></>;

@@ -55,7 +55,7 @@ export const useXterm = () => {
         return;
       }
       await dispose();
-      const term = new Terminal({ fontFamily, fontSize });
+      const term = new Terminal({ fontFamily, fontSize, theme: { background: "#0000" } });
       const fitAddon = new FitAddon();
       term.loadAddon(fitAddon);
       term.open(el);

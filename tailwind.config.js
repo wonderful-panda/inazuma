@@ -24,6 +24,7 @@ module.exports = {
         info: colors.blue[700],
         background: "#222",
         paper: "#333",
+        console: "#0003",
         splitter: colors.grey[800],
         titlebar: "#2a2a2a",
         tooltip: "#333",
