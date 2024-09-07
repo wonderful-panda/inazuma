@@ -3,7 +3,6 @@ import { listen } from "@tauri-apps/api/event";
 import { useCallback, useRef } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { useWithRef } from "./useWithRef";
 
 interface Shell {
   id: number;
@@ -15,6 +14,7 @@ export type PtyId = number & { readonly _PtyId: unique symbol };
 
 export interface InteractiveShellOptions {
   openPty: (id: PtyId, rows: number, cols: number) => Promise<void>;
+  onExit?: (succeeded: boolean) => Promise<void> | void;
   fontFamily: string;
   fontSize: number;
 }
@@ -26,30 +26,35 @@ const getNextPtyId = () => {
   return currentPtyId as PtyId;
 };
 
-export const useXterm = (options: { onExit?: (succeeded: boolean) => void }) => {
+export const useXterm = () => {
   const shell = useRef<Shell>();
-  const [, onExitRef] = useWithRef(options.onExit);
   const closePtyRef = useRef<() => Promise<void>>();
 
-  const kill = useCallback(() => {
-    void closePtyRef.current?.();
+  const kill = useCallback(async () => {
+    const closePty = closePtyRef.current;
     closePtyRef.current = undefined;
+    if (closePty) {
+      await closePty();
+    }
   }, []);
 
-  const dispose = useCallback(() => {
-    kill();
+  const dispose = useCallback(async () => {
+    await kill();
     shell.current?.fitAddon.dispose();
     shell.current?.term.dispose();
     shell.current = undefined;
   }, [kill]);
 
   const open = useCallback(
-    async (el: HTMLDivElement, { openPty, fontFamily, fontSize }: InteractiveShellOptions) => {
+    async (
+      el: HTMLDivElement,
+      { openPty, fontFamily, fontSize, onExit }: InteractiveShellOptions
+    ) => {
       if (shell.current && 0 < shell.current.id) {
         shell.current.term.focus();
         return;
       }
-      dispose();
+      await dispose();
       const term = new Terminal({ fontFamily, fontSize });
       const fitAddon = new FitAddon();
       term.loadAddon(fitAddon);
@@ -74,13 +79,13 @@ export const useXterm = (options: { onExit?: (succeeded: boolean) => void }) => 
         if (shell.current) {
           shell.current.id = -1;
         }
-        onExitRef.current?.(payload);
+        void onExit?.(payload);
       });
       await openPty(id, term.rows, term.cols);
       term.focus();
       shell.current = { id, term, fitAddon };
     },
-    [dispose, onExitRef]
+    [dispose]
   );
 
   const fit = useCallback(() => {

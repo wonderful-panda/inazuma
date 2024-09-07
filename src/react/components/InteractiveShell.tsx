@@ -33,9 +33,9 @@ const InteractiveShellInner: React.FC<
     },
     [hide]
   );
-  const { open: openXterm, fit, changeFont, dispose } = useXterm({ onExit: handleExit });
+  const { open: openXterm, fit, changeFont, dispose } = useXterm();
 
-  useEffect(() => dispose, [dispose]);
+  useEffect(() => () => void dispose(), [dispose]);
 
   useEffect(() => {
     if (open) {
@@ -51,13 +51,14 @@ const InteractiveShellInner: React.FC<
       await openXterm(wrapperRef.current!, {
         openPty,
         fontFamily,
-        fontSize
+        fontSize,
+        onExit: handleExit
       });
     } catch (error) {
       reportError({ error });
       hide();
     }
-  }, [openXterm, hide, commandLine, repoPath, fontFamily, fontSize, reportError]);
+  }, [openXterm, hide, commandLine, repoPath, fontFamily, fontSize, handleExit, reportError]);
 
   useEffect(() => {
     if (open) {
