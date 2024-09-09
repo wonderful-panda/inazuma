@@ -18,7 +18,7 @@ export const CloneDialogBody: React.FC<{
     url: string,
     destinationFolder: string
   ) => Promise<boolean | "failed">;
-  killPty: () => void;
+  killPty: () => Promise<void>;
 }> = ({ openXterm, killPty }) => {
   const openFolderSelector = useCallback(async () => {
     const ret = await invokeTauriCommand("show_folder_selector");
