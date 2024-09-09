@@ -5,8 +5,8 @@ extern crate env_logger;
 mod avatar_protocol_handler;
 pub mod commands;
 pub mod git;
-pub mod pty;
 pub mod platform;
+pub mod pty;
 pub mod state;
 pub mod sync;
 
@@ -145,6 +145,7 @@ pub fn run() {
             commands::restore,
             commands::show_external_diff,
             commands::get_user_info,
+            commands::get_remote_list,
             commands::yank_text,
             commands::open_pty,
             commands::write_pty,

@@ -28,3 +28,4 @@ export interface ActionItem {
   handler: () => void;
 }
 export type IconActionItem = ActionItem & { icon: IconName };
+export type Spacer = string & { readonly _Spacer: unique symbol };

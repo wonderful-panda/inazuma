@@ -1,4 +1,4 @@
-import { IconActionItem } from "@/commands/types";
+import { IconActionItem, Spacer } from "@/commands/types";
 import { assertNever } from "@/util";
 import { useCallback, useMemo, useEffect } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
@@ -33,6 +33,9 @@ import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DevTools } from "jotai-devtools";
 import { DialogProvider } from "@/context/DialogContext";
+import { useBeginPush } from "@/hooks/actions/push";
+import { useAlert } from "@/context/AlertContext";
+import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
 
 const opt = { preload: true };
 const BlameTab = lazy(async () => (await import("./BlameTab")).default, opt);
@@ -63,6 +66,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const hideInteractiveShell = useSetAtom(hideInteractiveShellAtom);
   const toggleReflog = useSetAtom(toggleReflogAtom);
   const config = useConfigValue();
+  const alert = useAlert();
   const loadRepositoryIfNotYet = useLoadRepositoryIfNotYet();
   useEffect(() => {
     void loadRepositoryIfNotYet();
@@ -103,8 +107,22 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const selectNextTab = useSetAtom(selectNextRepoTabAtom);
   const selectPrevTab = useSetAtom(selectPreviousRepoTabAtom);
   const reloadRepository = useReloadRepository();
-  const titleBarActions: IconActionItem[] = useMemo(
+  const beginPush = useBeginPush();
+
+  const beginPushCurrentBranch = useCallbackWithErrorHandler(async () => {
+    const branchName = await invokeTauriCommand("get_current_branch", { repoPath });
+    await beginPush(branchName);
+  }, [beginPush]);
+
+  const titleBarActions: (IconActionItem | Spacer)[] = useMemo(
     () => [
+      {
+        id: "push",
+        label: "Push to remote repository",
+        icon: "mdi:upload",
+        handler: beginPushCurrentBranch
+      },
+      "w-8" as Spacer,
       {
         id: "toggleReflog",
         label: "Show / hide reflog",
@@ -128,7 +146,15 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
         handler: reloadRepository
       }
     ],
-    [config.interactiveShell, toggleReflog, toggleInteractiveShell, reloadRepository]
+    [
+      config.interactiveShell,
+      beginPush,
+      toggleReflog,
+      toggleInteractiveShell,
+      repoPath,
+      reloadRepository,
+      alert
+    ]
   );
   return (
     <>

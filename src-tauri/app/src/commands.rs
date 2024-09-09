@@ -305,6 +305,11 @@ pub async fn reset(repo_path: &Path, options: ResetOptions) -> Result<(), String
 }
 
 #[tauri::command]
+pub async fn get_remote_list(repo_path: &Path) -> Result<Vec<String>, String> {
+    Ok(git::remote::get_remote_list(repo_path).await?)
+}
+
+#[tauri::command]
 pub async fn show_external_diff(
     repo_path: &Path,
     left: FileSpec,

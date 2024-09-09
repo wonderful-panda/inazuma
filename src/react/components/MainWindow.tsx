@@ -20,14 +20,14 @@ import {
 import { usePreferenceDialog } from "./PreferenceDialog";
 import { useAboutDialog } from "./AboutDialog";
 import { CommandGroup, Cmd } from "./CommandGroup";
-import { IconActionItem } from "@/commands/types";
+import { IconActionItem, Spacer } from "@/commands/types";
 import { useConfig } from "@/state/root";
 import { nope } from "@/util";
 
 export interface MainWindowProps {
   title: string;
   drawerItems?: readonly IconActionItem[];
-  titleBarActions?: readonly IconActionItem[];
+  titleBarActions?: readonly (IconActionItem | Spacer)[];
 }
 
 interface ApplicationDrawerProps {
@@ -132,18 +132,22 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
               <Icon icon="mdi:menu" />
             </IconButton>
             <span className="flex-1">{props.title}</span>
-            {props.titleBarActions?.map((a) => (
-              <IconButton
-                key={a.id}
-                title={a.label}
-                disabled={a.disabled}
-                className="p-0 w-9"
-                onClick={a.handler}
-                size="large"
-              >
-                <Icon className="text-2xl text-inherit" icon={a.icon} />
-              </IconButton>
-            ))}
+            {props.titleBarActions?.map((a, i) =>
+              typeof a === "string" ? (
+                <div key={`__spacer__${i}`} className={a} />
+              ) : (
+                <IconButton
+                  key={a.id}
+                  title={a.label}
+                  disabled={a.disabled}
+                  className="p-0 w-9"
+                  onClick={a.handler}
+                  size="large"
+                >
+                  <Icon className="text-2xl text-inherit" icon={a.icon} />
+                </IconButton>
+              )
+            )}
           </div>
           <ApplicationDrawer opened={drawerOpened} close={closeDrawer} items={drawerItems} />
           <div className="absolute left-0 right-0 top-9 bottom-0 flex box-border p-1">
