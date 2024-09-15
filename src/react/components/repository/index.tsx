@@ -35,6 +35,7 @@ import { DevTools } from "jotai-devtools";
 import { DialogProvider } from "@/context/DialogContext";
 import { useBeginPush } from "@/hooks/actions/push";
 import { useAlert } from "@/context/AlertContext";
+import { useBeginFetch } from "@/hooks/actions/fetch";
 import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
 
 const opt = { preload: true };
@@ -108,6 +109,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const selectPrevTab = useSetAtom(selectPreviousRepoTabAtom);
   const reloadRepository = useReloadRepository();
   const beginPush = useBeginPush();
+  const beginFetch = useBeginFetch();
 
   const beginPushCurrentBranch = useCallbackWithErrorHandler(async () => {
     const branchName = await invokeTauriCommand("get_current_branch", { repoPath });
@@ -116,6 +118,12 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
 
   const titleBarActions: (IconActionItem | Spacer)[] = useMemo(
     () => [
+      {
+        id: "fetch",
+        label: "Fetch from remote repository",
+        icon: "mdi:download-outline",
+        handler: beginFetch
+      },
       {
         id: "push",
         label: "Push to remote repository",
@@ -149,6 +157,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
     [
       config.interactiveShell,
       beginPush,
+      beginFetch,
       toggleReflog,
       toggleInteractiveShell,
       repoPath,
