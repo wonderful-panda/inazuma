@@ -34,7 +34,6 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { DevTools } from "jotai-devtools";
 import { DialogProvider } from "@/context/DialogContext";
 import { useBeginPush } from "@/hooks/actions/push";
-import { useAlert } from "@/context/AlertContext";
 import { useBeginFetch } from "@/hooks/actions/fetch";
 import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
 
@@ -67,7 +66,6 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const hideInteractiveShell = useSetAtom(hideInteractiveShellAtom);
   const toggleReflog = useSetAtom(toggleReflogAtom);
   const config = useConfigValue();
-  const alert = useAlert();
   const loadRepositoryIfNotYet = useLoadRepositoryIfNotYet();
   useEffect(() => {
     void loadRepositoryIfNotYet();
@@ -114,7 +112,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const beginPushCurrentBranch = useCallbackWithErrorHandler(async () => {
     const branchName = await invokeTauriCommand("get_current_branch", { repoPath });
     await beginPush(branchName);
-  }, [beginPush]);
+  }, [beginPush, repoPath]);
 
   const titleBarActions: (IconActionItem | Spacer)[] = useMemo(
     () => [
@@ -156,13 +154,11 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
     ],
     [
       config.interactiveShell,
-      beginPush,
+      beginPushCurrentBranch,
       beginFetch,
       toggleReflog,
       toggleInteractiveShell,
-      repoPath,
-      reloadRepository,
-      alert
+      reloadRepository
     ]
   );
   return (
