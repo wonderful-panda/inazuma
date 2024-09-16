@@ -2,11 +2,6 @@ use core::slice;
 use std::error::Error;
 use thiserror::Error;
 
-use winapi::ctypes::c_int;
-use winapi::shared::minwindef::HLOCAL;
-use winapi::um::shellapi;
-use winapi::um::winbase::LocalFree;
-
 #[cfg(not(target_os = "windows"))]
 pub fn split_commandline(s: &str) -> Result<Vec<String>, Box<dyn Error + Send + Sync>> {
     shell_words::split(s).map_err(|e| e.into())
@@ -28,6 +23,10 @@ pub enum WindowsError {
 fn split_commandline_windows(s: &str) -> Result<Vec<String>, Box<dyn Error + Send + Sync>> {
     use std::ffi::OsString;
     use std::os::windows::ffi::OsStringExt;
+    use winapi::ctypes::c_int;
+    use winapi::shared::minwindef::HLOCAL;
+    use winapi::um::shellapi;
+    use winapi::um::winbase::LocalFree;
     let mut ret: Vec<String> = Vec::new();
     if s.is_empty() {
         return Ok(ret);
