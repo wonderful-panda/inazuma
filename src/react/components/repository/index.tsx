@@ -36,6 +36,7 @@ import { DialogProvider } from "@/context/DialogContext";
 import { useBeginPush } from "@/hooks/actions/push";
 import { useBeginFetch } from "@/hooks/actions/fetch";
 import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
+import { useBeginPull } from "@/hooks/actions/pull";
 
 const opt = { preload: true };
 const BlameTab = lazy(async () => (await import("./BlameTab")).default, opt);
@@ -108,6 +109,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const reloadRepository = useReloadRepository();
   const beginPush = useBeginPush();
   const beginFetch = useBeginFetch();
+  const beginPull = useBeginPull();
 
   const beginPushCurrentBranch = useCallbackWithErrorHandler(async () => {
     const branchName = await invokeTauriCommand("get_current_branch", { repoPath });
@@ -121,6 +123,12 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
         label: "Fetch from remote repository",
         icon: "mdi:download-outline",
         handler: beginFetch
+      },
+      {
+        id: "pull",
+        label: "Pull(fetch and merge) from remote repository",
+        icon: "mdi:download",
+        handler: beginPull
       },
       {
         id: "push",
@@ -156,6 +164,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
       config.interactiveShell,
       beginPushCurrentBranch,
       beginFetch,
+      beginPull,
       toggleReflog,
       toggleInteractiveShell,
       reloadRepository
