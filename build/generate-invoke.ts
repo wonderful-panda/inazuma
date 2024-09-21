@@ -102,7 +102,6 @@ const generateInvokeType = () => {
 import { {{{.}}} } from "@backend/{{{.}}}";
 {{/each}}
 
-// prettier-ignore
 export type TauriInvokeType = {
 {{#each data}}
   "{{{name}}}": {

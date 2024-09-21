@@ -1,7 +1,7 @@
 import { assertNever, nope } from "@/util";
 import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 
-// prettier-ignore
+// biome-ignore format:
 type Char =
   | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N"
   | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
@@ -9,7 +9,7 @@ type Char =
 
 type FKey = `F${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12}`;
 
-// prettier-ignore
+// biome-ignore format:
 type OtherKey =
   | "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight"
   | "Home" | "End" | "PageUp" | "PageDown"

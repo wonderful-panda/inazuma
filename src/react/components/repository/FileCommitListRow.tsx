@@ -60,7 +60,9 @@ const FileCommitListRow_: React.FC<FileCommitListRowProps> = ({
       </div>
       <div className="relative flex flex-col flex-nowrap flex-1 ml-1 my-auto overflow-hidden">
         <div className="flex-row-nowrap items-center text-lg leading-6 ellipsis">
-          {refs?.map((r) => <RefBadge key={`${r.type}:${r.fullname}`} r={r} />)}
+          {refs?.map((r) => (
+            <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
+          ))}
           <span className="ellipsis">{commit.summary}</span>
         </div>
         <div className="flex-row-nowrap items-center leading-5 pl-2 text-greytext ellipsis">

@@ -1,0 +1,15 @@
+{
+  "files": {
+    "include": ["**/*.ts", "**/*.tsx"],
+    "ignore": ["generated/**/*.*"]
+  },
+  "formatter": {
+    "indentStyle": "space"
+  },
+  "javascript": {
+    "formatter": {
+      "lineWidth": 100,
+      "trailingCommas": "none"
+    }
+  }
+}
