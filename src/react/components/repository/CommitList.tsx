@@ -1,9 +1,9 @@
 import { useTheme } from "@mui/material";
 import { forwardRef, memo, useCallback, useMemo } from "react";
-import { GraphFragment } from "@/grapher";
+import type { GraphFragment } from "@/grapher";
 import { CommitListRow } from "./CommitListRow";
-import { VirtualList, VirtualListEvents, VirtualListMethods } from "../VirtualList";
-import { CommitCommand } from "@/commands/types";
+import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "../VirtualList";
+import type { CommitCommand } from "@/commands/types";
 
 export interface CommitListProps extends VirtualListEvents<Commit> {
   commits: Commit[];

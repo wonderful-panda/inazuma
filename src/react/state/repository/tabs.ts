@@ -1,4 +1,4 @@
-import { TabDefinition } from "@/components/TabContainer";
+import type { TabDefinition } from "@/components/TabContainer";
 import { createTabsAtoms } from "../tabs";
 
 export interface TabType {

@@ -8,7 +8,7 @@ import { FileList, useFileListRowEventHandler } from "./FileList";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
 import { useDiffWithParentCommand } from "@/commands/diff";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
-import { VirtualListMethods } from "../VirtualList";
+import type { VirtualListMethods } from "../VirtualList";
 import { useShowFileContentCommand } from "@/commands/showFileContent";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";

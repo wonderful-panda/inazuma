@@ -1,4 +1,4 @@
-import { GraphFragment } from "@/grapher";
+import type { GraphFragment } from "@/grapher";
 import { atom, createStore } from "jotai";
 import { resetRepoTabsAtom } from "./tabs";
 import { workingTreeAtom } from "./workingtree";

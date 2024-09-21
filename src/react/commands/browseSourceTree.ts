@@ -1,5 +1,5 @@
 import { useShowLsTree } from "@/hooks/actions/showLsTree";
-import { CommitCommand } from "./types";
+import type { CommitCommand } from "./types";
 import { useMemo } from "react";
 
 export const useBrowseSourceTreeCommand = () => {

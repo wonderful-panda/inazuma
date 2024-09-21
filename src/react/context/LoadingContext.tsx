@@ -1,4 +1,4 @@
-import { FullscreenLoading, FullscreenLoadingMethods } from "@/components/Loading";
+import { FullscreenLoading, type FullscreenLoadingMethods } from "@/components/Loading";
 import { nope } from "@/util";
 import { createContext, useContext, useMemo, useRef } from "react";
 

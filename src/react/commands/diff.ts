@@ -1,5 +1,5 @@
 import { shortHash } from "@/util";
-import { FileCommand } from "./types";
+import type { FileCommand } from "./types";
 import { useMemo } from "react";
 import { useShowExternalDiff } from "@/hooks/actions/showExternalDiff";
 

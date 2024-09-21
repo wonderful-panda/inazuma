@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useAlert } from "@/context/AlertContext";
 import { PushDialogBody } from "@/components/repository/PushDialogBody";
-import { DialogResult } from "@/components/Dialog";
+import type { DialogResult } from "@/components/Dialog";
 import { useAtomValue } from "jotai";
 import { repoPathAtom } from "@/state/repository";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";

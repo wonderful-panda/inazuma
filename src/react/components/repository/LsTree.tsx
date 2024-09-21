@@ -1,10 +1,10 @@
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
+import type { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
 import { getFileName } from "@/util";
 import { useTheme } from "@mui/material";
 import classNames from "classnames";
 import { useCallback } from "react";
-import { VirtualListEvents } from "../VirtualList";
+import type { VirtualListEvents } from "../VirtualList";
 import { VirtualTree } from "../VirtualTree";
 
 export interface LsTreeProps extends VirtualListEvents<TreeItemVM<LstreeData>> {

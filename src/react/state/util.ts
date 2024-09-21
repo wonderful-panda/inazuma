@@ -1,4 +1,4 @@
-import { Atom, type createStore } from "jotai";
+import type { Atom, createStore } from "jotai";
 export type Store = ReturnType<typeof createStore>;
 
 export function createWacher<T>(atom: Atom<T>, store: Store) {

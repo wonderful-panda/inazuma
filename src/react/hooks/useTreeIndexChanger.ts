@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
-import { useListIndexChanger, ListItemSelector } from "./useListIndexChanger";
-import { TreeModelDispatch, TreeModelState } from "./useTreeModel";
+import { useListIndexChanger, type ListItemSelector } from "./useListIndexChanger";
+import type { TreeModelDispatch, TreeModelState } from "./useTreeModel";
 
 export const useTreeIndexChanger = <T>(
   treeModelState: TreeModelState<T>,

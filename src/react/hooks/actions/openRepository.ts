@@ -1,8 +1,8 @@
 import { setLogAtom, logAtom, repoPathAtom, repositoryStoresAtomFamily } from "@/state/repository";
-import { Getter, Setter } from "jotai";
+import type { Getter, Setter } from "jotai";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 import { getFileName, toSlashedPath } from "@/util";
-import { GraphFragment, Grapher } from "@/grapher";
+import { type GraphFragment, Grapher } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { addRecentOpenedRepository } from "@/state/root";
 import { addAppTab, getAppTabsValue, selectAppTab } from "@/state/tabs";

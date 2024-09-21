@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GitHash } from "../GitHash";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { VirtualListMethods } from "../VirtualList";
+import type { VirtualListMethods } from "../VirtualList";
 import { BlameFooter } from "./BlameFooter";
 import { BlameViewer } from "./BlameViewer";
 import { FileCommitList } from "./FileCommitList";

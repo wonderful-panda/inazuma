@@ -1,4 +1,4 @@
-import { IconActionItem } from "@/commands/types";
+import type { IconActionItem } from "@/commands/types";
 import { IconButton } from "@mui/material";
 import classNames from "classnames";
 import { memo, useMemo } from "react";

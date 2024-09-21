@@ -1,5 +1,5 @@
 import { usePersistState } from "@/hooks/usePersistState";
-import { SplitterPanel, SplitterPanelProps } from "./SplitterPanel";
+import { SplitterPanel, type SplitterPanelProps } from "./SplitterPanel";
 
 export type PersistSplitterPanelProps = Omit<
   SplitterPanelProps,

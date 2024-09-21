@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import { memo, useMemo } from "react";
 import { FileStatusIcon } from "./FileStatusIcon";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import { FileCommand, IconActionItem } from "@/commands/types";
+import type { FileCommand, IconActionItem } from "@/commands/types";
 import { fileCommandsToActions } from "@/commands";
 import { RowActionButtons } from "./RowActionButtons";
 import { FileStat } from "./FileStat";

@@ -1,4 +1,4 @@
-import { NodeEdge, GraphFragment } from "@/grapher";
+import type { NodeEdge, GraphFragment } from "@/grapher";
 import { shortHash } from "@/util";
 import { memo } from "react";
 

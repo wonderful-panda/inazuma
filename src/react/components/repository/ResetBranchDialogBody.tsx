@@ -6,7 +6,7 @@ import { CommitAttributes } from "./CommitAttributes";
 import classNames from "classnames";
 import { useReset } from "@/hooks/actions/reset";
 import { useAlert } from "@/context/AlertContext";
-import { ResetMode } from "@backend/ResetMode";
+import type { ResetMode } from "@backend/ResetMode";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useAtomValue } from "jotai";
 import { repoPathAtom } from "@/state/repository";

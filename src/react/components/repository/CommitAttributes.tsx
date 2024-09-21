@@ -1,4 +1,4 @@
-import { IconName } from "@/types/IconName";
+import type { IconName } from "@/types/IconName";
 import { formatDateTimeLong } from "@/date";
 import { GitHash } from "../GitHash";
 import { Icon } from "../Icon";

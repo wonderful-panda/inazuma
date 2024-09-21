@@ -1,4 +1,4 @@
-import { IconName } from "@/types/IconName";
+import type { IconName } from "@/types/IconName";
 
 export interface CommitCommand {
   type: "commit";

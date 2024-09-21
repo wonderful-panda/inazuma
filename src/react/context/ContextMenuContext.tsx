@@ -1,4 +1,4 @@
-import { ActionItem } from "@/commands/types";
+import type { ActionItem } from "@/commands/types";
 import { Icon } from "@/components/Icon";
 import { nope } from "@/util";
 import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";

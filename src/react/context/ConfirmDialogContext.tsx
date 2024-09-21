@@ -5,7 +5,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogMethods,
+  type DialogMethods,
   DialogTitle
 } from "@/components/Dialog";
 

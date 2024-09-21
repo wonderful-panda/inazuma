@@ -8,7 +8,7 @@ import {
   ListItemText
 } from "@mui/material";
 import { useCallback, useMemo } from "react";
-import { IconName } from "@/types/IconName";
+import type { IconName } from "@/types/IconName";
 
 export interface RepositoryListItemProps {
   itemId: string;

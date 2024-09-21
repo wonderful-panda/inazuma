@@ -1,4 +1,4 @@
-import { DebouncedFunc, throttle } from "lodash";
+import { type DebouncedFunc, throttle } from "lodash";
 
 export const assertNever = (_: never): never => {
   throw new Error("This function must be unreachable");

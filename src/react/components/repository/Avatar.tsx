@@ -1,4 +1,4 @@
-import { AvatarShape } from "@backend/AvatarShape";
+import type { AvatarShape } from "@backend/AvatarShape";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import classNames from "classnames";
 import { useMemo } from "react";

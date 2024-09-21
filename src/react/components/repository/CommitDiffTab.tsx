@@ -3,7 +3,7 @@ import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { FileList, useFileListRowEventHandler } from "./FileList";
 import { Loading } from "../Loading";
 import { FlexCard } from "../FlexCard";
-import { VirtualListMethods } from "../VirtualList";
+import type { VirtualListMethods } from "../VirtualList";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { debounce } from "lodash";

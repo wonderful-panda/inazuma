@@ -1,4 +1,4 @@
-import { GlobalAlert, AlertMethods } from "@/components/Alert";
+import { GlobalAlert, type AlertMethods } from "@/components/Alert";
 import { nope } from "@/util";
 import { createContext, useContext, useMemo, useRef } from "react";
 

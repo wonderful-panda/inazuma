@@ -1,6 +1,6 @@
 import { useBrowseSourceTreeCommand } from "./browseSourceTree";
 import { useCopyFullHashCommand, useCopyShortHashCommand } from "./copyHash";
-import { ActionItem, CommitCommand, FileCommand } from "./types";
+import type { ActionItem, CommitCommand, FileCommand } from "./types";
 import { useCreateBranchCommand } from "./createBranch";
 import { useMemo } from "react";
 import { useCopyRelativePathCommand } from "./copyRelativePath";

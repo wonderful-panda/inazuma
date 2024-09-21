@@ -1,9 +1,9 @@
 import { Divider, List, Typography } from "@mui/material";
-import { RepositoryListItem, RepositoryListItemProps } from "./RepositoryListItem";
+import { RepositoryListItem, type RepositoryListItemProps } from "./RepositoryListItem";
 import { useCallback, useMemo } from "react";
 import { MainWindowProperty } from "@/components/MainWindow";
 import { CommandGroup, Cmd } from "../CommandGroup";
-import { Command } from "@/context/CommandGroupContext";
+import type { Command } from "@/context/CommandGroupContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import {
   removeRecentOpenedRepository,

@@ -5,7 +5,7 @@ import { currentBranchAtom, repoPathAtom } from "../../state/repository";
 import { useReloadRepository } from "@/hooks/actions/openRepository";
 import { useDialog } from "@/context/DialogContext";
 import { ResetDialogBody } from "@/components/repository/ResetBranchDialogBody";
-import { ResetOptions } from "@backend/ResetOptions";
+import type { ResetOptions } from "@backend/ResetOptions";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 export const useBeginReset = () => {

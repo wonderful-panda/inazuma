@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/material";
-import { ComponentProps, useCallback, useRef, useState } from "react";
+import { type ComponentProps, useCallback, useRef, useState } from "react";
 
 export const LazyTooltip: React.FC<{
   className: string;

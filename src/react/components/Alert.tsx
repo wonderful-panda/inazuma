@@ -2,7 +2,7 @@ import { IconButton, Snackbar, SnackbarContent, Typography } from "@mui/material
 import { Icon } from "./Icon";
 import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
 import { assertNever, serializeError, wait } from "@/util";
-import { IconName } from "@/types/IconName";
+import type { IconName } from "@/types/IconName";
 import { createPortal } from "react-dom";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useWithRef } from "@/hooks/useWithRef";

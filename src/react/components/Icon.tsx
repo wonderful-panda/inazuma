@@ -1,6 +1,6 @@
-import { IconName } from "@/types/IconName";
+import type { IconName } from "@/types/IconName";
 import iconifyJSONs from "@/generated/iconbundle.json";
-import { Icon as IconRaw, IconifyJSON, addCollection } from "@iconify/react/offline";
+import { Icon as IconRaw, type IconifyJSON, addCollection } from "@iconify/react/offline";
 
 iconifyJSONs.forEach((json: unknown) => {
   addCollection(json as IconifyJSON);

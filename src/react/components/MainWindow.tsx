@@ -1,6 +1,7 @@
 import IconButton from "@mui/material/IconButton";
 import { Icon } from "./Icon";
-import React, {
+import type React from "react";
+import {
   memo,
   useCallback,
   useMemo,
@@ -20,7 +21,7 @@ import {
 import { usePreferenceDialog } from "./PreferenceDialog";
 import { useAboutDialog } from "./AboutDialog";
 import { CommandGroup, Cmd } from "./CommandGroup";
-import { IconActionItem, Spacer } from "@/commands/types";
+import type { IconActionItem, Spacer } from "@/commands/types";
 import { useConfig } from "@/state/root";
 import { nope } from "@/util";
 

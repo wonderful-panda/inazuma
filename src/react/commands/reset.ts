@@ -1,5 +1,5 @@
 import { useBeginReset } from "@/hooks/actions/reset";
-import { CommitCommand } from "./types";
+import type { CommitCommand } from "./types";
 import { useMemo } from "react";
 
 export const useResetCommand = () => {

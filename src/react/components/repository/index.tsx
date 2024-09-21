@@ -1,11 +1,11 @@
-import { IconActionItem, Spacer } from "@/commands/types";
+import type { IconActionItem, Spacer } from "@/commands/types";
 import { assertNever } from "@/util";
 import { useCallback, useMemo, useEffect } from "react";
 import { CommandGroup, Cmd } from "../CommandGroup";
 import { InteractiveShell } from "../InteractiveShell";
 import { MainWindowProperty } from "../MainWindow";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { TabContainer, TabContainerProps, TooltipTitle } from "../TabContainer";
+import { TabContainer, type TabContainerProps, TooltipTitle } from "../TabContainer";
 import CommitLog from "./CommitLog";
 import BlameTabTooltip from "./BlameTabTooltip";
 import LsTreeTabTooltip from "./LsTreeTabTooltip";
@@ -15,7 +15,7 @@ import { useConfigValue } from "@/state/root";
 import { logAtom, repoPathAtom, repositoryStoresAtomFamily } from "@/state/repository";
 import { Provider, useAtomValue, useSetAtom } from "jotai";
 import {
-  TabType,
+  type TabType,
   removeRepoTabAtom,
   selectNextRepoTabAtom,
   selectPreviousRepoTabAtom,

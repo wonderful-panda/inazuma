@@ -1,4 +1,4 @@
-import { Dialog, DialogMethods } from "@/components/Dialog";
+import { Dialog, type DialogMethods } from "@/components/Dialog";
 import { createContext, useContext, useMemo, useRef } from "react";
 
 const defaultMethods: DialogMethods = {

@@ -1,13 +1,13 @@
 import classNames from "classnames";
-import { GraphFragment } from "@/grapher";
+import type { GraphFragment } from "@/grapher";
 import { memo, useMemo } from "react";
 import { GraphCell } from "./GraphCell";
 import { RefBadge } from "./RefBadge";
 import { formatDateTimeLong } from "@/date";
 import { GitHash } from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import { CommitCommand } from "@/commands/types";
-import { RowActionButtons, RowActionItem } from "./RowActionButtons";
+import type { CommitCommand } from "@/commands/types";
+import { RowActionButtons, type RowActionItem } from "./RowActionButtons";
 import { commitCommandsToActions } from "@/commands";
 import { Avatar } from "./Avatar";
 import { useConfigValue } from "@/state/root";

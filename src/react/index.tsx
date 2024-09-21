@@ -5,7 +5,7 @@ import { createRoot } from "react-dom/client";
 import Home from "./components/home";
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
-import { PartialStorage, PersistStateProvider } from "./context/PersistStateContext";
+import { type PartialStorage, PersistStateProvider } from "./context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
 import { CommandGroupProvider, CommandGroupTreeProvider } from "./context/CommandGroupContext";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
@@ -23,7 +23,7 @@ import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions
 import { useWithRef } from "./hooks/useWithRef";
 import { MainWindow } from "./components/MainWindow";
 import {
-  AppTabType,
+  type AppTabType,
   registerApplicationTabsWatcher,
   useAppTabsValue,
   setInitialValue as setInitialAppTabsValue,
@@ -32,9 +32,9 @@ import {
   selectHomeTab,
   selectAppTab,
   removeAppTab,
-  TabsState
+  type TabsState
 } from "./state/tabs";
-import { TabContainer, TabContainerProps, TooltipTitle } from "./components/TabContainer";
+import { TabContainer, type TabContainerProps, TooltipTitle } from "./components/TabContainer";
 import { assertNever } from "./util";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
 import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";

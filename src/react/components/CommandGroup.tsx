@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { Command, useCommandGroupTree } from "@/context/CommandGroupContext";
+import { type Command, useCommandGroupTree } from "@/context/CommandGroupContext";
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { nope } from "@/util";
 

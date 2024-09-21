@@ -2,7 +2,7 @@ import type * as monaco from "monaco-editor";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import { memo, useCallback, useMemo, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { MonacoDiffEditor, DiffContent } from "../MonacoDiffEditor";
+import { MonacoDiffEditor, type DiffContent } from "../MonacoDiffEditor";
 
 setupMonaco();
 

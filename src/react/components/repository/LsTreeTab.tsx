@@ -1,6 +1,6 @@
 import { filterTreeItems, sortTreeInplace } from "@/tree";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useTreeModel, TreeItemVM } from "@/hooks/useTreeModel";
+import { useTreeModel, type TreeItemVM } from "@/hooks/useTreeModel";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { Loading } from "../Loading";
 import { LsTree } from "./LsTree";

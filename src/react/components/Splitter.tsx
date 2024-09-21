@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { IconButton } from "@mui/material";
-import React, { useCallback, useState } from "react";
+import type React from "react";
+import { useCallback, useState } from "react";
 import { Icon } from "./Icon";
 
 interface SplitterProps {

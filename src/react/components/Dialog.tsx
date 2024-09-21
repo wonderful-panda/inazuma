@@ -1,12 +1,13 @@
 import { useStateWithRef } from "@/hooks/useStateWithRef";
 import { assertNever, wait } from "@/util";
-import { DndContext, DragEndEvent, DraggableAttributes, useDraggable } from "@dnd-kit/core";
-import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+import { DndContext, type DragEndEvent, type DraggableAttributes, useDraggable } from "@dnd-kit/core";
+import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { Icon } from "@iconify/react";
 import { Button, IconButton, Paper } from "@mui/material";
 import classNames from "classnames";
-import React, {
-  createContext,
+import type React from "react";
+import {
+  createContext,type 
   CSSProperties,
   forwardRef,
   useCallback,
@@ -15,7 +16,7 @@ import React, {
   useMemo,
   useRef,
   useState
-} from "react";
+} from "react"
 
 export interface DialogAction {
   text: string;

@@ -1,5 +1,5 @@
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { FileCommand } from "./types";
+import type { FileCommand } from "./types";
 import { useMemo } from "react";
 import { useAlert } from "@/context/AlertContext";
 

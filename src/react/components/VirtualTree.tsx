@@ -1,8 +1,8 @@
-import { TreeItem } from "@/tree";
+import type { TreeItem } from "@/tree";
 import classNames from "classnames";
 import { memo, useCallback, useEffect, useMemo, useRef } from "react";
-import { VirtualList, VirtualListEvents, VirtualListMethods } from "./VirtualList";
-import { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
+import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "./VirtualList";
+import type { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
 
 export interface VirtualTreeProps<T> extends VirtualListEvents<TreeItemVM<T>> {
   treeModelState: TreeModelState<T>;

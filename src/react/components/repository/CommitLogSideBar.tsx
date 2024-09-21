@@ -1,5 +1,6 @@
 import { Collapse, IconButton, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
-import React, { useCallback, useMemo, useState } from "react";
+import type React from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Icon } from "../Icon";
 import classNames from "classnames";
 import { useBeginDeleteBranch, useSwitchBranch } from "@/hooks/actions/branch";
