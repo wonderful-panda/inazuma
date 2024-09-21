@@ -3,6 +3,12 @@ import { listen } from "@tauri-apps/api/event";
 import { useCallback, useRef } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { useWithRef } from "./useWithRef";
+import { useReloadRepository } from "./actions/openRepository";
+import { useAlert } from "@/context/AlertContext";
+import { assertNever } from "@/util";
+import { BOLD, CRLF, RESET, ULINE, YELLOW } from "@/ansiEscape";
+import { useConfigValue } from "@/state/root";
 
 interface Shell {
   id: number;
@@ -114,4 +120,56 @@ export const useXterm = () => {
   }, []);
 
   return { open, fit, write, changeFont, kill, dispose };
+};
+
+export const useExecuteGitInXterm = () => {
+  const xterm = useXterm();
+  const alert = useAlert();
+  const fontFamily = useConfigValue().fontFamily.monospace ?? "monospace";
+  const [, reloadRepositoryRef] = useWithRef(useReloadRepository());
+  const execute = useCallback(
+    (
+      el: HTMLDivElement,
+      options: { command: string; args: string[]; onSucceeded?: () => Promise<unknown> }
+    ) => {
+      return new Promise<boolean>((resolve) => {
+        void xterm.open(el, {
+          openPty: (id, rows, cols) => {
+            alert.clear();
+            return invokeTauriCommand("exec_git_with_pty", {
+              id,
+              command: options.command,
+              args: options.args,
+              rows,
+              cols
+            });
+          },
+          fontFamily,
+          fontSize: 16,
+          onExit: async (status) => {
+            switch (status) {
+              case "succeeded":
+                await (options.onSucceeded ?? reloadRepositoryRef.current)?.();
+                break;
+              case "failed":
+                alert.showError("Failed.");
+                xterm.write(CRLF + BOLD + ULINE + YELLOW + "### FAILED ###" + RESET + CRLF);
+                break;
+              case "aborted":
+                alert.showWarning("Cancelled.");
+                xterm.write(CRLF + BOLD + ULINE + YELLOW + "### CANCELLED ###" + RESET + CRLF);
+                break;
+              default:
+                assertNever(status);
+                break;
+            }
+            resolve(status === "succeeded");
+          }
+        });
+      });
+    },
+    [xterm, fontFamily, alert, reloadRepositoryRef]
+  );
+  const kill = useCallback(() => xterm.kill(), [xterm]);
+  return { execute, kill };
 };
