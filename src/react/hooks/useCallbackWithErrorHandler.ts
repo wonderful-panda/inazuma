@@ -11,6 +11,7 @@ export function useCallbackWithErrorHandler<T extends (...args: never[]) => unkn
 ): (...args: Parameters<T>) => Promise<TryUnwrapProimse<ReturnType<T>> | "failed"> {
   const loading = useLoading();
   const { reportError } = useAlert();
+  // biome-ignore lint/correctness/useExhaustiveDependencies(func):
   return useCallback(
     async (...args: Parameters<T>) => {
       try {
@@ -32,7 +33,6 @@ export function useCallbackWithErrorHandler<T extends (...args: never[]) => unkn
         }
       }
     },
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [...deps, opt?.loading, loading]
+    [...deps, opt?.loading, loading, reportError]
   );
 }

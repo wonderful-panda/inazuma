@@ -22,7 +22,7 @@ export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branc
     }
     const force = forceRef.current?.checked ?? false;
     return await deleteBranch({ branchName, force });
-  }, [branchName, forceRef, deleteBranch, showWarning]);
+  }, [branchName, deleteBranch, showWarning]);
 
   return (
     <>

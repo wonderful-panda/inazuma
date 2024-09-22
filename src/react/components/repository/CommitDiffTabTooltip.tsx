@@ -13,11 +13,9 @@ const CommitDiffTabTooltip: React.FC<CommitDiffTabTooltipProps> = ({ commitFrom,
         text={commitFrom !== "parent" ? "Commit difference between" : "Commit changes"}
       />
       {commitFrom !== "parent" && (
-        <>
-          <div className="m-1 ml-4 pb-1 border-b border-greytext">
-            <CommitAttributes commit={commitFrom} showSummary />
-          </div>
-        </>
+        <div className="m-1 ml-4 pb-1 border-b border-greytext">
+          <CommitAttributes commit={commitFrom} showSummary />
+        </div>
       )}
       <div className="m-1 ml-4 pt-1">
         <CommitAttributes commit={commitTo} showSummary />

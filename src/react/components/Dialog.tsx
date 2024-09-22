@@ -1,14 +1,19 @@
 import { useStateWithRef } from "@/hooks/useStateWithRef";
 import { assertNever, wait } from "@/util";
-import { DndContext, type DragEndEvent, type DraggableAttributes, useDraggable } from "@dnd-kit/core";
+import {
+  DndContext,
+  type DragEndEvent,
+  type DraggableAttributes,
+  useDraggable
+} from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { Icon } from "@iconify/react";
 import { Button, IconButton, Paper } from "@mui/material";
 import classNames from "classnames";
 import type React from "react";
 import {
-  createContext,type 
-  CSSProperties,
+  createContext,
+  type CSSProperties,
   forwardRef,
   useCallback,
   useContext,
@@ -16,7 +21,7 @@ import {
   useMemo,
   useRef,
   useState
-} from "react"
+} from "react";
 
 export interface DialogAction {
   text: string;
@@ -316,7 +321,7 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
       setProps(defaultProps);
       statusRef.current = "disposed";
     }
-  }, [setProps, statusRef]);
+  }, [statusRef]);
 
   const methods = useMemo<DialogMethods>(() => {
     return {
@@ -343,7 +348,7 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
         });
       }
     };
-  }, [setProps, setStatus, statusRef, dispose]);
+  }, [setStatus, statusRef, dispose]);
 
   useImperativeHandle(outerRef, () => methods, [methods]);
 

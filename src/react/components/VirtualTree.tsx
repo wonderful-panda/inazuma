@@ -19,6 +19,7 @@ const ExpandButton: React.FC<{ expanded: boolean; size: number }> = ({ expanded,
     height={size}
     className={classNames("my-auto cursor-pointer", expanded && "rotate-90")}
   >
+    <title>toggle expansion</title>
     <polygon
       transform={`translate(${size / 2}, ${size / 2})`}
       points="-1,-4 3,0 -1,4"

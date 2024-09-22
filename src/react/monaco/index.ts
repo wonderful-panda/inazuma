@@ -79,7 +79,9 @@ export function getLangIdFromPath(path: string): string {
     langIdMap = {};
     monaco.languages.getLanguages().forEach((lang) => {
       if (lang.extensions) {
-        lang.extensions.forEach((ext) => (langIdMap[ext.toLowerCase()] = lang.id));
+        lang.extensions.forEach((ext) => {
+          langIdMap[ext.toLowerCase()] = lang.id;
+        });
       }
     });
   }

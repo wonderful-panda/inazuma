@@ -158,7 +158,7 @@ const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
         onUpdateBlamePath={setBlamePath}
       />
     ),
-    [commit, entries, blamePath, setBlamePath]
+    [commit, entries, blamePath]
   );
   useEffect(() => {
     invokeTauriCommand("get_tree", { repoPath, revspec })

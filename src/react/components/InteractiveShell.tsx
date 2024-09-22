@@ -37,6 +37,8 @@ const InteractiveShellInner: React.FC<
 
   useEffect(() => () => void dispose(), [dispose]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies(width):
+  // biome-ignore lint/correctness/useExhaustiveDependencies(height):
   useEffect(() => {
     if (open) {
       fit();
@@ -76,7 +78,6 @@ const InteractiveShellInner: React.FC<
     <div
       ref={wrapperRef}
       className="relative flex-1 overflow-hidden border border-paper bg-console px-2 py-1 m-2"
-      tabIndex={0}
     />
   );
 };

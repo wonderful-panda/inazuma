@@ -6,6 +6,25 @@
   "formatter": {
     "indentStyle": "space"
   },
+  "linter": {
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "useKeyWithClickEvents": "off"
+      },
+      "style": {
+        "noUselessElse": "off",
+        "useTemplate": "off",
+        "noNonNullAssertion": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off"
+      }
+    }
+  },
   "javascript": {
     "formatter": {
       "lineWidth": 100,

@@ -117,6 +117,7 @@ const CommitLogInner: React.FC<{
     void selectLog(selectedIndex);
   }, [selectedIndex, selectLog]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies(repoPath):
   useEffect(() => {
     setTimeout(() => {
       listRef.current?.scrollToItem(selectedIndexRef.current);

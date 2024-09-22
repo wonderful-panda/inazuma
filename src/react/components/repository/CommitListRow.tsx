@@ -59,7 +59,7 @@ export const useCompareWithPinnedCommitAction = (
   return useMemo<RowActionItem>(
     () => ({
       id: "CompareCommitWithPinnedCommit",
-      label: `Compare with pinned commit (Compare-BASE commit)`,
+      label: "Compare with pinned commit (Compare-BASE commit)",
       icon: "mdi:map-marker-distance",
       hidden: () => commit.id === "--",
       disabled: pinned,

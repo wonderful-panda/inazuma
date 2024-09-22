@@ -118,6 +118,7 @@ const TabPage = <T,>(p: {
 
 export const TabContainer = <T,>(p: TabContainerProps<T>) => {
   const tabBarRef = useRef<HTMLDivElement>(null);
+  // biome-ignore lint/correctness/useExhaustiveDependencies(p.currentTabIndex):
   useEffect(() => {
     const el = tabBarRef.current?.querySelector(`.${CURRENT_TABBUTTON_CLASS}`);
     el?.scrollIntoView({ block: "nearest" });

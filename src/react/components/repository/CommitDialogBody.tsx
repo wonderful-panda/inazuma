@@ -59,7 +59,7 @@ export const CommitDialogBody: React.FC = () => {
           revspec: "HEAD"
         });
         messageRef.current.value =
-          commitDetail.summary + (commitDetail.body ? "\n\n" + commitDetail.body : "");
+          commitDetail.summary + (commitDetail.body ? `\n\n${commitDetail.body}` : "");
         handleChange();
       } catch (error) {
         reportError({ error });

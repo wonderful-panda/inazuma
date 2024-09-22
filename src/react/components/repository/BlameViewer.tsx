@@ -222,6 +222,7 @@ const BlameViewer_: React.FC<BlameViewerProps> = ({
   const lineNumberMap = useMemo(() => {
     const map: Record<string, number[]> = {};
     blame.commitIds.forEach((commitId, index) => {
+      // biome-ignore lint/suspicious/noAssignInExpressions:
       (map[commitId] ?? (map[commitId] = [])).push(index + 1);
     });
     return map;

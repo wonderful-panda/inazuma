@@ -31,7 +31,7 @@ export const useItemBasedListItemSelector = <T>(
         setSelectedItem(items[value]);
       }
     },
-    [items, setSelectedItem]
+    [items]
   );
   return {
     selectedItem,

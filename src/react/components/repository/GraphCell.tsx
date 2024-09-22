@@ -82,6 +82,7 @@ const GraphCell_: React.FC<Props> = ({ graph, height, head, maskIdPrefix }) => {
   const nodeColor = actualColor(graph.node.color);
   return (
     <svg width={width} height={height}>
+      <title>revision graph</title>
       <defs>
         <mask key="0" id={nodeMask} maskUnits="userSpaceOnUse">
           <rect width="100%" height="100%" fill="white" />

@@ -58,11 +58,9 @@ const CommitMetadataInner: React.FC<CommitDetailProps> = ({ commit, refs }) => {
       title={commit.summary}
       content={content}
       actions={
-        <>
-          <Button disabled={!commit} onClick={showSourceTree_} color="inherit">
-            Browse source
-          </Button>
-        </>
+        <Button disabled={!commit} onClick={showSourceTree_} color="inherit">
+          Browse source
+        </Button>
       }
     />
   );
@@ -77,7 +75,10 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
     [commit, filterText]
   );
   const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(visibleFiles || []);
-  useEffect(() => setSelectedIndex(-1), [commit, setSelectedIndex]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies(commit):
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [commit, setSelectedIndex]);
   const listRef = useRef<VirtualListMethods>(null);
   const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
     visibleFiles.length || 0,

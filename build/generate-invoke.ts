@@ -1,10 +1,10 @@
-import fs from "fs";
-import path from "path";
-import cp from "child_process";
+import fs from "node:fs";
+import path from "node:path";
+import cp from "node:child_process";
 import Handlebars from "handlebars";
-import { TsFunc } from "../src-tauri/generate/bindings/TsFunc";
-import { TsArg } from "../src-tauri/generate/bindings/TsArg";
-import { TsType } from "../src-tauri/generate/bindings/TsType";
+import type { TsFunc } from "../src-tauri/generate/bindings/TsFunc";
+import type { TsArg } from "../src-tauri/generate/bindings/TsArg";
+import type { TsType } from "../src-tauri/generate/bindings/TsType";
 
 const OUTPUT_PATH = "src/react/generated/tauri-invoke.d.ts";
 
@@ -44,10 +44,11 @@ const typeToString = (ty: TsType, imports: Set<string>): string => {
       const inner = typeToString(ty.content, imports);
       return ty.content.kind === "Optional" ? inner : `(${inner}) | undefined`;
     }
-    case "Record":
+    case "Record": {
       const key = typeToString(ty.content.key, imports);
       const value = typeToString(ty.content.value, imports);
       return `Record<${key}, ${value}>`;
+    }
     case "Tuple":
       return `[${ty.content.map((t) => typeToString(t, imports)).join(", ")}]`;
     case "UserDefined":

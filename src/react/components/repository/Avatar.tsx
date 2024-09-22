@@ -12,5 +12,11 @@ export const Avatar: React.FC<{
     () => convertFileSrc(fromGravatar ? encodeURI(mailAddress) : "__DEFAULT__", "avatar"),
     [mailAddress, fromGravatar]
   );
-  return <img src={src} className={classNames("h-full", shape == "circle" && "rounded-full")} />;
+  return (
+    <img
+      src={src}
+      alt="avatar icon"
+      className={classNames("h-full", shape === "circle" && "rounded-full")}
+    />
+  );
 };

@@ -43,7 +43,7 @@ const useRowEventHandler = <T, E extends React.SyntheticEvent>(
       return undefined;
     }
     return (event: E) => {
-      const index = parseInt((event.currentTarget as HTMLElement).dataset.index ?? "-1");
+      const index = Number.parseInt((event.currentTarget as HTMLElement).dataset.index ?? "-1");
       if (0 <= index && items[index] !== undefined) {
         handler(event, index, items[index]);
       }
@@ -76,6 +76,7 @@ const VirtualListInner = <T,>(
       }
     }
   }));
+  // biome-ignore lint/correctness/useExhaustiveDependencies(itemSize):
   useEffect(() => {
     listRef.current?.resetAfterIndex?.(0);
   }, [itemSize]);

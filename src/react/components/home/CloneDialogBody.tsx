@@ -86,7 +86,7 @@ export const CloneDialogBody: React.FC<{
           <div
             ref={xtermRef}
             className="border border-highlight bg-console px-2 py-1 m-0 h-[24rem]"
-          ></div>
+          />
         </div>
       </DialogContent>
       <DialogActions>

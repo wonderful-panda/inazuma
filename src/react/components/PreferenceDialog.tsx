@@ -92,15 +92,14 @@ const reducer = (state: Config, action: Action) => {
         break;
       case "recentListCount":
         {
-          const intValue = parseInt(value ?? "0");
-          if (!isNaN(intValue) && intValue > 0) {
+          const intValue = Number.parseInt(value ?? "0");
+          if (!Number.isNaN(intValue) && intValue > 0) {
             newState.recentListCount = intValue;
           }
         }
         break;
       case "avatarShape":
         newState.avatarShape = value === "circle" ? "circle" : "square";
-        break;
         break;
       default:
         assertNever(action);
