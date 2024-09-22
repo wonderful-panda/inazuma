@@ -136,7 +136,7 @@ impl StagerState {
         self.wakeup_watcher(app_handle)?;
         if let Some(ref mut watcher) = self.watcher {
             watcher.watch(&repo.stage_file_dir, notify::RecursiveMode::NonRecursive)?;
-            debug!("watching: {:?}", repo.stage_file_dir);
+            println!("watching: {:?}", repo.stage_file_dir);
         } else {
             warn!("Watcher is not awakened");
         }
@@ -146,10 +146,11 @@ impl StagerState {
     pub async fn unwatch(&mut self, repo: &Repository) -> Result<(), Box<dyn Error>> {
         if let Some(ref mut watcher) = self.watcher {
             watcher.unwatch(&repo.stage_file_dir)?;
-            debug!("unwatch: {:?}", repo.stage_file_dir);
+            println!("unwatch: {:?}", repo.stage_file_dir);
             let mut watch_files = self.watch_files.lock().await;
             watch_files.retain(|_, v| v.repo_path.ne(&repo.path));
             if watch_files.len() == 0 {
+                println!("drop watcher");
                 drop(self.watcher.take())
             }
         } else {
