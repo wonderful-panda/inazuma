@@ -206,7 +206,6 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
     void listen<string>("request_reload", (e) => {
-      console.log("request_reload", e);
       void reloadRepository(e.payload);
     }).then((unlisten) => {
       window.addEventListener("unload", unlisten);

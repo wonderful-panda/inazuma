@@ -19,11 +19,9 @@ const FullscreenLoading_: React.ForwardRefRenderFunction<FullscreenLoadingMethod
   const innerRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     show: () => {
-      console.log("show loading", innerRef.current);
       innerRef.current?.showModal();
     },
     hide: () => {
-      console.log("hide loading", innerRef.current);
       innerRef.current?.close();
     }
   }));
