@@ -56,7 +56,7 @@ const useCompareWithParentCommand = () => {
         void showCommitDiff.current("parent", commit);
       }
     }),
-    [showCommitDiff]
+    []
   );
 };
 
@@ -103,7 +103,7 @@ const CommitLogInner: React.FC<{
           }
         }
       }, 200),
-    [repoPath, log.commits, selectedIndexRef, reloadWorkingTree, fetchCommitDetail]
+    [repoPath, log.commits, reloadWorkingTree, fetchCommitDetail]
   );
   const currentRefs = useMemo(() => {
     if (!loadedId) {
@@ -122,7 +122,7 @@ const CommitLogInner: React.FC<{
     setTimeout(() => {
       listRef.current?.scrollToItem(selectedIndexRef.current);
     }, 0);
-  }, [repoPath, selectedIndexRef]);
+  }, [repoPath]);
 
   const detail = useCallback(
     (direction: Direction) => {
@@ -179,7 +179,7 @@ const CommitLogInner: React.FC<{
         listRef.current?.scrollToItem(index);
       }
     },
-    [log.commits, setSelectedIndex]
+    [log.commits]
   );
   return (
     <>

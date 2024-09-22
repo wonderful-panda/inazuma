@@ -168,7 +168,7 @@ export const useExecuteGitInXterm = () => {
         });
       });
     },
-    [xterm, fontFamily, alert, reloadRepositoryRef]
+    [xterm, fontFamily, alert]
   );
   const kill = useCallback(() => xterm.kill(), [xterm]);
   return { execute, kill };

@@ -321,7 +321,7 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
       setProps(defaultProps);
       statusRef.current = "disposed";
     }
-  }, [statusRef]);
+  }, []);
 
   const methods = useMemo<DialogMethods>(() => {
     return {
@@ -348,7 +348,7 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
         });
       }
     };
-  }, [setStatus, statusRef, dispose]);
+  }, [dispose]);
 
   useImperativeHandle(outerRef, () => methods, [methods]);
 

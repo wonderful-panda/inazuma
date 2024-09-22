@@ -65,7 +65,7 @@ export const useCreateBranch = () => {
       await reloadRepository.current();
       return true;
     },
-    [repoPath, reloadRepository, showWarning]
+    [repoPath, showWarning]
   );
 };
 
@@ -97,7 +97,7 @@ export const useDeleteBranch = () => {
       await reloadRepository.current();
       return true;
     },
-    [repoPath, reloadRepository]
+    [repoPath]
   );
 };
 
@@ -127,6 +127,6 @@ export const useSwitchBranch = () => {
       await reloadRepository.current();
       return true;
     },
-    [repoPath, reloadRepository, confirm, showWarning]
+    [repoPath, confirm, showWarning]
   );
 };

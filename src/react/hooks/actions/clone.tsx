@@ -21,7 +21,7 @@ export const useBeginClone = () => {
         }
       });
     },
-    [execute, openRepositoryRef]
+    [execute]
   );
 
   return useCallback(() => {

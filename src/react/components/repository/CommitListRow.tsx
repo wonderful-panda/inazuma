@@ -71,7 +71,7 @@ export const useCompareWithPinnedCommitAction = (
         void showCommitDiff.current(pinnedCommitRef.current, commit);
       }
     }),
-    [commit, pinned, pinnedCommitRef, showCommitDiff, showWarning]
+    [commit, pinned, showWarning]
   );
 };
 

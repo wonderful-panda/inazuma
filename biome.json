@@ -12,6 +12,22 @@
       "a11y": {
         "useKeyWithClickEvents": "off"
       },
+      "correctness": {
+        "useExhaustiveDependencies": {
+          "level": "error",
+          "options": {
+            "hooks": [
+              { "name": "useWithRef", "stableResult": [1] },
+              { "name": "useStateWithRef", "stableResult": [1, 2] },
+              {
+                "name": "useCallbackWithErrorHandler",
+                "closureIndex": 0,
+                "dependenciesIndex": 1
+              }
+            ]
+          }
+        }
+      },
       "style": {
         "noUselessElse": "off",
         "useTemplate": "off",

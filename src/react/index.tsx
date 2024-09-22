@@ -220,7 +220,7 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
     })()
       .catch((error) => reportError.current({ error }))
       .finally(() => setInitializing(false));
-  }, [startupRepository, openRepository, reportError]);
+  }, [startupRepository]);
 
   const content = useMemo(() => {
     if (initializing) {

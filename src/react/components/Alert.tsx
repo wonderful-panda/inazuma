@@ -104,22 +104,19 @@ const Alert_: React.ForwardRefRenderFunction<AlertMethods> = (_, ref) => {
   });
   const [portalContainer, setPortalContainer] = useState<HTMLElement>(document.body);
 
-  const show = useCallback(
-    async (alert: { type: AlertType; message: string }) => {
-      if (statusRef.current === "opened") {
-        setStatus("closed");
-      }
-      await wait(10); // execute below code after previous alert closed
-      const portalContainer = getPortalContainer();
-      if (portalContainer instanceof HTMLDialogElement) {
-        portalContainer.addEventListener("close", () => setStatus("closed"), { once: true });
-      }
-      setPortalContainer(portalContainer);
-      setStatus("opened");
-      setAlert(alert);
-    },
-    [statusRef]
-  );
+  const show = useCallback(async (alert: { type: AlertType; message: string }) => {
+    if (statusRef.current === "opened") {
+      setStatus("closed");
+    }
+    await wait(10); // execute below code after previous alert closed
+    const portalContainer = getPortalContainer();
+    if (portalContainer instanceof HTMLDialogElement) {
+      portalContainer.addEventListener("close", () => setStatus("closed"), { once: true });
+    }
+    setPortalContainer(portalContainer);
+    setStatus("opened");
+    setAlert(alert);
+  }, []);
 
   const hide = useCallback(() => {
     setStatus((prev) => (prev === "opened" ? "closing" : prev));
