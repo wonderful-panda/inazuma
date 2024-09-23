@@ -31,9 +31,9 @@ const fetchHistory = async (repoPath: string, reflogCount: number) => {
   const refs = makeRefs(rawRefs);
   const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"], refs);
   const graph: Record<string, GraphFragment> = {};
-  commits.forEach((c) => {
+  for (const c of commits) {
     graph[c.id] = grapher.proceed(c);
-  });
+  }
   return { commits, refs, graph };
 };
 
@@ -47,7 +47,7 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
     remotes: {},
     refsById: {}
   };
-  refArray.forEach((r) => {
+  for (const r of refArray) {
     switch (r.type) {
       case "branch":
         refs.branches.push(r);
@@ -64,7 +64,7 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
     }
     // biome-ignore lint/suspicious/noAssignInExpressions:
     (refs.refsById[r.id] ?? (refs.refsById[r.id] = [])).push(r);
-  });
+  }
   const types: Ref["type"][] = ["branch", "tag", "remote", "reflog"];
   const compare = (a: Ref, b: Ref) => {
     if (a.type === b.type) {
@@ -79,7 +79,9 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
       return types.indexOf(a.type) - types.indexOf(b.type);
     }
   };
-  Object.values(refs.refsById).forEach((v) => v.sort(compare));
+  for (const v of Object.values(refs.refsById)) {
+    v.sort(compare);
+  }
   return refs;
 };
 

@@ -8,11 +8,11 @@ export function sortTreeInplace<T>(
   compareFn: (a: TreeItem<T>, b: TreeItem<T>) => number
 ): void {
   nodes.sort(compareFn);
-  nodes.forEach((n) => {
+  for (const n of nodes) {
     if (n.children) {
       sortTreeInplace(n.children, compareFn);
     }
-  });
+  }
 }
 
 export const filterTreeItems = <T>(

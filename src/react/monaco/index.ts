@@ -56,20 +56,20 @@ export const setup = () => {
   monaco.editor.setTheme("inazuma-dark");
 
   const { typescript, json, css } = monaco.languages;
-  [typescript.typescriptDefaults, typescript.javascriptDefaults].forEach((d) => {
+  for (const d of [typescript.typescriptDefaults, typescript.javascriptDefaults]) {
     d.setDiagnosticsOptions({
       noSemanticValidation: true,
       noSyntaxValidation: true
     });
-  });
+  }
 
   json.jsonDefaults.setDiagnosticsOptions({
     validate: false
   });
 
-  [css.cssDefaults, css.lessDefaults, css.scssDefaults].forEach((d) =>
-    d.setOptions({ validate: false })
-  );
+  for (const d of [css.cssDefaults, css.lessDefaults, css.scssDefaults]) {
+    d.setOptions({ validate: false });
+  }
 };
 
 let langIdMap: Record<string, string>;
@@ -77,13 +77,13 @@ let langIdMap: Record<string, string>;
 export function getLangIdFromPath(path: string): string {
   if (!langIdMap) {
     langIdMap = {};
-    monaco.languages.getLanguages().forEach((lang) => {
+    for (const lang of monaco.languages.getLanguages()) {
       if (lang.extensions) {
-        lang.extensions.forEach((ext) => {
+        for (const ext of lang.extensions) {
           langIdMap[ext.toLowerCase()] = lang.id;
-        });
+        }
       }
-    });
+    }
   }
   const ext = getExtension(path).toLowerCase();
   return langIdMap[ext] ?? "plaintext";

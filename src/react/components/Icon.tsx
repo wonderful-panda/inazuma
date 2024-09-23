@@ -2,9 +2,9 @@ import type { IconName } from "@/types/IconName";
 import iconifyJSONs from "@/generated/iconbundle.json";
 import { Icon as IconRaw, type IconifyJSON, addCollection } from "@iconify/react/offline";
 
-iconifyJSONs.forEach((json: unknown) => {
+for (const json of iconifyJSONs as Array<unknown>) {
   addCollection(json as IconifyJSON);
-});
+}
 
 export interface IconProps {
   icon: IconName;

@@ -51,9 +51,9 @@ export const throttled = <T extends Record<string, (...args: never[]) => unknown
   ms: number
 ): Debounced<T> => {
   const ret = {} as Debounced<T>;
-  Object.getOwnPropertyNames(obj).forEach((name: keyof T) => {
+  for (const name of Object.getOwnPropertyNames(obj) as Array<keyof T>) {
     ret[name] = throttle(obj[name], ms);
-  });
+  }
   return ret;
 };
 

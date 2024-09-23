@@ -145,8 +145,8 @@ export const CommandGroupProvider: React.FC<React.PropsWithChildren> = ({ childr
   );
   const hotkeyMap = useMemo<Record<string, { cmd: Command; group: string }>>(() => {
     const ret: Record<string, { cmd: Command; group: string }> = {};
-    state.groups.forEach((g) =>
-      g.commands.forEach((c) => {
+    for (const g of state.groups) {
+      for (const c of g.commands) {
         if (c.hotkey) {
           const existing = ret[c.hotkey];
           if (existing) {
@@ -154,8 +154,8 @@ export const CommandGroupProvider: React.FC<React.PropsWithChildren> = ({ childr
           }
           ret[c.hotkey] = { cmd: c, group: g.groupName };
         }
-      })
-    );
+      }
+    }
     return ret;
   }, [state.groups]);
   const suspended = state.suspend > 0;

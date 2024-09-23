@@ -98,12 +98,12 @@ export const CommitLogSideBar: React.FC<{
   const deleteBranch = useBeginDeleteBranch();
   const refMap = useMemo(() => {
     const ret = {} as Record<string, Ref>;
-    refs.branches.forEach((b) => {
-      ret[b.fullname] = b;
-    });
-    refs.tags.forEach((t) => {
-      ret[t.fullname] = t;
-    });
+    for (const r of refs.branches) {
+      ret[r.fullname] = r;
+    }
+    for (const r of refs.tags) {
+      ret[r.fullname] = r;
+    }
     return ret;
   }, [refs]);
   const handleListItemClick = useCallback(

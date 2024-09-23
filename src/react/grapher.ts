@@ -33,9 +33,9 @@ class ColorPallete {
   constructor(public colors: string[]) {
     this._queue = [...colors];
     this._used = {};
-    colors.forEach((c) => {
+    for (const c of colors) {
       this._used[c] = 0;
-    });
+    }
   }
 
   pop(): string {
@@ -82,21 +82,24 @@ export class Grapher {
     const prevEdges = [] as InterEdge[];
     if (this._prev) {
       const prevId = this._prev.id;
-      this._prev.interEdges.forEach((e) => {
+      for (const e of this._prev.interEdges) {
         prevEdges[e.index] = e;
-      });
-      this._prev.nodeEdges.forEach(({ index, id, color, type }) => {
+      }
+      for (const { index, id, color, type } of this._prev.nodeEdges) {
         if (type === "P") {
           prevEdges[index] = { index, id, childId: prevId, color };
         }
-      });
+      }
     }
     let isMajor = this.isMajorRef(dagNode.id);
     let node: NodeSymbol | undefined;
     const interEdges: InterEdge[] = [];
     const nodeEdges: NodeEdge[] = [];
     const occupied: boolean[] = [];
-    prevEdges.forEach((e) => {
+    for (const e of prevEdges) {
+      if (!e) {
+        continue;
+      }
       const { id, childId, index, color: prevColor } = e;
       if (id === dagNode.id) {
         isMajor ||= !!prevColor;
@@ -114,12 +117,12 @@ export class Grapher {
         } else if (!node.color && prevColor) {
           node.color = prevColor;
           let first = true;
-          nodeEdges.forEach((ne) => {
+          for (const ne of nodeEdges) {
             if (ne.type === "P" && !ne.color) {
               ne.color = first ? prevColor : this._pallete.pop();
               first = false;
             }
-          });
+          }
         }
         if (!edgeGoingOn && prevColor) {
           this._pallete.push(prevColor);
@@ -134,7 +137,7 @@ export class Grapher {
           secondaryParents.splice(pidx, 1);
         }
       }
-    });
+    }
     for (let index = 0; ; ++index) {
       if (occupied[index]) {
         continue;
