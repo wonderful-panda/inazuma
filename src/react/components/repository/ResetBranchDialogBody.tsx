@@ -1,5 +1,12 @@
-import { AcceptButton, CancelButton, DialogContent, DialogTitle } from "@/components/Dialog";
-import { DialogActions, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import {
+  AcceptButton,
+  CancelButton,
+  DialogContent,
+  DialogSection,
+  DialogTitle,
+  LabelledRadio
+} from "@/components/Dialog";
+import { DialogActions, RadioGroup } from "@mui/material";
 import { useRef } from "react";
 import { Icon } from "../Icon";
 import { CommitAttributes } from "./CommitAttributes";
@@ -19,10 +26,8 @@ const colors: Record<ResetMode, string> = {
 };
 const ModeRadio: React.FC<{ value: ResetMode; description: string }> = ({ value, description }) => {
   return (
-    <FormControlLabel
-      className="h-8"
+    <LabelledRadio
       value={value}
-      control={<Radio />}
       label={
         <div className="flex-row-nowrap">
           <span
@@ -70,30 +75,33 @@ export const ResetDialogBody: React.FC<{ branchName: string; destination: Commit
       <DialogTitle>Reset current branch to the specified commit</DialogTitle>
       <DialogContent>
         <div className="m-0 flex flex-col-nowrap w-[44rem]">
-          <div className="text-primary">Current branch</div>
-          <div className="ml-6 mb-2 px-2 flex-row-nowrap">
-            <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
-            <span>{branchName}</span>
-          </div>
-          <div className="text-primary">Reset to</div>
-          <div className="ml-6 mb-3 px-2 border border-greytext">
-            <CommitAttributes commit={destination} showSummary />
-          </div>
-          <div className="text-primary">Mode</div>
-          <RadioGroup ref={modeRef} className="ml-6" defaultValue="soft">
-            <ModeRadio
-              value="soft"
-              description="Don't touch the index or the working tree at all"
-            />
-            <ModeRadio
-              value="mixed"
-              description="Reset the index, and don't touch the working tree"
-            />
-            <ModeRadio
-              value="hard"
-              description="Discard all changes including the index and the working tree"
-            />
-          </RadioGroup>
+          <DialogSection label="Current branch">
+            <div className="flex-row-nowrap">
+              <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
+              <span>{branchName}</span>
+            </div>
+          </DialogSection>
+          <DialogSection label="Reset to">
+            <div className="p-2 border border-greytext">
+              <CommitAttributes commit={destination} showSummary />
+            </div>
+          </DialogSection>
+          <DialogSection label="Mode">
+            <RadioGroup ref={modeRef} defaultValue="soft">
+              <ModeRadio
+                value="soft"
+                description="Don't touch the index or the working tree at all"
+              />
+              <ModeRadio
+                value="mixed"
+                description="Reset the index, and don't touch the working tree"
+              />
+              <ModeRadio
+                value="hard"
+                description="Discard all changes including the index and the working tree"
+              />
+            </RadioGroup>
+          </DialogSection>
         </div>
       </DialogContent>
       <DialogActions>

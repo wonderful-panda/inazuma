@@ -1,6 +1,13 @@
-import { AcceptButton, CancelButton, DialogContent, DialogTitle } from "@/components/Dialog";
+import {
+  AcceptButton,
+  CancelButton,
+  DialogContent,
+  DialogSection,
+  DialogTitle,
+  LabelledCheckBox
+} from "@/components/Dialog";
 import { useCreateBranch } from "@/hooks/actions/branch";
-import { Checkbox, DialogActions, FormControlLabel, TextField } from "@mui/material";
+import { DialogActions, TextField } from "@mui/material";
 import { useCallback, useEffect, useRef } from "react";
 import { CommitAttributes } from "./CommitAttributes";
 import { Icon } from "../Icon";
@@ -34,31 +41,29 @@ export const NewBranchDialogBody: React.FC<{ commit: Commit }> = ({ commit }) =>
       <DialogTitle>Create branch</DialogTitle>
       <DialogContent>
         <div className="m-0 flex flex-col-nowrap w-[44rem]">
-          <div className="text-primary">New branch name</div>
-          <div className="ml-6 mb-2 px-2 flex-row-nowrap">
-            <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
-            <TextField
-              inputRef={branchNameRef}
-              className="w-80"
-              variant="standard"
-              InputLabelProps={{ shrink: true }}
+          <DialogSection label="New branch name">
+            <div className="flex-row-nowrap">
+              <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
+              <TextField
+                inputRef={branchNameRef}
+                className="w-80"
+                variant="standard"
+                InputLabelProps={{ shrink: true }}
+              />
+            </div>
+          </DialogSection>
+          <DialogSection label="Create at">
+            <div className="border p-2 border-greytext">
+              <CommitAttributes commit={commit} showSummary />
+            </div>
+          </DialogSection>
+          <DialogSection label="Options">
+            <LabelledCheckBox inputRef={switchRef} label="Switch to created branch" />
+            <LabelledCheckBox
+              inputRef={forceRef}
+              label="Move branch to this commit if already exists (--force)"
             />
-          </div>
-          <div className="text-primary">Create at</div>
-          <div className="ml-6 mb-3 px-2 border border-greytext">
-            <CommitAttributes commit={commit} showSummary />
-          </div>
-          <div className="text-primary">Options</div>
-          <FormControlLabel
-            className="ml-6 h-8"
-            control={<Checkbox inputRef={switchRef} />}
-            label="Switch to created branch"
-          />
-          <FormControlLabel
-            className="ml-6 h-8"
-            control={<Checkbox inputRef={forceRef} />}
-            label="Move branch to this commit if already exists (--force)"
-          />
+          </DialogSection>
         </div>
       </DialogContent>
       <DialogActions>

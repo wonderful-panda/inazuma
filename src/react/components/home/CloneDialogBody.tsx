@@ -5,7 +5,8 @@ import {
   DialogActions,
   AcceptButton,
   CancelButton,
-  DialogButton
+  DialogButton,
+  DialogSection
 } from "../Dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "../Icon";
@@ -64,25 +65,26 @@ export const CloneDialogBody: React.FC<{
       <DialogTitle>Clone repository</DialogTitle>
       <DialogContent>
         <div className="m-0 flex flex-col-nowrap w-[64rem]">
-          <div className="text-primary">Repository URL</div>
-          <div className="ml-6 mb-3 px-2 flex-row-nowrap">
-            <Icon icon="mdi:web" className="mr-2 my-auto text-2xl" />
-            <TextField inputRef={urlRef} className="flex-1 mr-10" variant="standard" />
-          </div>
-
-          <div className="text-primary">Destination folder</div>
-          <div className="relative ml-6 mb-3 px-2 flex-row-nowrap">
-            <Icon icon="mdi:folder" className="mr-2 my-auto text-2xl" />
-            <TextField inputRef={destinationRef} className="flex-1 mr-10" variant="standard" />
-            <IconButton
-              title="Open folder selector"
-              className="absolute right-0 p-0 my-auto h-10 w-10"
-              onClick={openFolderSelector as VoidReturn<typeof openFolderSelector>}
-              size="large"
-            >
-              <Icon className="text-2xl text-inherit" icon="mdi:folder-search-outline" />
-            </IconButton>
-          </div>
+          <DialogSection label="Repository URL">
+            <div className="flex-row-nowrap">
+              <Icon icon="mdi:web" className="mr-2 my-auto text-2xl" />
+              <TextField inputRef={urlRef} className="flex-1 mr-10" variant="standard" />
+            </div>
+          </DialogSection>
+          <DialogSection label="Destination folder">
+            <div className="relative flex-row-nowrap">
+              <Icon icon="mdi:folder" className="mr-2 my-auto text-2xl" />
+              <TextField inputRef={destinationRef} className="flex-1 mr-10" variant="standard" />
+              <IconButton
+                title="Open folder selector"
+                className="absolute right-0 p-0 my-auto h-10 w-10"
+                onClick={openFolderSelector as VoidReturn<typeof openFolderSelector>}
+                size="large"
+              >
+                <Icon className="text-2xl text-inherit" icon="mdi:folder-search-outline" />
+              </IconButton>
+            </div>
+          </DialogSection>
           <div
             ref={xtermRef}
             className="border border-highlight bg-console px-2 py-1 m-0 h-[24rem]"

@@ -4,11 +4,14 @@ import {
   DialogActions,
   AcceptButton,
   CancelButton,
-  DialogButton
+  DialogButton,
+  DialogSection,
+  LabelledCheckBox,
+  LabelledRadio
 } from "../Dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
-import { Checkbox, FormControlLabel, NativeSelect, Radio, RadioGroup } from "@mui/material";
+import { NativeSelect, RadioGroup } from "@mui/material";
 
 type FetchMode = "selected" | "all";
 export type FetchOptions = ({ type: "all" } | { type: "selected"; remote: string }) & {
@@ -19,15 +22,7 @@ const ModeRadio: React.FC<{
   label: React.ReactNode;
   disabled?: boolean;
 }> = ({ value, label, disabled }) => {
-  return (
-    <FormControlLabel
-      className="h-8"
-      value={value}
-      control={<Radio />}
-      label={label}
-      disabled={disabled}
-    />
-  );
+  return <LabelledRadio value={value} label={label} disabled={disabled} />;
 };
 
 export const FetchDialogBody: React.FC<{
@@ -75,28 +70,28 @@ export const FetchDialogBody: React.FC<{
       <DialogTitle>Fetch changes from remote repository</DialogTitle>
       <DialogContent>
         <div className="m-0 flex flex-col-nowrap w-[64rem]">
-          <div className="text-primary">Fetch from</div>
-          <RadioGroup ref={modeRef} className="ml-6 mb-4" value={mode} onChange={handleChangeMode}>
-            <ModeRadio value="all" label="All remote repositories" />
-            <ModeRadio
-              value="selected"
-              label={
-                <NativeSelect
-                  inputRef={remoteRef}
-                  variant="standard"
-                  inputProps={{ name: "remote", className: "min-w-80" }}
-                  defaultValue={remotes[0]}
-                  disabled={mode === "all"}
-                >
-                  {...remotes.map((r) => <option key={r}>{r}</option>)}
-                </NativeSelect>
-              }
-            />
-          </RadioGroup>
-          <div className="text-primary">Options</div>
-          <div className="ml-6">
-            <FormControlLabel control={<Checkbox inputRef={tagsRef} />} label="Fetch tags" />
-          </div>
+          <DialogSection label="Fetch from">
+            <RadioGroup ref={modeRef} value={mode} onChange={handleChangeMode}>
+              <ModeRadio value="all" label="All remote repositories" />
+              <ModeRadio
+                value="selected"
+                label={
+                  <NativeSelect
+                    inputRef={remoteRef}
+                    variant="standard"
+                    inputProps={{ name: "remote", className: "min-w-80" }}
+                    defaultValue={remotes[0]}
+                    disabled={mode === "all"}
+                  >
+                    {...remotes.map((r) => <option key={r}>{r}</option>)}
+                  </NativeSelect>
+                }
+              />
+            </RadioGroup>
+          </DialogSection>
+          <DialogSection label="Options">
+            <LabelledCheckBox label="Fetch tags" inputRef={tagsRef} />
+          </DialogSection>
           <div
             ref={xtermRef}
             className="border border-highlight bg-console px-2 py-1 m-0 mt-2 h-[24rem]"

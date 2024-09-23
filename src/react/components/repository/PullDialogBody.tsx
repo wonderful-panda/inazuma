@@ -4,11 +4,14 @@ import {
   DialogActions,
   AcceptButton,
   CancelButton,
-  DialogButton
+  DialogButton,
+  DialogSection,
+  LabelledCheckBox,
+  LabelledRadio
 } from "../Dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
-import { Checkbox, FormControlLabel, NativeSelect, Radio, RadioGroup } from "@mui/material";
+import { NativeSelect, RadioGroup } from "@mui/material";
 import { Icon } from "../Icon";
 
 type PullMode = "--no-ff" | "--ff" | "--ff-only" | "--rebase";
@@ -25,10 +28,8 @@ const ModeRadio: React.FC<{
   disabled?: boolean;
 }> = ({ value, label, disabled }) => {
   return (
-    <FormControlLabel
-      className="h-8"
+    <LabelledRadio
       value={value}
-      control={<Radio />}
       label={
         <span>
           <span>{label}</span>
@@ -88,23 +89,23 @@ export const PullDialogBody: React.FC<{
       <DialogTitle>Pull(fetch and merge) changes from remote repository</DialogTitle>
       <DialogContent>
         <div className="m-0 flex flex-col-nowrap w-[64rem]">
-          <div className="text-primary">Pull from</div>
-          <div className="ml-6 px-2 flex-row-nowrap">
-            <Icon icon="mdi:web" className="mr-2 my-auto text-2xl" />
-            <NativeSelect
-              inputRef={remoteRef}
-              variant="standard"
-              inputProps={{ name: "remote", className: "min-w-80" }}
-            >
-              {remotes.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </NativeSelect>
-          </div>
-          <div className="text-primary mt-3">Mode</div>
-          <div className="ml-6 flex-col-nowrap">
+          <DialogSection label="Pull from">
+            <div className="flex-row-nowrap">
+              <Icon icon="mdi:web" className="mr-2 my-auto text-2xl" />
+              <NativeSelect
+                inputRef={remoteRef}
+                variant="standard"
+                inputProps={{ name: "remote", className: "min-w-80" }}
+              >
+                {remotes.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </NativeSelect>
+            </div>
+          </DialogSection>
+          <DialogSection label="Mode">
             <RadioGroup ref={modeRef} defaultValue="--no-ff" onChange={handleChangeMode}>
               <ModeRadio
                 value="--no-ff"
@@ -117,20 +118,14 @@ export const PullDialogBody: React.FC<{
               />
               <ModeRadio value="--rebase" label="Rebase local changes onto upstream changes" />
             </RadioGroup>
-          </div>
-          <div className="text-primary mt-3">Options</div>
-          <div className="ml-6 flex-col-nowrap">
-            <FormControlLabel
-              className="h-8"
-              control={<Checkbox inputRef={tagsRef} />}
-              label="Fetch tags"
-            />
-            <FormControlLabel
-              className="h-8"
-              control={<Checkbox inputRef={autoStashRef} />}
+          </DialogSection>
+          <DialogSection label="Options">
+            <LabelledCheckBox label="Fetch tags" inputRef={tagsRef} />
+            <LabelledCheckBox
               label="Stash uncommitted changes temporarily"
+              inputRef={autoStashRef}
             />
-          </div>
+          </DialogSection>
           <div
             ref={xtermRef}
             className="border border-highlight bg-console px-2 py-1 m-0 mt-2 h-[24rem]"

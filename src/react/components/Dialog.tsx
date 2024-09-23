@@ -8,7 +8,7 @@ import {
 } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { Icon } from "@iconify/react";
-import { Button, IconButton, Paper } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, IconButton, Paper, Radio } from "@mui/material";
 import classNames from "classnames";
 import type React from "react";
 import {
@@ -139,6 +139,49 @@ export const DialogContent: React.FC<React.PropsWithChildren> = ({ children }) =
     >
       {children}
     </div>
+  );
+};
+
+export const DialogSection: React.FC<React.PropsWithChildren<{ label: string }>> = ({
+  label,
+  children
+}) => {
+  return (
+    <>
+      <div className="text-primary">{label}</div>
+      <div className="ml-6 mb-3 px-2 flex-col-nowrap">{children}</div>
+    </>
+  );
+};
+
+export const LabelledCheckBox: React.FC<{
+  label: string;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}> = ({ label, inputRef, onChange }) => {
+  return (
+    <FormControlLabel
+      className="h-8"
+      control={<Checkbox inputRef={inputRef} onChange={onChange} />}
+      label={label}
+    />
+  );
+};
+
+export const LabelledRadio: React.FC<{
+  value: string;
+  label: React.ReactNode;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  disabled?: boolean;
+}> = ({ value, label, disabled }) => {
+  return (
+    <FormControlLabel
+      className="h-8"
+      value={value}
+      control={<Radio />}
+      label={label}
+      disabled={disabled}
+    />
   );
 };
 

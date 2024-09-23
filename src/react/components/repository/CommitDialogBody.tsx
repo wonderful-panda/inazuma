@@ -1,5 +1,5 @@
 import { clamp } from "@/util";
-import { Checkbox, FormControlLabel, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useAtomValue } from "jotai";
@@ -10,7 +10,8 @@ import {
   CancelButton,
   DialogActions,
   DialogContent,
-  DialogTitle
+  DialogTitle,
+  LabelledCheckBox
 } from "@/components/Dialog";
 import { useAlert } from "@/context/AlertContext";
 
@@ -82,14 +83,10 @@ export const CommitDialogBody: React.FC = () => {
             placeholder="Input commit message"
             onChange={handleChange}
           />
-          <FormControlLabel
-            control={
-              <Checkbox
-                inputRef={amendRef}
-                onChange={handleAmendChange as VoidReturn<typeof handleAmendChange>}
-              />
-            }
-            label="amend last commit"
+          <LabelledCheckBox
+            label="Amend last commit"
+            inputRef={amendRef}
+            onChange={handleAmendChange as VoidReturn<typeof handleAmendChange>}
           />
         </div>
       </DialogContent>

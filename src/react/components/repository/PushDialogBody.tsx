@@ -4,7 +4,8 @@ import {
   DialogActions,
   AcceptButton,
   CancelButton,
-  DialogButton
+  DialogButton,
+  DialogSection
 } from "../Dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "../Icon";
@@ -52,26 +53,28 @@ export const PushDialogBody: React.FC<{
       <DialogTitle>Push changes</DialogTitle>
       <DialogContent>
         <div className="m-0 flex flex-col-nowrap w-[64rem]">
-          <div className="text-primary">Remote repository</div>
-          <div className="ml-6 mb-3 px-2 flex-row-nowrap">
-            <Icon icon="mdi:web" className="mr-2 my-auto text-2xl" />
-            <NativeSelect
-              inputRef={remoteRef}
-              variant="standard"
-              inputProps={{ name: "remote", className: "min-w-80" }}
-            >
-              {remotes.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </NativeSelect>
-          </div>
-          <div className="text-primary">Branch name to push</div>
-          <div className="ml-6 mb-2 px-2 flex-row-nowrap">
-            <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
-            {branchName}
-          </div>
+          <DialogSection label="Remote repository">
+            <div className="flex-row-nowrap">
+              <Icon icon="mdi:web" className="mr-2 my-auto text-2xl" />
+              <NativeSelect
+                inputRef={remoteRef}
+                variant="standard"
+                inputProps={{ name: "remote", className: "min-w-80" }}
+              >
+                {remotes.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </NativeSelect>
+            </div>
+          </DialogSection>
+          <DialogSection label="Branch name to push">
+            <div className="flex-row-nowrap">
+              <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
+              {branchName}
+            </div>
+          </DialogSection>
           <div
             ref={xtermRef}
             className="border border-highlight bg-console px-2 py-1 m-0 mt-2 h-[24rem]"

@@ -1,4 +1,10 @@
-import { AcceptButton, CancelButton, DialogContent, DialogTitle } from "@/components/Dialog";
+import {
+  AcceptButton,
+  CancelButton,
+  DialogContent,
+  DialogSection,
+  DialogTitle
+} from "@/components/Dialog";
 import { DialogActions } from "@mui/material";
 import { Icon } from "../Icon";
 import { CommitAttributes } from "./CommitAttributes";
@@ -30,15 +36,17 @@ export const MoveBranchDialogBody: React.FC<{ branchName: string; destination: C
       <DialogTitle>Move branch to the specified commit</DialogTitle>
       <DialogContent>
         <div className="m-0 flex flex-col-nowrap w-[44rem]">
-          <div className="text-primary">Target branch</div>
-          <div className="ml-6 mb-2 px-2 flex-row-nowrap">
-            <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
-            <span>{branchName}</span>
-          </div>
-          <div className="text-primary">Move to</div>
-          <div className="ml-6 mb-3 px-2 border border-greytext">
-            <CommitAttributes commit={destination} showSummary />
-          </div>
+          <DialogSection label="Target branch">
+            <div className="flex-row-nowrap">
+              <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
+              <span>{branchName}</span>
+            </div>
+          </DialogSection>
+          <DialogSection label="Move to">
+            <div className="p-2 border border-greytext">
+              <CommitAttributes commit={destination} showSummary />
+            </div>
+          </DialogSection>
         </div>
       </DialogContent>
       <DialogActions>

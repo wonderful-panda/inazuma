@@ -4,10 +4,11 @@ import {
   CancelButton,
   DialogActions,
   DialogContent,
-  DialogTitle
+  DialogSection,
+  DialogTitle,
+  LabelledCheckBox
 } from "@/components/Dialog";
 import { useDeleteBranch } from "@/hooks/actions/branch";
-import { Checkbox, FormControlLabel } from "@mui/material";
 import { useCallback, useRef } from "react";
 import { Icon } from "../Icon";
 
@@ -29,17 +30,18 @@ export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branc
       <DialogTitle>Delete branch</DialogTitle>
       <DialogContent>
         <div className="flex-col-nowrap w-[36rem]">
-          <div className="text-primary">Branch name</div>
-          <div className="ml-6 mb-2 px-2 flex-row-nowrap">
-            <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
-            {branchName}
-          </div>
-          <div className="text-primary">Options</div>
-          <FormControlLabel
-            className="ml-6"
-            control={<Checkbox inputRef={forceRef} />}
-            label="Delete branch even if not merged in upstream (--force)"
-          />
+          <DialogSection label="Branch name">
+            <div className="flex-row-nowrap">
+              <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
+              {branchName}
+            </div>
+          </DialogSection>
+          <DialogSection label="Options">
+            <LabelledCheckBox
+              label="Delete branch even if not merged in upstream (--force)"
+              inputRef={forceRef}
+            />
+          </DialogSection>
         </div>
       </DialogContent>
       <DialogActions>
