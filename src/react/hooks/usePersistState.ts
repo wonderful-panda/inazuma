@@ -1,15 +1,12 @@
 import { PersistStateContext } from "@/context/PersistStateContext";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export const usePersistState = <T>(key: string, initialValue: T): [T, (value: T) => void] => {
   const { getItem, setItem } = useContext(PersistStateContext);
-  const [value, setValue] = useState(initialValue);
-  useLayoutEffect(() => {
+  const [value, setValue] = useState(() => {
     const storedValue = getItem(key);
-    if (storedValue) {
-      setValue(JSON.parse(storedValue) as T);
-    }
-  }, [key, getItem]);
+    return storedValue ? (JSON.parse(storedValue) as T) : initialValue;
+  });
 
   useEffect(() => {
     setItem(key, JSON.stringify(value));
