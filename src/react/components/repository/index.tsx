@@ -214,13 +214,6 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
 
 const RepositoryPageTab: React.FC<{ path: string; active: boolean }> = ({ path, active }) => {
   const store = useAtomValue(repositoryStoresAtomFamily(path));
-  useEffect(() => {
-    return () => {
-      void invokeTauriCommand("close_repository", { repoPath: path }).then(() => {
-        repositoryStoresAtomFamily.remove(path);
-      });
-    };
-  }, [path]);
   return (
     <Provider store={store}>
       <DevTools store={store} />

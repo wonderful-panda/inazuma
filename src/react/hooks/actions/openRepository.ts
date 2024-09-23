@@ -107,7 +107,11 @@ export const useOpenRepository = () => {
           id: `__REPO__:${path}`,
           title: getFileName(path),
           payload: { path },
-          closable: true
+          closable: true,
+          onClose: async () => {
+            await invokeTauriCommand("close_repository", { repoPath: path });
+            await repositoryStoresAtomFamily.remove(path);
+          }
         });
       },
       [],

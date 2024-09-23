@@ -81,6 +81,7 @@ export type TabProps<Type, Payload> = {
   id: string;
   title: string;
   closable: boolean;
+  onClose?: () => Promise<void>;
 } & (Payload extends null ? unknown : { payload: Payload });
 
 export type TabDefinition<T> = {
