@@ -71,7 +71,7 @@ pub async fn show_folder_selector<T: Runtime>(
         .file()
         .set_parent(&window)
         .blocking_pick_folder()
-        .map(|path| path.to_str().unwrap().replace("\\", "/").into())
+        .map(|path| path.to_string().replace("\\", "/").into())
 }
 
 #[tauri::command]

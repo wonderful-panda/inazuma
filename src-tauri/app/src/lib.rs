@@ -156,8 +156,8 @@ pub fn run() {
             commands::set_window_title,
         ])
         .setup(|app| setup(app))
-        .register_asynchronous_uri_scheme_protocol("avatar", move |app, request, responder| {
-            let app = AppHandle::clone(&app);
+        .register_asynchronous_uri_scheme_protocol("avatar", move |ctx, request, responder| {
+            let app = AppHandle::clone(ctx.app_handle());
             avatar_protocol_handler::handle_request(app, request, responder);
         })
         .build(tauri::generate_context!())
