@@ -1,5 +1,5 @@
-import process from "process";
-import cp from "child_process";
+import process from "node:process";
+import cp from "node:child_process";
 
 const main = () => {
   const cargo = cp.spawn("cargo", ["test"], {
