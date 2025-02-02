@@ -18,29 +18,29 @@ tauri-build = { version = "2.0", features = [] }
 path = "../types"
 
 [dependencies]
-log = "0.4.16"
-env_logger = "0.10.0"
+log = "0.4.25"
+env_logger = "0.10.2"
 serde_json = "1.0"
 serde_bytes = "0.11"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "2.0", features = [] }
+tauri = { version = "2.2", features = [] }
 thiserror = "1.0"
-tokio = { version = "1.32", features = ["full"] }
-tokio-stream = "0.1.14"
-regex = "1.5"
+tokio = { version = "1.43", features = ["full"] }
+tokio-stream = "0.1.17"
+regex = "1.11"
 base64 = "0.13"
 sha1_smol = { version = "1.0", features = ["std"] }
 portable-pty = "0.8.1"
 rand = "0.8"
 font-kit = "0.11.0"
 notify = { version = "6.1.1", default-features = false, features = ["macos_fsevent"] }
-tauri-plugin-dialog = "2.0"
-tauri-plugin-fs = "2.0"
-tauri-plugin-clipboard-manager = "2.0"
-url = "2.5.2"
+tauri-plugin-dialog = "2.2"
+tauri-plugin-fs = "2.2"
+tauri-plugin-clipboard-manager = "2.2"
+url = "2.5.4"
 sha2 = "0.10.8"
-tauri-plugin-http = "2.0"
-http = "1.1.0"
+tauri-plugin-http = "2.3"
+http = "1.2.0"
 urlencoding = "2.1.3"
 
 [target.'cfg(target_os = "windows")'.dependencies]

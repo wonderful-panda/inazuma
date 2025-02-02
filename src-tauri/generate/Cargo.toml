@@ -7,14 +7,14 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "4.3.24", features = ["derive"] }
-regex = "1.5"
+clap = { version = "4.5.27", features = ["derive"] }
+regex = "1.11"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 syn = { version = "1.0", features = ["full", "visit", "extra-traits"] }
-glob = "0.3.0"
-thiserror = "1.0.31"
-ts-rs = { version = "7.0.0", features = ["format"] }
+glob = "0.3.2"
+thiserror = "1.0.69"
+ts-rs = { version = "7.1.1", features = ["format"] }
 
 [dependencies.types]
 path = "../types"
