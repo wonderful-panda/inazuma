@@ -43,7 +43,8 @@ export const PushDialogBody: React.FC<{
     }
     setRunning(true);
     try {
-      return await openXterm(xtermRef.current, remote, branchName);
+      await openXterm(xtermRef.current, remote, branchName);
+      return false;
     } finally {
       setRunning(false);
     }
