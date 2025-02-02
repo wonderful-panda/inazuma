@@ -130,7 +130,12 @@ export const useExecuteGitInXterm = () => {
   const execute = useCallback(
     (
       el: HTMLDivElement,
-      options: { command: string; args: string[]; onSucceeded?: () => Promise<unknown> }
+      options: {
+        command: string;
+        args: string[];
+        repoPath?: string;
+        onSucceeded?: () => Promise<unknown>;
+      }
     ) => {
       return new Promise<boolean>((resolve) => {
         void xterm.open(el, {
@@ -140,6 +145,7 @@ export const useExecuteGitInXterm = () => {
               id,
               command: options.command,
               args: options.args,
+              repoPath: options.repoPath,
               rows,
               cols
             });

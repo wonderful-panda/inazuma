@@ -25,10 +25,11 @@ export const useBeginPull = () => {
           opt.mode,
           opt.tags ? "--tags" : "--no-tags",
           opt.autoStash ? "--autostash" : "--no-autostash"
-        ]
+        ],
+        repoPath
       });
     },
-    [execute]
+    [execute, repoPath]
   );
 
   return useCallbackWithErrorHandler(async (): Promise<DialogResult | "failed"> => {

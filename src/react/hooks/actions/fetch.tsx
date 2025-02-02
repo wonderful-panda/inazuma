@@ -23,10 +23,11 @@ export const useBeginFetch = () => {
         args: [
           options.type === "all" ? "--all" : options.remote,
           options.tags ? "--tags" : "--no-tags"
-        ]
+        ],
+        repoPath
       });
     },
-    [execute]
+    [execute, repoPath]
   );
 
   return useCallbackWithErrorHandler(async (): Promise<DialogResult> => {

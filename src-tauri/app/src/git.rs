@@ -68,10 +68,10 @@ pub fn build_command_line(repo_path: Option<&Path>, command: &str, args: &[&str]
     let mut command_line = if let Some(repo_path) = repo_path {
         let git_dir = repo_path.join(".git");
         format!(
-            "git {} -C \"{}\" --git_dir \"{}\" ",
-            command,
+            "git -C \"{}\" --git-dir \"{}\" {}",
             repo_path.to_str().unwrap(),
-            git_dir.to_str().unwrap()
+            git_dir.to_str().unwrap(),
+            command
         )
     } else {
         format!("git {}", command)

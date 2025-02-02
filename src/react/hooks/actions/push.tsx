@@ -19,10 +19,11 @@ export const useBeginPush = () => {
     (el: HTMLDivElement, remote: string, branchName: string) => {
       return execute(el, {
         command: "push",
-        args: [remote, branchName]
+        args: [remote, branchName],
+        repoPath
       });
     },
-    [execute]
+    [execute, repoPath]
   );
 
   return useCallbackWithErrorHandler(
