@@ -60,7 +60,8 @@ export const FetchDialogBody: React.FC<{
     setRunning(true);
     try {
       const opt = { type: mode, tags, remote: remoteRef.current.value };
-      return await openXterm(xtermRef.current, opt);
+      await openXterm(xtermRef.current, opt);
+      return false;
     } finally {
       setRunning(false);
     }
