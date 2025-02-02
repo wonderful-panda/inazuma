@@ -9,7 +9,7 @@ import {
   LabelledCheckBox,
   LabelledRadio
 } from "../Dialog";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
 import { NativeSelect, RadioGroup } from "@mui/material";
 import { Icon } from "../Icon";
@@ -59,12 +59,6 @@ export const PullDialogBody: React.FC<{
     setMode(e.target.value as PullMode);
   }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      modeRef.current?.querySelector<HTMLInputElement>("input[value='--no-ff']")?.focus();
-    }, 0);
-  }, []);
-
   const handleOk = useCallback(async (): Promise<boolean> => {
     if (!xtermRef.current || !remoteRef.current) {
       return false;
@@ -106,7 +100,7 @@ export const PullDialogBody: React.FC<{
             </div>
           </DialogSection>
           <DialogSection label="Mode">
-            <RadioGroup ref={modeRef} defaultValue="--no-ff" onChange={handleChangeMode}>
+            <RadioGroup ref={modeRef} defaultValue="--ff" onChange={handleChangeMode}>
               <ModeRadio
                 value="--no-ff"
                 label="Create merge commit always, even if fast-forward merge is possible"
