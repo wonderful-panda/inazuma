@@ -7,7 +7,7 @@ import { useWithRef } from "./useWithRef";
 import { useReloadRepository } from "./actions/openRepository";
 import { useAlert } from "@/context/AlertContext";
 import { assertNever } from "@/util";
-import { BOLD, CRLF, RESET, ULINE, YELLOW } from "@/ansiEscape";
+import { BOLD, CRLF, GREEN, RESET, ULINE, YELLOW } from "@/ansiEscape";
 import { useConfigValue } from "@/state/root";
 
 interface Shell {
@@ -156,6 +156,7 @@ export const useExecuteGitInXterm = () => {
             switch (status) {
               case "succeeded":
                 await (options.onSucceeded ?? reloadRepositoryRef.current)?.();
+                xterm.write(CRLF + BOLD + ULINE + GREEN + "### FINISHED ###" + RESET + CRLF);
                 break;
               case "failed":
                 alert.showError("Failed.");
