@@ -403,7 +403,7 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
       <dialog
         ref={ref}
         className={classNames(
-          "overflow-visible bg-inherit min-w-96 text-xl backdrop:bg-backdrop translate-x-0 translate-y-0",
+          "overflow-visible bg-inherit min-w-96 text-xl backdrop:bg-backdrop m-auto translate-x-0 translate-y-0",
           fullscreen && "m-0"
         )}
         onKeyDown={handleKeyDown}
