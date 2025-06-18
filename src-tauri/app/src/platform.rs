@@ -57,6 +57,7 @@ fn split_commandline_windows(s: &str) -> Result<Vec<String>, Box<dyn Error + Sen
 
 #[cfg(test)]
 mod tests {
+    #[allow(unused_imports)]
     use super::*;
 
     #[cfg(target_os = "windows")]
