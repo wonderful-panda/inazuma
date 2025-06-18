@@ -2,6 +2,7 @@ import process from "node:process";
 import fs from "node:fs";
 import cp from "node:child_process";
 import path from "node:path";
+import Handlebars from "handlebars";
 
 const main = () => {
   console.log("Generating license information...");
@@ -43,12 +44,74 @@ const main = () => {
   if (jsLicenses.trim()) {
     fs.writeFileSync(path.join("src", "react", "generated", "js-licenses.json"), jsLicenses);
     console.log("JavaScript licenses written to js-licenses.json");
+
+    // Generate HTML from JSON licenses
+    console.log("Generating JavaScript licenses HTML...");
+    generateJsLicensesHtml(JSON.parse(jsLicenses));
   } else {
     console.log("No JavaScript license content generated");
   }
 
   console.log("License generation completed successfully!");
   process.exit(0);
+};
+
+const generateJsLicensesHtml = (licensesData: Record<string, any>) => {
+  // Group licenses by license type
+  const licenseGroups: Record<string, Array<{name: string, version: string, repository?: string, licenseFile?: string, publisher?: string}>> = {};
+  const licenseTexts: Record<string, string> = {};
+
+  for (const [packageName, data] of Object.entries(licensesData)) {
+    const licenseName = data.licenses || 'Unknown';
+    const [name, version] = packageName.split('@').slice(-2);
+
+    if (!licenseGroups[licenseName]) {
+      licenseGroups[licenseName] = [];
+    }
+
+    licenseGroups[licenseName].push({
+      name: name || packageName,
+      version: version || '',
+      repository: data.repository || `https://www.npmjs.com/package/${name || packageName}`,
+      licenseFile: data.licenseFile,
+      publisher: data.publisher
+    });
+
+    // Store license text if available
+    if (data.licenseFile && fs.existsSync(data.licenseFile)) {
+      try {
+        licenseTexts[licenseName] = fs.readFileSync(data.licenseFile, 'utf-8');
+      } catch (e) {
+        // Ignore file read errors
+      }
+    }
+  }
+
+  // Prepare data for Handlebars template
+  const templateData = {
+    overview: Object.entries(licenseGroups).map(([licenseName, packages]) => ({
+      id: licenseName.replace(/[^a-zA-Z0-9]/g, '-'),
+      name: licenseName,
+      count: packages.length
+    })),
+    licenses: Object.entries(licenseGroups).map(([licenseName, packages]) => ({
+      id: licenseName.replace(/[^a-zA-Z0-9]/g, '-'),
+      name: licenseName,
+      used_by: packages,
+      text: licenseTexts[licenseName] || 'License text not available'
+    }))
+  };
+
+  // Read and compile Handlebars template
+  const templatePath = path.join("build", "js-licenses.hbs");
+  const templateSource = fs.readFileSync(templatePath, 'utf-8');
+  const template = Handlebars.compile(templateSource);
+
+  // Generate HTML
+  const html = template(templateData);
+
+  fs.writeFileSync(path.join("src", "react", "generated", "js-licenses.html"), html);
+  console.log("JavaScript licenses HTML written to js-licenses.html");
 };
 
 main();
