@@ -60,7 +60,6 @@ pub async fn save_config(
         .map_err(|e| format!("Failed to save config, {}", e))
 }
 
-#[cfg(any(target_os = "windows", target_os = "macos"))]
 #[tauri::command]
 pub async fn show_folder_selector<T: Runtime>(
     window: Window<T>,

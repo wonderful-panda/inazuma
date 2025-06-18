@@ -87,7 +87,7 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
         .inner_size(width.into(), height.into())
         .maximized(maximized)
         .visible(false)
-        .drag_and_drop(false)
+        .disable_drag_drop_handler()
         .build();
     match win {
         Ok(win) => {

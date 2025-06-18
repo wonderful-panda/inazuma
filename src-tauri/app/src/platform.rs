@@ -1,6 +1,4 @@
-use core::slice;
 use std::error::Error;
-use thiserror::Error;
 
 #[cfg(not(target_os = "windows"))]
 pub fn split_commandline(s: &str) -> Result<Vec<String>, Box<dyn Error + Send + Sync>> {
@@ -21,6 +19,8 @@ pub enum WindowsError {
 
 #[cfg(target_os = "windows")]
 fn split_commandline_windows(s: &str) -> Result<Vec<String>, Box<dyn Error + Send + Sync>> {
+    use core::slice;
+    use thiserror::Error;
     use std::ffi::OsString;
     use std::os::windows::ffi::OsStringExt;
     use winapi::ctypes::c_int;
