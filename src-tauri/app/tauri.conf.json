@@ -14,7 +14,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [],
+    "resources": {
+      "../../src/react/generated/js-licenses.html": "js-licenses.html",
+      "../../src/react/generated/rust-licenses.html": "rust-licenses.html"
+    },
     "externalBin": [],
     "copyright": "",
     "category": "DeveloperTool",
@@ -49,7 +52,7 @@
     "security": {
       "csp": null,
       "assetProtocol": {
-        "scope": ["http://avatar.localhost/*", "avatar://*"]
+        "scope": ["http://avatar.localhost/*", "avatar://*", "static://*"]
       }
     }
   }

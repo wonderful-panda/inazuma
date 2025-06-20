@@ -3,6 +3,7 @@ extern crate log;
 extern crate env_logger;
 
 mod avatar_protocol_handler;
+mod static_protocol_handler;
 pub mod commands;
 pub mod git;
 pub mod platform;
@@ -159,6 +160,10 @@ pub fn run() {
         .register_asynchronous_uri_scheme_protocol("avatar", move |ctx, request, responder| {
             let app = AppHandle::clone(ctx.app_handle());
             avatar_protocol_handler::handle_request(app, request, responder);
+        })
+        .register_asynchronous_uri_scheme_protocol("static", move |ctx, request, responder| {
+            let app = AppHandle::clone(ctx.app_handle());
+            static_protocol_handler::handle_request(app, request, responder);
         })
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
