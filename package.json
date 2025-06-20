@@ -63,7 +63,6 @@
     "@tailwindcss/cli": "^4.0.3",
     "@tailwindcss/vite": "^4.0.3",
     "@tauri-apps/cli": "^2.0.0-rc.3",
-    "@types/chardet": "^1.0.0",
     "@types/lodash": "^4.17.15",
     "@types/react": "18.3.3",
     "@types/react-dom": "^18.3.0",
