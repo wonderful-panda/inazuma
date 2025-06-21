@@ -3,12 +3,12 @@ extern crate log;
 extern crate env_logger;
 
 mod avatar_protocol_handler;
-mod static_protocol_handler;
 pub mod commands;
 pub mod git;
 pub mod platform;
 pub mod pty;
 pub mod state;
+mod static_protocol_handler;
 pub mod sync;
 
 use state::avatars::AvatarsState;

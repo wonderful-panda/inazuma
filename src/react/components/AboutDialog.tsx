@@ -51,14 +51,14 @@ export const AboutDialogBody: React.FC = () => {
     <>
       <DialogTitle>ABOUT</DialogTitle>
       <DialogContent>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="license tabs">
             <Tab label="General" id="simple-tab-0" aria-controls="simple-tabpanel-0" />
             <Tab label="Frontend Licenses" id="simple-tab-1" aria-controls="simple-tabpanel-1" />
             <Tab label="Backend Licenses" id="simple-tab-2" aria-controls="simple-tabpanel-2" />
           </Tabs>
         </Box>
-        
+
         <Box sx={{ display: "flex", flex: 1, mt: 1 }}>
           <TabPanel value={tabValue} index={0}>
             <Box sx={{ m: 2 }}>
@@ -69,10 +69,10 @@ export const AboutDialogBody: React.FC = () => {
             <iframe
               src={jsLicensesUrl}
               style={{
-                width: '100%',
-                height: '100%',
-                border: 'none',
-                borderRadius: '4px'
+                width: "100%",
+                height: "100%",
+                border: "none",
+                borderRadius: "4px"
               }}
               title="Frontend Dependencies Licenses"
             />
@@ -81,10 +81,10 @@ export const AboutDialogBody: React.FC = () => {
             <iframe
               src={rustLicensesUrl}
               style={{
-                width: '100%',
-                height: '100%',
-                border: 'none',
-                borderRadius: '4px'
+                width: "100%",
+                height: "100%",
+                border: "none",
+                borderRadius: "4px"
               }}
               title="Backend Dependencies Licenses"
             />

@@ -58,7 +58,7 @@ pub fn handle_request<R: Runtime>(
     spawn(async move {
         let url = request.uri();
         debug!("static protocol request: {}", url);
-        
+
         if let Some(file_path) = get_file_path_from_static_url(url) {
             // Only serve license files for security
             if file_path == "js-licenses.html" || file_path == "rust-licenses.html" {
@@ -71,7 +71,11 @@ pub fn handle_request<R: Runtime>(
                                 responder.respond(build_static_response(content, content_type));
                             }
                             Err(e) => {
-                                warn!("Failed to read resource file {}: {}", resource_path.display(), e);
+                                warn!(
+                                    "Failed to read resource file {}: {}",
+                                    resource_path.display(),
+                                    e
+                                );
                                 responder.respond(build_error_response(StatusCode::NOT_FOUND));
                             }
                         }
