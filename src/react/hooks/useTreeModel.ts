@@ -1,6 +1,6 @@
 import type { TreeItem } from "@/tree";
 import { assertNever } from "@/util";
-import { type Reducer, type SetStateAction, useReducer } from "react";
+import { type SetStateAction, useReducer } from "react";
 
 export interface TreeItemVM<D> {
   item: TreeItem<D>;
@@ -295,6 +295,6 @@ const reducer = <T>(state: TreeModelState<T>, action: Action<T>) => {
 };
 
 export const useTreeModel = <T>(getItemKey: (item: T) => string) => {
-  return useReducer<Reducer<TreeModelState<T>, Action<T>>>(reducer, initialState(getItemKey));
+  return useReducer(reducer, initialState(getItemKey));
 };
 export type TreeModelDispatch<T> = React.Dispatch<Action<T>>;

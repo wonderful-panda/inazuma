@@ -13,7 +13,7 @@ import { useCallback, useRef } from "react";
 import { Icon } from "../Icon";
 
 export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branchName }) => {
-  const forceRef = useRef<HTMLInputElement>(null);
+  const forceRef = useRef<HTMLInputElement | null>(null);
   const { showWarning } = useAlert();
   const deleteBranch = useDeleteBranch();
   const invokeDeleteBranch = useCallback(async () => {

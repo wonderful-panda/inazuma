@@ -14,6 +14,7 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["./*"],

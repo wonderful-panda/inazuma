@@ -156,7 +156,7 @@ export const DialogSection: React.FC<React.PropsWithChildren<{ label: string }>>
 
 export const LabelledCheckBox: React.FC<{
   label: string;
-  inputRef?: React.RefObject<HTMLInputElement>;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ label, inputRef, onChange }) => {
   return (

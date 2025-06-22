@@ -36,8 +36,8 @@ const getNextPtyId = () => {
 };
 
 export const useXterm = () => {
-  const shell = useRef<Shell>();
-  const closePtyRef = useRef<() => Promise<void>>();
+  const shell = useRef<Shell | undefined>(undefined);
+  const closePtyRef = useRef<(() => Promise<void>) | undefined>(undefined);
 
   const kill = useCallback(async () => {
     const closePty = closePtyRef.current;

@@ -17,8 +17,8 @@ import { useAlert } from "@/context/AlertContext";
 
 export const CommitDialogBody: React.FC = () => {
   const repoPath = useAtomValue(repoPathAtom);
-  const messageRef = useRef<HTMLInputElement>(null);
-  const amendRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLInputElement | null>(null);
+  const amendRef = useRef<HTMLInputElement | null>(null);
   const { reportError } = useAlert();
   const [rows, setRows] = useState(6);
 

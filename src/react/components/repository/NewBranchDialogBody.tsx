@@ -13,9 +13,9 @@ import { CommitAttributes } from "./CommitAttributes";
 import { Icon } from "../Icon";
 
 export const NewBranchDialogBody: React.FC<{ commit: Commit }> = ({ commit }) => {
-  const branchNameRef = useRef<HTMLInputElement>(null);
-  const switchRef = useRef<HTMLInputElement>(null);
-  const forceRef = useRef<HTMLInputElement>(null);
+  const branchNameRef = useRef<HTMLInputElement | null>(null);
+  const switchRef = useRef<HTMLInputElement | null>(null);
+  const forceRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setTimeout(() => branchNameRef.current?.focus(), 0);

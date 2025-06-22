@@ -32,7 +32,7 @@ export const FetchDialogBody: React.FC<{
 }> = ({ remotes, openXterm, killPty }) => {
   const alert = useAlert();
   const modeRef = useRef<HTMLDivElement>(null);
-  const remoteRef = useRef<HTMLInputElement>(null);
+  const remoteRef = useRef<HTMLInputElement | null>(null);
   const tagsRef = useRef<HTMLInputElement>(null);
   const xtermRef = useRef<HTMLDivElement>(null);
   const [mode, setMode] = useState<FetchMode>("all");

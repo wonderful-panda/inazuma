@@ -23,7 +23,7 @@ export const PushDialogBody: React.FC<{
   killPty: () => Promise<void>;
 }> = ({ remotes, branchName, openXterm, killPty }) => {
   const alert = useAlert();
-  const remoteRef = useRef<HTMLInputElement>(null);
+  const remoteRef = useRef<HTMLInputElement | null>(null);
   const xtermRef = useRef<HTMLDivElement>(null);
   const [running, setRunning] = useState(false);
 
