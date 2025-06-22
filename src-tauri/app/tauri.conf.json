@@ -15,8 +15,8 @@
       "icons/icon.ico"
     ],
     "resources": {
-      "../../src/react/generated/js-licenses.html": "js-licenses.html",
-      "../../src/react/generated/rust-licenses.html": "rust-licenses.html"
+      "../generated/js-licenses.html": "js-licenses.html",
+      "../generated/rust-licenses.html": "rust-licenses.html"
     },
     "externalBin": [],
     "copyright": "",

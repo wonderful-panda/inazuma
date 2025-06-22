@@ -6,10 +6,14 @@ import Handlebars from "handlebars";
 
 const main = () => {
   console.log("Generating license information...");
+  
+  if (!fs.existsSync("src-tauri/generated")) {
+    fs.mkdirSync("src-tauri/generated");
+  }
 
   // Generate Rust licenses using cargo-about
   console.log("Generating Rust licenses...");
-  const cargoRet = cp.spawnSync("cargo", ["about", "generate", "about.hbs", "--output-file", "../src/react/generated/rust-licenses.html"], {
+  const cargoRet = cp.spawnSync("cargo", ["about", "generate", "about.hbs", "--output-file", "generated/rust-licenses.html"], {
     cwd: "./src-tauri",
     stdio: ["pipe", "pipe", "inherit"]
   });
@@ -20,7 +24,7 @@ const main = () => {
   }
 
   // Check if file was created
-  const rustLicensePath = path.join("src", "react", "generated", "rust-licenses.html");
+  const rustLicensePath = path.join("src-tauri", "generated", "rust-licenses.html");
   if (fs.existsSync(rustLicensePath)) {
     console.log("Rust licenses written to rust-licenses.html");
   } else {
@@ -42,7 +46,7 @@ const main = () => {
 
   const jsLicenses = jsRet.stdout.toString("utf-8");
   if (jsLicenses.trim()) {
-    fs.writeFileSync(path.join("src", "react", "generated", "js-licenses.json"), jsLicenses);
+    fs.writeFileSync(path.join("src-tauri", "generated", "js-licenses.json"), jsLicenses);
     console.log("JavaScript licenses written to js-licenses.json");
 
     // Generate HTML from JSON licenses
@@ -110,7 +114,7 @@ const generateJsLicensesHtml = (licensesData: Record<string, any>) => {
   // Generate HTML
   const html = template(templateData);
 
-  fs.writeFileSync(path.join("src", "react", "generated", "js-licenses.html"), html);
+  fs.writeFileSync(path.join("src-tauri", "generated", "js-licenses.html"), html);
   console.log("JavaScript licenses HTML written to js-licenses.html");
 };
 
