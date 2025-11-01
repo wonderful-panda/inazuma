@@ -1,4 +1,4 @@
-import type * as React from 'react';
+import type * as React from "react";
 
 // workaround for libraries which still use global JSX namespace
 declare global {
