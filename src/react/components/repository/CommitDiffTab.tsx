@@ -114,8 +114,8 @@ const CommitDiffContent: React.FC<{
     [reportError, repoPath, commitFrom, commitTo]
   );
   useEffect(() => {
-    void handleSelectFile(files[selectedIndex]);
-  }, [files, selectedIndex, handleSelectFile]);
+    void handleSelectFile(visibleFiles[selectedIndex]);
+  }, [visibleFiles, selectedIndex, handleSelectFile]);
 
   const first = (
     <div className="flex flex-1 p-2">
