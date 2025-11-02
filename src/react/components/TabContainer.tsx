@@ -113,13 +113,13 @@ const TabPage = <T,>(p: {
   if (activated) {
     return <>{p.renderContent(p.tab, p.active)}</>;
   } else {
-    return <></>;
+    return null;
   }
 };
 
 export const TabContainer = <T,>(p: TabContainerProps<T>) => {
   const tabBarRef = useRef<HTMLDivElement>(null);
-  // biome-ignore lint/correctness/useExhaustiveDependencies(p.currentTabIndex):
+  // biome-ignore lint/correctness/useExhaustiveDependencies(p.currentTabIndex): currentTabIndex changes should trigger scrollIntoView
   useEffect(() => {
     const el = tabBarRef.current?.querySelector(`.${CURRENT_TABBUTTON_CLASS}`);
     el?.scrollIntoView({ block: "nearest" });

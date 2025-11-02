@@ -37,8 +37,8 @@ const InteractiveShellInner: React.FC<
 
   useEffect(() => () => void dispose(), [dispose]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies(width):
-  // biome-ignore lint/correctness/useExhaustiveDependencies(height):
+  // biome-ignore lint/correctness/useExhaustiveDependencies(width): width and height changes should trigger terminal resize
+  // biome-ignore lint/correctness/useExhaustiveDependencies(height): width and height changes should trigger terminal resize
   useEffect(() => {
     if (open) {
       fit();

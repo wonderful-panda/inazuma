@@ -117,7 +117,7 @@ const CommitLogInner: React.FC<{
     void selectLog(selectedIndex);
   }, [selectedIndex, selectLog]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies(repoPath):
+  // biome-ignore lint/correctness/useExhaustiveDependencies(repoPath): repoPath changes should trigger scroll to selected item
   useEffect(() => {
     setTimeout(() => {
       listRef.current?.scrollToItem(selectedIndexRef.current);
@@ -225,7 +225,7 @@ const CommitLog: React.FC = () => {
   const repoPath = useAtomValue(repoPathAtom);
   const log = useAtomValue(logAtom);
   if (!repoPath || !log) {
-    return <></>;
+    return null;
   }
   return <CommitLogInner repoPath={repoPath} log={log} />;
 };

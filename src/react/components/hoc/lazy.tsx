@@ -18,7 +18,7 @@ export const lazy = <P extends object>(
     if (Component) {
       return <Component {...props} />;
     } else {
-      return <></>;
+      return null;
     }
   };
   return Lazy;

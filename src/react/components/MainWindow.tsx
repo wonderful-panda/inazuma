@@ -71,7 +71,7 @@ export const MainWindowProperty: React.FC<MainWindowProps> = ({
   useLayoutEffect(() => {
     setProps({ title, titleBarActions, drawerItems });
   }, [setProps, title, titleBarActions, drawerItems]);
-  return <></>;
+  return null;
 };
 
 export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {

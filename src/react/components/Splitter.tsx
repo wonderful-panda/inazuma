@@ -83,6 +83,10 @@ export const Splitter: React.FC<SplitterProps> = ({
   );
   return (
     <div
+      role="separator"
+      aria-orientation={horiz ? "vertical" : "horizontal"}
+      aria-valuenow={thickness}
+      tabIndex={0}
       className={classNames("relative box-border z-999 grow-0 shrink-0 group hover:bg-splitter", {
         "cursor-col-resize mx-px my-0": horiz,
         "cursor-row-resize mx-0 my-px": !horiz,

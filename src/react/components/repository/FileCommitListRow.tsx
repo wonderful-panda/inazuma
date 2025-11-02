@@ -32,9 +32,7 @@ const FilePaths: React.FC<{ file: FileEntry }> = ({ file }) =>
         {file.path}
       </div>
     </div>
-  ) : (
-    <></>
-  );
+  ) : null;
 
 const FileCommitListRow_: React.FC<FileCommitListRowProps> = ({
   commit,

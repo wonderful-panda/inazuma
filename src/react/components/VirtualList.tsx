@@ -43,7 +43,7 @@ const useRowEventHandler = <T, E extends React.SyntheticEvent>(
       return undefined;
     }
     return (event: E) => {
-      const index = Number.parseInt((event.currentTarget as HTMLElement).dataset.index ?? "-1");
+      const index = Number.parseInt((event.currentTarget as HTMLElement).dataset.index ?? "-1", 10);
       if (0 <= index && items[index] !== undefined) {
         handler(event, index, items[index]);
       }
@@ -76,7 +76,7 @@ const VirtualListInner = <T,>(
       }
     }
   }));
-  // biome-ignore lint/correctness/useExhaustiveDependencies(itemSize):
+  // biome-ignore lint/correctness/useExhaustiveDependencies(itemSize): itemSize changes should trigger list reset
   useEffect(() => {
     listRef.current?.resetAfterIndex?.(0);
   }, [itemSize]);
@@ -93,6 +93,8 @@ const VirtualListInner = <T,>(
       const item = items[index];
       return item !== undefined ? (
         <div
+          role="row"
+          tabIndex={-1}
           data-index={index}
           key={getItemKey(item)}
           style={style}
@@ -107,9 +109,7 @@ const VirtualListInner = <T,>(
         >
           {children({ index, item })}
         </div>
-      ) : (
-        <></>
-      );
+      ) : null;
     },
     [
       items,

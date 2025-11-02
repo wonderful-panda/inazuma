@@ -43,7 +43,7 @@ const RowActionButtons_: React.FC<{
     [size, actions]
   );
   if (!actions) {
-    return <></>;
+    return null;
   }
   return <div className="ml-1 mr-2 flex-row-nowrap items-center">{buttons}</div>;
 };

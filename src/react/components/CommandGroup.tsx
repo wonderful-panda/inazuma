@@ -3,7 +3,7 @@ import { type Command, useCommandGroupTree } from "@/context/CommandGroupContext
 import { useCommandGroup } from "@/hooks/useCommandGroup";
 import { nope } from "@/util";
 
-export const Cmd: React.FC<Command> = () => <></>;
+export const Cmd: React.FC<Command> = () => null;
 
 export const CommandGroup: React.FC<
   React.PropsWithChildren<{
@@ -38,5 +38,5 @@ export const CommandGroup: React.FC<
     return nope;
   }, [commandGroup, groupName, actualEnabled, commands]);
 
-  return <></>;
+  return null;
 };

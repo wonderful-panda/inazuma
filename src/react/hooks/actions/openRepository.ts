@@ -56,13 +56,13 @@ const makeRefs = (rawRefs: RawRefs): Refs => {
         refs.tags.push(r);
         break;
       case "remote":
-        // biome-ignore lint/suspicious/noAssignInExpressions:
+        // biome-ignore lint/suspicious/noAssignInExpressions: lazy initialization of array
         (refs.remotes[r.remote] ?? (refs.remotes[r.remote] = [])).push(r);
         break;
       default:
         break;
     }
-    // biome-ignore lint/suspicious/noAssignInExpressions:
+    // biome-ignore lint/suspicious/noAssignInExpressions: lazy initialization of array
     (refs.refsById[r.id] ?? (refs.refsById[r.id] = [])).push(r);
   }
   const types: Ref["type"][] = ["branch", "tag", "remote", "reflog"];

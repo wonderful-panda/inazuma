@@ -45,13 +45,26 @@ const VirtualTreeRowInner = <T,>(props: {
     },
     [item, toggleExpand]
   );
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.stopPropagation();
+        toggleExpand(item);
+      }
+    },
+    [item, toggleExpand]
+  );
   const indent = 16 * level;
   return (
     <div className="flex-row-nowrap my-auto mx-0.5 items-center" style={{ height }}>
       <div
+        role="button"
+        aria-label="Toggle expand"
+        tabIndex={0}
         className="flex my-auto"
         style={{ height, marginLeft: indent, minWidth: 20 }}
         onClick={onClick}
+        onKeyDown={onKeyDown}
       >
         {item.children && <ExpandButton expanded={expanded} size={20} />}
       </div>

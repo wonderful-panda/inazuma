@@ -13,6 +13,7 @@ export const KeyDownTrapper: React.FC<KeyDownTrapperProps> = ({
   children
 }) => (
   <div
+    role="group"
     className={classNames("flex flex-1 focus:ring-1 focus:ring-secondary", className)}
     tabIndex={tabIndex}
     onKeyDown={onKeyDown}

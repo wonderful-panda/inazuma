@@ -11,13 +11,14 @@ const Badge: React.FC<
   }>
 > = ({ className, draggable, onDragStart, children }) => (
   <span
+    role={draggable ? "button" : undefined}
     className={classNames(
       "align-middle h-4 leading-4 text-sm mr-1 my-auto px-2 box-content whitespace-nowrap cursor-default bg-background",
       draggable && "cursor-move",
       className
     )}
-    draggable={draggable}
-    onDragStart={onDragStart}
+    draggable={draggable || undefined}
+    onDragStart={draggable ? onDragStart : undefined}
   >
     {children}
   </span>

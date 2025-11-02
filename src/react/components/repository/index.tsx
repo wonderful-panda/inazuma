@@ -74,7 +74,7 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   const renderTabContent = useCallback<TabContainerProps<TabType>["renderTabContent"]>(
     (tab, active) => {
       if (!repoPath || !tab) {
-        return <></>;
+        return null;
       }
       let child: React.ReactNode;
       switch (tab.type) {

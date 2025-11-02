@@ -137,19 +137,17 @@ const Alert_: React.ForwardRefRenderFunction<AlertMethods> = (_, ref) => {
       void show({ type: "error", message });
     }
   }));
-  return status !== "closed" ? (
-    createPortal(
-      <AlertInner
-        open={status === "opened"}
-        onClose={hide}
-        type={alert.type}
-        message={alert.message}
-      />,
-      portalContainer
-    )
-  ) : (
-    <></>
-  );
+  return status !== "closed"
+    ? createPortal(
+        <AlertInner
+          open={status === "opened"}
+          onClose={hide}
+          type={alert.type}
+          message={alert.message}
+        />,
+        portalContainer
+      )
+    : null;
 };
 
 export const GlobalAlert = forwardRef(Alert_);

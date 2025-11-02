@@ -1,7 +1,6 @@
 {
   "files": {
-    "include": ["**/*.ts", "**/*.tsx"],
-    "ignore": ["generated/**/*.*", "node_modules/**/*.*"]
+    "includes": ["**/*.ts", "**/*.tsx", "!**/generated/**", "!node_modules"]
   },
   "formatter": {
     "indentStyle": "space"
@@ -10,7 +9,9 @@
     "rules": {
       "recommended": true,
       "a11y": {
-        "useKeyWithClickEvents": "off"
+        "useKeyWithClickEvents": "off",
+        "useSemanticElements": "off",
+        "noStaticElementInteractions": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": {

@@ -364,7 +364,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         );
       } else {
         if (!stat) {
-          return <></>;
+          return null;
         }
         return (
           <FileListRow

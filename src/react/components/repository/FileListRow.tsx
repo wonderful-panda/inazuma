@@ -24,9 +24,7 @@ const OldPath: React.FC<{ file: FileEntry }> = ({ file }) =>
       </div>
       <div className="flex-1 font-bold ellipsis text-greytext">{file.oldPath}</div>
     </>
-  ) : (
-    <></>
-  );
+  ) : null;
 
 const FileListRow_: React.FC<FileListRowProps> = ({
   commit,

@@ -223,7 +223,7 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
 
   const content = useMemo(() => {
     if (initializing) {
-      return <></>;
+      return null;
     } else {
       return <Content />;
     }

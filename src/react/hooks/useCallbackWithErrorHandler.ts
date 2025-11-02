@@ -11,7 +11,7 @@ export function useCallbackWithErrorHandler<T extends (...args: never[]) => unkn
 ): (...args: Parameters<T>) => Promise<TryUnwrapProimse<ReturnType<T>> | "failed"> {
   const loading = useLoading();
   const { reportError } = useAlert();
-  // biome-ignore lint/correctness/useExhaustiveDependencies(func):
+  // biome-ignore lint/correctness/useExhaustiveDependencies(func): func is intentionally not in deps to allow stable callback reference
   return useCallback(
     async (...args: Parameters<T>) => {
       try {

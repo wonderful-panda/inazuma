@@ -75,7 +75,7 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
     [commit, filterText]
   );
   const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(visibleFiles || []);
-  // biome-ignore lint/correctness/useExhaustiveDependencies(commit):
+  // biome-ignore lint/correctness/useExhaustiveDependencies(commit): commit changes should reset selected index
   useEffect(() => {
     setSelectedIndex(-1);
   }, [commit, setSelectedIndex]);

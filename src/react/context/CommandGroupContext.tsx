@@ -1,7 +1,7 @@
 import { assertNever, nope } from "@/util";
 import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 
-// biome-ignore format:
+// biome-ignore format:for readability
 type Char =
   | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N"
   | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
@@ -9,11 +9,21 @@ type Char =
 
 type FKey = `F${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12}`;
 
-// biome-ignore format:
 type OtherKey =
-  | "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight"
-  | "Home" | "End" | "PageUp" | "PageDown"
-  | "Enter" | "Tab" | "Insert" | "Delete" | "Space" | "Backspace";
+  | "ArrowUp"
+  | "ArrowDown"
+  | "ArrowLeft"
+  | "ArrowRight"
+  | "Home"
+  | "End"
+  | "PageUp"
+  | "PageDown"
+  | "Enter"
+  | "Tab"
+  | "Insert"
+  | "Delete"
+  | "Space"
+  | "Backspace";
 
 const codeToKey = (code: string): string => {
   if (code.startsWith("Key")) {
