@@ -1,7 +1,7 @@
 // biome-ignore lint/correctness/noUnusedImports: need for interfaces merging
 import type { Theme, ThemeOptions } from "@mui/material/styles";
 
-declare module "@mui/material/styles/createTheme" {
+declare module "@mui/material/styles" {
   export interface Theme {
     custom: {
       baseFontSize: number;
