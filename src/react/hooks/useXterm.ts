@@ -137,7 +137,7 @@ export const useExecuteGitInXterm = () => {
         onSucceeded?: () => Promise<unknown>;
       }
     ) => {
-      return new Promise<boolean>((resolve) => {
+      return new Promise<PtyExitStatus>((resolve) => {
         void xterm.open(el, {
           openPty: (id, rows, cols) => {
             alert.clear();
@@ -170,7 +170,7 @@ export const useExecuteGitInXterm = () => {
                 assertNever(status);
                 break;
             }
-            resolve(status === "succeeded");
+            resolve(status);
           }
         });
       });
