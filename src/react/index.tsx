@@ -130,12 +130,18 @@ const displayStateStorage = {
     this.state[key] = value;
     saveDisplayState(this.state);
   },
-  reset(state: Record<string, string>) {
-    this.state = state;
+  reset(state: Record<string, string | undefined>) {
+    const newState: Record<string, string> = {};
+    for (const [k, v] of Object.entries(state)) {
+      if (v) {
+        newState[k] = v;
+      }
+    }
+    this.state = newState;
   }
 } satisfies PartialStorage & {
   state: Record<string, string>;
-  reset: (state: Record<string, string>) => void;
+  reset: (state: Record<string, string | undefined>) => void;
 };
 
 const Content: React.FC = () => {

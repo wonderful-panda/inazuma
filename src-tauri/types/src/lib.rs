@@ -10,16 +10,17 @@ fn default_use_gravatar() -> bool {
     true
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ConfigBase {
     #[serde(default)]
     pub font_family: FontFamily,
     #[serde(default)]
     pub font_size: FontSize,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub external_diff_tool: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub interactive_shell: Option<String>,
     #[serde(default = "default_recent_count")]
     pub recent_list_count: u32,
@@ -49,9 +50,9 @@ impl Into<Config> for ConfigBase {
 pub struct Config {
     pub font_family: FontFamily,
     pub font_size: FontSize,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub external_diff_tool: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub interactive_shell: Option<String>,
     pub recent_list_count: u32,
     pub avatar_shape: AvatarShape,
@@ -76,9 +77,9 @@ impl Default for Config {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct FontFamily {
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub standard: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub monospace: Option<String>,
 }
 
@@ -202,10 +203,10 @@ impl Commit {
 #[ts(export)]
 pub struct FileEntry {
     pub path: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub old_path: Option<String>,
     pub status_code: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub delta: Option<FileDelta>,
 }
 
@@ -240,10 +241,10 @@ pub enum WorkingTreeFileKind {
 pub struct WorkingTreeFileEntry {
     pub kind: WorkingTreeFileKind,
     pub path: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub old_path: Option<String>,
     pub status_code: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub delta: Option<FileDelta>,
 }
 
@@ -382,7 +383,7 @@ pub enum Ref {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Refs {
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub head: Option<String>,
     pub merge_heads: Vec<String>,
     pub refs: Vec<Ref>,
@@ -401,7 +402,7 @@ pub enum LstreeData {
 #[ts(export)]
 pub struct LstreeEntry {
     pub data: LstreeData,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub children: Option<Vec<LstreeEntry>>,
 }
 
@@ -430,7 +431,7 @@ pub enum CommitOptions {
         message: String,
     },
     Amend {
-        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(optional)]
         message: Option<String>,
     },
 }
@@ -441,9 +442,9 @@ pub enum CommitOptions {
 pub struct CreateBranchOptions {
     pub commit_id: String,
     pub branch_name: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub switch: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub force: Option<bool>,
 }
 
@@ -452,7 +453,7 @@ pub struct CreateBranchOptions {
 #[ts(export)]
 pub struct DeleteBranchOptions {
     pub branch_name: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub force: Option<bool>,
 }
 
@@ -469,7 +470,7 @@ pub struct SwitchCreateOptions {
 #[ts(export)]
 pub struct SwitchOptions {
     pub branch_name: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub create: Option<SwitchCreateOptions>,
 }
 

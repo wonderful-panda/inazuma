@@ -11,6 +11,8 @@ accepted = [
     "Unicode-DFS-2016",
     "Unicode-3.0",
     "OpenSSL",
+    "Zlib",
+    "CDLA-Permissive-2.0"
 ]
 workarounds = [
   "ring"
