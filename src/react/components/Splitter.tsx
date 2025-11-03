@@ -35,7 +35,7 @@ const RotateButton: React.FC<{
   >
     <Icon
       icon={`carbon:drag-${horiz ? "horizontal" : "vertical"}`}
-      className="min-w-[16px] min-h-[16px]"
+      className="min-w-4 min-h-4"
     />
   </IconButton>
 );

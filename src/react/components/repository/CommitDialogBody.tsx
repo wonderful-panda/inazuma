@@ -72,7 +72,7 @@ export const CommitDialogBody: React.FC = () => {
     <>
       <DialogTitle>Commit</DialogTitle>
       <DialogContent>
-        <div className="flex-col-nowrap min-w-[48rem]">
+        <div className="flex-col-nowrap min-w-3xl">
           <TextField
             inputRef={messageRef}
             className="h-auto w-full"

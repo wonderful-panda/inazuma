@@ -29,7 +29,7 @@ export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branc
     <>
       <DialogTitle>Delete branch</DialogTitle>
       <DialogContent>
-        <div className="flex-col-nowrap w-[36rem]">
+        <div className="flex-col-nowrap w-xl">
           <DialogSection label="Branch name">
             <div className="flex-row-nowrap">
               <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />

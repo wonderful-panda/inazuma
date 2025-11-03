@@ -70,7 +70,7 @@ export const FetchDialogBody: React.FC<{
     <>
       <DialogTitle>Fetch changes from remote repository</DialogTitle>
       <DialogContent>
-        <div className="m-0 flex flex-col-nowrap w-[64rem]">
+        <div className="m-0 flex flex-col-nowrap w-5xl">
           <DialogSection label="Fetch from">
             <RadioGroup ref={modeRef} value={mode} onChange={handleChangeMode}>
               <ModeRadio value="all" label="All remote repositories" />
@@ -95,7 +95,7 @@ export const FetchDialogBody: React.FC<{
           </DialogSection>
           <div
             ref={xtermRef}
-            className="border border-highlight bg-console px-2 py-1 m-0 mt-2 h-[24rem]"
+            className="border border-highlight bg-console px-2 py-1 m-0 mt-2 h-96"
           />
         </div>
       </DialogContent>

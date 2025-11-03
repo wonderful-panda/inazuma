@@ -135,7 +135,7 @@ const FontSelector: React.FC<{
       renderInput={(params) => (
         <TextField
           {...params}
-          className="w-[32rem]"
+          className="w-lg"
           label={label}
           margin="dense"
           variant="standard"

@@ -74,7 +74,7 @@ export const ResetDialogBody: React.FC<{ branchName: string; destination: Commit
     <>
       <DialogTitle>Reset current branch to the specified commit</DialogTitle>
       <DialogContent>
-        <div className="m-0 flex flex-col-nowrap w-[44rem]">
+        <div className="m-0 flex flex-col-nowrap w-176">
           <DialogSection label="Current branch">
             <div className="flex-row-nowrap">
               <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />

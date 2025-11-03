@@ -40,7 +40,7 @@ export const NewBranchDialogBody: React.FC<{ commit: Commit }> = ({ commit }) =>
     <>
       <DialogTitle>Create branch</DialogTitle>
       <DialogContent>
-        <div className="m-0 flex flex-col-nowrap w-[44rem]">
+        <div className="m-0 flex flex-col-nowrap w-176">
           <DialogSection label="New branch name">
             <div className="flex-row-nowrap">
               <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />

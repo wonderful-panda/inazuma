@@ -82,7 +82,7 @@ export const PullDialogBody: React.FC<{
     <>
       <DialogTitle>Pull(fetch and merge) changes from remote repository</DialogTitle>
       <DialogContent>
-        <div className="m-0 flex flex-col-nowrap w-[64rem]">
+        <div className="m-0 flex flex-col-nowrap w-5xl">
           <DialogSection label="Pull from">
             <div className="flex-row-nowrap">
               <Icon icon="mdi:web" className="mr-2 my-auto text-2xl" />
@@ -122,7 +122,7 @@ export const PullDialogBody: React.FC<{
           </DialogSection>
           <div
             ref={xtermRef}
-            className="border border-highlight bg-console px-2 py-1 m-0 mt-2 h-[24rem]"
+            className="border border-highlight bg-console px-2 py-1 m-0 mt-2 h-96"
           />
         </div>
       </DialogContent>

@@ -35,7 +35,7 @@ export const MoveBranchDialogBody: React.FC<{ branchName: string; destination: C
     <>
       <DialogTitle>Move branch to the specified commit</DialogTitle>
       <DialogContent>
-        <div className="m-0 flex flex-col-nowrap w-[44rem]">
+        <div className="m-0 flex flex-col-nowrap w-176">
           <DialogSection label="Target branch">
             <div className="flex-row-nowrap">
               <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />

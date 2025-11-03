@@ -64,7 +64,7 @@ const FileCommitListRow_: React.FC<FileCommitListRowProps> = ({
           <span className="ellipsis">{commit.summary}</span>
         </div>
         <div className="flex-row-nowrap items-center leading-5 pl-2 text-greytext ellipsis">
-          <FileStat className="text-base min-w-[6.5rem] mr-1" file={commit} />
+          <FileStat className="text-base min-w-26 mr-1" file={commit} />
           <Icon className="ml-3 mr-0.5 my-auto flex-none" icon="mdi:hashtag-box" />
           <GitHash hash={commit.id} />
           <Icon className="ml-3 mr-0.5 my-auto flex-none" icon="mdi:account" />
