@@ -1,12 +1,5 @@
 import { useStateWithRef } from "@/hooks/useStateWithRef";
 import { assertNever, wait } from "@/util";
-import {
-  DndContext,
-  type DragEndEvent,
-  type DraggableAttributes,
-  useDraggable
-} from "@dnd-kit/core";
-import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { Icon } from "@iconify/react";
 import { Button, Checkbox, FormControlLabel, IconButton, Paper, Radio } from "@mui/material";
 import classNames from "classnames";
@@ -101,27 +94,24 @@ export interface DialogMethods {
 const innerCtx = createContext<{
   fullscreen: boolean;
   draggable: boolean;
-  attributes: DraggableAttributes | undefined;
-  listeners: SyntheticListenerMap | undefined;
+  onDragStart: (e: React.MouseEvent) => void;
   close: (ret: DialogResult) => Promise<boolean>;
 }>({
   fullscreen: false,
   draggable: false,
-  attributes: undefined,
-  listeners: undefined,
+  onDragStart: () => {},
   close: () => Promise.resolve(false)
 });
 
 export const DialogTitle: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { draggable, attributes, listeners } = useContext(innerCtx);
-  const dragProps = draggable ? { ...attributes, ...listeners, tabIndex: undefined } : {};
+  const { draggable, onDragStart } = useContext(innerCtx);
   return (
     <div
       className={classNames(
         "px-4 pb-2 border-b border-highlight pt-3 font-bold",
         draggable && "cursor-move"
       )}
-      {...dragProps}
+      onMouseDown={draggable ? onDragStart : undefined}
     >
       {children}
     </div>
@@ -133,7 +123,7 @@ export const DialogContent: React.FC<React.PropsWithChildren> = ({ children }) =
   return (
     <div
       className={classNames(
-        "flex-col-nowrap p-4 text-lg border-b border-highlight min-w-[40rem]",
+        "flex-col-nowrap p-4 text-lg border-b border-highlight min-w-160",
         fullscreen && "flex-1"
       )}
     >
@@ -264,37 +254,64 @@ const DialogInner: React.FC<
     fullscreen: boolean;
     draggable: boolean;
     pos: { x: number; y: number };
+    onDragEnd: (delta: { x: number; y: number }) => void;
     close: (ret: DialogResult) => Promise<boolean>;
   }>
-> = ({ fullscreen, draggable, pos, close, children }) => {
+> = ({ fullscreen, draggable, pos, onDragEnd, close, children }) => {
   const reject = useCallback(() => void close({ result: "rejected" }), [close]);
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: "__dialogbody__",
-    disabled: !draggable
-  });
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+
+  const handleDragStart = useCallback(
+    (e: React.MouseEvent) => {
+      if (!draggable) return;
+      e.preventDefault();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      dragOffsetRef.current = { x: 0, y: 0 };
+      setDragOffset({ x: 0, y: 0 });
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const deltaX = moveEvent.clientX - startX;
+        const deltaY = moveEvent.clientY - startY;
+        dragOffsetRef.current = { x: deltaX, y: deltaY };
+        setDragOffset({ x: deltaX, y: deltaY });
+      };
+
+      const handleMouseUp = () => {
+        const finalDelta = dragOffsetRef.current;
+        setDragOffset({ x: 0, y: 0 });
+        onDragEnd(finalDelta);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    },
+    [draggable, onDragEnd]
+  );
 
   const innerState = useMemo(
     () => ({
       fullscreen,
       draggable,
-      attributes,
-      listeners,
+      onDragStart: handleDragStart,
       close
     }),
-    [fullscreen, draggable, attributes, listeners, close]
+    [fullscreen, draggable, handleDragStart, close]
   );
 
   const style = useMemo<CSSProperties>(
     () => ({
-      transform: `translate3d(${(transform?.x ?? 0) + pos.x}px, ${(transform?.y ?? 0) + pos.y}px, 0)`
+      transform: `translate3d(${pos.x + dragOffset.x}px, ${pos.y + dragOffset.y}px, 0)`
     }),
-    [transform, pos]
+    [pos, dragOffset]
   );
 
   return (
     <innerCtx.Provider value={innerState}>
       <Paper
-        ref={setNodeRef}
         style={style}
         className={classNames("relative flex-col-nowrap p-0", fullscreen && "w-screen h-screen")}
         elevation={6}
@@ -395,25 +412,30 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
 
   useImperativeHandle(outerRef, () => methods, [methods]);
 
-  const handleDragEnd = useCallback((e: DragEndEvent) => {
-    setPos(({ x, y }) => ({ x: x + e.delta.x, y: y + e.delta.y }));
+  const handleDragEnd = useCallback((delta: { x: number; y: number }) => {
+    setPos(({ x, y }) => ({ x: x + delta.x, y: y + delta.y }));
   }, []);
+
   return (
-    <DndContext onDragEnd={handleDragEnd}>
-      <dialog
-        ref={ref}
-        className={classNames(
-          "overflow-visible bg-inherit min-w-96 text-xl backdrop:bg-backdrop translate-x-0 translate-y-0",
-          fullscreen ? "m-0" : "m-auto"
-        )}
-        onKeyDown={handleKeyDown}
-        onKeyDownCapture={handleKeyDownCapture}
+    <dialog
+      ref={ref}
+      className={classNames(
+        "overflow-visible bg-inherit min-w-96 text-xl backdrop:bg-backdrop translate-x-0 translate-y-0",
+        fullscreen ? "m-0" : "m-auto"
+      )}
+      onKeyDown={handleKeyDown}
+      onKeyDownCapture={handleKeyDownCapture}
+    >
+      <DialogInner
+        fullscreen={fullscreen ?? false}
+        draggable={draggable}
+        pos={pos}
+        onDragEnd={handleDragEnd}
+        close={close}
       >
-        <DialogInner fullscreen={fullscreen ?? false} draggable={draggable} pos={pos} close={close}>
-          {content}
-        </DialogInner>
-      </dialog>
-    </DndContext>
+        {content}
+      </DialogInner>
+    </dialog>
   );
 };
 export const Dialog = forwardRef(Dialog_);
