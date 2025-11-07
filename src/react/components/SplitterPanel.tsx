@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { forwardRef, useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { Splitter } from "./Splitter";
 
 const FLEX_SUM = 1000;
@@ -26,10 +26,14 @@ interface PanelProps {
   minSize: string;
   children: React.ReactNode | ((direction: Direction, show: boolean) => React.ReactNode);
 }
-const PanelInner = (
-  { show, horiz, flex, minSize, children }: PanelProps,
-  ref: React.ForwardedRef<HTMLDivElement>
-) => (
+const Panel: React.FC<PanelProps & { ref?: React.Ref<HTMLDivElement> }> = ({
+  show,
+  horiz,
+  flex,
+  minSize,
+  children,
+  ref
+}) => (
   <div
     ref={ref}
     className={classNames(
@@ -46,7 +50,6 @@ const PanelInner = (
     {typeof children === "function" ? children(horiz ? "horiz" : "vert", show) : children}
   </div>
 );
-const Panel = forwardRef(PanelInner);
 
 export const SplitterPanel: React.FC<SplitterPanelProps> = ({
   first,

@@ -1,6 +1,6 @@
 import { Backdrop, CircularProgress } from "@mui/material";
 import classNames from "classnames";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { useImperativeHandle, useRef } from "react";
 
 export const Loading: React.FC<{ className?: string; open: boolean }> = ({ className, open }) => {
   return (
@@ -15,7 +15,9 @@ export interface FullscreenLoadingMethods {
   hide: () => void;
 }
 
-const FullscreenLoading_: React.ForwardRefRenderFunction<FullscreenLoadingMethods> = (_, ref) => {
+export const FullscreenLoading: React.FC<{ ref?: React.Ref<FullscreenLoadingMethods> }> = ({
+  ref
+}) => {
   const innerRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     show: () => {
@@ -36,5 +38,3 @@ const FullscreenLoading_: React.ForwardRefRenderFunction<FullscreenLoadingMethod
     </dialog>
   );
 };
-
-export const FullscreenLoading = forwardRef(FullscreenLoading_);

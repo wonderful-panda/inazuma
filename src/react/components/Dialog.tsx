@@ -7,7 +7,6 @@ import type React from "react";
 import {
   createContext,
   type CSSProperties,
-  forwardRef,
   useCallback,
   useContext,
   useImperativeHandle,
@@ -325,7 +324,7 @@ const DialogInner: React.FC<
   );
 };
 
-const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef) => {
+export const Dialog: React.FC<{ ref?: React.Ref<DialogMethods> }> = ({ ref: outerRef }) => {
   const [{ content, defaultActionKey, fullscreen, onBeforeClose }, setProps] =
     useState<DialogProps>(defaultProps);
   const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -438,6 +437,5 @@ const Dialog_: React.ForwardRefRenderFunction<DialogMethods> = (_props, outerRef
     </dialog>
   );
 };
-export const Dialog = forwardRef(Dialog_);
 
 export const useCloseDialog = () => useContext(innerCtx).close;

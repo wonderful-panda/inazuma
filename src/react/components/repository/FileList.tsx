@@ -1,4 +1,4 @@
-import { forwardRef, useCallback } from "react";
+import { useCallback } from "react";
 import { FileListRow } from "./FileListRow";
 import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "../VirtualList";
 import type { FileCommand } from "@/commands/types";
@@ -25,10 +25,13 @@ export const useFileListRowEventHandler = (command: FileCommand, commit: Commit 
   );
 };
 
-const FileList_: React.ForwardRefRenderFunction<VirtualListMethods, FileListProps> = (
-  { commit, files, actionCommands, ...rest },
-  ref
-) => {
+export const FileList: React.FC<FileListProps & { ref?: React.Ref<VirtualListMethods> }> = ({
+  commit,
+  files,
+  actionCommands,
+  ref,
+  ...rest
+}) => {
   const theme = useTheme();
   const rowHeight = theme.custom.baseFontSize * 3;
   const renderRow = useCallback(
@@ -57,5 +60,3 @@ const FileList_: React.ForwardRefRenderFunction<VirtualListMethods, FileListProp
     </VirtualList>
   );
 };
-
-export const FileList = forwardRef(FileList_);

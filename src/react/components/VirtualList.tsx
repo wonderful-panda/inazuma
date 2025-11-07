@@ -1,14 +1,6 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, VariableSizeList } from "react-window";
-import {
-  forwardRef,
-  memo,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef
-} from "react";
+import { memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 
 const MemoizedFixedSizeList = memo(FixedSizeList);
 const MemoizedVariableSizeList = memo(VariableSizeList);
@@ -51,23 +43,21 @@ const useRowEventHandler = <T, E extends React.SyntheticEvent>(
   }, [items, handler]);
 };
 
-const VirtualListInner = <T,>(
-  {
-    itemSize,
-    items,
-    getItemKey,
-    children,
-    onRowClick,
-    onRowMouseDown,
-    onRowDoubleClick,
-    onRowContextMenu,
-    onRowDragEnter,
-    onRowDragLeave,
-    onRowDragOver,
-    onRowDrop
-  }: VirtualListProps<T>,
-  ref: React.ForwardedRef<VirtualListMethods>
-) => {
+const VirtualListInner = <T,>({
+  itemSize,
+  items,
+  getItemKey,
+  children,
+  onRowClick,
+  onRowMouseDown,
+  onRowDoubleClick,
+  onRowContextMenu,
+  onRowDragEnter,
+  onRowDragLeave,
+  onRowDragOver,
+  onRowDrop,
+  ref
+}: VirtualListProps<T> & { ref?: React.Ref<VirtualListMethods> }) => {
   const listRef = useRef<FixedSizeList & VariableSizeList>(null);
   useImperativeHandle(ref, () => ({
     scrollToItem: (index) => {
@@ -154,6 +144,4 @@ const VirtualListInner = <T,>(
   );
 };
 
-export const VirtualList = forwardRef(VirtualListInner) as <T>(
-  props: VirtualListProps<T> & { ref?: React.ForwardedRef<VirtualListMethods> }
-) => ReturnType<typeof VirtualListInner>;
+export const VirtualList = VirtualListInner;

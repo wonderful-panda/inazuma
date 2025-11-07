@@ -1,4 +1,4 @@
-import { forwardRef, useCallback } from "react";
+import { useCallback } from "react";
 import { FileCommitListRow } from "./FileCommitListRow";
 import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "../VirtualList";
 import { useTheme } from "@mui/material";
@@ -18,10 +18,9 @@ export const getRowHeight = (commit: FileCommit | undefined, baseFontSize: numbe
 
 export const getFileCommitListKey = (item: FileCommit) => item.id;
 
-const FileCommitList_: React.ForwardRefRenderFunction<VirtualListMethods, FileCommitListProps> = (
-  { commits, refs, ...rest },
-  ref
-) => {
+export const FileCommitList: React.FC<
+  FileCommitListProps & { ref?: React.Ref<VirtualListMethods> }
+> = ({ commits, refs, ref, ...rest }) => {
   const theme = useTheme();
   const baseFontSize = theme.custom.baseFontSize;
   const renderRow = useCallback(
@@ -54,5 +53,3 @@ const FileCommitList_: React.ForwardRefRenderFunction<VirtualListMethods, FileCo
     </VirtualList>
   );
 };
-
-export const FileCommitList = forwardRef(FileCommitList_);

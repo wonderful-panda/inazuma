@@ -1,5 +1,5 @@
 import { useTheme } from "@mui/material";
-import { forwardRef, memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import type { GraphFragment } from "@/grapher";
 import { CommitListRow } from "./CommitListRow";
 import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "../VirtualList";
@@ -16,10 +16,14 @@ const getCommitListKey = (item: Commit) => item.id;
 
 let nextId = 0;
 
-const CommitList_: React.ForwardRefRenderFunction<VirtualListMethods, CommitListProps> = (
-  { commits, graph, refs, actionCommands, ...rest },
-  ref
-) => {
+const CommitList_: React.FC<CommitListProps & { ref?: React.Ref<VirtualListMethods> }> = ({
+  commits,
+  graph,
+  refs,
+  actionCommands,
+  ref,
+  ...rest
+}) => {
   const theme = useTheme();
   const rowHeight = theme.custom.baseFontSize * 3.25;
   const instanceId = useMemo(() => (nextId++).toString(), []);
@@ -53,4 +57,4 @@ const CommitList_: React.ForwardRefRenderFunction<VirtualListMethods, CommitList
   );
 };
 
-export const CommitList = memo(forwardRef(CommitList_));
+export const CommitList = memo(CommitList_);

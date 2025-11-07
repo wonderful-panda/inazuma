@@ -1,6 +1,6 @@
 import { IconButton, Snackbar, SnackbarContent, Typography } from "@mui/material";
 import { Icon } from "./Icon";
-import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
+import { useCallback, useImperativeHandle, useState } from "react";
 import { assertNever, serializeError, wait } from "@/util";
 import type { IconName } from "@/types/IconName";
 import { createPortal } from "react-dom";
@@ -95,7 +95,7 @@ const AlertInner: React.FC<{
 const getPortalContainer = () =>
   document.querySelector<HTMLElement>("dialog:modal") ?? document.body;
 
-const Alert_: React.ForwardRefRenderFunction<AlertMethods> = (_, ref) => {
+export const GlobalAlert: React.FC<{ ref?: React.Ref<AlertMethods> }> = ({ ref }) => {
   const [status, setStatus] = useState<"opened" | "closing" | "closed">("closed");
   const [, statusRef] = useWithRef(status);
   const [alert, setAlert] = useState<{ type: AlertType; message: string }>({
@@ -149,5 +149,3 @@ const Alert_: React.ForwardRefRenderFunction<AlertMethods> = (_, ref) => {
       )
     : null;
 };
-
-export const GlobalAlert = forwardRef(Alert_);
