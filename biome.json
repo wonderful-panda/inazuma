@@ -1,6 +1,6 @@
 {
   "files": {
-    "includes": ["**/*.ts", "**/*.tsx", "!**/generated/**", "!node_modules"]
+    "includes": ["**/*.ts", "**/*.tsx", "!**/generated", "!node_modules"]
   },
   "formatter": {
     "indentStyle": "space"
