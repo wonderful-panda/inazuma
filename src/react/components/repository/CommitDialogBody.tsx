@@ -1,10 +1,6 @@
-import { clamp } from "@/util";
 import { TextField } from "@mui/material";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useAtomValue } from "jotai";
-import { repoPathAtom } from "@/state/repository";
-import { useCommit } from "@/hooks/actions/workingtree";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AcceptButton,
   CancelButton,
@@ -14,6 +10,10 @@ import {
   LabelledCheckBox
 } from "@/components/Dialog";
 import { useAlert } from "@/context/AlertContext";
+import { useCommit } from "@/hooks/actions/workingtree";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { repoPathAtom } from "@/state/repository";
+import { clamp } from "@/util";
 
 export const CommitDialogBody: React.FC = () => {
   const repoPath = useAtomValue(repoPathAtom);

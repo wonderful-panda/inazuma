@@ -1,8 +1,8 @@
 import fs from "node:fs";
-import HandleBars from "handlebars";
 import { lookupCollection } from "@iconify/json";
-import { getIcons } from "@iconify/utils/lib/icon-set/get-icons";
 import type { IconifyJSON } from "@iconify/types";
+import { getIcons } from "@iconify/utils/lib/icon-set/get-icons";
+import HandleBars from "handlebars";
 
 const icons: Record<string, string[]> = {
   mdi: [

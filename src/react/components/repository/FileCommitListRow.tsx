@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import { memo } from "react";
-import { RefBadge } from "./RefBadge";
 import { formatDateTimeLong } from "@/date";
-import { FileStatusIcon } from "./FileStatusIcon";
-import { GitHash } from "../GitHash";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import { FileStat } from "./FileStat";
+import { GitHash } from "../GitHash";
 import { Icon } from "../Icon";
+import { FileStat } from "./FileStat";
+import { FileStatusIcon } from "./FileStatusIcon";
+import { RefBadge } from "./RefBadge";
 
 export const getRowHeightClass = (commit: FileCommit) => (commit.oldPath ? "h-[76px]" : "h-[52px]");
 

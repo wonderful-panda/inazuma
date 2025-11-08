@@ -1,22 +1,22 @@
 import classNames from "classnames";
-import type { GraphFragment } from "@/grapher";
+import { useAtom } from "jotai";
 import { memo, useMemo } from "react";
+import { commitCommandsToActions } from "@/commands";
+import type { CommitCommand } from "@/commands/types";
+import { useAlert } from "@/context/AlertContext";
+import { formatDateTimeLong } from "@/date";
+import type { GraphFragment } from "@/grapher";
+import { useShowCommitDiff } from "@/hooks/actions/showCommitDiff";
+import { useSelectedIndex } from "@/hooks/useSelectedIndex";
+import { useWithRef } from "@/hooks/useWithRef";
+import { pinnedCommitAtom } from "@/state/repository/misc";
+import { useConfigValue } from "@/state/root";
+import { GitHash } from "../GitHash";
+import { Icon } from "../Icon";
+import { Avatar } from "./Avatar";
 import { GraphCell } from "./GraphCell";
 import { RefBadge } from "./RefBadge";
-import { formatDateTimeLong } from "@/date";
-import { GitHash } from "../GitHash";
-import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import type { CommitCommand } from "@/commands/types";
 import { RowActionButtons, type RowActionItem } from "./RowActionButtons";
-import { commitCommandsToActions } from "@/commands";
-import { Avatar } from "./Avatar";
-import { useConfigValue } from "@/state/root";
-import { Icon } from "../Icon";
-import { useAtom } from "jotai";
-import { pinnedCommitAtom } from "@/state/repository/misc";
-import { useShowCommitDiff } from "@/hooks/actions/showCommitDiff";
-import { useWithRef } from "@/hooks/useWithRef";
-import { useAlert } from "@/context/AlertContext";
 
 export interface CommitListRowProps {
   height: number;

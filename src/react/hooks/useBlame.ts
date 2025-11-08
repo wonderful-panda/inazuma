@@ -1,7 +1,7 @@
+import { useEffect, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { decodeBase64, decodeToString } from "@/strings";
-import { useEffect, useState } from "react";
 
 export const useBlame = (
   repoPath: string | undefined,

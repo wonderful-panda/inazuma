@@ -1,3 +1,5 @@
+import { DialogActions, TextField } from "@mui/material";
+import { useCallback, useEffect, useRef } from "react";
 import {
   AcceptButton,
   CancelButton,
@@ -7,10 +9,8 @@ import {
   LabelledCheckBox
 } from "@/components/Dialog";
 import { useCreateBranch } from "@/hooks/actions/branch";
-import { DialogActions, TextField } from "@mui/material";
-import { useCallback, useEffect, useRef } from "react";
-import { CommitAttributes } from "./CommitAttributes";
 import { Icon } from "../Icon";
+import { CommitAttributes } from "./CommitAttributes";
 
 export const NewBranchDialogBody: React.FC<{ commit: Commit }> = ({ commit }) => {
   const branchNameRef = useRef<HTMLInputElement | null>(null);

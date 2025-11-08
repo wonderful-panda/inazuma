@@ -1,9 +1,9 @@
-import type { IconName } from "@/types/IconName";
 import { formatDateTimeLong } from "@/date";
+import { useConfigValue } from "@/state/root";
+import type { IconName } from "@/types/IconName";
 import { GitHash } from "../GitHash";
 import { Icon } from "../Icon";
 import { Avatar } from "./Avatar";
-import { useConfigValue } from "@/state/root";
 
 const AttrIcon: React.FC<{ icon: IconName }> = ({ icon }) => (
   <Icon className="mr-1 my-auto flex-none text-greytext" icon={icon} />

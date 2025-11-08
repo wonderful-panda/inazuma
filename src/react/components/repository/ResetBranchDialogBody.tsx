@@ -1,3 +1,8 @@
+import type { ResetMode } from "@backend/ResetMode";
+import { DialogActions, RadioGroup } from "@mui/material";
+import classNames from "classnames";
+import { useAtomValue } from "jotai";
+import { useRef } from "react";
 import {
   AcceptButton,
   CancelButton,
@@ -6,18 +11,13 @@ import {
   DialogTitle,
   LabelledRadio
 } from "@/components/Dialog";
-import { DialogActions, RadioGroup } from "@mui/material";
-import { useRef } from "react";
+import { useAlert } from "@/context/AlertContext";
+import { useReset } from "@/hooks/actions/reset";
+import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { repoPathAtom } from "@/state/repository";
 import { Icon } from "../Icon";
 import { CommitAttributes } from "./CommitAttributes";
-import classNames from "classnames";
-import { useReset } from "@/hooks/actions/reset";
-import { useAlert } from "@/context/AlertContext";
-import type { ResetMode } from "@backend/ResetMode";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useAtomValue } from "jotai";
-import { repoPathAtom } from "@/state/repository";
-import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
 
 const colors: Record<ResetMode, string> = {
   soft: "bg-success",

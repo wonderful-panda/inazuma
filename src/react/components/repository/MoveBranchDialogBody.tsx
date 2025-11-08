@@ -1,3 +1,5 @@
+import { DialogActions } from "@mui/material";
+import { useAtomValue } from "jotai";
 import {
   AcceptButton,
   CancelButton,
@@ -5,15 +7,13 @@ import {
   DialogSection,
   DialogTitle
 } from "@/components/Dialog";
-import { DialogActions } from "@mui/material";
+import { useAlert } from "@/context/AlertContext";
+import { useCreateBranch } from "@/hooks/actions/branch";
+import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { repoPathAtom } from "@/state/repository";
 import { Icon } from "../Icon";
 import { CommitAttributes } from "./CommitAttributes";
-import { useAlert } from "@/context/AlertContext";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useAtomValue } from "jotai";
-import { repoPathAtom } from "@/state/repository";
-import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
-import { useCreateBranch } from "@/hooks/actions/branch";
 
 export const MoveBranchDialogBody: React.FC<{ branchName: string; destination: Commit }> = ({
   branchName,

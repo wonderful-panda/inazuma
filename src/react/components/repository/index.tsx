@@ -1,42 +1,42 @@
-import type { IconActionItem, Spacer } from "@/commands/types";
-import { assertNever } from "@/util";
-import { useCallback, useMemo, useEffect } from "react";
-import { CommandGroup, Cmd } from "../CommandGroup";
-import { InteractiveShell } from "../InteractiveShell";
-import { MainWindowProperty } from "../MainWindow";
-import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { TabContainer, type TabContainerProps, TooltipTitle } from "../TabContainer";
-import CommitLog from "./CommitLog";
-import BlameTabTooltip from "./BlameTabTooltip";
-import LsTreeTabTooltip from "./LsTreeTabTooltip";
-import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
-import { lazy } from "../hoc/lazy";
-import { useConfigValue } from "@/state/root";
-import { logAtom, repoPathAtom, repositoryStoresAtomFamily } from "@/state/repository";
 import { Provider, useAtomValue, useSetAtom } from "jotai";
-import {
-  type TabType,
-  removeRepoTabAtom,
-  selectNextRepoTabAtom,
-  selectPreviousRepoTabAtom,
-  selectRepoTabAtom,
-  repoTabsAtom
-} from "@/state/repository/tabs";
+import { DevTools } from "jotai-devtools";
+import { useCallback, useEffect, useMemo } from "react";
+import type { IconActionItem, Spacer } from "@/commands/types";
+import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
+import { DialogProvider } from "@/context/DialogContext";
+import { useBeginFetch } from "@/hooks/actions/fetch";
+import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/hooks/actions/openRepository";
+import { useBeginPull } from "@/hooks/actions/pull";
+import { useBeginPush } from "@/hooks/actions/push";
+import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { logAtom, repoPathAtom, repositoryStoresAtomFamily } from "@/state/repository";
 import {
   hideInteractiveShellAtom,
   interactiveShellAtom,
   toggleInteractiveShellAtom,
   toggleReflogAtom
 } from "@/state/repository/misc";
-import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/hooks/actions/openRepository";
-import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { DevTools } from "jotai-devtools";
-import { DialogProvider } from "@/context/DialogContext";
-import { useBeginPush } from "@/hooks/actions/push";
-import { useBeginFetch } from "@/hooks/actions/fetch";
-import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
-import { useBeginPull } from "@/hooks/actions/pull";
+import {
+  removeRepoTabAtom,
+  repoTabsAtom,
+  selectNextRepoTabAtom,
+  selectPreviousRepoTabAtom,
+  selectRepoTabAtom,
+  type TabType
+} from "@/state/repository/tabs";
+import { useConfigValue } from "@/state/root";
+import { assertNever } from "@/util";
+import { Cmd, CommandGroup } from "../CommandGroup";
+import { lazy } from "../hoc/lazy";
+import { InteractiveShell } from "../InteractiveShell";
+import { MainWindowProperty } from "../MainWindow";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import { TabContainer, type TabContainerProps, TooltipTitle } from "../TabContainer";
+import BlameTabTooltip from "./BlameTabTooltip";
+import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
+import CommitLog from "./CommitLog";
+import LsTreeTabTooltip from "./LsTreeTabTooltip";
 
 const opt = { preload: true };
 const BlameTab = lazy(async () => (await import("./BlameTab")).default, opt);

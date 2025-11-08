@@ -1,22 +1,22 @@
-import { filterTreeItems, sortTreeInplace } from "@/tree";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useTreeModel, type TreeItemVM } from "@/hooks/useTreeModel";
-import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { Loading } from "../Loading";
-import { LsTree } from "./LsTree";
 import { IconButton } from "@mui/material";
-import { Icon } from "../Icon";
-import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
-import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { BlamePanel } from "./BlamePanel";
-import { KeyDownTrapper } from "../KeyDownTrapper";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useBlame } from "@/hooks/useBlame";
-import PathFilter from "./PathFilter";
-import { CommitAttributes } from "./CommitAttributes";
 import classNames from "classnames";
-import { FlexCard } from "../FlexCard";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
+import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
+import { useBlame } from "@/hooks/useBlame";
+import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
+import { type TreeItemVM, useTreeModel } from "@/hooks/useTreeModel";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { filterTreeItems, sortTreeInplace } from "@/tree";
+import { FlexCard } from "../FlexCard";
+import { Icon } from "../Icon";
+import { KeyDownTrapper } from "../KeyDownTrapper";
+import { Loading } from "../Loading";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import { BlamePanel } from "./BlamePanel";
+import { CommitAttributes } from "./CommitAttributes";
+import { LsTree } from "./LsTree";
+import PathFilter from "./PathFilter";
 
 export interface LsTreeTabProps {
   repoPath: string;

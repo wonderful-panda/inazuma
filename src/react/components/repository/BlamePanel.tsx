@@ -1,17 +1,17 @@
+import classNames from "classnames";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useFileCommitContextMenu } from "@/hooks/useContextMenu";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GitHash } from "../GitHash";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import type { VirtualListMethods } from "../VirtualList";
 import { BlameFooter } from "./BlameFooter";
 import { BlameViewer } from "./BlameViewer";
-import { FileCommitList } from "./FileCommitList";
 import { CommitAttributes } from "./CommitAttributes";
-import classNames from "classnames";
+import { FileCommitList } from "./FileCommitList";
 
 setupMonaco();
 

@@ -1,11 +1,11 @@
+import { useCallback, useContext } from "react";
 import {
-  useCommitCommands,
   commitCommandsToActions,
   fileCommandsToActions,
+  useCommitCommands,
   useFileCommands
 } from "@/commands";
 import { ContextMenuContext } from "@/context/ContextMenuContext";
-import { useCallback, useContext } from "react";
 
 export const useCommitContextMenu = (): ((
   event: React.MouseEvent | MouseEvent,

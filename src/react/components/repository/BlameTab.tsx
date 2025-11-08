@@ -1,6 +1,6 @@
+import { useBlame } from "@/hooks/useBlame";
 import { Loading } from "../Loading";
 import { BlamePanel } from "./BlamePanel";
-import { useBlame } from "@/hooks/useBlame";
 
 export interface BlameTabProps {
   repoPath: string;

@@ -1,6 +1,6 @@
-import type { NodeEdge, GraphFragment } from "@/grapher";
-import { shortHash } from "@/util";
 import { memo } from "react";
+import type { GraphFragment, NodeEdge } from "@/grapher";
+import { shortHash } from "@/util";
 
 const c2x = (c: number, gridWidth: number) => c * gridWidth + gridWidth / 2;
 

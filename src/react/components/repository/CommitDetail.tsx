@@ -1,22 +1,22 @@
 import { Button } from "@mui/material";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { RefBadge } from "./RefBadge";
-import { FlexCard } from "../FlexCard";
-import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { FileList, useFileListRowEventHandler } from "./FileList";
-import { useFileContextMenu } from "@/hooks/useContextMenu";
-import { useDiffWithParentCommand } from "@/commands/diff";
-import { useListIndexChanger } from "@/hooks/useListIndexChanger";
-import type { VirtualListMethods } from "../VirtualList";
-import { useShowFileContentCommand } from "@/commands/showFileContent";
-import { KeyDownTrapper } from "../KeyDownTrapper";
-import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
-import PathFilter from "./PathFilter";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
+import { useDiffWithParentCommand } from "@/commands/diff";
+import { useShowFileContentCommand } from "@/commands/showFileContent";
+import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useShowLsTree } from "@/hooks/actions/showLsTree";
+import { useFileContextMenu } from "@/hooks/useContextMenu";
+import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
+import { useListIndexChanger } from "@/hooks/useListIndexChanger";
+import { FlexCard } from "../FlexCard";
+import { KeyDownTrapper } from "../KeyDownTrapper";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import type { VirtualListMethods } from "../VirtualList";
 import { CommitAttributes } from "./CommitAttributes";
+import { FileList, useFileListRowEventHandler } from "./FileList";
 import { NumStat } from "./NumStat";
+import PathFilter from "./PathFilter";
+import { RefBadge } from "./RefBadge";
 
 export interface CommitDetailProps {
   commit: CommitDetail | undefined;

@@ -1,13 +1,13 @@
-import { setLogAtom, logAtom, repoPathAtom, repositoryStoresAtomFamily } from "@/state/repository";
 import type { Getter, Setter } from "jotai";
-import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
-import { getFileName, toSlashedPath } from "@/util";
-import { type GraphFragment, Grapher } from "@/grapher";
+import { useAtomCallback } from "jotai/utils";
+import { Grapher, type GraphFragment } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { logAtom, repoPathAtom, repositoryStoresAtomFamily, setLogAtom } from "@/state/repository";
+import { reflogAtom } from "@/state/repository/misc";
 import { addRecentOpenedRepository } from "@/state/root";
 import { addAppTab, getAppTabsValue, selectAppTab } from "@/state/tabs";
-import { useAtomCallback } from "jotai/utils";
-import { reflogAtom } from "@/state/repository/misc";
+import { getFileName, toSlashedPath } from "@/util";
+import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 
 const fetchHistory = async (repoPath: string, reflogCount: number) => {
   const [[commits, rawRefs], user] = await Promise.all([

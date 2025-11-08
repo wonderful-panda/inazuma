@@ -1,5 +1,5 @@
-import { assertNever, nope } from "@/util";
 import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
+import { assertNever, nope } from "@/util";
 
 // biome-ignore format:for readability
 type Char =

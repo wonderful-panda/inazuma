@@ -1,22 +1,26 @@
-import process from "node:process";
-import fs from "node:fs";
 import cp from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
+import process from "node:process";
 import Handlebars from "handlebars";
 
 const main = () => {
   console.log("Generating license information...");
-  
+
   if (!fs.existsSync("src-tauri/generated")) {
     fs.mkdirSync("src-tauri/generated");
   }
 
   // Generate Rust licenses using cargo-about
   console.log("Generating Rust licenses...");
-  const cargoRet = cp.spawnSync("cargo", ["about", "generate", "about.hbs", "--output-file", "generated/rust-licenses.html"], {
-    cwd: "./src-tauri",
-    stdio: ["pipe", "pipe", "inherit"]
-  });
+  const cargoRet = cp.spawnSync(
+    "cargo",
+    ["about", "generate", "about.hbs", "--output-file", "generated/rust-licenses.html"],
+    {
+      cwd: "./src-tauri",
+      stdio: ["pipe", "pipe", "inherit"]
+    }
+  );
 
   if (cargoRet.status !== 0) {
     console.error("Failed to generate Rust licenses");
@@ -33,11 +37,15 @@ const main = () => {
 
   // Generate JavaScript licenses using license-checker
   console.log("Generating JavaScript licenses...");
-  const jsRet = cp.spawnSync("license-checker", ["--json", "--excludePrivatePackages", "--production"], {
-    cwd: ".",
-    stdio: ["pipe", "pipe", "inherit"],
-    shell: true
-  });
+  const jsRet = cp.spawnSync(
+    "license-checker",
+    ["--json", "--excludePrivatePackages", "--production"],
+    {
+      cwd: ".",
+      stdio: ["pipe", "pipe", "inherit"],
+      shell: true
+    }
+  );
 
   if (jsRet.status !== 0) {
     console.error("Failed to generate JavaScript licenses");
@@ -62,12 +70,21 @@ const main = () => {
 
 const generateJsLicensesHtml = (licensesData: Record<string, any>) => {
   // Group licenses by license type
-  const licenseGroups: Record<string, Array<{name: string, version: string, repository?: string, licenseFile?: string, publisher?: string}>> = {};
+  const licenseGroups: Record<
+    string,
+    Array<{
+      name: string;
+      version: string;
+      repository?: string;
+      licenseFile?: string;
+      publisher?: string;
+    }>
+  > = {};
   const licenseTexts: Record<string, string> = {};
 
   for (const [packageName, data] of Object.entries(licensesData)) {
-    const licenseName = data.licenses || 'Unknown';
-    const [name, version] = packageName.split('@').slice(-2);
+    const licenseName = data.licenses || "Unknown";
+    const [name, version] = packageName.split("@").slice(-2);
 
     if (!licenseGroups[licenseName]) {
       licenseGroups[licenseName] = [];
@@ -75,7 +92,7 @@ const generateJsLicensesHtml = (licensesData: Record<string, any>) => {
 
     licenseGroups[licenseName].push({
       name: name || packageName,
-      version: version || '',
+      version: version || "",
       repository: data.repository || `https://www.npmjs.com/package/${name || packageName}`,
       licenseFile: data.licenseFile,
       publisher: data.publisher
@@ -84,7 +101,7 @@ const generateJsLicensesHtml = (licensesData: Record<string, any>) => {
     // Store license text if available
     if (data.licenseFile && fs.existsSync(data.licenseFile)) {
       try {
-        licenseTexts[licenseName] = fs.readFileSync(data.licenseFile, 'utf-8');
+        licenseTexts[licenseName] = fs.readFileSync(data.licenseFile, "utf-8");
       } catch (e) {
         // Ignore file read errors
       }
@@ -94,21 +111,21 @@ const generateJsLicensesHtml = (licensesData: Record<string, any>) => {
   // Prepare data for Handlebars template
   const templateData = {
     overview: Object.entries(licenseGroups).map(([licenseName, packages]) => ({
-      id: licenseName.replace(/[^a-zA-Z0-9]/g, '-'),
+      id: licenseName.replace(/[^a-zA-Z0-9]/g, "-"),
       name: licenseName,
       count: packages.length
     })),
     licenses: Object.entries(licenseGroups).map(([licenseName, packages]) => ({
-      id: licenseName.replace(/[^a-zA-Z0-9]/g, '-'),
+      id: licenseName.replace(/[^a-zA-Z0-9]/g, "-"),
       name: licenseName,
       used_by: packages,
-      text: licenseTexts[licenseName] || 'License text not available'
+      text: licenseTexts[licenseName] || "License text not available"
     }))
   };
 
   // Read and compile Handlebars template
   const templatePath = path.join("build", "js-licenses.hbs");
-  const templateSource = fs.readFileSync(templatePath, 'utf-8');
+  const templateSource = fs.readFileSync(templatePath, "utf-8");
   const template = Handlebars.compile(templateSource);
 
   // Generate HTML

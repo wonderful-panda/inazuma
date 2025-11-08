@@ -1,7 +1,7 @@
-import AutoSizer from "react-virtualized-auto-sizer";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { type PtyExitStatus, type PtyId, useXterm } from "@/hooks/useXterm";
+import AutoSizer from "react-virtualized-auto-sizer";
 import { useAlert } from "@/context/AlertContext";
+import { type PtyExitStatus, type PtyId, useXterm } from "@/hooks/useXterm";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 export interface InteractiveShellProps {

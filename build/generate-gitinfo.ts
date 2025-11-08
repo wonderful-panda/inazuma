@@ -1,6 +1,6 @@
-import process from "node:process";
-import fs from "node:fs";
 import cp from "node:child_process";
+import fs from "node:fs";
+import process from "node:process";
 
 const main = () => {
   const ret = cp.spawnSync("git", ["rev-parse", "HEAD"], {

@@ -1,5 +1,5 @@
-import { Dialog, type DialogMethods } from "@/components/Dialog";
 import { createContext, useContext, useMemo, useRef } from "react";
+import { Dialog, type DialogMethods } from "@/components/Dialog";
 
 const defaultMethods: DialogMethods = {
   showModal: () => Promise.resolve({ result: "notready" })

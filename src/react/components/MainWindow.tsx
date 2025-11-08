@@ -1,15 +1,3 @@
-import IconButton from "@mui/material/IconButton";
-import { Icon } from "./Icon";
-import type React from "react";
-import {
-  memo,
-  useCallback,
-  useMemo,
-  useState,
-  createContext,
-  useContext,
-  useLayoutEffect
-} from "react";
 import {
   Drawer,
   ListItem,
@@ -18,12 +6,24 @@ import {
   ListItemText,
   Typography
 } from "@mui/material";
-import { usePreferenceDialog } from "./PreferenceDialog";
-import { useAboutDialog } from "./AboutDialog";
-import { CommandGroup, Cmd } from "./CommandGroup";
+import IconButton from "@mui/material/IconButton";
+import type React from "react";
+import {
+  createContext,
+  memo,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useState
+} from "react";
 import type { IconActionItem, Spacer } from "@/commands/types";
 import { useConfig } from "@/state/root";
 import { nope } from "@/util";
+import { useAboutDialog } from "./AboutDialog";
+import { Cmd, CommandGroup } from "./CommandGroup";
+import { Icon } from "./Icon";
+import { usePreferenceDialog } from "./PreferenceDialog";
 
 export interface MainWindowProps {
   title: string;

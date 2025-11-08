@@ -1,8 +1,8 @@
 import { TextField } from "@mui/material";
-import { Icon } from "../Icon";
 import classNames from "classnames";
-import { useMemo } from "react";
 import { debounce } from "lodash";
+import { useMemo } from "react";
+import { Icon } from "../Icon";
 
 const PathFilter: React.FC<{ onFilterTextChange: (value: string) => void; className?: string }> = ({
   onFilterTextChange,

@@ -1,9 +1,9 @@
+import cp from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import cp from "node:child_process";
 import Handlebars from "handlebars";
-import type { TsFunc } from "../src-tauri/generate/bindings/TsFunc";
 import type { TsArg } from "../src-tauri/generate/bindings/TsArg";
+import type { TsFunc } from "../src-tauri/generate/bindings/TsFunc";
 import type { TsType } from "../src-tauri/generate/bindings/TsType";
 
 /**
@@ -50,7 +50,7 @@ const unreachable = (_: never): never => {
  */
 const toCamelCase = (value: string): string =>
   value.replace(/_([a-z])/g, (_, g: string) => g.toUpperCase());
-  
+
 /**
  * Recursively traverses a type or function definition and calls the callback for each type encountered.
  * @param target - The type or function to traverse
@@ -86,7 +86,7 @@ const traverseType = (target: TsType | TsFunc, callback: (ty: TsType) => void) =
     target.args.forEach((arg) => traverseType(arg.ty, callback));
     traverseType(target.ret, callback);
   }
-}
+};
 
 /**
  * Converts a TsType to its TypeScript string representation.
@@ -171,11 +171,13 @@ const generateInvokeType = () => {
   const data: TranslatedFunc[] = funcDefs.map((f) => translateTsFunc(f));
   // add import statements for user defined types
   const imports = new Set<string>();
-  funcDefs.forEach(fn => traverseType(fn, ty => {
-    if (ty.kind === "UserDefined") {
-      imports.add(ty.content);
-    }
-  }));
+  funcDefs.forEach((fn) =>
+    traverseType(fn, (ty) => {
+      if (ty.kind === "UserDefined") {
+        imports.add(ty.content);
+      }
+    })
+  );
   const template = Handlebars.compile(`/* eslint-disable */
 
 /*

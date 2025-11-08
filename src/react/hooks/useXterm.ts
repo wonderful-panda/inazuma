@@ -1,14 +1,14 @@
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { listen } from "@tauri-apps/api/event";
-import { useCallback, useRef } from "react";
-import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { useWithRef } from "./useWithRef";
-import { useReloadRepository } from "./actions/openRepository";
-import { useAlert } from "@/context/AlertContext";
-import { assertNever } from "@/util";
+import { Terminal } from "@xterm/xterm";
+import { useCallback, useRef } from "react";
 import { BOLD, CRLF, GREEN, RESET, ULINE, YELLOW } from "@/ansiEscape";
+import { useAlert } from "@/context/AlertContext";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useConfigValue } from "@/state/root";
+import { assertNever } from "@/util";
+import { useReloadRepository } from "./actions/openRepository";
+import { useWithRef } from "./useWithRef";
 
 interface Shell {
   id: number;

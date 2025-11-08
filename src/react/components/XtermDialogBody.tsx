@@ -1,13 +1,13 @@
+import { useCallback, useRef, useState } from "react";
 import type { PtyExitStatus } from "@/hooks/useXterm";
 import {
-  DialogContent,
-  DialogTitle,
-  DialogActions,
   AcceptButton,
   CancelButton,
-  DialogButton
+  DialogActions,
+  DialogButton,
+  DialogContent,
+  DialogTitle
 } from "./Dialog";
-import { useCallback, useRef, useState } from "react";
 
 export const XtermDialogBody: React.FC<{
   title: string;

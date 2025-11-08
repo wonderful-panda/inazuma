@@ -1,7 +1,7 @@
-import { shortHash } from "@/util";
-import type { FileCommand } from "./types";
 import { useMemo } from "react";
 import { useShowExternalDiff } from "@/hooks/actions/showExternalDiff";
+import { shortHash } from "@/util";
+import type { FileCommand } from "./types";
 
 const $path = (_: Commit, file: FileEntry) => file.path;
 const $oldPathOrPath = (_: Commit, file: FileEntry) => file.oldPath ?? file.path;

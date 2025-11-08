@@ -1,17 +1,17 @@
+import { useMemo } from "react";
 import { useBrowseSourceTreeCommand } from "./browseSourceTree";
 import { useCopyFullHashCommand, useCopyShortHashCommand } from "./copyHash";
-import type { ActionItem, CommitCommand, FileCommand } from "./types";
-import { useCreateBranchCommand } from "./createBranch";
-import { useMemo } from "react";
 import { useCopyRelativePathCommand } from "./copyRelativePath";
+import { useCreateBranchCommand } from "./createBranch";
 import {
   useDiffUnstagedCommand,
   useDiffWithLocalCommand,
   useDiffWithParent2Command,
   useDiffWithParentCommand
 } from "./diff";
-import { useStageCommand, useUnstageCommand } from "./workingtree";
 import { useShowFileContentCommand } from "./showFileContent";
+import type { ActionItem, CommitCommand, FileCommand } from "./types";
+import { useStageCommand, useUnstageCommand } from "./workingtree";
 
 export const useCommitCommands = () => {
   const copyFullHash = useCopyFullHashCommand();

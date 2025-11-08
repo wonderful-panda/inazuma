@@ -1,6 +1,6 @@
+import { type SetStateAction, useReducer } from "react";
 import type { TreeItem } from "@/tree";
 import { assertNever } from "@/util";
-import { type SetStateAction, useReducer } from "react";
 
 export interface TreeItemVM<D> {
   item: TreeItem<D>;

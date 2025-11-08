@@ -1,5 +1,3 @@
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { assertNever } from "@/util";
 import {
   Autocomplete,
   Checkbox,
@@ -10,8 +8,8 @@ import {
   TextField,
   Typography
 } from "@mui/material";
-import { useCallback, useEffect, useImperativeHandle, useReducer, useRef, useState } from "react";
 import classNames from "classnames";
+import { useCallback, useEffect, useImperativeHandle, useReducer, useRef, useState } from "react";
 import {
   AcceptButton,
   CancelButton,
@@ -19,9 +17,10 @@ import {
   DialogContent,
   DialogTitle
 } from "@/components/Dialog";
-
-import { useDialog } from "@/context/DialogContext";
 import { useAlert } from "@/context/AlertContext";
+import { useDialog } from "@/context/DialogContext";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { assertNever } from "@/util";
 
 const SectionHeader: React.FC<{ text: string }> = ({ text }) => (
   <Typography variant="h6" component="div" color="primary">

@@ -1,10 +1,10 @@
-import { useCallback, useState } from "react";
 import { Box, Tab, Tabs } from "@mui/material";
-import { version } from "../../../package.json";
-import { sha } from "@/generated/gitinfo.json";
+import { convertFileSrc } from "@tauri-apps/api/core";
+import { useCallback, useState } from "react";
 import { CancelButton, DialogActions, DialogContent, DialogTitle } from "@/components/Dialog";
 import { useDialog } from "@/context/DialogContext";
-import { convertFileSrc } from "@tauri-apps/api/core";
+import { sha } from "@/generated/gitinfo.json";
+import { version } from "../../../package.json";
 
 export const useAboutDialog = () => {
   const dialog = useDialog();

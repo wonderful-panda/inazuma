@@ -1,7 +1,7 @@
+import { useAtomValue, useSetAtom } from "jotai";
 import { repoPathAtom } from "@/state/repository";
 import { addRepoTabAtom } from "@/state/repository/tabs";
 import { shortHash } from "@/util";
-import { useAtomValue, useSetAtom } from "jotai";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 
 export const useShowLsTree = () => {

@@ -1,21 +1,21 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { FileList, useFileListRowEventHandler } from "./FileList";
-import { Loading } from "../Loading";
-import { FlexCard } from "../FlexCard";
-import type { VirtualListMethods } from "../VirtualList";
-import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { debounce } from "lodash";
-import { KeyDownTrapper } from "../KeyDownTrapper";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useDiffAgainstCommand } from "@/commands/diff";
+import { useAlert } from "@/context/AlertContext";
+import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
+import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
+import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { decodeBase64, decodeToString } from "@/strings";
-import PathFilter from "./PathFilter";
-import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
-import { useDiffAgainstCommand } from "@/commands/diff";
-import { DiffViewer } from "./DiffViewer";
+import { FlexCard } from "../FlexCard";
+import { KeyDownTrapper } from "../KeyDownTrapper";
+import { Loading } from "../Loading";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import type { VirtualListMethods } from "../VirtualList";
 import { CommitAttributes } from "./CommitAttributes";
-import { useAlert } from "@/context/AlertContext";
+import { DiffViewer } from "./DiffViewer";
+import { FileList, useFileListRowEventHandler } from "./FileList";
+import PathFilter from "./PathFilter";
 
 export interface CommitDiffTabProps {
   repoPath: string;

@@ -1,4 +1,3 @@
-import { Icon } from "../Icon";
 import {
   IconButton,
   ListItem,
@@ -9,6 +8,7 @@ import {
 } from "@mui/material";
 import { useCallback, useMemo } from "react";
 import type { IconName } from "@/types/IconName";
+import { Icon } from "../Icon";
 
 export interface RepositoryListItemProps {
   itemId: string;

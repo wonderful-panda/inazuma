@@ -1,7 +1,7 @@
 import classNames from "classnames";
-import { assertNever } from "@/util";
 import { useCallback } from "react";
 import { setDragData } from "@/dragdrop";
+import { assertNever } from "@/util";
 
 const Badge: React.FC<
   React.PropsWithChildren<{

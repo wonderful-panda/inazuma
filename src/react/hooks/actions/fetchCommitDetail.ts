@@ -1,7 +1,7 @@
-import { repoPathAtom, setCommitDetailAtom } from "@/state/repository";
 import { useAtomValue, useSetAtom } from "jotai";
-import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { repoPathAtom, setCommitDetailAtom } from "@/state/repository";
+import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 
 export const useFetchCommitDetail = () => {
   const repoPath = useAtomValue(repoPathAtom);

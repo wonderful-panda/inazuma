@@ -1,5 +1,5 @@
-import { PersistStateContext } from "@/context/PersistStateContext";
 import { useContext, useEffect, useState } from "react";
+import { PersistStateContext } from "@/context/PersistStateContext";
 
 export const usePersistState = <T>(key: string, initialValue: T): [T, (value: T) => void] => {
   const { getItem, setItem } = useContext(PersistStateContext);

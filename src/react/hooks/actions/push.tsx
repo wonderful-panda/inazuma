@@ -1,13 +1,13 @@
-import { useDialog } from "@/context/DialogContext";
-import { useExecuteGitInXterm } from "../useXterm";
-import { useCallback } from "react";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useAlert } from "@/context/AlertContext";
-import { PushDialogBody } from "@/components/repository/PushDialogBody";
-import type { DialogResult } from "@/components/Dialog";
 import { useAtomValue } from "jotai";
+import { useCallback } from "react";
+import type { DialogResult } from "@/components/Dialog";
+import { PushDialogBody } from "@/components/repository/PushDialogBody";
+import { useAlert } from "@/context/AlertContext";
+import { useDialog } from "@/context/DialogContext";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { repoPathAtom } from "@/state/repository";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
+import { useExecuteGitInXterm } from "../useXterm";
 
 export const useBeginPush = () => {
   const dialog = useDialog();

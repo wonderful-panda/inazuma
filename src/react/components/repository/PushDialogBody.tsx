@@ -1,9 +1,9 @@
-import { DialogSection } from "../Dialog";
-import { useCallback, useEffect, useRef } from "react";
-import { Icon } from "../Icon";
-import { useAlert } from "@/context/AlertContext";
 import { NativeSelect } from "@mui/material";
+import { useCallback, useEffect, useRef } from "react";
+import { useAlert } from "@/context/AlertContext";
 import type { PtyExitStatus } from "@/hooks/useXterm";
+import { DialogSection } from "../Dialog";
+import { Icon } from "../Icon";
 import { XtermDialogBody } from "../XtermDialogBody";
 
 export const PushDialogBody: React.FC<{

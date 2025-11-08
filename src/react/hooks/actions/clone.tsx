@@ -1,9 +1,9 @@
-import { useDialog } from "@/context/DialogContext";
-import { useExecuteGitInXterm } from "../useXterm";
 import { useCallback } from "react";
 import { CloneDialogBody } from "@/components/home/CloneDialogBody";
-import { useOpenRepository } from "./openRepository";
+import { useDialog } from "@/context/DialogContext";
 import { useWithRef } from "../useWithRef";
+import { useExecuteGitInXterm } from "../useXterm";
+import { useOpenRepository } from "./openRepository";
 
 export const useBeginClone = () => {
   const dialog = useDialog();

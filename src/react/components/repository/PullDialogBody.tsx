@@ -1,10 +1,10 @@
-import { DialogSection, LabelledCheckBox, LabelledRadio } from "../Dialog";
+import { NativeSelect, RadioGroup } from "@mui/material";
 import { useCallback, useRef, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
-import { NativeSelect, RadioGroup } from "@mui/material";
+import type { PtyExitStatus } from "@/hooks/useXterm";
+import { DialogSection, LabelledCheckBox, LabelledRadio } from "../Dialog";
 import { Icon } from "../Icon";
 import { XtermDialogBody } from "../XtermDialogBody";
-import type { PtyExitStatus } from "@/hooks/useXterm";
 
 type PullMode = "--no-ff" | "--ff" | "--ff-only" | "--rebase";
 export interface PullOptions {

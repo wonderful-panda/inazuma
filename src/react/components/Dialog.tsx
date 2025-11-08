@@ -1,12 +1,10 @@
-import { useStateWithRef } from "@/hooks/useStateWithRef";
-import { assertNever, wait } from "@/util";
 import { Icon } from "@iconify/react";
 import { Button, Checkbox, FormControlLabel, IconButton, Paper, Radio } from "@mui/material";
 import classNames from "classnames";
 import type React from "react";
 import {
-  createContext,
   type CSSProperties,
+  createContext,
   useCallback,
   useContext,
   useImperativeHandle,
@@ -14,6 +12,8 @@ import {
   useRef,
   useState
 } from "react";
+import { useStateWithRef } from "@/hooks/useStateWithRef";
+import { assertNever, wait } from "@/util";
 
 export interface DialogAction {
   text: string;

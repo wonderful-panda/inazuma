@@ -1,6 +1,6 @@
-import { throttled } from "@/util";
 import type React from "react";
 import { useMemo } from "react";
+import { throttled } from "@/util";
 
 export interface ListItemSelector {
   set: SetState<number>;

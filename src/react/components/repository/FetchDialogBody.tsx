@@ -1,8 +1,8 @@
-import { DialogSection, LabelledCheckBox, LabelledRadio } from "../Dialog";
+import { NativeSelect, RadioGroup } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
-import { NativeSelect, RadioGroup } from "@mui/material";
 import type { PtyExitStatus } from "@/hooks/useXterm";
+import { DialogSection, LabelledCheckBox, LabelledRadio } from "../Dialog";
 import { XtermDialogBody } from "../XtermDialogBody";
 
 type FetchMode = "selected" | "all";

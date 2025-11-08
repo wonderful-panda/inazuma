@@ -1,8 +1,8 @@
-import type { GraphFragment } from "@/grapher";
 import { atom, createStore } from "jotai";
+import { atomFamily } from "jotai/utils";
+import type { GraphFragment } from "@/grapher";
 import { resetRepoTabsAtom } from "./tabs";
 import { workingTreeAtom } from "./workingtree";
-import { atomFamily } from "jotai/utils";
 
 export interface CommitLogItems {
   commits: Commit[];

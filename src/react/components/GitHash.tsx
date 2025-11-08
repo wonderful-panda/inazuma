@@ -1,5 +1,5 @@
-import { shortHash } from "@/util";
 import classNames from "classnames";
+import { shortHash } from "@/util";
 
 export const GitHash: React.FC<{ hash: string; full?: boolean; className?: string }> = ({
   hash,

@@ -1,9 +1,9 @@
+import { useAtomValue } from "jotai";
+import { useAlert } from "@/context/AlertContext";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { repoPathAtom } from "@/state/repository";
 import { useConfigValue } from "@/state/root";
-import { useAtomValue } from "jotai";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { useAlert } from "@/context/AlertContext";
 
 export const useShowExternalDiff = () => {
   const repoPath = useAtomValue(repoPathAtom);

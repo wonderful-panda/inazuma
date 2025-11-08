@@ -1,35 +1,21 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Button, useTheme } from "@mui/material";
+import classNames from "classnames";
+import { useAtomValue } from "jotai";
 import { debounce } from "lodash";
 import type * as monaco from "monaco-editor";
-import { FlexCard } from "../FlexCard";
-import { decodeBase64, decodeToString } from "@/strings";
-import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import type { VirtualListMethods } from "../VirtualList";
-import { Button, useTheme } from "@mui/material";
-import { useTreeModel, type TreeItemVM } from "@/hooks/useTreeModel";
-import type { TreeItem } from "@/tree";
-import { VirtualTree, type VirtualTreeProps } from "../VirtualTree";
-import { FileListRow } from "./FileListRow";
-import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
-import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import classNames from "classnames";
-import { executeFileCommand } from "@/commands";
-import type { IconActionItem } from "@/commands/types";
-import { RowActionButtons } from "./RowActionButtons";
-import { MonacoEditor } from "../MonacoEditor";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { KeyDownTrapper } from "../KeyDownTrapper";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import PathFilter from "./PathFilter";
-import { useFileContextMenuT } from "@/hooks/useContextMenu";
+import { executeFileCommand } from "@/commands";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
-import { useRestoreCommand, useStageCommand, useUnstageCommand } from "@/commands/workingtree";
 import {
   useDiffUnstagedCommand,
   useDiffWithParent2Command,
   useDiffWithParentCommand
 } from "@/commands/diff";
+import type { IconActionItem } from "@/commands/types";
+import { useRestoreCommand, useStageCommand, useUnstageCommand } from "@/commands/workingtree";
+import { useAlert } from "@/context/AlertContext";
+import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import {
   useBeginCommit,
   useFixup,
@@ -37,11 +23,25 @@ import {
   useStage,
   useUnstage
 } from "@/hooks/actions/workingtree";
-import { useAtomValue } from "jotai";
-import { repoPathAtom } from "@/state/repository";
-import { NumStat } from "./NumStat";
-import { useAlert } from "@/context/AlertContext";
+import { useFileContextMenuT } from "@/hooks/useContextMenu";
+import { useSelectedIndex } from "@/hooks/useSelectedIndex";
+import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
+import { type TreeItemVM, useTreeModel } from "@/hooks/useTreeModel";
 import { useWithRef } from "@/hooks/useWithRef";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { repoPathAtom } from "@/state/repository";
+import { decodeBase64, decodeToString } from "@/strings";
+import type { TreeItem } from "@/tree";
+import { FlexCard } from "../FlexCard";
+import { KeyDownTrapper } from "../KeyDownTrapper";
+import { MonacoEditor } from "../MonacoEditor";
+import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import type { VirtualListMethods } from "../VirtualList";
+import { VirtualTree, type VirtualTreeProps } from "../VirtualTree";
+import { FileListRow } from "./FileListRow";
+import { NumStat } from "./NumStat";
+import PathFilter from "./PathFilter";
+import { RowActionButtons } from "./RowActionButtons";
 
 export interface WorkingTreeProps {
   stat: WorkingTreeStat | undefined;

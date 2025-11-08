@@ -1,9 +1,9 @@
-import { useCallback } from "react";
-import { FileListRow } from "./FileListRow";
-import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "../VirtualList";
-import type { FileCommand } from "@/commands/types";
-import { executeFileCommand } from "@/commands";
 import { useTheme } from "@mui/material";
+import { useCallback } from "react";
+import { executeFileCommand } from "@/commands";
+import type { FileCommand } from "@/commands/types";
+import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "../VirtualList";
+import { FileListRow } from "./FileListRow";
 
 export interface FileListProps extends VirtualListEvents<FileEntry> {
   commit: Commit;

@@ -1,6 +1,6 @@
+import { useMemo } from "react";
 import { useRestore, useStage, useUnstage } from "@/hooks/actions/workingtree";
 import type { FileCommand } from "./types";
-import { useMemo } from "react";
 
 export const useStageCommand = () => {
   const stage = useStage();

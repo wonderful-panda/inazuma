@@ -1,8 +1,8 @@
-import { Icon } from "./Icon";
-import classNames from "classnames";
 import { Button, IconButton, styled } from "@mui/material";
+import classNames from "classnames";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GitHash } from "./GitHash";
+import { Icon } from "./Icon";
 import { LazyTooltip } from "./LazyTooltip";
 
 const CURRENT_TABBUTTON_CLASS = "__current_tabbutton__";

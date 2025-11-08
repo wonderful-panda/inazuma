@@ -1,6 +1,6 @@
+import { useMemo } from "react";
 import { useBeginCreateBranch } from "@/hooks/actions/branch";
 import type { CommitCommand } from "./types";
-import { useMemo } from "react";
 
 export const useCreateBranchCommand = () => {
   const beginCreateBranch = useBeginCreateBranch();

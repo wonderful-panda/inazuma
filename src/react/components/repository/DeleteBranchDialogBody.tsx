@@ -1,4 +1,4 @@
-import { useAlert } from "@/context/AlertContext";
+import { useCallback, useRef } from "react";
 import {
   AcceptButton,
   CancelButton,
@@ -8,8 +8,8 @@ import {
   DialogTitle,
   LabelledCheckBox
 } from "@/components/Dialog";
+import { useAlert } from "@/context/AlertContext";
 import { useDeleteBranch } from "@/hooks/actions/branch";
-import { useCallback, useRef } from "react";
 import { Icon } from "../Icon";
 
 export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branchName }) => {

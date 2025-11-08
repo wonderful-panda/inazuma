@@ -1,46 +1,46 @@
 import "@xterm/xterm/css/xterm.css";
 import "./install-polyfill";
+import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
+import { lime, yellow } from "@mui/material/colors";
+import { listen } from "@tauri-apps/api/event";
+import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { Cmd, CommandGroup } from "./components/CommandGroup";
+import { lazy } from "./components/hoc/lazy";
 import Home from "./components/home";
-import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material";
-import { lime, yellow } from "@mui/material/colors";
+import { MainWindow } from "./components/MainWindow";
+import { TabContainer, type TabContainerProps, TooltipTitle } from "./components/TabContainer";
+import { AlertProvider, useAlert } from "./context/AlertContext";
+import { CommandGroupProvider, CommandGroupTreeProvider } from "./context/CommandGroupContext";
+import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
+import { ContextMenuProvider } from "./context/ContextMenuContext";
+import { DialogProvider } from "./context/DialogContext";
+import { LoadingProvider } from "./context/LoadingContext";
 import { type PartialStorage, PersistStateProvider } from "./context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
-import { CommandGroupProvider, CommandGroupTreeProvider } from "./context/CommandGroupContext";
-import { ContextMenuProvider } from "./context/ContextMenuContext";
-import { lazy } from "./components/hoc/lazy";
+import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions/openRepository";
+import { useWithRef } from "./hooks/useWithRef";
 import { invokeTauriCommand } from "./invokeTauriCommand";
-import { debounce } from "lodash";
-import { listen } from "@tauri-apps/api/event";
 import {
   registerConfigWatcher,
   registerRecentOpenedRepositoriesWatcher,
   setInitialValue,
   useConfigValue
 } from "./state/root";
-import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions/openRepository";
-import { useWithRef } from "./hooks/useWithRef";
-import { MainWindow } from "./components/MainWindow";
 import {
   type AppTabType,
   registerApplicationTabsWatcher,
-  useAppTabsValue,
-  setInitialValue as setInitialAppTabsValue,
+  removeAppTab,
+  selectAppTab,
+  selectHomeTab,
   selectNextAppTab,
   selectPrevAppTab,
-  selectHomeTab,
-  selectAppTab,
-  removeAppTab,
-  type TabsState
+  setInitialValue as setInitialAppTabsValue,
+  type TabsState,
+  useAppTabsValue
 } from "./state/tabs";
-import { TabContainer, type TabContainerProps, TooltipTitle } from "./components/TabContainer";
 import { assertNever } from "./util";
-import { Cmd, CommandGroup } from "./components/CommandGroup";
-import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
-import { DialogProvider } from "./context/DialogContext";
-import { LoadingProvider } from "./context/LoadingContext";
-import { AlertProvider, useAlert } from "./context/AlertContext";
 
 if (import.meta.env.DEV) {
   void import("./jotai-devtools-styles");

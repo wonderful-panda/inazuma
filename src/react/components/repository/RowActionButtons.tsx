@@ -1,7 +1,7 @@
-import type { IconActionItem } from "@/commands/types";
 import { IconButton } from "@mui/material";
 import classNames from "classnames";
 import { memo, useMemo } from "react";
+import type { IconActionItem } from "@/commands/types";
 import { Icon } from "../Icon";
 
 export interface RowActionItem extends IconActionItem {

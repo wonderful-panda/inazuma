@@ -1,16 +1,16 @@
 import { Divider, List, Typography } from "@mui/material";
-import { RepositoryListItem, type RepositoryListItemProps } from "./RepositoryListItem";
 import { useCallback, useMemo } from "react";
 import { MainWindowProperty } from "@/components/MainWindow";
-import { CommandGroup, Cmd } from "../CommandGroup";
 import type { Command } from "@/context/CommandGroupContext";
+import { useBeginClone } from "@/hooks/actions/clone";
+import { useOpenRepository } from "@/hooks/actions/openRepository";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import {
   removeRecentOpenedRepository,
   useVisibleRecentOpenedRepositoriesValue
 } from "@/state/root";
-import { useOpenRepository } from "@/hooks/actions/openRepository";
-import { useBeginClone } from "@/hooks/actions/clone";
+import { Cmd, CommandGroup } from "../CommandGroup";
+import { RepositoryListItem, type RepositoryListItemProps } from "./RepositoryListItem";
 
 const Home: React.FC<{ active: boolean }> = ({ active }) => {
   const beginClone = useBeginClone();

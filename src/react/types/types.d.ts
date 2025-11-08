@@ -1,7 +1,5 @@
 import React, { ComponentProps, ComponentPropsWithRef } from "react";
 
-export {};
-
 declare global {
   interface Window {
     StringDecoder: typeof import("string_decoder").StringDecoder;

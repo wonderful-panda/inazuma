@@ -1,6 +1,6 @@
 import { atom, useAtom, useAtomValue } from "jotai";
-import { createWacher } from "./util";
 import { getRootStore } from "./rootStore";
+import { createWacher } from "./util";
 
 const rootStore = getRootStore();
 const opt = { store: rootStore };

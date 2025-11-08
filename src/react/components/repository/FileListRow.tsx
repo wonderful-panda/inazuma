@@ -1,12 +1,12 @@
-import classNames from "classnames";
 import { Typography } from "@mui/material";
+import classNames from "classnames";
 import { memo, useMemo } from "react";
-import { FileStatusIcon } from "./FileStatusIcon";
-import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import type { FileCommand, IconActionItem } from "@/commands/types";
 import { fileCommandsToActions } from "@/commands";
-import { RowActionButtons } from "./RowActionButtons";
+import type { FileCommand, IconActionItem } from "@/commands/types";
+import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { FileStat } from "./FileStat";
+import { FileStatusIcon } from "./FileStatusIcon";
+import { RowActionButtons } from "./RowActionButtons";
 
 export interface FileListRowProps {
   commit: Commit;

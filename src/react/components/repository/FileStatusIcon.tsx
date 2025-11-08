@@ -1,6 +1,6 @@
+import { type FileStatus, isValidFileStatus } from "@/filestatus";
 import type { IconName } from "@/types/IconName";
 import { Icon } from "../Icon";
-import { type FileStatus, isValidFileStatus } from "@/filestatus";
 
 interface Attr {
   icon: IconName;

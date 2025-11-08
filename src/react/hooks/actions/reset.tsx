@@ -1,12 +1,12 @@
+import type { ResetOptions } from "@backend/ResetOptions";
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
-import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
-import { currentBranchAtom, repoPathAtom } from "../../state/repository";
-import { useReloadRepository } from "@/hooks/actions/openRepository";
-import { useDialog } from "@/context/DialogContext";
 import { ResetDialogBody } from "@/components/repository/ResetBranchDialogBody";
-import type { ResetOptions } from "@backend/ResetOptions";
+import { useDialog } from "@/context/DialogContext";
+import { useReloadRepository } from "@/hooks/actions/openRepository";
+import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { currentBranchAtom, repoPathAtom } from "../../state/repository";
 
 export const useBeginReset = () => {
   const repoPath = useAtomValue(repoPathAtom);

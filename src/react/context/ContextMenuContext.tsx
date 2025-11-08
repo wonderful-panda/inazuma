@@ -1,8 +1,8 @@
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import { createContext, useCallback, useMemo, useState } from "react";
 import type { ActionItem } from "@/commands/types";
 import { Icon } from "@/components/Icon";
 import { nope } from "@/util";
-import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
-import { createContext, useCallback, useMemo, useState } from "react";
 
 export interface ContextMenuMethods {
   show: (event: React.MouseEvent | MouseEvent, menus: ActionItem[]) => void;

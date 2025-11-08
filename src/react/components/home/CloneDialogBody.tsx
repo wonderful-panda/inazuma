@@ -1,10 +1,10 @@
 import { IconButton, TextField } from "@mui/material";
-import { DialogSection } from "../Dialog";
 import { useCallback, useEffect, useRef } from "react";
-import { Icon } from "../Icon";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useAlert } from "@/context/AlertContext";
 import type { PtyExitStatus } from "@/hooks/useXterm";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { DialogSection } from "../Dialog";
+import { Icon } from "../Icon";
 import { XtermDialogBody } from "../XtermDialogBody";
 
 export const CloneDialogBody: React.FC<{

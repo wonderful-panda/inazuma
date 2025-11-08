@@ -1,11 +1,11 @@
 import { IconButton, Snackbar, SnackbarContent, Typography } from "@mui/material";
-import { Icon } from "./Icon";
 import { useCallback, useImperativeHandle, useState } from "react";
-import { assertNever, serializeError, wait } from "@/util";
-import type { IconName } from "@/types/IconName";
 import { createPortal } from "react-dom";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useWithRef } from "@/hooks/useWithRef";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import type { IconName } from "@/types/IconName";
+import { assertNever, serializeError, wait } from "@/util";
+import { Icon } from "./Icon";
 
 const iconName = (type: AlertType): IconName => {
   switch (type) {
