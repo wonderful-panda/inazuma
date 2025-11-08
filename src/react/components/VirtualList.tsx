@@ -81,10 +81,10 @@ const VirtualListInner = <T,>({
   const renderRow = useCallback(
     ({ index, style }: { index: number; style: object }) => {
       const item = items[index];
+      // row must be unfocusable.
+      // because there is a problemaic behavior when focused row scrolled out
       return item !== undefined ? (
         <div
-          role="row"
-          tabIndex={-1}
           data-index={index}
           key={getItemKey(item)}
           style={style}
