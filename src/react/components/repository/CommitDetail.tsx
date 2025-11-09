@@ -1,17 +1,12 @@
 import { Button } from "@mui/material";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
 import { useDiffWithParentCommand } from "@/commands/diff";
 import { useShowFileContentCommand } from "@/commands/showFileContent";
-import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useShowLsTree } from "@/hooks/actions/showLsTree";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
-import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
-import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { FlexCard } from "../FlexCard";
-import { KeyDownTrapper } from "../KeyDownTrapper";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import type { VirtualListMethods } from "../VirtualList";
 import { CommitAttributes } from "./CommitAttributes";
 import { FileList, useFileListRowEventHandler } from "./FileList";
 import { NumStat } from "./NumStat";
@@ -74,16 +69,6 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
     () => (commit ? commit.files.filter((f) => f.path.includes(filterText)) : []),
     [commit, filterText]
   );
-  const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(visibleFiles || []);
-  // biome-ignore lint/correctness/useExhaustiveDependencies(commit): commit changes should reset selected index
-  useEffect(() => {
-    setSelectedIndex(-1);
-  }, [commit, setSelectedIndex]);
-  const listRef = useRef<VirtualListMethods>(null);
-  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
-    visibleFiles.length || 0,
-    setSelectedIndex
-  );
   const copyRelativePath = useCopyRelativePathCommand();
   const diffWithParent = useDiffWithParentCommand();
   const showFileContent = useShowFileContentCommand();
@@ -92,7 +77,6 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
     [copyRelativePath, diffWithParent, showFileContent]
   );
 
-  useEffect(() => listRef.current?.scrollToItem(selectedIndex), [selectedIndex]);
   const onRowDoubleClick = useFileListRowEventHandler(diffWithParent, commit);
   const onRowContextMenu = useFileContextMenu(commit);
   return (
@@ -118,19 +102,13 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
             commit && (
               <div className="flex-1 flex-col-nowrap">
                 <PathFilter onFilterTextChange={setFilterText} className="m-2" />
-                <SelectedIndexProvider value={selectedIndex}>
-                  <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
-                    <FileList
-                      ref={listRef}
-                      commit={commit}
-                      files={visibleFiles}
-                      actionCommands={actionCommands}
-                      onRowMouseDown={handleRowMouseDown}
-                      onRowDoubleClick={onRowDoubleClick}
-                      onRowContextMenu={onRowContextMenu}
-                    />
-                  </KeyDownTrapper>
-                </SelectedIndexProvider>
+                <FileList
+                  commit={commit}
+                  files={visibleFiles}
+                  actionCommands={actionCommands}
+                  onRowDoubleClick={onRowDoubleClick}
+                  onRowContextMenu={onRowContextMenu}
+                />
               </div>
             )
           }

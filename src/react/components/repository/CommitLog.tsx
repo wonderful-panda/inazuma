@@ -132,7 +132,12 @@ const CommitLogInner: React.FC<{
           {loadedId === "--" ? (
             <WorkingTree stat={workingTree} orientation={orientation} />
           ) : (
-            <CommitDetail commit={commitDetail} refs={currentRefs} orientation={orientation} />
+            <CommitDetail
+              commit={commitDetail}
+              key={commitDetail?.id || "empty"}
+              refs={currentRefs}
+              orientation={orientation}
+            />
           )}
         </div>
       );

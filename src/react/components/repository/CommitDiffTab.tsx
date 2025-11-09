@@ -1,17 +1,12 @@
 import { debounce } from "lodash";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDiffAgainstCommand } from "@/commands/diff";
 import { useAlert } from "@/context/AlertContext";
-import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
-import { useListIndexChanger } from "@/hooks/useListIndexChanger";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { decodeBase64, decodeToString } from "@/strings";
 import { FlexCard } from "../FlexCard";
-import { KeyDownTrapper } from "../KeyDownTrapper";
 import { Loading } from "../Loading";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import type { VirtualListMethods } from "../VirtualList";
 import { CommitAttributes } from "./CommitAttributes";
 import { DiffViewer } from "./DiffViewer";
 import { FileList, useFileListRowEventHandler } from "./FileList";
@@ -69,8 +64,6 @@ const CommitDiffContent: React.FC<{
   commitFrom: Commit | "parent";
   commitTo: Commit;
 }> = ({ repoPath, commitFrom, commitTo, files }) => {
-  const listRef = useRef<VirtualListMethods>(null);
-  const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(files);
   const [filterText, setFilterText] = useState("");
   const visibleFiles = useMemo(
     () => files.filter((f) => f.path.includes(filterText)),
@@ -81,13 +74,6 @@ const CommitDiffContent: React.FC<{
     undefined
   ]);
   const [loading, setLoading] = useState(false);
-  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
-    visibleFiles.length,
-    setSelectedIndex
-  );
-  useEffect(() => {
-    listRef.current?.scrollToItem(selectedIndex);
-  }, [selectedIndex]);
   const { reportError } = useAlert();
   const diffAgainst = useDiffAgainstCommand(commitFrom);
   const actionCommands = useMemo(() => [diffAgainst] as const, [diffAgainst]);
@@ -113,9 +99,12 @@ const CommitDiffContent: React.FC<{
       }, 200),
     [reportError, repoPath, commitFrom, commitTo]
   );
-  useEffect(() => {
-    void handleSelectFile(visibleFiles[selectedIndex]);
-  }, [visibleFiles, selectedIndex, handleSelectFile]);
+  const handleSelectionChange = useCallback(
+    (index: number) => {
+      void handleSelectFile(visibleFiles[index]);
+    },
+    [handleSelectFile, visibleFiles]
+  );
 
   const first = (
     <div className="flex flex-1 p-2">
@@ -131,18 +120,13 @@ const CommitDiffContent: React.FC<{
               <CommitAttributes commit={commitTo} showSummary />
             </div>
             <PathFilter onFilterTextChange={setFilterText} className="m-2" />
-            <SelectedIndexProvider value={selectedIndex}>
-              <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
-                <FileList
-                  ref={listRef}
-                  commit={commitTo}
-                  files={visibleFiles}
-                  onRowMouseDown={handleRowMouseDown}
-                  onRowDoubleClick={handleRowDoubleClick}
-                  actionCommands={actionCommands}
-                />
-              </KeyDownTrapper>
-            </SelectedIndexProvider>
+            <FileList
+              commit={commitTo}
+              files={visibleFiles}
+              onRowDoubleClick={handleRowDoubleClick}
+              onSelectionChange={handleSelectionChange}
+              actionCommands={actionCommands}
+            />
           </div>
         }
       />
