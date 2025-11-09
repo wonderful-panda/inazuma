@@ -1,4 +1,4 @@
-import React, { ComponentProps, ComponentPropsWithRef } from "react";
+import type React from "react";
 
 declare global {
   interface Window {
