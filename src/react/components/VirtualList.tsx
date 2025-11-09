@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
-import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, VariableSizeList } from "react-window";
+import { useElementSize } from "@/hooks/useElementSize";
 
 const MemoizedFixedSizeList = memo(FixedSizeList);
 const MemoizedVariableSizeList = memo(VariableSizeList);
@@ -70,6 +70,7 @@ const VirtualListInner = <T,>({
   useEffect(() => {
     listRef.current?.resetAfterIndex?.(0);
   }, [itemSize]);
+  const [containerRef, size] = useElementSize();
   const handleRowClick = useRowEventHandler(items, onRowClick);
   const handleRowMouseDown = useRowEventHandler(items, onRowMouseDown);
   const handleRowDoubleClick = useRowEventHandler(items, onRowDoubleClick);
@@ -132,15 +133,15 @@ const VirtualListInner = <T,>({
     overscanCount: 8
   };
   return (
-    <AutoSizer className="flex-1" doNotBailOutOnEmptyChildren>
-      {(size) =>
-        typeof itemSize === "number" ? (
+    <div ref={containerRef} className="relative flex-1 grid grid-row-1 grid-col-1 overflow-hidden">
+      <div className="absolute top-0 bottom-0 left-0 right-0">
+        {typeof itemSize === "number" ? (
           <MemoizedFixedSizeList itemSize={itemSize} {...props} {...size} />
         ) : (
           <MemoizedVariableSizeList itemSize={itemSize} {...props} {...size} />
-        )
-      }
-    </AutoSizer>
+        )}
+      </div>
+    </div>
   );
 };
 

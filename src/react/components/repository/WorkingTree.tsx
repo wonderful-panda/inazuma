@@ -4,7 +4,6 @@ import { useAtomValue } from "jotai";
 import { debounce } from "lodash";
 import type * as monaco from "monaco-editor";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import AutoSizer from "react-virtualized-auto-sizer";
 import { executeFileCommand } from "@/commands";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
 import {
@@ -24,6 +23,7 @@ import {
   useUnstage
 } from "@/hooks/actions/workingtree";
 import { useFileContextMenuT } from "@/hooks/useContextMenu";
+import { useElementSize } from "@/hooks/useElementSize";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
 import { type TreeItemVM, useTreeModel } from "@/hooks/useTreeModel";
@@ -177,20 +177,19 @@ const UdiffViewer: React.FC<{ udiff: Udiff | undefined }> = ({ udiff }) => {
   const handleResize = useCallback(() => {
     editor?.layout();
   }, [editor]);
+  const [containerRef] = useElementSize(handleResize);
   const content = getUdiffContent(udiff);
   return (
-    <div className="relative flex-1 overflow-hidden border border-paper">
-      <AutoSizer className="flex flex-1 overflow-hidden" onResize={handleResize}>
-        {() => (
-          <MonacoEditor
-            className="absolute top-0 bottom-0 left-0 right-0"
-            options={options}
-            language="unified-diff"
-            value={content}
-            onEditorMounted={handleEditorMounted}
-          />
-        )}
-      </AutoSizer>
+    <div
+      ref={containerRef}
+      className="flex-1 grid grid-rows-1 grid-cols-1 overflow-hidden border border-paper"
+    >
+      <MonacoEditor
+        options={options}
+        language="unified-diff"
+        value={content}
+        onEditorMounted={handleEditorMounted}
+      />
     </div>
   );
 };

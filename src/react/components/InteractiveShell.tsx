@@ -1,6 +1,6 @@
-import { memo, useCallback, useEffect, useRef, useState } from "react";
-import AutoSizer from "react-virtualized-auto-sizer";
+import { memo, useCallback, useEffect, useRef } from "react";
 import { useAlert } from "@/context/AlertContext";
+import { useElementSize } from "@/hooks/useElementSize";
 import { type PtyExitStatus, type PtyId, useXterm } from "@/hooks/useXterm";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 
@@ -74,27 +74,15 @@ const InteractiveShellInner: React.FC<
     changeFont(fontFamily, fontSize);
   }, [changeFont, fontFamily, fontSize]);
 
-  return (
-    <div
-      ref={wrapperRef}
-      className="relative flex-1 overflow-hidden border border-paper bg-console px-2 py-1 m-2"
-    />
-  );
+  return <div ref={wrapperRef} className="border border-paper bg-console px-2 py-1 m-2" />;
 };
 
-const nope = () => <></>;
-
 const InteractiveShell_: React.FC<InteractiveShellProps> = (props) => {
-  const [size, setSize] = useState({ width: 0, height: 0 });
-  // AutoSizer's children will be unmounted during 'display:none'.
-  // InteractiveShellInner must be kept mounted, so we put it out of AutoSizer.
+  const [containerRef, size] = useElementSize<HTMLDivElement>();
   return (
-    <>
+    <div ref={containerRef} className="flex-1 grid grid-rows-1 grid-cols-1 overflow-hidden">
       <InteractiveShellInner {...props} {...size} />
-      <AutoSizer className="absolute flex-1" onResize={setSize}>
-        {nope}
-      </AutoSizer>
-    </>
+    </div>
   );
 };
 

@@ -1,5 +1,6 @@
 import * as monaco from "monaco-editor";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useState } from "react";
+import { useElementSize } from "@/hooks/useElementSize";
 
 type IStandaloneDiffEditor = monaco.editor.IStandaloneDiffEditor;
 type IDiffEditorConstructionOptions = monaco.editor.IDiffEditorConstructionOptions;
@@ -26,7 +27,7 @@ const MonacoDiffEditor_: React.FC<MonacoDiffEditorProps> = ({
   options,
   onEditorMounted
 }) => {
-  const editorRef = useRef<HTMLDivElement>(null);
+  const [editorRef, size] = useElementSize();
   const [editor, setEditor] = useState<IStandaloneDiffEditor | undefined>(undefined);
   useEffect(() => {
     const editor = monaco.editor.createDiffEditor(editorRef.current!, {});
@@ -38,11 +39,15 @@ const MonacoDiffEditor_: React.FC<MonacoDiffEditorProps> = ({
       editor.dispose();
       setEditor(undefined);
     };
-  }, [onEditorMounted]);
+  }, [onEditorMounted, editorRef]);
 
   useEffect(() => {
     editor?.updateOptions(options);
   }, [editor, options]);
+
+  useEffect(() => {
+    editor?.layout(size);
+  }, [editor, size]);
 
   useEffect(() => {
     if (!editor) {

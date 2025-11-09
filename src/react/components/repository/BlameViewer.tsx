@@ -1,8 +1,8 @@
 import { styled, useTheme } from "@mui/material";
 import * as monaco from "monaco-editor";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import AutoSizer from "react-virtualized-auto-sizer";
 import { formatDate } from "@/date";
+import { useElementSize } from "@/hooks/useElementSize";
 import { lineNumbersToRanges } from "@/monaco";
 import { shortHash } from "@/util";
 import { MonacoEditor } from "../MonacoEditor";
@@ -149,6 +149,8 @@ const BlameViewer_: React.FC<BlameViewerProps> = ({
     editor?.layout();
   }, [editor]);
 
+  const [containerRef] = useElementSize<HTMLDivElement>(onResize);
+
   useEffect(() => {
     onHoveredCommitIdChanged?.(hoveredCommitId);
   }, [onHoveredCommitIdChanged, hoveredCommitId]);
@@ -234,17 +236,16 @@ const BlameViewer_: React.FC<BlameViewerProps> = ({
   useDecorationEffect(editor, selectedCommitLineNumbers, selectedCommitDecorationOptions);
 
   return (
-    <div className="relative flex-1 overflow-hidden border border-paper">
-      <AutoSizer className="flex flex-1 overflow-hidden" onResize={onResize}>
-        {() => (
-          <StyledMonacoEditor
-            options={options}
-            language={language}
-            value={blame.content.text}
-            onEditorMounted={handleEditorMounted}
-          />
-        )}
-      </AutoSizer>
+    <div
+      ref={containerRef}
+      className="relative grid grid-row-1 grid-col-1 flex-1 overflow-hidden border border-paper"
+    >
+      <StyledMonacoEditor
+        options={options}
+        language={language}
+        value={blame.content.text}
+        onEditorMounted={handleEditorMounted}
+      />
     </div>
   );
 };
