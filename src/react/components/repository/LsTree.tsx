@@ -2,14 +2,11 @@ import { useTheme } from "@mui/material";
 import classNames from "classnames";
 import { useCallback } from "react";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import type { TreeItemVM, TreeModelDispatch, TreeModelState } from "@/hooks/useTreeModel";
 import { getFileName } from "@/util";
-import type { VirtualListEvents } from "../VirtualList";
-import { VirtualTree } from "../VirtualTree";
+import { VirtualTree, type VirtualTreeProps } from "../VirtualTree";
 
-export interface LsTreeProps extends VirtualListEvents<TreeItemVM<LstreeData>> {
-  treeModelState: TreeModelState<LstreeData>;
-  treeModelDispatch: TreeModelDispatch<LstreeData>;
+export interface LsTreeProps
+  extends Omit<VirtualTreeProps<LstreeData>, "getItemKey" | "itemSize" | "renderRow"> {
   getRowClass?: (item: LstreeData) => string | undefined;
 }
 
@@ -34,12 +31,7 @@ const LsTreeRow: React.FC<{
   );
 };
 
-export const LsTree: React.FC<LsTreeProps> = ({
-  treeModelState,
-  treeModelDispatch,
-  getRowClass,
-  ...rest
-}) => {
+export const LsTree: React.FC<LsTreeProps> = ({ getRowClass, ...rest }) => {
   const theme = useTheme();
   const itemSize = theme.custom.baseFontSize * 2;
   const renderRow = useCallback(
@@ -50,8 +42,6 @@ export const LsTree: React.FC<LsTreeProps> = ({
   );
   return (
     <VirtualTree<LstreeData>
-      treeModelState={treeModelState}
-      treeModelDispatch={treeModelDispatch}
       getItemKey={getItemKey}
       itemSize={itemSize}
       renderRow={renderRow}

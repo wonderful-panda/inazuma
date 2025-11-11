@@ -16,6 +16,7 @@ export interface ActionPayload<D = unknown> {
     items: readonly TreeItem<D>[];
   };
   expandItem: ItemSpec<D>;
+  expandItems: readonly ItemSpec<D>[];
   collapseItem: ItemSpec<D>;
   toggleItem: ItemSpec<D>;
   expandAll: never;
@@ -153,6 +154,20 @@ const expandItem = <T>(
   const newExpandedItems = new Set(state.expandedItems).add(key);
   return recomputeStateAfterExpandOrCollapse(state, newExpandedItems);
 };
+const expandItems = <T>(
+  state: TreeModelState<T>,
+  itemsSpec: ActionPayload<T>["expandItems"]
+): TreeModelState<T> => {
+  const keys = itemsSpec
+    .map((s) => ("item" in s ? s.item : state.visibleItems[s.index]?.item))
+    .filter((item) => item?.children !== undefined)
+    .map((item) => state.getItemKey(item!.data));
+  if (keys.every((key) => state.expandedItems.has(key))) {
+    return state;
+  }
+  const newExpandedItems = new Set([...state.expandedItems, ...keys]);
+  return recomputeStateAfterExpandOrCollapse(state, newExpandedItems);
+};
 
 const collapseItem = <T>(
   state: TreeModelState<T>,
@@ -271,6 +286,8 @@ const reducer = <T>(state: TreeModelState<T>, action: Action<T>) => {
       return reset(state, action.payload);
     case "expandItem":
       return expandItem(state, action.payload);
+    case "expandItems":
+      return expandItems(state, action.payload);
     case "collapseItem":
       return collapseItem(state, action.payload);
     case "toggleItem":

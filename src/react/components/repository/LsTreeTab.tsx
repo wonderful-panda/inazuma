@@ -1,16 +1,13 @@
 import { IconButton } from "@mui/material";
 import classNames from "classnames";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
-import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useBlame } from "@/hooks/useBlame";
-import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
-import { type TreeItemVM, useTreeModel } from "@/hooks/useTreeModel";
+import type { TreeItemVM, TreeModelDispatch } from "@/hooks/useTreeModel";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { filterTreeItems, sortTreeInplace } from "@/tree";
+import { filterTreeItems, sortTreeInplace, type TreeItem } from "@/tree";
 import { FlexCard } from "../FlexCard";
 import { Icon } from "../Icon";
-import { KeyDownTrapper } from "../KeyDownTrapper";
 import { Loading } from "../Loading";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { BlamePanel } from "./BlamePanel";
@@ -23,8 +20,6 @@ export interface LsTreeTabProps {
   commit: Commit;
   refs: Refs | undefined;
 }
-
-const getItemKey = (item: LstreeData) => item.path;
 
 const LsTreeWithFilter: React.FC<{
   orientation: Orientation;
@@ -41,20 +36,15 @@ const LsTreeWithFilter: React.FC<{
     return filterTreeItems(entries, (data) => data.path.includes(filterText));
   }, [entries, filterText]);
 
-  const [state, dispatch] = useTreeModel<LstreeData>(getItemKey);
-  const { handleKeyDown, handleRowMouseDown } = useTreeIndexChanger(state, dispatch);
-
-  useEffect(() => {
-    dispatch({ type: "reset", payload: { items: filteredEntries } });
-  }, [filteredEntries, dispatch]);
+  const dispatchRef = useRef<TreeModelDispatch<LstreeData> | null>(null);
 
   const expandAll = useCallback(() => {
-    dispatch({ type: "expandAll" });
-  }, [dispatch]);
+    dispatchRef.current?.({ type: "expandAll" });
+  }, []);
 
   const collapseAll = useCallback(() => {
-    dispatch({ type: "collapseAll" });
-  }, [dispatch]);
+    dispatchRef.current?.({ type: "collapseAll" });
+  }, []);
 
   const getRowClass = useCallback(
     (data: LstreeData) => (data.path === blamePath ? "text-primary font-bold" : undefined),
@@ -67,22 +57,20 @@ const LsTreeWithFilter: React.FC<{
         if (item.data.type === "blob") {
           onUpdateBlamePath(item.data.path);
         } else {
-          dispatch({ type: "toggleItem", payload: { item } });
+          dispatchRef.current?.({ type: "toggleItem", payload: { item } });
         }
       }
     },
-    [onUpdateBlamePath, dispatch]
+    [onUpdateBlamePath]
   );
 
   const selectedData = useRef<LstreeData | undefined>(undefined);
-  useLayoutEffect(() => {
-    selectedData.current = state.selectedItem?.item.data;
-  }, [state.selectedItem]);
-  const handleKeyDownWithEnter = useCallback(
+  const handleSelectionChange = useCallback((_: number, item: TreeItem<LstreeData> | undefined) => {
+    selectedData.current = item?.data;
+  }, []);
+
+  const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
-      if (handleKeyDown(event)) {
-        return;
-      }
       // get selected data via RefObject to avoid recomputation after selected index changed
       if (event.key === "Enter") {
         if (selectedData.current?.type === "blob") {
@@ -90,7 +78,7 @@ const LsTreeWithFilter: React.FC<{
         }
       }
     },
-    [onUpdateBlamePath, handleKeyDown]
+    [onUpdateBlamePath]
   );
   const content = (
     <div
@@ -121,17 +109,14 @@ const LsTreeWithFilter: React.FC<{
         </div>
       </div>
       <div className="flex-col-nowrap flex-1 m-1 border border-greytext">
-        <SelectedIndexProvider value={state.selectedIndex}>
-          <KeyDownTrapper className="p-1 border border-paper" onKeyDown={handleKeyDownWithEnter}>
-            <LsTree
-              treeModelState={state}
-              treeModelDispatch={dispatch}
-              onRowMouseDown={handleRowMouseDown}
-              onRowDoubleClick={handleRowDoubleClick}
-              getRowClass={getRowClass}
-            />
-          </KeyDownTrapper>
-        </SelectedIndexProvider>
+        <LsTree
+          dispatchRef={dispatchRef}
+          rootItems={filteredEntries}
+          onKeyDown={handleKeyDown}
+          onSelectionChange={handleSelectionChange}
+          onRowDoubleClick={handleRowDoubleClick}
+          getRowClass={getRowClass}
+        />
       </div>
     </div>
   );

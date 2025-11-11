@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import { debounce } from "lodash";
 import type * as monaco from "monaco-editor";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { executeFileCommand } from "@/commands";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
 import {
@@ -14,7 +14,6 @@ import {
 import type { IconActionItem } from "@/commands/types";
 import { useRestoreCommand, useStageCommand, useUnstageCommand } from "@/commands/workingtree";
 import { useAlert } from "@/context/AlertContext";
-import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import {
   useBeginCommit,
   useFixup,
@@ -25,18 +24,15 @@ import {
 import { useFileContextMenuT } from "@/hooks/useContextMenu";
 import { useElementSize } from "@/hooks/useElementSize";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
-import { type TreeItemVM, useTreeModel } from "@/hooks/useTreeModel";
+import type { TreeItemVM, TreeModelDispatch } from "@/hooks/useTreeModel";
 import { useWithRef } from "@/hooks/useWithRef";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { repoPathAtom } from "@/state/repository";
 import { decodeBase64, decodeToString } from "@/strings";
 import type { TreeItem } from "@/tree";
 import { FlexCard } from "../FlexCard";
-import { KeyDownTrapper } from "../KeyDownTrapper";
 import { MonacoEditor } from "../MonacoEditor";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import type { VirtualListMethods } from "../VirtualList";
 import { VirtualTree, type VirtualTreeProps } from "../VirtualTree";
 import { FileListRow } from "./FileListRow";
 import { NumStat } from "./NumStat";
@@ -194,28 +190,37 @@ const UdiffViewer: React.FC<{ udiff: Udiff | undefined }> = ({ udiff }) => {
   );
 };
 
-const filesToItems = (files: readonly WorkingTreeFileEntry[], filterText: string) => {
-  return files
-    .filter((f) => f.path.includes(filterText))
-    .sort((a, b) => a.path.localeCompare(b.path))
-    .map((data) => ({ data }));
+const filesToItems = (files: readonly WorkingTreeFileEntry[]) => {
+  const items = files.map((data) => ({ data }));
+  items.sort((a, b) => a.data.path.localeCompare(b.data.path));
+  return items;
 };
 
 const getGroupHeaderItem = (
   headerType: GroupHeaderType,
-  files: readonly WorkingTreeFileEntry[],
-  filterText: string
+  files: readonly WorkingTreeFileEntry[]
 ) => {
   return {
     data: {
       headerType,
       files
     },
-    children: filesToItems(files, filterText)
-  };
+    children: filesToItems(files)
+  } satisfies TreeItem<RowType>;
+};
+
+const getFilteredGroupHeaderItem = (
+  header: ReturnType<typeof getGroupHeaderItem>,
+  filterText: string
+) => {
+  return {
+    data: header.data,
+    children: header.children.filter((child) => child.data.path.includes(filterText))
+  } satisfies TreeItem<RowType>;
 };
 
 export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) => {
+  const dispatchRef = useRef<TreeModelDispatch<RowType>>(null);
   const repoPath = useAtomValue(repoPathAtom);
   const theme = useTheme();
   const rowHeight = theme.custom.baseFontSize * 3;
@@ -230,14 +235,8 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
     },
     [rowHeight, headerRowHeight]
   );
-  const treeRef = useRef<VirtualListMethods>(null);
   const [udiff, setUdiff] = useState<Udiff | undefined>(undefined);
   const selectedRowDataRef = useRef<RowType | undefined>(undefined);
-  const [treeModelState, treeModelDispatch] = useTreeModel<RowType>(getItemKey);
-  const { handleKeyDown, handleRowMouseDown } = useTreeIndexChanger(
-    treeModelState,
-    treeModelDispatch
-  );
 
   const copyRelativePath = useCopyRelativePathCommand();
   const restore = useRestoreCommand();
@@ -264,9 +263,6 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
   const beginCommit = useBeginCommit();
   const fixup = useFixup();
 
-  useEffect(() => {
-    treeRef.current?.scrollToItem(treeModelState.selectedIndex);
-  }, [treeModelState.selectedIndex]);
   const selectFile = useMemo(
     () =>
       debounce(async (data: RowType | undefined) => {
@@ -286,55 +282,50 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
       }, 200),
     [repoPath, reportError]
   );
-  useEffect(() => {
-    void selectFile(treeModelState.selectedItem?.item.data);
-  }, [selectFile, treeModelState.selectedItem]);
-
-  useEffect(() => {
-    selectedRowDataRef.current = treeModelState.selectedItem?.item.data;
-  }, [treeModelState.selectedItem]);
+  const handleSelectionChange = useCallback(
+    (_: number, item: TreeItem<RowType> | undefined) => {
+      selectedRowDataRef.current = item?.data;
+      void selectFile(item?.data);
+    },
+    [selectFile]
+  );
 
   const [filterText, setFilterText] = useState("");
 
-  useEffect(() => {
-    const items: TreeItem<RowType>[] = [];
-    items.push({ data: { headerType: "conflict", files: [] }, children: [] });
-    items.push({ data: { headerType: "unstaged", files: [] }, children: [] });
-    items.push({ data: { headerType: "staged", files: [] }, children: [] });
-    treeModelDispatch({ type: "reset", payload: { items } });
-    treeModelDispatch({ type: "expandAll" });
-  }, [treeModelDispatch]);
+  useLayoutEffect(() => {
+    // expand GroupHeaders as default
+    const payload = [
+      { item: getGroupHeaderItem("conflict", []) },
+      { item: getGroupHeaderItem("unstaged", []) },
+      { item: getGroupHeaderItem("staged", []) }
+    ];
+    dispatchRef.current?.({ type: "expandItems", payload });
+  }, []);
 
   const unmergedHeader = useMemo(
-    () => getGroupHeaderItem("conflict", stat?.unmergedFiles ?? [], filterText),
-    [stat?.unmergedFiles, filterText]
+    () => getGroupHeaderItem("conflict", stat?.unmergedFiles ?? []),
+    [stat?.unmergedFiles]
   );
   const unstagedHeader = useMemo(
-    () => getGroupHeaderItem("unstaged", stat?.unstagedFiles ?? [], filterText),
-    [stat?.unstagedFiles, filterText]
+    () => getGroupHeaderItem("unstaged", stat?.unstagedFiles ?? []),
+    [stat?.unstagedFiles]
   );
   const stagedHeader = useMemo(
-    () => getGroupHeaderItem("staged", stat?.stagedFiles ?? [], filterText),
-    [stat?.stagedFiles, filterText]
+    () => getGroupHeaderItem("staged", stat?.stagedFiles ?? []),
+    [stat?.stagedFiles]
   );
-  useEffect(() => {
-    const rootItems = [unmergedHeader, unstagedHeader, stagedHeader].filter(
-      (h) => h.children.length > 0
-    );
-    treeModelDispatch({ type: "reset", payload: { items: rootItems } });
-    if (selectedRowDataRef.current) {
-      const key = getItemKey(selectedRowDataRef.current);
-      treeModelDispatch({
-        type: "selectByPredicate",
-        payload: (v) => getItemKey(v.item.data) === key
-      });
-    }
-  }, [treeModelDispatch, unmergedHeader, unstagedHeader, stagedHeader]);
+  const rootItems = useMemo(
+    () =>
+      [unmergedHeader, unstagedHeader, stagedHeader]
+        .map((h) => getFilteredGroupHeaderItem(h, filterText))
+        .filter((h) => h.children.length > 0),
+    [unmergedHeader, unstagedHeader, stagedHeader, filterText]
+  );
 
   const handleRowDoubleClick = useCallback(
     (_e: unknown, _index: unknown, { item }: TreeItemVM<RowType>) => {
       if ("headerType" in item.data) {
-        treeModelDispatch({ type: "toggleItem", payload: { item } });
+        dispatchRef.current?.({ type: "toggleItem", payload: { item } });
       } else {
         if (stat) {
           const command = item.data.kind.type === "unstaged" ? diffUnstaged : diffWithParent;
@@ -342,7 +333,7 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
         }
       }
     },
-    [treeModelDispatch, diffUnstaged, diffWithParent, stat]
+    [diffUnstaged, diffWithParent, stat]
   );
 
   const handleRowContextMenu = useFileContextMenuT<TreeItemVM<RowType>>(
@@ -391,20 +382,18 @@ export const WorkingTree: React.FC<WorkingTreeProps> = ({ stat, orientation }) =
           content={
             <div className="flex-1 flex-col-nowrap">
               <PathFilter onFilterTextChange={setFilterText} className="m-2" />
-              <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
-                <SelectedIndexProvider value={treeModelState.selectedIndex}>
-                  <VirtualTree<RowType>
-                    treeModelState={treeModelState}
-                    treeModelDispatch={treeModelDispatch}
-                    itemSize={itemSize}
-                    getItemKey={getItemKey}
-                    renderRow={renderRow}
-                    onRowMouseDown={handleRowMouseDown}
-                    onRowDoubleClick={handleRowDoubleClick}
-                    onRowContextMenu={handleRowContextMenu}
-                  />
-                </SelectedIndexProvider>
-              </KeyDownTrapper>
+              <div className="flex-1 flex m-1 p-1">
+                <VirtualTree<RowType>
+                  dispatchRef={dispatchRef}
+                  rootItems={rootItems}
+                  itemSize={itemSize}
+                  getItemKey={getItemKey}
+                  renderRow={renderRow}
+                  onSelectionChange={handleSelectionChange}
+                  onRowDoubleClick={handleRowDoubleClick}
+                  onRowContextMenu={handleRowContextMenu}
+                />
+              </div>
             </div>
           }
           actions={
