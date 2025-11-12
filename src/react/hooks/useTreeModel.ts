@@ -23,7 +23,6 @@ export interface ActionPayload<D = unknown> {
   collapseAll: never;
   setSelectedIndex: SetStateAction<number>;
   setSelectedItem: TreeItemVM<D> | undefined;
-  selectByPredicate: (item: TreeItemVM<D>) => boolean;
   expandOrSelectChild: never;
   collapseOrSelectParent: never;
 }
@@ -235,14 +234,6 @@ const setSelectedItem = <T>(
   }
 };
 
-const selectByPredicate = <T>(
-  state: TreeModelState<T>,
-  predicate: ActionPayload<T>["selectByPredicate"]
-): TreeModelState<T> => {
-  const selectedIndex = state.visibleItems.findIndex(predicate);
-  return { ...state, selectedIndex, selectedItem: state.visibleItems[selectedIndex] };
-};
-
 const expandAll = <T>(state: TreeModelState<T>): TreeModelState<T> => {
   const expandedItems = new Set<string>();
   const { rootItems, getItemKey } = state;
@@ -306,8 +297,6 @@ const reducer = <T>(state: TreeModelState<T>, action: Action<T>) => {
       return setSelectedIndex(state, action.payload);
     case "setSelectedItem":
       return setSelectedItem(state, action.payload);
-    case "selectByPredicate":
-      return selectByPredicate(state, action.payload);
     case "expandAll":
       return expandAll(state);
     case "collapseAll":
