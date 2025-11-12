@@ -1,9 +1,7 @@
-import { memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
-import { FixedSizeList, VariableSizeList } from "react-window";
-import { useElementSize } from "@/hooks/useElementSize";
+import { memo, useCallback, useImperativeHandle, useMemo, useRef } from "react";
+import { List, type ListImperativeAPI } from "react-window";
 
-const MemoizedFixedSizeList = memo(FixedSizeList);
-const MemoizedVariableSizeList = memo(VariableSizeList);
+const MemoizedList = memo(List);
 
 export interface VirtualListEvents<T> {
   onRowClick?: (event: React.MouseEvent, index: number, item: T) => void;
@@ -58,19 +56,15 @@ const VirtualListInner = <T,>({
   onRowDrop,
   ref
 }: VirtualListProps<T> & { ref?: React.Ref<VirtualListMethods> }) => {
-  const listRef = useRef<FixedSizeList & VariableSizeList>(null);
+  const listRef = useRef<ListImperativeAPI>(null);
   useImperativeHandle(ref, () => ({
     scrollToItem: (index) => {
       if (0 <= index) {
-        listRef.current?.scrollToItem(index);
+        listRef.current?.scrollToRow({ index });
       }
     }
   }));
-  // biome-ignore lint/correctness/useExhaustiveDependencies(itemSize): itemSize changes should trigger list reset
-  useEffect(() => {
-    listRef.current?.resetAfterIndex?.(0);
-  }, [itemSize]);
-  const [containerRef, size] = useElementSize();
+
   const handleRowClick = useRowEventHandler(items, onRowClick);
   const handleRowMouseDown = useRowEventHandler(items, onRowMouseDown);
   const handleRowDoubleClick = useRowEventHandler(items, onRowDoubleClick);
@@ -79,15 +73,32 @@ const VirtualListInner = <T,>({
   const handleRowDragLeave = useRowEventHandler(items, onRowDragLeave);
   const handleRowDragOver = useRowEventHandler(items, onRowDragOver);
   const handleRowDrop = useRowEventHandler(items, onRowDrop);
-  const renderRow = useCallback(
-    ({ index, style }: { index: number; style: object }) => {
+
+  // getItemKey is not used in react-window v2 as it handles keys internally
+  // Keeping parameter for API compatibility
+  void getItemKey;
+
+  // Row component for react-window v2
+  const RowComponent = useCallback(
+    ({
+      index,
+      style,
+      ariaAttributes
+    }: {
+      index: number;
+      style: React.CSSProperties;
+      ariaAttributes: { "aria-posinset": number; "aria-setsize": number; role: "listitem" };
+    }) => {
       const item = items[index];
       // row must be unfocusable.
       // because there is a problemaic behavior when focused row scrolled out
-      return item !== undefined ? (
+      if (item === undefined) {
+        return <div {...ariaAttributes} style={style} />;
+      }
+      return (
         <div
+          {...ariaAttributes}
           data-index={index}
-          key={getItemKey(item)}
           style={style}
           onClick={handleRowClick}
           onMouseDown={handleRowMouseDown}
@@ -100,11 +111,10 @@ const VirtualListInner = <T,>({
         >
           {children({ index, item })}
         </div>
-      ) : null;
+      );
     },
     [
       items,
-      getItemKey,
       handleRowClick,
       handleRowMouseDown,
       handleRowDoubleClick,
@@ -116,30 +126,18 @@ const VirtualListInner = <T,>({
       children
     ]
   );
-  const itemKey = useCallback(
-    (index: number, data: unknown) => {
-      const item = (data as T[])[index];
-      return item !== undefined ? getItemKey(item) : "";
-    },
-    [getItemKey]
-  );
 
-  const props = {
-    ref: listRef,
-    itemCount: items.length,
-    itemData: items,
-    itemKey,
-    children: renderRow,
-    overscanCount: 8
-  };
   return (
-    <div ref={containerRef} className="relative flex-1 grid grid-row-1 grid-col-1 overflow-hidden">
+    <div className="relative flex-1 grid grid-row-1 grid-col-1 overflow-hidden">
       <div className="absolute top-0 bottom-0 left-0 right-0">
-        {typeof itemSize === "number" ? (
-          <MemoizedFixedSizeList itemSize={itemSize} {...props} {...size} />
-        ) : (
-          <MemoizedVariableSizeList itemSize={itemSize} {...props} {...size} />
-        )}
+        <MemoizedList
+          listRef={listRef}
+          rowCount={items.length}
+          rowHeight={itemSize}
+          rowComponent={RowComponent}
+          rowProps={{}}
+          overscanCount={8}
+        />
       </div>
     </div>
   );
