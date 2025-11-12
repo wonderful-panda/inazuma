@@ -127,10 +127,6 @@ export const VirtualTree = <T,>({
     },
     [dispatch]
   );
-  const getItemKey_ = useCallback(
-    (itemVm: TreeItemVM<T>) => getItemKey(itemVm.item.data),
-    [getItemKey]
-  );
   const itemSize_ = useMemo(() => {
     if (typeof itemSize === "number") {
       return itemSize;
@@ -162,7 +158,6 @@ export const VirtualTree = <T,>({
           ref={listRef}
           items={state.visibleItems}
           itemSize={itemSize_}
-          getItemKey={getItemKey_}
           onRowMouseDown={handleRowMouseDown}
           {...rest}
         >

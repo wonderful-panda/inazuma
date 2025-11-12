@@ -12,8 +12,6 @@ export interface CommitListProps extends VirtualListEvents<Commit> {
   actionCommands?: readonly CommitCommand[];
 }
 
-const getCommitListKey = (item: Commit) => item.id;
-
 let nextId = 0;
 
 const CommitList_: React.FC<CommitListProps & { ref?: React.Ref<VirtualListMethods> }> = ({
@@ -45,13 +43,7 @@ const CommitList_: React.FC<CommitListProps & { ref?: React.Ref<VirtualListMetho
     [graph, refs, rowHeight, instanceId, actionCommands]
   );
   return (
-    <VirtualList<Commit>
-      ref={ref}
-      items={commits}
-      itemSize={rowHeight}
-      getItemKey={getCommitListKey}
-      {...rest}
-    >
+    <VirtualList<Commit> ref={ref} items={commits} itemSize={rowHeight} {...rest}>
       {renderRow}
     </VirtualList>
   );

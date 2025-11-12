@@ -16,8 +16,6 @@ export const getRowHeight = (commit: FileCommit | undefined, baseFontSize: numbe
   }
 };
 
-export const getFileCommitListKey = (item: FileCommit) => item.id;
-
 export const FileCommitList: React.FC<
   FileCommitListProps & { ref?: React.Ref<VirtualListMethods> }
 > = ({ commits, refs, ref, ...rest }) => {
@@ -42,13 +40,7 @@ export const FileCommitList: React.FC<
     [commits, baseFontSize]
   );
   return (
-    <VirtualList<FileCommit>
-      ref={ref}
-      items={commits}
-      itemSize={rowHeight}
-      getItemKey={getFileCommitListKey}
-      {...rest}
-    >
+    <VirtualList<FileCommit> ref={ref} items={commits} itemSize={rowHeight} {...rest}>
       {renderRow}
     </VirtualList>
   );

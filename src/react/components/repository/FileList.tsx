@@ -16,8 +16,6 @@ export interface FileListProps extends Omit<VirtualListEvents<FileEntry>, "onRow
   onSelectionChange?: (index: number) => void;
 }
 
-const getFileListKey = (item: FileEntry) => `${item.path}:${item.statusCode}`;
-
 export const useFileListRowEventHandler = (command: FileCommand, commit: Commit | undefined) => {
   return useCallback(
     (_e: unknown, _index: number, item: FileEntry) => {
@@ -71,7 +69,6 @@ export const FileList: React.FC<FileListProps> = ({
           ref={ref}
           items={files}
           itemSize={rowHeight}
-          getItemKey={getFileListKey}
           onRowMouseDown={handleRowMouseDown}
           {...rest}
         >

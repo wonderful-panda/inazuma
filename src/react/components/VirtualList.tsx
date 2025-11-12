@@ -16,7 +16,6 @@ export interface VirtualListEvents<T> {
 export interface VirtualListProps<T> extends VirtualListEvents<T> {
   itemSize: number | ((index: number) => number);
   items: readonly T[];
-  getItemKey: (item: T) => string;
   children: (props: { index: number; item: T }) => React.ReactNode;
 }
 
@@ -44,7 +43,6 @@ const useRowEventHandler = <T, E extends React.SyntheticEvent>(
 const VirtualListInner = <T,>({
   itemSize,
   items,
-  getItemKey,
   children,
   onRowClick,
   onRowMouseDown,
@@ -73,10 +71,6 @@ const VirtualListInner = <T,>({
   const handleRowDragLeave = useRowEventHandler(items, onRowDragLeave);
   const handleRowDragOver = useRowEventHandler(items, onRowDragOver);
   const handleRowDrop = useRowEventHandler(items, onRowDrop);
-
-  // getItemKey is not used in react-window v2 as it handles keys internally
-  // Keeping parameter for API compatibility
-  void getItemKey;
 
   // Row component for react-window v2
   const RowComponent = useCallback(
