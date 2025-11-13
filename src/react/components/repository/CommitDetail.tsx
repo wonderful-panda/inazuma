@@ -100,8 +100,8 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
           }
           content={
             commit && (
-              <div className="flex-1 flex-col-nowrap">
-                <PathFilter onFilterTextChange={setFilterText} className="m-2" />
+              <div className="flex-1 flex-col-nowrap p-1">
+                <PathFilter onFilterTextChange={setFilterText} className="mb-2" />
                 <FileList
                   commit={commit}
                   files={visibleFiles}

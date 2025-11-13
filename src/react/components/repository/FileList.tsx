@@ -1,19 +1,25 @@
 import { useTheme } from "@mui/material";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { executeFileCommand } from "@/commands";
 import type { FileCommand } from "@/commands/types";
-import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
-import { useItemBasedListItemSelector } from "@/hooks/useItemBasedListItemSelector";
-import { useListIndexChanger } from "@/hooks/useListIndexChanger";
-import { KeyDownTrapper } from "../KeyDownTrapper";
-import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "../VirtualList";
+import type { TreeItemVM } from "@/hooks/useTreeModel";
+import type { TreeItem } from "@/tree";
+import { VirtualTree } from "../VirtualTree";
 import { FileListRow } from "./FileListRow";
 
-export interface FileListProps extends Omit<VirtualListEvents<FileEntry>, "onRowMouseDown"> {
+export interface FileListProps {
   commit: Commit;
   files: FileEntry[];
   actionCommands?: readonly FileCommand[];
-  onSelectionChange?: (index: number) => void;
+  onKeyDown?: (event: React.KeyboardEvent) => void;
+  onSelectionChange?: (index: number, item: FileEntry | undefined) => void;
+  onRowClick?: (event: React.MouseEvent, index: number, item: FileEntry) => void;
+  onRowDoubleClick?: (event: React.MouseEvent, index: number, item: FileEntry) => void;
+  onRowContextMenu?: (event: React.MouseEvent, index: number, item: FileEntry) => void;
+  onRowDragEnter?: (event: React.DragEvent, index: number, item: FileEntry) => void;
+  onRowDragLeave?: (event: React.DragEvent, index: number, item: FileEntry) => void;
+  onRowDragOver?: (event: React.DragEvent, index: number, item: FileEntry) => void;
+  onRowDrop?: (event: React.DragEvent, index: number, item: FileEntry) => void;
 }
 
 export const useFileListRowEventHandler = (command: FileCommand, commit: Commit | undefined) => {
@@ -28,21 +34,53 @@ export const useFileListRowEventHandler = (command: FileCommand, commit: Commit 
   );
 };
 
+const getItemKey = (item: FileEntry) => item.path;
+
+const useNativeRowEventHandler = <E,>(
+  handler?: (event: E, index: number, item: FileEntry) => void
+) =>
+  useMemo(() => {
+    if (handler === undefined) {
+      return undefined;
+    }
+    return (event: E, index: number, item: TreeItemVM<FileEntry>) => {
+      const file = item.item.data;
+      handler(event, index, file);
+    };
+  }, [handler]);
+
 export const FileList: React.FC<FileListProps> = ({
   commit,
   files,
   actionCommands,
+  onKeyDown,
   onSelectionChange,
-  ...rest
+  onRowClick,
+  onRowDoubleClick,
+  onRowDragEnter,
+  onRowDragLeave,
+  onRowDragOver,
+  onRowDrop,
+  onRowContextMenu
 }) => {
   const theme = useTheme();
   const rowHeight = theme.custom.baseFontSize * 3;
+  const rootItems = useMemo(() => files.map((data) => ({ data })), [files]);
+
+  const handleRowClick = useNativeRowEventHandler(onRowClick);
+  const handleRowDoubleClick = useNativeRowEventHandler(onRowDoubleClick);
+  const handleRowDragEnter = useNativeRowEventHandler(onRowDragEnter);
+  const handleRowDragLeave = useNativeRowEventHandler(onRowDragLeave);
+  const handleRowDragOver = useNativeRowEventHandler(onRowDragOver);
+  const handleRowDrop = useNativeRowEventHandler(onRowDrop);
+  const handleRowContextMenu = useNativeRowEventHandler(onRowContextMenu);
+
   const renderRow = useCallback(
-    ({ index, item }: { index: number; item: FileEntry }) => {
+    (item: TreeItem<FileEntry>, index: number) => {
       return (
         <FileListRow
           commit={commit}
-          file={item}
+          file={item.data}
           index={index}
           height={rowHeight}
           actionCommands={actionCommands}
@@ -51,30 +89,30 @@ export const FileList: React.FC<FileListProps> = ({
     },
     [rowHeight, commit, actionCommands]
   );
-  const ref = useRef<VirtualListMethods>(null);
-  const { selectedIndex, setSelectedIndex } = useItemBasedListItemSelector(files);
-  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
-    files.length || 0,
-    setSelectedIndex
-  );
-  useEffect(() => {
-    ref.current?.scrollToItem(selectedIndex);
-    onSelectionChange?.(selectedIndex);
-  }, [selectedIndex, onSelectionChange]);
+  const handleSelectionChange = useMemo(() => {
+    if (onSelectionChange === undefined) {
+      return undefined;
+    } else {
+      return (index: number, item: TreeItem<FileEntry> | undefined) =>
+        onSelectionChange(index, item?.data);
+    }
+  }, [onSelectionChange]);
 
   return (
-    <SelectedIndexProvider value={selectedIndex}>
-      <KeyDownTrapper className="m-1 p-1" onKeyDown={handleKeyDown}>
-        <VirtualList<FileEntry>
-          ref={ref}
-          items={files}
-          itemSize={rowHeight}
-          onRowMouseDown={handleRowMouseDown}
-          {...rest}
-        >
-          {renderRow}
-        </VirtualList>
-      </KeyDownTrapper>
-    </SelectedIndexProvider>
+    <VirtualTree<FileEntry>
+      rootItems={rootItems}
+      getItemKey={getItemKey}
+      itemSize={rowHeight}
+      renderRow={renderRow}
+      onKeyDown={onKeyDown}
+      onSelectionChange={handleSelectionChange}
+      onRowClick={handleRowClick}
+      onRowDoubleClick={handleRowDoubleClick}
+      onRowDragEnter={handleRowDragEnter}
+      onRowDragLeave={handleRowDragLeave}
+      onRowDragOver={handleRowDragOver}
+      onRowDrop={handleRowDrop}
+      onRowContextMenu={handleRowContextMenu}
+    />
   );
 };

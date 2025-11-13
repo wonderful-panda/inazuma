@@ -110,16 +110,16 @@ const CommitDiffContent: React.FC<{
     <div className="flex flex-1 p-2">
       <FlexCard
         content={
-          <div className="flex-1 flex-col-nowrap">
+          <div className="flex-1 flex-col-nowrap p-1">
             {commitFrom !== "parent" && (
               <div className="p-2 mb-2 border border-greytext">
                 <CommitAttributes commit={commitFrom} showSummary />
               </div>
             )}
-            <div className="p-2 border border-greytext">
+            <div className="p-1 border border-greytext">
               <CommitAttributes commit={commitTo} showSummary />
             </div>
-            <PathFilter onFilterTextChange={setFilterText} className="m-2" />
+            <PathFilter onFilterTextChange={setFilterText} className="mb-2" />
             <FileList
               commit={commitTo}
               files={visibleFiles}
