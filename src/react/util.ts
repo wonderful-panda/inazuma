@@ -14,6 +14,11 @@ export const getFileName = (fullpath: string): string => {
   return 0 <= p ? fullpath.slice(p + 1) : fullpath;
 };
 
+export const getFolderAndFileName = (fullpath: string): [string, string] => {
+  const p = fullpath.lastIndexOf("/");
+  return 0 <= p ? [fullpath.slice(0, p), fullpath.slice(p + 1)] : ["", fullpath];
+};
+
 export const getExtension = (pathOrFileName: string): string => {
   const fileName = getFileName(pathOrFileName);
   const p = fileName.lastIndexOf(".");

@@ -4,6 +4,8 @@ import { memo, useMemo } from "react";
 import { fileCommandsToActions } from "@/commands";
 import type { FileCommand, IconActionItem } from "@/commands/types";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
+import type { IconName } from "@/types/IconName";
+import { Icon } from "../Icon";
 import { FileStat } from "./FileStat";
 import { FileStatusIcon } from "./FileStatusIcon";
 import { RowActionButtons } from "./RowActionButtons";
@@ -69,4 +71,37 @@ const FileListRow_: React.FC<FileListRowProps> = ({
   );
 };
 
+export interface FileListFolderRowProps {
+  icon: IconName;
+  index: number;
+  height: number;
+  text: string;
+}
+
+const FileListFolderRow_: React.FC<FileListFolderRowProps> = ({ icon, index, height, text }) => {
+  const selectedIndex = useSelectedIndex();
+  return (
+    <div
+      className={classNames(
+        "group relative flex flex-1 overflow-hidden box-border cursor-pointer py-1",
+        "border-b border-highlight",
+        index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
+      )}
+      style={{ height }}
+    >
+      <div className="mx-2 my-auto">
+        <span className="text-greytext" style={{ fontSize: "16px" }}>
+          <Icon icon={icon} />
+        </span>
+      </div>
+      <div className="flex-1 flex-col-nowrap pl-1 overflow-hidden font-mono">
+        <Typography variant="subtitle1" component="div" className="ellipsis h-6 leading-6">
+          {text}
+        </Typography>
+      </div>
+    </div>
+  );
+};
+
 export const FileListRow = memo(FileListRow_);
+export const FileListFolderRow = memo(FileListFolderRow_);

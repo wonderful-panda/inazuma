@@ -15,16 +15,17 @@ export function sortTreeInplace<T>(
   }
 }
 
-export const filterTreeItems = <T>(
+export function filterTreeItems<T>(
   items: readonly TreeItem<T>[],
   predicate: (item: T) => boolean
-): TreeItem<T>[] => {
+): TreeItem<T>[] {
   return items.map((item) => filterTreeItem(item, predicate)).filter((item) => !!item);
-};
-export const filterTreeItem = <T>(
+}
+
+export function filterTreeItem<T>(
   item: TreeItem<T>,
   predicate: (item: T) => boolean
-): TreeItem<T> | null => {
+): TreeItem<T> | null {
   const { data, children: orgChildren } = item;
   if (predicate(data)) {
     return item;
@@ -37,4 +38,23 @@ export const filterTreeItem = <T>(
     return null;
   }
   return { data, children };
-};
+}
+
+export function shrinkTreeInplace<T>(
+  nodes: TreeItem<T>[],
+  shrinkFn: (parent: TreeItem<T>, child: TreeItem<T>) => TreeItem<T>
+) {
+  for (let i = 0; i < nodes.length; ++i) {
+    const node = nodes[i]!;
+    if (node.children !== undefined) {
+      shrinkTreeInplace(node.children, shrinkFn);
+      const child = node.children[0];
+      if (child !== undefined && node.children.length === 1) {
+        const newNode = shrinkFn(node, child);
+        if (node !== newNode) {
+          nodes[i] = newNode;
+        }
+      }
+    }
+  }
+}

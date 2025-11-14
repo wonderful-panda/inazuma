@@ -19,6 +19,7 @@ export interface VirtualTreeProps<T> extends VirtualListEvents<TreeItemVM<T>> {
   dispatchRef?: React.RefObject<TreeModelDispatch<T> | null>;
   rootItems: readonly TreeItem<T>[];
   itemSize: number | ((data: T) => number);
+  expandAllOnMounted?: boolean;
   getItemKey: (data: T) => string;
   renderRow: (item: TreeItem<T>, index: number, expanded: boolean) => React.ReactNode;
   onKeyDown?: (e: React.KeyboardEvent) => void;
@@ -89,6 +90,7 @@ export const VirtualTree = <T,>({
   dispatchRef,
   rootItems,
   itemSize,
+  expandAllOnMounted,
   getItemKey,
   renderRow,
   onKeyDown,
@@ -111,6 +113,12 @@ export const VirtualTree = <T,>({
     },
     [handleKeyDown, onKeyDown]
   );
+
+  useLayoutEffect(() => {
+    if (expandAllOnMounted) {
+      dispatch({ type: "expandAll" });
+    }
+  }, [expandAllOnMounted, dispatch]);
 
   const listRef = useRef<VirtualListMethods>(null);
   useEffect(() => {
