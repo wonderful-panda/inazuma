@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { memo, useMemo } from "react";
 import { fileCommandsToActions } from "@/commands";
 import type { FileCommand, IconActionItem } from "@/commands/types";
+import { type FileStatus, getFileStatusAttr } from "@/filestatus";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import type { IconName } from "@/types/IconName";
 import { Icon } from "../Icon";
@@ -44,7 +45,7 @@ const FileListRow_: React.FC<FileListRowProps> = ({
   return (
     <div
       className={classNames(
-        "group relative flex flex-1 overflow-hidden box-border cursor-pointer py-1",
+        "group flex flex-1 overflow-hidden box-border cursor-pointer py-1",
         "border-b border-highlight",
         index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
@@ -83,7 +84,7 @@ const FileListFolderRow_: React.FC<FileListFolderRowProps> = ({ icon, index, hei
   return (
     <div
       className={classNames(
-        "group relative flex flex-1 overflow-hidden box-border cursor-pointer py-1",
+        "group flex flex-1 overflow-hidden box-border cursor-pointer py-1",
         "border-b border-highlight",
         index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
       )}
@@ -94,14 +95,51 @@ const FileListFolderRow_: React.FC<FileListFolderRowProps> = ({ icon, index, hei
           <Icon icon={icon} />
         </span>
       </div>
-      <div className="flex-1 flex-col-nowrap pl-1 overflow-hidden font-mono">
-        <Typography variant="subtitle1" component="div" className="ellipsis h-6 leading-6">
-          {text}
-        </Typography>
+      <Typography
+        variant="subtitle1"
+        component="div"
+        className="ellipsis h-6 leading-6 font-mono my-auto"
+      >
+        {text}
+      </Typography>
+    </div>
+  );
+};
+
+export interface FileListStatusRowProps {
+  status: FileStatus;
+  index: number;
+  height: number;
+}
+
+const FileListStatusRow_: React.FC<FileListStatusRowProps> = ({ status, index, height }) => {
+  const selectedIndex = useSelectedIndex();
+  const attr = getFileStatusAttr(status);
+  return (
+    <div
+      className={classNames(
+        "group flex flex-1 overflow-hidden box-border cursor-pointer py-1",
+        "border-b border-highlight",
+        index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
+      )}
+      style={{ height }}
+    >
+      <div className="mx-2 my-auto">
+        <span style={{ color: attr.color, fontSize: "16px" }}>
+          <Icon icon={attr.icon} />
+        </span>
       </div>
+      <Typography
+        variant="subtitle1"
+        component="div"
+        className="ellipsis h-6 leading-6 font-bold my-auto"
+      >
+        {attr.title.toUpperCase()}
+      </Typography>
     </div>
   );
 };
 
 export const FileListRow = memo(FileListRow_);
 export const FileListFolderRow = memo(FileListFolderRow_);
+export const FileListStatusRow = memo(FileListStatusRow_);

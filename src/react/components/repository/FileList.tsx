@@ -2,23 +2,32 @@ import { IconButton, ToggleButton, ToggleButtonGroup, useTheme } from "@mui/mate
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { executeFileCommand } from "@/commands";
 import type { FileCommand } from "@/commands/types";
+import { type FileStatus, FileStatusList } from "@/filestatus";
 import type { TreeItemVM, TreeModelDispatch } from "@/hooks/useTreeModel";
 import { filterTreeItems, shrinkTreeInplace, sortTreeInplace, type TreeItem } from "@/tree";
 import { assertNever, getFolderAndFileName, nope } from "@/util";
 import { Icon } from "../Icon";
 import { VirtualTree } from "../VirtualTree";
-import { FileListFolderRow, FileListRow } from "./FileListRow";
+import { FileListFolderRow, FileListRow, FileListStatusRow } from "./FileListRow";
 import PathFilter from "./PathFilter";
 
-const viewTypeValues = ["flat", "folder"] as const;
+const viewTypeValues = ["flat", "folder", "status"] as const;
 export type FileListViewType = (typeof viewTypeValues)[number];
 
 export const fixView = (value: string) => viewTypeValues.find((v) => v === value) || "flat";
 
 type File = FileEntry;
 type Folder = { type: "folder"; name: string; path: string };
-type RowData = File | Folder;
-function isFolder(value: File | Folder): value is Folder {
+type StatusHeader = { type: "status"; status: FileStatus };
+type RowData = File | Folder | StatusHeader;
+
+function isFile(value: RowData): value is File {
+  return !("type" in value);
+}
+function isStatusHeader(value: RowData): value is StatusHeader {
+  return "type" in value && value.type === "status";
+}
+function isFolder(value: RowData): value is Folder {
   return "type" in value && value.type === "folder";
 }
 
@@ -51,7 +60,8 @@ export const useFileListRowEventHandler = (command: FileCommand, commit: Commit 
   );
 };
 
-const getItemKey = (item: RowData) => `${isFolder(item) ? 0 : 1}:${item.path}`;
+const getItemKey = (item: RowData) =>
+  isStatusHeader(item) ? `0:${item.status}` : `${isFolder(item) ? 1 : 2}:${item.path}`;
 
 const buildFlatTree = (files: FileEntry[]): TreeItem<RowData>[] => {
   return files.map((data) => ({ data }));
@@ -96,6 +106,27 @@ const buildFolderTree = (files: FileEntry[]): TreeItem<RowData>[] => {
   return root.children;
 };
 
+const buildStatusTree = (files: FileEntry[]): TreeItem<RowData>[] => {
+  const rootItems = FileStatusList.map((status) => ({
+    data: { type: "status", status },
+    children: [] as TreeItem<RowData>[]
+  })) satisfies TreeItem<RowData>[];
+  const unknownItems: TreeItem<RowData>[] = [];
+  const rootItemMap = new Map<string, (typeof rootItems)[number]>(
+    rootItems.map((item) => [item.data.status, item])
+  );
+  files.forEach((data) => {
+    const item = { data } satisfies TreeItem<RowData>;
+    const root = rootItemMap.get(data.statusCode.substring(0, 1));
+    if (root !== undefined) {
+      root.children.push(item);
+    } else {
+      unknownItems.push(item);
+    }
+  });
+  return [...rootItems.filter((item) => item.children.length > 0), ...unknownItems];
+};
+
 const useNativeRowEventHandler = <E,>(
   handler?: (event: E, index: number, item: FileEntry) => void
 ) =>
@@ -104,7 +135,7 @@ const useNativeRowEventHandler = <E,>(
       return undefined;
     }
     return (event: E, index: number, item: TreeItemVM<RowData>) => {
-      if (isFolder(item.item.data)) {
+      if (!isFile(item.item.data)) {
         return;
       }
       handler(event, index, item.item.data);
@@ -127,8 +158,8 @@ const FileListFilterBar: React.FC<FileListFilterBarProps> = ({
   collapseAll
 }) => {
   const handleViewChange = useCallback(
-    (_e: unknown, value: string | null) => {
-      const view = viewTypeValues.find((v) => v === value) || "flat";
+    (_e: unknown, value: string) => {
+      const view = fixView(value);
       onViewChange(view);
     },
     [onViewChange]
@@ -149,6 +180,9 @@ const FileListFilterBar: React.FC<FileListFilterBarProps> = ({
           </ToggleButton>
           <ToggleButton value="folder" title="Folder view">
             <Icon icon="mdi:file-tree" className="text-2xl" />
+          </ToggleButton>
+          <ToggleButton value="status" title="Status view">
+            <Icon icon="octicon:diff-modified-16" className="text-2xl" />
           </ToggleButton>
         </ToggleButtonGroup>
         <IconButton
@@ -195,10 +229,10 @@ export const FileList: React.FC<FileListProps> = ({
   const [filterText, setFilterText] = useState("");
   const theme = useTheme();
   const rowHeight = theme.custom.baseFontSize * 3;
-  const folderRowHeight = rowHeight * 0.75;
+  const headerRowHeight = rowHeight * 0.75;
   const itemSize = useCallback(
-    (item: RowData) => (isFolder(item) ? folderRowHeight : rowHeight),
-    [rowHeight, folderRowHeight]
+    (item: RowData) => (isFile(item) ? rowHeight : headerRowHeight),
+    [rowHeight, headerRowHeight]
   );
   const rootItems = useMemo(() => {
     switch (view) {
@@ -206,13 +240,18 @@ export const FileList: React.FC<FileListProps> = ({
         return buildFlatTree(files);
       case "folder":
         return buildFolderTree(files);
+      case "status":
+        return buildStatusTree(files);
       default:
         return assertNever(view);
     }
   }, [files, view]);
 
   const visibleItems = useMemo(() => {
-    return filterTreeItems(rootItems, (item) => item.path.includes(filterText));
+    return filterTreeItems(
+      rootItems,
+      (item) => !isStatusHeader(item) && item.path.includes(filterText)
+    );
   }, [rootItems, filterText]);
 
   useLayoutEffect(() => {
@@ -234,31 +273,39 @@ export const FileList: React.FC<FileListProps> = ({
 
   const renderRow = useCallback(
     (item: TreeItem<RowData>, index: number) => {
-      return isFolder(item.data) ? (
-        <FileListFolderRow
-          icon="octicon:file-directory-fill-16"
-          index={index}
-          height={folderRowHeight}
-          text={item.data.name}
-        />
-      ) : (
-        <FileListRow
-          commit={commit}
-          file={item.data}
-          index={index}
-          height={rowHeight}
-          actionCommands={actionCommands}
-        />
-      );
+      if (isFile(item.data)) {
+        return (
+          <FileListRow
+            commit={commit}
+            file={item.data}
+            index={index}
+            height={rowHeight}
+            actionCommands={actionCommands}
+          />
+        );
+      } else if (isFolder(item.data)) {
+        return (
+          <FileListFolderRow
+            icon="octicon:file-directory-fill-16"
+            index={index}
+            height={headerRowHeight}
+            text={item.data.name}
+          />
+        );
+      } else {
+        return (
+          <FileListStatusRow index={index} height={headerRowHeight} status={item.data.status} />
+        );
+      }
     },
-    [rowHeight, folderRowHeight, commit, actionCommands]
+    [rowHeight, headerRowHeight, commit, actionCommands]
   );
   const handleSelectionChange = useMemo(() => {
     if (onSelectionChange === undefined) {
       return undefined;
     } else {
       return (index: number, item: TreeItem<RowData> | undefined) =>
-        onSelectionChange(index, item === undefined || isFolder(item.data) ? undefined : item.data);
+        onSelectionChange(index, item !== undefined && isFile(item.data) ? item.data : undefined);
     }
   }, [onSelectionChange]);
 
