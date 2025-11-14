@@ -2,6 +2,7 @@ import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDiffAgainstCommand } from "@/commands/diff";
 import { useAlert } from "@/context/AlertContext";
+import { usePersistState } from "@/hooks/usePersistState";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { decodeBase64, decodeToString } from "@/strings";
 import { FlexCard } from "../FlexCard";
@@ -9,8 +10,7 @@ import { Loading } from "../Loading";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { CommitAttributes } from "./CommitAttributes";
 import { DiffViewer } from "./DiffViewer";
-import { FileList, useFileListRowEventHandler } from "./FileList";
-import PathFilter from "./PathFilter";
+import { FileList, type FileListViewType, useFileListRowEventHandler } from "./FileList";
 
 export interface CommitDiffTabProps {
   repoPath: string;
@@ -64,15 +64,14 @@ const CommitDiffContent: React.FC<{
   commitFrom: Commit | "parent";
   commitTo: Commit;
 }> = ({ repoPath, commitFrom, commitTo, files }) => {
-  const [filterText, setFilterText] = useState("");
-  const visibleFiles = useMemo(
-    () => files.filter((f) => f.path.includes(filterText)),
-    [files, filterText]
-  );
   const [content, setContent] = useState<[TextFile | undefined, TextFile | undefined]>([
     undefined,
     undefined
   ]);
+  const [view, setView] = usePersistState<FileListViewType>(
+    "repository/commitDiffTab/view",
+    "flat"
+  );
   const [loading, setLoading] = useState(false);
   const { reportError } = useAlert();
   const diffAgainst = useDiffAgainstCommand(commitFrom);
@@ -100,10 +99,10 @@ const CommitDiffContent: React.FC<{
     [reportError, repoPath, commitFrom, commitTo]
   );
   const handleSelectionChange = useCallback(
-    (index: number) => {
-      void handleSelectFile(visibleFiles[index]);
+    (_: number, item: FileEntry | undefined) => {
+      void handleSelectFile(item);
     },
-    [handleSelectFile, visibleFiles]
+    [handleSelectFile]
   );
 
   const first = (
@@ -119,10 +118,11 @@ const CommitDiffContent: React.FC<{
             <div className="p-1 border border-greytext">
               <CommitAttributes commit={commitTo} showSummary />
             </div>
-            <PathFilter onFilterTextChange={setFilterText} className="mb-2" />
             <FileList
+              view={view}
+              onViewChange={setView}
               commit={commitTo}
-              files={visibleFiles}
+              files={files}
               onRowDoubleClick={handleRowDoubleClick}
               onSelectionChange={handleSelectionChange}
               actionCommands={actionCommands}

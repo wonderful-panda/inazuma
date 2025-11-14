@@ -28,6 +28,7 @@ const icons: Record<string, string[]> = {
     "folder",
     "folder-download-outline",
     "folder-search-outline",
+    "format-list-bulleted",
     "history",
     "home",
     "hashtag-box",

@@ -100,12 +100,22 @@ const recomputeStateAfterExpandOrCollapse = <D>(
     return { ...state, expandedItems, visibleItems };
   } else if (
     visibleItems[selectedIndex] &&
-    visibleItems[selectedIndex].item.data === selectedItem?.item.data
+    visibleItems[selectedIndex].item.data === selectedItem.item.data
   ) {
     // index of selected item is not changed
     return { ...state, expandedItems, visibleItems, selectedItem: visibleItems[selectedIndex] };
   } else {
     // search new index of selected item
+    const newIndex = visibleItems.findIndex((vm) => vm.item.data === selectedItem.item.data);
+    if (0 <= newIndex) {
+      return {
+        ...state,
+        expandedItems,
+        visibleItems,
+        selectedIndex: newIndex,
+        selectedItem: visibleItems[newIndex]
+      };
+    }
     // if selected item is not visible, select last visible ancester instead
     const itemVms = getBacktrackToRootItem(selectedItem);
     let lastIndex = -1;

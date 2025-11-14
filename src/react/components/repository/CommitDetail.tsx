@@ -1,16 +1,16 @@
 import { Button } from "@mui/material";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { useCopyRelativePathCommand } from "@/commands/copyRelativePath";
 import { useDiffWithParentCommand } from "@/commands/diff";
 import { useShowFileContentCommand } from "@/commands/showFileContent";
 import { useShowLsTree } from "@/hooks/actions/showLsTree";
 import { useFileContextMenu } from "@/hooks/useContextMenu";
+import { usePersistState } from "@/hooks/usePersistState";
 import { FlexCard } from "../FlexCard";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { CommitAttributes } from "./CommitAttributes";
-import { FileList, useFileListRowEventHandler } from "./FileList";
+import { FileList, type FileListViewType, fixView, useFileListRowEventHandler } from "./FileList";
 import { NumStat } from "./NumStat";
-import PathFilter from "./PathFilter";
 import { RefBadge } from "./RefBadge";
 
 export interface CommitDetailProps {
@@ -64,11 +64,6 @@ const CommitMetadata = memo(CommitMetadataInner);
 
 export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
   const commit = props.commit;
-  const [filterText, setFilterText] = useState("");
-  const visibleFiles = useMemo(
-    () => (commit ? commit.files.filter((f) => f.path.includes(filterText)) : []),
-    [commit, filterText]
-  );
   const copyRelativePath = useCopyRelativePathCommand();
   const diffWithParent = useDiffWithParentCommand();
   const showFileContent = useShowFileContentCommand();
@@ -76,6 +71,7 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
     () => [copyRelativePath, diffWithParent, showFileContent],
     [copyRelativePath, diffWithParent, showFileContent]
   );
+  const [view, setView] = usePersistState<FileListViewType>("repository/CommitDetail/view", "flat");
 
   const onRowDoubleClick = useFileListRowEventHandler(diffWithParent, commit);
   const onRowContextMenu = useFileContextMenu(commit);
@@ -101,10 +97,11 @@ export const CommitDetail: React.FC<CommitDetailProps> = (props) => {
           content={
             commit && (
               <div className="flex-1 flex-col-nowrap p-1">
-                <PathFilter onFilterTextChange={setFilterText} className="mb-2" />
                 <FileList
+                  view={fixView(view)}
+                  onViewChange={setView}
                   commit={commit}
-                  files={visibleFiles}
+                  files={commit?.files || []}
                   actionCommands={actionCommands}
                   onRowDoubleClick={onRowDoubleClick}
                   onRowContextMenu={onRowContextMenu}
