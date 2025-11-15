@@ -1,10 +1,48 @@
 import cp from "node:child_process";
 import fs from "node:fs";
+import https from "node:https";
 import path from "node:path";
 import process from "node:process";
 import Handlebars from "handlebars";
 
-const main = () => {
+const fontLicenses = {
+  "Material Design Icons": {
+    name: "Pictogrammers Free License",
+    url: "https://raw.githubusercontent.com/Templarian/MaterialDesign/master/LICENSE"
+  },
+  Octicons: {
+    name: "MIT",
+    url: "https://raw.githubusercontent.com/primer/octicons/main/LICENSE"
+  },
+  Carbon: {
+    name: "Apache-2.0",
+    url: "https://raw.githubusercontent.com/carbon-design-system/carbon/main/LICENSE"
+  }
+};
+
+// Helper function to fetch license text from a URL
+const fetchLicenseText = (url: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (res) => {
+        let data = "";
+
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+
+        res.on("end", () => {
+          resolve(data);
+        });
+      })
+      .on("error", (err) => {
+        console.error(`Failed to fetch license from ${url}: ${err.message}`);
+        reject(err);
+      });
+  });
+};
+
+const main = async () => {
   console.log("Generating license information...");
 
   if (!fs.existsSync("src-tauri/generated")) {
@@ -59,7 +97,7 @@ const main = () => {
 
     // Generate HTML from JSON licenses
     console.log("Generating JavaScript licenses HTML...");
-    generateJsLicensesHtml(JSON.parse(jsLicenses));
+    await generateJsLicensesHtml(JSON.parse(jsLicenses));
   } else {
     console.log("No JavaScript license content generated");
   }
@@ -68,7 +106,7 @@ const main = () => {
   process.exit(0);
 };
 
-const generateJsLicensesHtml = (licensesData: Record<string, any>) => {
+const generateJsLicensesHtml = async (licensesData: Record<string, any>) => {
   // Group licenses by license type
   const licenseGroups: Record<
     string,
@@ -102,8 +140,37 @@ const generateJsLicensesHtml = (licensesData: Record<string, any>) => {
     if (data.licenseFile && fs.existsSync(data.licenseFile)) {
       try {
         licenseTexts[licenseName] = fs.readFileSync(data.licenseFile, "utf-8");
-      } catch (e) {
+      } catch {
         // Ignore file read errors
+      }
+    }
+  }
+
+  // Add font licenses and fetch their license texts
+  console.log("Fetching font license texts...");
+  for (const [fontName, licenseInfo] of Object.entries(fontLicenses)) {
+    const licenseName = licenseInfo.name;
+
+    if (!licenseGroups[licenseName]) {
+      licenseGroups[licenseName] = [];
+    }
+
+    licenseGroups[licenseName].push({
+      name: fontName,
+      version: "",
+      repository: licenseInfo.url,
+      publisher: "Font"
+    });
+
+    // Fetch and embed license text for fonts
+    if (!licenseTexts[licenseName]) {
+      try {
+        console.log(`Fetching license for ${fontName}...`);
+        const licenseText = await fetchLicenseText(licenseInfo.url);
+        licenseTexts[licenseName] = licenseText;
+      } catch (error) {
+        console.warn(`Failed to fetch license for ${fontName}, using fallback`);
+        licenseTexts[licenseName] = `License: ${licenseName}\nFor full license text, visit: ${licenseInfo.url}`;
       }
     }
   }
@@ -135,4 +202,7 @@ const generateJsLicensesHtml = (licensesData: Record<string, any>) => {
   console.log("JavaScript licenses HTML written to js-licenses.html");
 };
 
-main();
+main().catch((error) => {
+  console.error("Error during license generation:", error);
+  process.exit(1);
+});
