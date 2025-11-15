@@ -80,6 +80,12 @@ const CommitLogInner: React.FC<{
     listRef.current?.scrollToItem(selectedIndex);
   }, [selectedIndex]);
 
+  useEffect(() => {
+    // workaround: scrollToItem() does not work as expected on mounted. (maybe conflicts with resizing)
+    // So, do it after all on-mounted efects completed.
+    setTimeout(() => listRef.current?.scrollToItem(selectedIndexRef.current), 0);
+  }, []);
+
   const reset = useResetCommand();
   const createBranch = useCreateBranchCommand();
   const browseSourceTree = useBrowseSourceTreeCommand();
