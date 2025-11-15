@@ -14,7 +14,7 @@ export const NumStat: React.FC<{ files: readonly FileEntry[] }> = ({ files }) =>
     return ret;
   }, [files]);
   return (
-    <div className="flex-row-wrap items-center py-1">
+    <div className="flex-row-wrap items-center py-1 leading-none">
       {FileStatusList.filter((c) => c in nums).map((c) => [
         <FileStatusIcon key={c} statusCode={c} />,
         <div key={`${c}-num`} className="pl-1 pr-2 mt-auto">
