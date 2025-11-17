@@ -176,13 +176,13 @@ const FileListFilterBar: React.FC<FileListFilterBarProps> = ({
           onChange={handleViewChange}
         >
           <ToggleButton value="flat" title="Flat view">
-            <Icon icon="mdi:format-list-bulleted" className="text-2xl" />
+            <Icon icon="mdi:format-list-bulleted" className="text-xl" />
           </ToggleButton>
           <ToggleButton value="folder" title="Folder view">
-            <Icon icon="mdi:file-tree" className="text-2xl" />
+            <Icon icon="mdi:file-tree" className="text-xl" />
           </ToggleButton>
           <ToggleButton value="status" title="Status view">
-            <Icon icon="octicon:diff-modified-16" className="text-2xl" />
+            <Icon icon="octicon:diff-modified-16" className="text-xl" />
           </ToggleButton>
         </ToggleButtonGroup>
         <IconButton
@@ -192,7 +192,7 @@ const FileListFilterBar: React.FC<FileListFilterBarProps> = ({
           disabled={view === "flat"}
           onClick={expandAll}
         >
-          <Icon icon="mdi:chevron-down" className="text-2xl" />
+          <Icon icon="mdi:chevron-down" className="text-xl" />
         </IconButton>
         <IconButton
           size="small"
@@ -201,7 +201,7 @@ const FileListFilterBar: React.FC<FileListFilterBarProps> = ({
           disabled={view === "flat"}
           onClick={collapseAll}
         >
-          <Icon icon="mdi:chevron-up" className="text-2xl" />
+          <Icon icon="mdi:chevron-up" className="text-xl" />
         </IconButton>
       </div>
     </div>
