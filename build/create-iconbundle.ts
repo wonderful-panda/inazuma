@@ -48,6 +48,7 @@ const icons: Record<string, string[]> = {
   ],
   octicon: [
     "check-circle-16",
+    "diff-16",
     "diff-added-16",
     "diff-ignored-16",
     "diff-modified-16",
@@ -55,7 +56,9 @@ const icons: Record<string, string[]> = {
     "diff-renamed-16",
     "file-code-16",
     "file-directory-fill-16",
-    "git-compare-16"
+    "fold-16",
+    "git-compare-16",
+    "split-view-16"
   ],
   carbon: ["drag-horizontal", "drag-vertical"]
 };

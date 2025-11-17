@@ -9,7 +9,7 @@ import { FlexCard } from "../FlexCard";
 import { Loading } from "../Loading";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { CommitAttributes } from "./CommitAttributes";
-import { DiffViewer } from "./DiffViewer";
+import { DiffViewer, type DiffViewerOptions } from "./DiffViewer";
 import { FileList, type FileListViewType, useFileListRowEventHandler } from "./FileList";
 
 export interface CommitDiffTabProps {
@@ -68,9 +68,13 @@ const CommitDiffContent: React.FC<{
     undefined,
     undefined
   ]);
-  const [view, setView] = usePersistState<FileListViewType>(
-    "repository/commitDiffTab/view",
+  const [fileView, setFileView] = usePersistState<FileListViewType>(
+    "repository/commitDiffTab/fileView",
     "flat"
+  );
+  const [diffOptions, setDiffOptions] = usePersistState<DiffViewerOptions>(
+    "repository/commitDiffTab/diffOptions",
+    {}
   );
   const [loading, setLoading] = useState(false);
   const { reportError } = useAlert();
@@ -119,8 +123,8 @@ const CommitDiffContent: React.FC<{
               <CommitAttributes commit={commitTo} showSummary />
             </div>
             <FileList
-              view={view}
-              onViewChange={setView}
+              view={fileView}
+              onViewChange={setFileView}
               commit={commitTo}
               files={files}
               onRowDoubleClick={handleRowDoubleClick}
@@ -134,7 +138,12 @@ const CommitDiffContent: React.FC<{
   );
   const second = (
     <div className="relative flex-col-nowrap flex-1 p-2">
-      <DiffViewer left={content[0]} right={content[1]} />
+      <DiffViewer
+        options={diffOptions}
+        onOptionsChange={setDiffOptions}
+        left={content[0]}
+        right={content[1]}
+      />
       {loading && <Loading open />}
     </div>
   );

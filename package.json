@@ -50,9 +50,9 @@
   "devDependencies": {
     "@biomejs/biome": "^2.3.2",
     "@emotion/react": "^11.14.0",
-    "@iconify/json": "^2.2.301",
-    "@iconify/react": "^5.2.0",
-    "@iconify/utils": "^2.2.1",
+    "@iconify/json": "^2.2.407",
+    "@iconify/react": "^5.2.1",
+    "@iconify/utils": "^2.3.0",
     "@mui/material": "^7.3.4",
     "@tailwindcss/cli": "^4.1.16",
     "@tailwindcss/vite": "^4.1.16",
