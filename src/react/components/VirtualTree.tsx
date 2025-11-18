@@ -10,7 +10,12 @@ import {
 } from "react";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useTreeIndexChanger } from "@/hooks/useTreeIndexChanger";
-import { type TreeItemVM, type TreeModelDispatch, useTreeModel } from "@/hooks/useTreeModel";
+import {
+  type NodeState,
+  type TreeItemVM,
+  type TreeModelDispatch,
+  useTreeModel
+} from "@/hooks/useTreeModel";
 import type { TreeItem } from "@/tree";
 import { KeyDownTrapper } from "./KeyDownTrapper";
 import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "./VirtualList";
@@ -19,7 +24,7 @@ export interface VirtualTreeProps<T> extends VirtualListEvents<TreeItemVM<T>> {
   dispatchRef?: React.RefObject<TreeModelDispatch<T> | null>;
   rootItems: readonly TreeItem<T>[];
   itemSize: number | ((data: T) => number);
-  expandAllOnMounted?: boolean;
+  defaultNodeState?: NodeState;
   getItemKey: (data: T) => string;
   renderRow: (item: TreeItem<T>, index: number, expanded: boolean) => React.ReactNode;
   onKeyDown?: (e: React.KeyboardEvent) => void;
@@ -90,14 +95,14 @@ export const VirtualTree = <T,>({
   dispatchRef,
   rootItems,
   itemSize,
-  expandAllOnMounted,
+  defaultNodeState = "collapsed",
   getItemKey,
   renderRow,
   onKeyDown,
   onSelectionChange,
   ...rest
 }: VirtualTreeProps<T>) => {
-  const [state, dispatch] = useTreeModel(getItemKey);
+  const [state, dispatch] = useTreeModel(getItemKey, defaultNodeState);
   const { handleKeyDown, handleRowMouseDown } = useTreeIndexChanger(state, dispatch);
   useLayoutEffect(
     () => dispatch({ type: "reset", payload: { items: rootItems } }),
@@ -113,12 +118,6 @@ export const VirtualTree = <T,>({
     },
     [handleKeyDown, onKeyDown]
   );
-
-  useLayoutEffect(() => {
-    if (expandAllOnMounted) {
-      dispatch({ type: "expandAll" });
-    }
-  }, [expandAllOnMounted, dispatch]);
 
   const listRef = useRef<VirtualListMethods>(null);
   useEffect(() => {

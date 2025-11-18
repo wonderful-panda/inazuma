@@ -323,7 +323,7 @@ export const FileList: React.FC<FileListProps> = ({
         rootItems={visibleItems}
         getItemKey={getItemKey}
         itemSize={itemSize}
-        expandAllOnMounted
+        defaultNodeState="expanded"
         renderRow={renderRow}
         onKeyDown={onKeyDown}
         onSelectionChange={handleSelectionChange}
