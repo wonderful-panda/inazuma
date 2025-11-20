@@ -1,16 +1,19 @@
-import { debounce } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import _ from "lodash";
+import { use, useMemo, useState } from "react";
 import { useDiffAgainstCommand } from "@/commands/diff";
-import { useAlert } from "@/context/AlertContext";
 import { usePersistState } from "@/hooks/usePersistState";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
+import {
+  type DeterministicTauriInvoke,
+  useTauriInvokeQuery,
+  useTauriSuspenseQuery
+} from "@/hooks/useTauriQuery";
 import { decodeBase64, decodeToString } from "@/strings";
 import { FlexCard } from "../FlexCard";
-import { Loading } from "../Loading";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { CommitAttributes } from "./CommitAttributes";
 import { DiffViewer, type DiffViewerOptions } from "./DiffViewer";
 import { FileList, type FileListViewType, useFileListRowEventHandler } from "./FileList";
+import { LoadingSuspense } from "./LoadingSuspense";
 
 export interface CommitDiffTabProps {
   repoPath: string;
@@ -19,11 +22,12 @@ export interface CommitDiffTabProps {
 }
 
 const getContent = async (
+  queryInvoke: DeterministicTauriInvoke,
   repoPath: string,
   relPath: string,
   revspec: string
 ): Promise<TextFile> => {
-  const s = await invokeTauriCommand("get_content_base64", {
+  const s = await queryInvoke("get_content_base64", {
     repoPath,
     relPath,
     revspec
@@ -38,6 +42,7 @@ const getContent = async (
 };
 
 const loadContents = (
+  queryInvoke: DeterministicTauriInvoke,
   repoPath: string,
   revspec1: string,
   revspec2: string,
@@ -50,63 +55,64 @@ const loadContents = (
   const left =
     file.statusCode === "A" || file.delta?.type !== "text"
       ? Promise.resolve(undefined)
-      : getContent(repoPath, leftPath, revspec1);
+      : getContent(queryInvoke, repoPath, leftPath, revspec1);
   const right =
     file.statusCode === "D" || file.delta?.type !== "text"
       ? Promise.resolve(undefined)
-      : getContent(repoPath, file.path, revspec2);
+      : getContent(queryInvoke, repoPath, file.path, revspec2);
   return Promise.all([left, right]);
 };
 
-const CommitDiffContent: React.FC<{
+const RightPanel: React.FC<{
   repoPath: string;
-  files: FileEntry[];
   commitFrom: Commit | "parent";
   commitTo: Commit;
-}> = ({ repoPath, commitFrom, commitTo, files }) => {
-  const [content, setContent] = useState<[TextFile | undefined, TextFile | undefined]>([
-    undefined,
-    undefined
-  ]);
-  const [fileView, setFileView] = usePersistState<FileListViewType>(
-    "repository/commitDiffTab/fileView",
-    "flat"
-  );
+  file: FileEntry | undefined;
+}> = ({ repoPath, commitFrom, commitTo, file }) => {
   const [diffOptions, setDiffOptions] = usePersistState<DiffViewerOptions>(
     "repository/commitDiffTab/diffOptions",
     {}
   );
-  const [loading, setLoading] = useState(false);
-  const { reportError } = useAlert();
+  const revspec1 = commitFrom === "parent" ? `${commitTo.id}~` : commitFrom.id;
+  const revspec2 = commitTo.id;
+
+  const contentsPromise = useTauriInvokeQuery(
+    ["commitDiff", repoPath, revspec1, revspec2, file],
+    (invoke) => loadContents(invoke, repoPath, revspec1, revspec2, file)
+  );
+
+  const [left, right] = use(contentsPromise);
+
+  return (
+    <DiffViewer options={diffOptions} onOptionsChange={setDiffOptions} left={left} right={right} />
+  );
+};
+const CommitDiffContent: React.FC<{
+  repoPath: string;
+  commitFrom: Commit | "parent";
+  commitTo: Commit;
+}> = ({ repoPath, commitFrom, commitTo }) => {
+  const revspec1 = commitFrom === "parent" ? `${commitTo.id}~` : commitFrom.id;
+  const revspec2 = commitTo.id;
+  const { data: files } = useTauriSuspenseQuery("get_changes_between", {
+    repoPath,
+    revspec1,
+    revspec2
+  });
+  const [selectedFile, setSelectedFile] = useState<FileEntry | undefined>(undefined);
+  const [fileView, setFileView] = usePersistState<FileListViewType>(
+    "repository/commitDiffTab/fileView",
+    "flat"
+  );
   const diffAgainst = useDiffAgainstCommand(commitFrom);
   const actionCommands = useMemo(() => [diffAgainst] as const, [diffAgainst]);
   const handleRowDoubleClick = useFileListRowEventHandler(actionCommands[0], commitTo);
-  const handleSelectFile = useMemo(
+  const handleSelectionChange = useMemo(
     () =>
-      debounce(async (file: FileEntry | undefined) => {
-        try {
-          setLoading(true);
-          setContent(
-            await loadContents(
-              repoPath,
-              commitFrom === "parent" ? `${commitTo.id}~` : commitFrom.id,
-              commitTo.id,
-              file
-            )
-          );
-        } catch (error) {
-          reportError({ error });
-        } finally {
-          setLoading(false);
-        }
-      }, 200),
-    [reportError, repoPath, commitFrom, commitTo]
-  );
-  const handleSelectionChange = useCallback(
-    (_: number, item: FileEntry | undefined) => {
-      void handleSelectFile(item);
-    },
-    [handleSelectFile]
+      _.debounce((_: number, item: FileEntry | undefined) => {
+        setSelectedFile(item);
+      }, 250),
+    []
   );
 
   const first = (
@@ -137,15 +143,14 @@ const CommitDiffContent: React.FC<{
     </div>
   );
   const second = (
-    <div className="relative flex-col-nowrap flex-1 p-2">
-      <DiffViewer
-        options={diffOptions}
-        onOptionsChange={setDiffOptions}
-        left={content[0]}
-        right={content[1]}
+    <LoadingSuspense containerClass="relative flex flex-1 p-2">
+      <RightPanel
+        repoPath={repoPath}
+        commitFrom={commitFrom}
+        commitTo={commitTo}
+        file={selectedFile}
       />
-      {loading && <Loading open />}
-    </div>
+    </LoadingSuspense>
   );
 
   return (
@@ -160,28 +165,11 @@ const CommitDiffContent: React.FC<{
 };
 
 const CommitDiffTab: React.FC<CommitDiffTabProps> = ({ repoPath, commitFrom, commitTo }) => {
-  const [files, setFiles] = useState<FileEntry[] | undefined>(undefined);
-  const { reportError } = useAlert();
-  useEffect(() => {
-    (commitFrom !== "parent"
-      ? invokeTauriCommand("get_changes_between", {
-          repoPath,
-          revspec1: commitFrom.id,
-          revspec2: commitTo.id
-        })
-      : invokeTauriCommand("get_changes", {
-          repoPath,
-          revspec: commitTo.id
-        })
-    )
-      .then((files) => setFiles(files))
-      .catch((error) => reportError({ error }));
-  }, [reportError, repoPath, commitFrom, commitTo]);
-  if (!files) {
-    return <Loading open />;
-  } else {
-    return <CommitDiffContent {...{ repoPath, commitFrom, commitTo, files }} />;
-  }
+  return (
+    <LoadingSuspense containerClass="flex flex-1">
+      <CommitDiffContent {...{ repoPath, commitFrom, commitTo }} />
+    </LoadingSuspense>
+  );
 };
 
 export default CommitDiffTab;
