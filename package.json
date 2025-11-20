@@ -31,6 +31,7 @@
     "all": "run-s format lint clean build"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.10",
     "@tauri-apps/api": "^2.9.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",

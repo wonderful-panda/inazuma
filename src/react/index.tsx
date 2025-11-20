@@ -2,6 +2,7 @@ import "@xterm/xterm/css/xterm.css";
 import "./install-polyfill";
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { listen } from "@tauri-apps/api/event";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -104,6 +105,22 @@ const createMuiTheme = (baseFontSize: FontSize) =>
       baseFontSize: fontSizeNumber[baseFontSize]
     }
   });
+
+// Create QueryClient for React Query
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Disable automatic refetching for deterministic Tauri commands
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      // Keep data in cache for 5 minutes
+      staleTime: 5 * 60 * 1000,
+      // Keep unused data in cache for 10 minutes
+      gcTime: 10 * 60 * 1000,
+      retry: false,
+    },
+  },
+});
 
 const getInitialRepository = async (hash: string | undefined) => {
   if (hash === "home") {
@@ -235,25 +252,27 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
     }
   }, [initializing]);
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <CommandGroupProvider>
-          <ContextMenuProvider>
-            <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
-              <ConfirmDialogProvider>
-                <AlertProvider>
-                  <LoadingProvider>
-                    <DialogProvider>
-                      <MainWindow>{content}</MainWindow>
-                    </DialogProvider>
-                  </LoadingProvider>
-                </AlertProvider>
-              </ConfirmDialogProvider>
-            </PersistStateProvider>
-          </ContextMenuProvider>
-        </CommandGroupProvider>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <QueryClientProvider client={queryClient}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <CommandGroupProvider>
+            <ContextMenuProvider>
+              <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
+                <ConfirmDialogProvider>
+                  <AlertProvider>
+                    <LoadingProvider>
+                      <DialogProvider>
+                        <MainWindow>{content}</MainWindow>
+                      </DialogProvider>
+                    </LoadingProvider>
+                  </AlertProvider>
+                </ConfirmDialogProvider>
+              </PersistStateProvider>
+            </ContextMenuProvider>
+          </CommandGroupProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </QueryClientProvider>
   );
 };
 
