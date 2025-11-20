@@ -65,6 +65,61 @@ function App() {
 }
 ```
 
+### `useTauriInvokeQuery(queryKey, queryFn)`
+
+**Advanced hook** for executing custom query logic with multiple Tauri commands **without request waterfalls**.
+
+This is the most powerful hook when you need to:
+- **Fetch multiple commands in parallel** - avoid sequential waterfalls
+- **Compose complex queries** from multiple data sources
+- **Share cached results** - each command call is cached individually
+
+The `queryFn` receives an `invoke` function that you can call multiple times. Each `invoke` call is cached separately, so results can be reused across different components.
+
+**Only works with deterministic commands** (same as above).
+
+```tsx
+import { useTauriInvokeQuery } from "@/hooks/useTauriQuery";
+import { useQuery } from "@tanstack/react-query";
+
+function CommitComparison({ repoPath, revspec1, revspec2 }: Props) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["commit-comparison", repoPath, revspec1, revspec2],
+    queryFn: () =>
+      useTauriInvokeQuery(
+        ["commit-comparison", repoPath, revspec1, revspec2],
+        async (invoke) => {
+          // Fetch all data in parallel - no waterfall!
+          const [detail1, detail2, changes] = await Promise.all([
+            invoke("get_commit_detail", { repoPath, revspec: revspec1 }),
+            invoke("get_commit_detail", { repoPath, revspec: revspec2 }),
+            invoke("get_changes_between", { repoPath, revspec1, revspec2 })
+          ]);
+
+          // Compose the final result
+          return {
+            commit1: detail1,
+            commit2: detail2,
+            changes,
+            timeDiff: detail2.timestamp - detail1.timestamp
+          };
+        }
+      )
+  });
+
+  if (isLoading) return <Loading />;
+  return (
+    <div>
+      <h2>{data.commit1.message} vs {data.commit2.message}</h2>
+      <p>{data.changes.length} files changed</p>
+      <p>Time difference: {data.timeDiff}ms</p>
+    </div>
+  );
+}
+```
+
+**Key benefit**: Each `invoke` call's result is cached individually. If another component calls `invoke("get_commit_detail", { repoPath, revspec: revspec1 })`, it will get the cached result instantly!
+
 ## Real-World Examples
 
 ### Example 1: Fetching Commit Details with Suspense
@@ -124,6 +179,87 @@ function MyComponent({ repoPath, revspec, enabled }: Props) {
 }
 ```
 
+### Example 4: Avoiding Request Waterfalls with useTauriInvokeQuery
+
+```tsx
+// ❌ BAD: Sequential waterfall - second query waits for first
+function BadExample({ repoPath, revspec }: Props) {
+  const { data: detail } = useTauriQuery("get_commit_detail", { repoPath, revspec });
+  const { data: changes } = useTauriQuery("get_changes", { repoPath, revspec });
+  // changes query doesn't start until detail finishes!
+}
+
+// ✅ GOOD: Parallel fetching - no waterfall
+function GoodExample({ repoPath, revspec }: Props) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["commit-with-changes", repoPath, revspec],
+    queryFn: () =>
+      useTauriInvokeQuery(
+        ["commit-with-changes", repoPath, revspec],
+        async (invoke) => {
+          // Both requests fire in parallel!
+          const [detail, changes] = await Promise.all([
+            invoke("get_commit_detail", { repoPath, revspec }),
+            invoke("get_changes", { repoPath, revspec })
+          ]);
+          return { detail, changes };
+        }
+      )
+  });
+
+  if (isLoading) return <Loading />;
+  return <CommitView detail={data.detail} changes={data.changes} />;
+}
+```
+
+### Example 5: Complex Data Composition
+
+```tsx
+function EnrichedCommitView({ repoPath, revspec, parentRevspec }: Props) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["enriched-commit", repoPath, revspec, parentRevspec],
+    queryFn: () =>
+      useTauriInvokeQuery(
+        ["enriched-commit", repoPath, revspec, parentRevspec],
+        async (invoke) => {
+          // Fetch commit details for both revisions
+          const [commit, parentCommit] = await Promise.all([
+            invoke("get_commit_detail", { repoPath, revspec }),
+            invoke("get_commit_detail", { repoPath, revspec: parentRevspec })
+          ]);
+
+          // Then fetch changes (depends on commit info, but runs after parallel fetch)
+          const changes = await invoke("get_changes", { repoPath, revspec });
+
+          // Fetch blame for first changed file
+          const firstFile = changes[0];
+          const blame = firstFile
+            ? await invoke("get_blame", {
+                repoPath,
+                relPath: firstFile.path,
+                revspec
+              })
+            : null;
+
+          return {
+            commit,
+            parentCommit,
+            changes,
+            blame,
+            summary: {
+              filesChanged: changes.length,
+              timeSinceParent: commit.timestamp - parentCommit.timestamp
+            }
+          };
+        }
+      )
+  });
+
+  if (isLoading) return <Loading />;
+  return <DetailedCommitView data={data} />;
+}
+```
+
 ## Cache Management
 
 The cache is managed automatically through time-based expiration:
@@ -177,6 +313,13 @@ You can adjust these defaults based on your needs:
 
 1. **Use `useTauriSuspenseQuery` with Suspense boundaries** for the best user experience
 2. **Use `useTauriQuery` for non-Suspense async operations**
-3. **Prefetch data on hover** to make the UI feel instant
+3. **Use `useTauriInvokeQuery` when fetching multiple commands** - avoids request waterfalls and maximizes parallelization
 4. **Use `invokeTauriCommand` directly for mutations** - no need to cache them
 5. **Adjust `staleTime` based on data mutability** - immutable data can be cached forever
+
+### When to use each hook:
+
+- **Single command fetch**: Use `useTauriQuery` or `useTauriSuspenseQuery`
+- **Multiple commands in parallel**: Use `useTauriInvokeQuery` with `Promise.all`
+- **Complex data composition**: Use `useTauriInvokeQuery` for maximum flexibility
+- **Mutations**: Use `invokeTauriCommand` directly (no caching)
