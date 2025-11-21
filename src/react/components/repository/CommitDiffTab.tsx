@@ -1,10 +1,10 @@
 import _ from "lodash";
-import { use, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useDiffAgainstCommand } from "@/commands/diff";
 import { usePersistState } from "@/hooks/usePersistState";
 import {
   type DeterministicTauriInvoke,
-  useTauriInvokeQuery,
+  useTauriSuspenseInvoke,
   useTauriSuspenseQuery
 } from "@/hooks/useTauriQuery";
 import { decodeBase64, decodeToString } from "@/strings";
@@ -76,12 +76,11 @@ const RightPanel: React.FC<{
   const revspec1 = commitFrom === "parent" ? `${commitTo.id}~` : commitFrom.id;
   const revspec2 = commitTo.id;
 
-  const contentsPromise = useTauriInvokeQuery(
-    ["commitDiff", repoPath, revspec1, revspec2, file],
-    (invoke) => loadContents(invoke, repoPath, revspec1, revspec2, file)
+  const {
+    data: [left, right]
+  } = useTauriSuspenseInvoke(["commitDiff", repoPath, revspec1, revspec2, file], (invoke) =>
+    loadContents(invoke, repoPath, revspec1, revspec2, file)
   );
-
-  const [left, right] = use(contentsPromise);
 
   return (
     <DiffViewer options={diffOptions} onOptionsChange={setDiffOptions} left={left} right={right} />

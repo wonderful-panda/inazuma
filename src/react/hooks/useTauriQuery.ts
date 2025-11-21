@@ -91,13 +91,15 @@ export function useTauriSuspenseQuery<K extends DeterministicTauriCommand>(
 }
 
 /**
- * Hook for executing custom query logic with multiple Tauri commands without request waterfalls.
+ * Hook for executing custom query logic with multiple Tauri commands with Suspense support.
  *
  * This hook provides an `invoke` function that can be called multiple times within the query function.
  * Each `invoke` call is cached individually, allowing you to:
  * - Call multiple commands in parallel (avoiding waterfalls)
  * - Compose complex queries from multiple data sources
  * - Share cached results across different queries
+ *
+ * This version throws promises for Suspense boundaries.
  *
  * ONLY works with deterministic commands: get_blame, get_changes, get_changes_between,
  * get_commit_detail, get_content_base64, get_tree
@@ -109,7 +111,7 @@ export function useTauriSuspenseQuery<K extends DeterministicTauriCommand>(
  * ```tsx
  * function CommitComparison({ repoPath, revspec1, revspec2 }: Props) {
  *   // Fetch two commit details in parallel - no waterfall!
- *   const result = useTauriInvokeQuery(
+ *   const { data } = useTauriSuspenseInvoke(
  *     ["commit-comparison", repoPath, revspec1, revspec2],
  *     async (invoke) => {
  *       // These run in parallel
@@ -125,13 +127,16 @@ export function useTauriSuspenseQuery<K extends DeterministicTauriCommand>(
  *       };
  *     }
  *   );
- *
- *   // Each invoke call is cached separately, so other components
- *   // can reuse the cached commit details
+ *   // data is always defined - no need to check
  * }
+ *
+ * // Wrap with Suspense boundary:
+ * <Suspense fallback={<Loading />}>
+ *   <CommitComparison repoPath={path} revspec1={hash1} revspec2={hash2} />
+ * </Suspense>
  * ```
  */
-export function useTauriInvokeQuery<T>(
+export function useTauriSuspenseInvoke<T>(
   queryKey: readonly unknown[],
   queryFn: (invoke: DeterministicTauriInvoke) => Promise<T>
 ) {
@@ -145,7 +150,7 @@ export function useTauriInvokeQuery<T>(
       queryFn: () => invokeTauriCommand(command, ...args)
     });
   };
-  return queryClient.fetchQuery({
+  return useSuspenseQuery({
     queryKey,
     queryFn: () => queryFn(invoke)
   });
