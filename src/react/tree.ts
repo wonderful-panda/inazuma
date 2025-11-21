@@ -15,6 +15,22 @@ export function sortTreeInplace<T>(
   }
 }
 
+export function sortTree<T>(
+  nodes: TreeItem<T>[],
+  compareFn: (a: TreeItem<T>, b: TreeItem<T>) => number
+): TreeItem<T>[] {
+  nodes.sort(compareFn);
+  const newNodes = nodes.map((n) => {
+    if (n.children) {
+      return { ...n, children: sortTree(n.children, compareFn) };
+    } else {
+      return n;
+    }
+  });
+  newNodes.sort(compareFn);
+  return newNodes;
+}
+
 export function filterTreeItems<T>(
   items: readonly TreeItem<T>[],
   predicate: (item: T) => boolean

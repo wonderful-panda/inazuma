@@ -1,17 +1,17 @@
 import { IconButton } from "@mui/material";
 import classNames from "classnames";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useAlert } from "@/context/AlertContext";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useBlame } from "@/hooks/useBlame";
+import { useTauriSuspenseQuery } from "@/hooks/useTauriQuery";
 import type { TreeItemVM, TreeModelDispatch } from "@/hooks/useTreeModel";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { filterTreeItems, sortTreeInplace, type TreeItem } from "@/tree";
+import { filterTreeItems, sortTree, type TreeItem } from "@/tree";
 import { FlexCard } from "../FlexCard";
 import { Icon } from "../Icon";
 import { Loading } from "../Loading";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { BlamePanel } from "./BlamePanel";
 import { CommitAttributes } from "./CommitAttributes";
+import { LoadingSuspense } from "./LoadingSuspense";
 import { LsTree } from "./LsTree";
 import PathFilter from "./PathFilter";
 
@@ -127,43 +127,33 @@ const LsTreeWithFilter: React.FC<{
   );
 };
 
-const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
-  const [entries, setEntries] = useState<LstreeEntry[]>([]);
+const compareEntries = (a: LstreeEntry, b: LstreeEntry): number => {
+  if (a.data.type !== b.data.type) {
+    return a.data.type === "tree" ? -1 : 1;
+  } else {
+    return a.data.path.localeCompare(b.data.path);
+  }
+};
+
+const LsTreeTabContent: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
   const [blamePath, setBlamePath] = useState<string | undefined>(undefined);
   const revspec = commit.id;
   const blame = useBlame(repoPath, blamePath, revspec);
-  const { reportError } = useAlert();
+  const { data: entries } = useTauriSuspenseQuery("get_tree", { repoPath, revspec });
+  const sortedEntries = useMemo(() => sortTree(entries, compareEntries), [entries]);
   const lstree = useCallback(
     (direction: Direction) => (
       <LsTreeWithFilter
         orientation={direction === "horiz" ? "portrait" : "landscape"}
         commit={commit}
-        entries={entries}
+        entries={sortedEntries}
         blamePath={blamePath}
         onUpdateBlamePath={setBlamePath}
       />
     ),
-    [commit, entries, blamePath]
+    [commit, sortedEntries, blamePath]
   );
-  useEffect(() => {
-    invokeTauriCommand("get_tree", { repoPath, revspec })
-      .then((entries) => {
-        sortTreeInplace(entries, (a, b) => {
-          if (a.data.type !== b.data.type) {
-            return a.data.type === "tree" ? -1 : 1;
-          } else {
-            return a.data.path.localeCompare(b.data.path);
-          }
-        });
-        setEntries(entries);
-      })
-      .catch((error) => {
-        reportError({ error });
-      });
-  }, [repoPath, revspec, reportError]);
-  return !entries ? (
-    <Loading open />
-  ) : (
+  return (
     <PersistSplitterPanel
       persistKey="repository/LsTreeTab"
       initialRatio={0.3}
@@ -187,6 +177,14 @@ const LsTreeTab: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
       }
       allowDirectionChange
     />
+  );
+};
+
+const LsTreeTab: React.FC<LsTreeTabProps> = (props) => {
+  return (
+    <LoadingSuspense containerClass="flex flex-1">
+      <LsTreeTabContent {...props} />
+    </LoadingSuspense>
   );
 };
 
