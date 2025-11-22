@@ -96,6 +96,8 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
                 error!("Failed to show main window, {}", e);
                 return Err(e.into());
             }
+            #[cfg(debug_assertions)]
+            win.open_devtools();
         }
         Err(e) => {
             error!("Failed to create main window, {}", e);
