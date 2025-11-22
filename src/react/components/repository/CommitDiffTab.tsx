@@ -4,7 +4,7 @@ import { useDiffAgainstCommand } from "@/commands/diff";
 import { usePersistState } from "@/hooks/usePersistState";
 import {
   type DeterministicTauriInvoke,
-  useTauriSuspenseInvoke,
+  useTauriComposeQuery,
   useTauriSuspenseQuery
 } from "@/hooks/useTauriQuery";
 import { decodeBase64, decodeToString } from "@/strings";
@@ -78,7 +78,7 @@ const RightPanel: React.FC<{
 
   const {
     data: [left, right]
-  } = useTauriSuspenseInvoke(["commitDiff", repoPath, revspec1, revspec2, file], (invoke) =>
+  } = useTauriComposeQuery(["commitDiff", repoPath, revspec1, revspec2, file], (invoke) =>
     loadContents(invoke, repoPath, revspec1, revspec2, file)
   );
 

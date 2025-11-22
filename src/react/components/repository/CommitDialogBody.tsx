@@ -11,7 +11,7 @@ import {
 } from "@/components/Dialog";
 import { useAlert } from "@/context/AlertContext";
 import { useCommit } from "@/hooks/actions/workingtree";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { useTauriQueryInvoke } from "@/hooks/useTauriQuery";
 import { repoPathAtom } from "@/state/repository";
 import { clamp } from "@/util";
 
@@ -21,6 +21,8 @@ export const CommitDialogBody: React.FC = () => {
   const amendRef = useRef<HTMLInputElement | null>(null);
   const { reportError } = useAlert();
   const [rows, setRows] = useState(6);
+
+  const fetchTauriQuery = useTauriQueryInvoke();
 
   const commit = useCommit();
 
@@ -55,7 +57,7 @@ export const CommitDialogBody: React.FC = () => {
       }
       try {
         // get commit message of HEAD and set it to TextArea.
-        const commitDetail = await invokeTauriCommand("get_commit_detail", {
+        const commitDetail = await fetchTauriQuery("get_commit_detail", {
           repoPath,
           revspec: "HEAD"
         });
@@ -66,7 +68,7 @@ export const CommitDialogBody: React.FC = () => {
         reportError({ error });
       }
     },
-    [reportError, repoPath, handleChange]
+    [reportError, repoPath, handleChange, fetchTauriQuery]
   );
   return (
     <>

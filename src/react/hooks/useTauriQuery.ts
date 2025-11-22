@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import type { TauriInvokeType } from "@/generated/tauri-invoke";
+import { useCallback } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import type { TauriInvokeType } from "@/generated/tauri-invoke";
 
 /**
  * Deterministic Tauri commands that are safe to cache.
@@ -91,7 +92,50 @@ export function useTauriSuspenseQuery<K extends DeterministicTauriCommand>(
 }
 
 /**
- * Hook for executing custom query logic with multiple Tauri commands with Suspense support.
+ * Hook that returns a stable invoke function for imperative Tauri command fetching with query cache.
+ *
+ * Use this hook when you need to fetch data imperatively (e.g., in event handlers, callbacks)
+ * rather than declaratively. The returned function checks the cache first and reuses cached
+ * results when available.
+ *
+ * ONLY works with deterministic commands: get_blame, get_changes, get_changes_between,
+ * get_commit_detail, get_content_base64, get_tree
+ *
+ * @returns A stable invoke function that fetches and caches Tauri commands
+ *
+ * @example
+ * ```tsx
+ * function CommitDialog() {
+ *   const invoke = useTauriQueryInvoke();
+ *
+ *   const handleAmendChange = async (checked: boolean) => {
+ *     if (checked) {
+ *       // Fetch commit detail imperatively in event handler
+ *       const detail = await invoke("get_commit_detail", { repoPath, revspec: "HEAD" });
+ *       setMessage(detail.summary);
+ *     }
+ *   };
+ *
+ *   return <Checkbox onChange={handleAmendChange} />;
+ * }
+ * ```
+ */
+export function useTauriQueryInvoke() {
+  const queryClient = useQueryClient();
+  const invoke: DeterministicTauriInvoke = useCallback(
+    <K extends DeterministicTauriCommand>(command: K, ...args: TauriInvokeType[K]["args"]) => {
+      return queryClient.fetchQuery({
+        queryKey: createTauriQueryKey(command, args),
+        queryFn: () => invokeTauriCommand(command, ...args)
+      });
+    },
+    [queryClient]
+  );
+  return invoke;
+}
+
+/**
+ * Hook for composing multiple Tauri commands into a single query with Suspense support.
  *
  * This hook provides an `invoke` function that can be called multiple times within the query function.
  * Each `invoke` call is cached individually, allowing you to:
@@ -104,14 +148,14 @@ export function useTauriSuspenseQuery<K extends DeterministicTauriCommand>(
  * ONLY works with deterministic commands: get_blame, get_changes, get_changes_between,
  * get_commit_detail, get_content_base64, get_tree
  *
- * @param queryKey - Unique key for this combined query
+ * @param queryKey - Unique key for this composed query
  * @param queryFn - Async function that receives an `invoke` function to call Tauri commands
  *
  * @example
  * ```tsx
  * function CommitComparison({ repoPath, revspec1, revspec2 }: Props) {
  *   // Fetch two commit details in parallel - no waterfall!
- *   const { data } = useTauriSuspenseInvoke(
+ *   const { data } = useTauriComposeQuery(
  *     ["commit-comparison", repoPath, revspec1, revspec2],
  *     async (invoke) => {
  *       // These run in parallel
@@ -136,7 +180,7 @@ export function useTauriSuspenseQuery<K extends DeterministicTauriCommand>(
  * </Suspense>
  * ```
  */
-export function useTauriSuspenseInvoke<T>(
+export function useTauriComposeQuery<T>(
   queryKey: readonly unknown[],
   queryFn: (invoke: DeterministicTauriInvoke) => Promise<T>
 ) {

@@ -65,9 +65,50 @@ function App() {
 }
 ```
 
-### `useTauriSuspenseInvoke(queryKey, queryFn)`
+### `useTauriQueryInvoke()`
 
-**Advanced hook** for executing custom query logic with multiple Tauri commands with **Suspense support**.
+Hook that returns a stable invoke function for **imperative** Tauri command fetching with query cache.
+
+**Only works with the same deterministic commands as `useTauriQuery`**.
+
+**Use this for**: Event handlers, callbacks, or any imperative data fetching scenario where you can't use declarative hooks.
+
+The returned function:
+- Checks the cache first and reuses cached results when available
+- Is stable across renders (safe to use in dependency arrays)
+- Returns a Promise that resolves to the command result
+
+```tsx
+import { useTauriQueryInvoke } from "@/hooks/useTauriQuery";
+
+function CommitDialog({ repoPath }: Props) {
+  const [message, setMessage] = useState("");
+  const invoke = useTauriQueryInvoke();
+
+  const handleAmendChange = async (checked: boolean) => {
+    if (checked) {
+      // Fetch commit detail imperatively in event handler
+      const detail = await invoke("get_commit_detail", { repoPath, revspec: "HEAD" });
+      setMessage(detail.summary + (detail.body ? `\n\n${detail.body}` : ""));
+    } else {
+      setMessage("");
+    }
+  };
+
+  return (
+    <div>
+      <Checkbox label="Amend" onChange={handleAmendChange} />
+      <TextArea value={message} onChange={setMessage} />
+    </div>
+  );
+}
+```
+
+**Key benefit**: Perfect for fetching data in response to user interactions (clicks, form changes, etc.) while still benefiting from React Query's caching.
+
+### `useTauriComposeQuery(queryKey, queryFn)`
+
+**Advanced hook** for composing multiple Tauri commands into a single query with **Suspense support**.
 
 This is the most powerful hook when you need to:
 - **Fetch multiple commands in parallel** - avoid sequential waterfalls
@@ -81,10 +122,10 @@ This version throws promises for Suspense boundaries.
 **Only works with deterministic commands** (same as above).
 
 ```tsx
-import { useTauriSuspenseInvoke } from "@/hooks/useTauriQuery";
+import { useTauriComposeQuery } from "@/hooks/useTauriQuery";
 
 function CommitComparison({ repoPath, revspec1, revspec2 }: Props) {
-  const { data } = useTauriSuspenseInvoke(
+  const { data } = useTauriComposeQuery(
     ["commit-comparison", repoPath, revspec1, revspec2],
     async (invoke) => {
       // Fetch all data in parallel - no waterfall!
@@ -168,7 +209,47 @@ function CommitDetail({ repoPath, revspec }: Props) {
 }
 ```
 
-### Example 3: Conditional Fetching
+### Example 3: Imperative Fetching in Event Handlers
+
+```tsx
+// Use useTauriQueryInvoke for fetching in response to user actions
+import { useTauriQueryInvoke } from "@/hooks/useTauriQuery";
+
+function CommitDialog({ repoPath }: Props) {
+  const [message, setMessage] = useState("");
+  const [isAmend, setIsAmend] = useState(false);
+  const invoke = useTauriQueryInvoke();
+  const { reportError } = useAlert();
+
+  const handleAmendChange = async (checked: boolean) => {
+    setIsAmend(checked);
+    if (checked) {
+      try {
+        // Fetch HEAD commit message imperatively
+        const detail = await invoke("get_commit_detail", { repoPath, revspec: "HEAD" });
+        setMessage(detail.summary + (detail.body ? `\n\n${detail.body}` : ""));
+      } catch (error) {
+        reportError({ error });
+      }
+    } else {
+      setMessage("");
+    }
+  };
+
+  return (
+    <Dialog>
+      <TextField value={message} onChange={setMessage} multiline />
+      <Checkbox
+        label="Amend last commit"
+        checked={isAmend}
+        onChange={handleAmendChange}
+      />
+    </Dialog>
+  );
+}
+```
+
+### Example 4: Conditional Fetching
 
 ```tsx
 function MyComponent({ repoPath, revspec, enabled }: Props) {
@@ -181,7 +262,7 @@ function MyComponent({ repoPath, revspec, enabled }: Props) {
 }
 ```
 
-### Example 4: Avoiding Request Waterfalls with useTauriSuspenseInvoke
+### Example 5: Avoiding Request Waterfalls with useTauriComposeQuery
 
 ```tsx
 // ❌ BAD: Sequential waterfall - second query waits for first
@@ -193,7 +274,7 @@ function BadExample({ repoPath, revspec }: Props) {
 
 // ✅ GOOD: Parallel fetching - no waterfall
 function GoodExample({ repoPath, revspec }: Props) {
-  const { data } = useTauriSuspenseInvoke(
+  const { data } = useTauriComposeQuery(
     ["commit-with-changes", repoPath, revspec],
     async (invoke) => {
       // Both requests fire in parallel!
@@ -214,11 +295,11 @@ function GoodExample({ repoPath, revspec }: Props) {
 </Suspense>
 ```
 
-### Example 5: Complex Data Composition
+### Example 6: Complex Data Composition
 
 ```tsx
 function EnrichedCommitView({ repoPath, revspec, parentRevspec }: Props) {
-  const { data } = useTauriSuspenseInvoke(
+  const { data } = useTauriComposeQuery(
     ["enriched-commit", repoPath, revspec, parentRevspec],
     async (invoke) => {
       // Fetch commit details for both revisions
@@ -315,13 +396,15 @@ You can adjust these defaults based on your needs:
 
 1. **Use `useTauriSuspenseQuery` with Suspense boundaries** for the best user experience
 2. **Use `useTauriQuery` for non-Suspense async operations**
-3. **Use `useTauriSuspenseInvoke` when fetching multiple commands** - avoids request waterfalls and maximizes parallelization
-4. **Use `invokeTauriCommand` directly for mutations** - no need to cache them
-5. **Adjust `staleTime` based on data mutability** - immutable data can be cached forever
+3. **Use `useTauriQueryInvoke` for imperative fetching** in event handlers and callbacks
+4. **Use `useTauriComposeQuery` when fetching multiple commands** - avoids request waterfalls and maximizes parallelization
+5. **Use `invokeTauriCommand` directly for mutations** - no need to cache them
+6. **Adjust `staleTime` based on data mutability** - immutable data can be cached forever
 
 ### When to use each hook:
 
-- **Single command fetch**: Use `useTauriQuery` or `useTauriSuspenseQuery`
-- **Multiple commands in parallel**: Use `useTauriSuspenseInvoke` with `Promise.all`
-- **Complex data composition**: Use `useTauriSuspenseInvoke` for maximum flexibility
+- **Single command fetch (declarative)**: Use `useTauriQuery` or `useTauriSuspenseQuery`
+- **Single command fetch (imperative)**: Use `useTauriQueryInvoke()` for event handlers and callbacks
+- **Multiple commands in parallel**: Use `useTauriComposeQuery` with `Promise.all`
+- **Complex data composition**: Use `useTauriComposeQuery` for maximum flexibility
 - **Mutations**: Use `invokeTauriCommand` directly (no caching)
