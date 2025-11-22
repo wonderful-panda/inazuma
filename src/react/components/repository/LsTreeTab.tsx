@@ -1,13 +1,11 @@
 import { IconButton } from "@mui/material";
 import classNames from "classnames";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useBlame } from "@/hooks/useBlame";
 import { useTauriSuspenseQuery } from "@/hooks/useTauriQuery";
 import type { TreeItemVM, TreeModelDispatch } from "@/hooks/useTreeModel";
 import { filterTreeItems, sortTree, type TreeItem } from "@/tree";
 import { FlexCard } from "../FlexCard";
 import { Icon } from "../Icon";
-import { Loading } from "../Loading";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { BlamePanel } from "./BlamePanel";
 import { CommitAttributes } from "./CommitAttributes";
@@ -138,7 +136,6 @@ const compareEntries = (a: LstreeEntry, b: LstreeEntry): number => {
 const LsTreeTabContent: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) => {
   const [blamePath, setBlamePath] = useState<string | undefined>(undefined);
   const revspec = commit.id;
-  const blame = useBlame(repoPath, blamePath, revspec);
   const { data: entries } = useTauriSuspenseQuery("get_tree", { repoPath, revspec });
   const sortedEntries = useMemo(() => sortTree(entries, compareEntries), [entries]);
   const lstree = useCallback(
@@ -161,18 +158,17 @@ const LsTreeTabContent: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) 
       first={lstree}
       second={
         <div className="flex flex-1 relative">
-          {blame?.blame ? (
+          {blamePath ? (
             <BlamePanel
               persistKey="repository/LsTreeTab/BlamePanel"
-              blame={blame.blame}
+              repoPath={repoPath}
               commit={commit}
-              path={blame.path}
+              path={blamePath}
               refs={refs}
             />
           ) : (
             <div className="m-auto text-4xl font-bold text-paper">NO FILE SELECTED</div>
           )}
-          {blame && !blame.blame && <Loading open />}
         </div>
       }
       allowDirectionChange

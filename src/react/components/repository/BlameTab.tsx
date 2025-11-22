@@ -1,5 +1,3 @@
-import { useBlame } from "@/hooks/useBlame";
-import { Loading } from "../Loading";
 import { BlamePanel } from "./BlamePanel";
 
 export interface BlameTabProps {
@@ -10,18 +8,15 @@ export interface BlameTabProps {
 }
 
 const BlameTab: React.FC<BlameTabProps> = ({ repoPath, path, commit, refs }) => {
-  const blame = useBlame(repoPath, path, commit.id);
-  return blame?.blame ? (
+  return (
     <BlamePanel
       persistKey="repository/BlameTab"
-      blame={blame.blame}
+      repoPath={repoPath}
       path={path}
       commit={commit}
       refs={refs}
       showCommitAttrs
     />
-  ) : (
-    <Loading open />
   );
 };
 

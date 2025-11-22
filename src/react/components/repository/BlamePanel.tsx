@@ -1,17 +1,19 @@
 import classNames from "classnames";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useFileCommitContextMenu } from "@/hooks/useContextMenu";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
+import { useTauriSuspenseQuery } from "@/hooks/useTauriQuery";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
+import { decodeBase64, decodeToString } from "@/strings";
 import { GitHash } from "../GitHash";
 import { KeyDownTrapper } from "../KeyDownTrapper";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import type { VirtualListMethods } from "../VirtualList";
 import { BlameFooter } from "./BlameFooter";
 import { BlameViewer } from "./BlameViewer";
 import { CommitAttributes } from "./CommitAttributes";
 import { FileCommitList } from "./FileCommitList";
+import { LoadingSuspense } from "./LoadingSuspense";
 
 setupMonaco();
 
@@ -21,6 +23,54 @@ export interface SecondPanelProps {
   selectedCommitId: string | undefined;
   onUpdateSelectedCommitId: (value: string | undefined) => void;
 }
+
+const FirstPanel: React.FC<{
+  direction: Direction;
+  showCommitAttrs: boolean;
+  commit: Commit;
+  path: string;
+  blame: Blame;
+  refs: Refs | undefined;
+  selectedIndex: number;
+  setSelectedIndex: SetState<number>;
+}> = ({
+  direction,
+  showCommitAttrs,
+  commit,
+  path,
+  blame,
+  refs,
+  selectedIndex,
+  setSelectedIndex
+}) => {
+  const handleRowContextMenu = useFileCommitContextMenu(path);
+  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
+    blame.commits.length,
+    setSelectedIndex
+  );
+  const horiz = direction === "horiz";
+  return (
+    <div className={classNames("flex-1", horiz ? "flex-col-nowrap" : "flex-row-nowrap")}>
+      {showCommitAttrs && (
+        <div className={classNames("m-1 mb-3", !horiz && "max-w-2xl")}>
+          <div className={classNames("p-2 border border-greytext")}>
+            <CommitAttributes commit={commit} showSummary />
+          </div>
+        </div>
+      )}
+      <SelectedIndexProvider value={selectedIndex}>
+        <KeyDownTrapper className="m-1 p-1 border border-paper" onKeyDown={handleKeyDown}>
+          <FileCommitList
+            commits={blame.commits}
+            refs={refs}
+            onRowMouseDown={handleRowMouseDown}
+            onRowContextMenu={handleRowContextMenu}
+          />
+        </KeyDownTrapper>
+      </SelectedIndexProvider>
+    </div>
+  );
+};
 
 const SecondPanel: React.FC<SecondPanelProps> = ({
   blame,
@@ -73,22 +123,37 @@ const SecondPanel: React.FC<SecondPanelProps> = ({
 
 export interface BlamePanelProps {
   persistKey: string;
-  blame: Blame;
+  repoPath: string;
   commit: Commit;
   path: string;
   refs: Refs | undefined;
   showCommitAttrs?: boolean;
 }
 
-export const BlamePanel: React.FC<BlamePanelProps> = ({
+const BlamePanelInner: React.FC<BlamePanelProps> = ({
+  repoPath,
   persistKey,
-  blame,
   commit,
   path,
   refs,
-  showCommitAttrs
+  showCommitAttrs = false
 }) => {
-  const handleRowContextMenu = useFileCommitContextMenu(path);
+  const { data: rawBlame } = useTauriSuspenseQuery("get_blame", {
+    repoPath,
+    relPath: path,
+    revspec: commit.id
+  });
+  const blame = useMemo(() => {
+    const content = decodeToString(decodeBase64(rawBlame.contentBase64));
+    const commitIds: string[] = [];
+    for (const entry of rawBlame.blameEntries) {
+      for (const line of entry.lineNo) {
+        commitIds[line - 1] = entry.id;
+      }
+    }
+    return { commits: rawBlame.commits, content, commitIds };
+  }, [rawBlame]);
+
   const [selectedItem, setSelectedItem] = useState({
     index: -1,
     commitId: undefined as string | undefined
@@ -115,58 +180,8 @@ export const BlamePanel: React.FC<BlamePanelProps> = ({
     [blame]
   );
 
-  const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
-    blame?.commits.length || 0,
-    setSelectedIndex
-  );
-  const listRef = useRef<VirtualListMethods>(null);
-
-  useEffect(() => {
-    listRef.current?.scrollToItem(selectedItem.index);
-  }, [selectedItem.index]);
-
-  const first = useCallback(
-    (direction: Direction) => (
-      <div
-        className={classNames(
-          "flex-1",
-          direction === "horiz" ? "flex-col-nowrap" : "flex-row-nowrap"
-        )}
-      >
-        {showCommitAttrs && (
-          <div className={classNames("m-1 mb-3", direction === "vert" && "max-w-2xl")}>
-            <div className={classNames("p-2 border border-greytext")}>
-              <CommitAttributes commit={commit} showSummary />
-            </div>
-          </div>
-        )}
-        <SelectedIndexProvider value={selectedItem.index}>
-          <KeyDownTrapper className="m-1 p-1 border border-paper" onKeyDown={handleKeyDown}>
-            <FileCommitList
-              ref={listRef}
-              commits={blame.commits}
-              refs={refs}
-              onRowMouseDown={handleRowMouseDown}
-              onRowContextMenu={handleRowContextMenu}
-            />
-          </KeyDownTrapper>
-        </SelectedIndexProvider>
-      </div>
-    ),
-    [
-      selectedItem,
-      blame.commits,
-      showCommitAttrs,
-      commit,
-      refs,
-      handleKeyDown,
-      handleRowMouseDown,
-      handleRowContextMenu
-    ]
-  );
-
   return (
-    <div className="flex-col-nowrap flex-1 px-2 pt-1">
+    <>
       <div className="flex-row-nowrap items-center text-xl p-2 font-mono font-bold">
         <span className="pr-2 whitespace-nowrap text-secondary">{path}</span>
         <span className="text-greytext pr-2">@</span>
@@ -176,7 +191,18 @@ export const BlamePanel: React.FC<BlamePanelProps> = ({
         persistKey={persistKey}
         initialRatio={0.3}
         initialDirection="horiz"
-        first={first}
+        first={(direction) => (
+          <FirstPanel
+            direction={direction}
+            showCommitAttrs={showCommitAttrs}
+            refs={refs}
+            blame={blame}
+            path={path}
+            commit={commit}
+            selectedIndex={selectedItem.index}
+            setSelectedIndex={setSelectedIndex}
+          />
+        )}
         second={
           <SecondPanel
             blame={blame}
@@ -187,6 +213,14 @@ export const BlamePanel: React.FC<BlamePanelProps> = ({
         }
         allowDirectionChange
       />
-    </div>
+    </>
+  );
+};
+
+export const BlamePanel: React.FC<BlamePanelProps> = (props) => {
+  return (
+    <LoadingSuspense containerClass="flex-col-nowrap flex-1 px-2 pt-1">
+      <BlamePanelInner {...props} />
+    </LoadingSuspense>
   );
 };
