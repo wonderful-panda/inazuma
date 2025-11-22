@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider, useAtomValue, useSetAtom } from "jotai";
 import { DevTools } from "jotai-devtools";
 import { useCallback, useEffect, useMemo } from "react";
@@ -212,15 +213,35 @@ const RepositoryPage: React.FC<{ active: boolean }> = ({ active }) => {
   );
 };
 
+const createQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Disable automatic refetching for deterministic Tauri commands
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        // Keep data in cache for 5 minutes
+        staleTime: 5 * 60 * 1000,
+        // Keep unused data in cache for 10 minutes
+        gcTime: 10 * 60 * 1000,
+        retry: false
+      }
+    }
+  });
+
 const RepositoryPageTab: React.FC<{ path: string; active: boolean }> = ({ path, active }) => {
   const store = useAtomValue(repositoryStoresAtomFamily(path));
+  const queryClient = useMemo(createQueryClient, []);
+
   return (
-    <Provider store={store}>
-      <DevTools store={store} />
-      <DialogProvider>
-        <RepositoryPage active={active} />
-      </DialogProvider>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <DevTools store={store} />
+        <DialogProvider>
+          <RepositoryPage active={active} />
+        </DialogProvider>
+      </Provider>
+    </QueryClientProvider>
   );
 };
 
