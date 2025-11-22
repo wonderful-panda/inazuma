@@ -12,3 +12,14 @@ export const LoadingSuspense: React.FC<React.PropsWithChildren<{ containerClass?
     </div>
   );
 };
+
+export const withLoadingSuspense = <P extends {}>(
+  WrappedComponent: React.ComponentType<P>,
+  containerClass?: string
+) => {
+  return (props: P) => (
+    <LoadingSuspense containerClass={containerClass}>
+      <WrappedComponent {...props} />
+    </LoadingSuspense>
+  );
+};

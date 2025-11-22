@@ -13,7 +13,7 @@ import { BlameFooter } from "./BlameFooter";
 import { BlameViewer } from "./BlameViewer";
 import { CommitAttributes } from "./CommitAttributes";
 import { FileCommitList } from "./FileCommitList";
-import { LoadingSuspense } from "./LoadingSuspense";
+import { withLoadingSuspense } from "./LoadingSuspense";
 
 setupMonaco();
 
@@ -217,10 +217,4 @@ const BlamePanelInner: React.FC<BlamePanelProps> = ({
   );
 };
 
-export const BlamePanel: React.FC<BlamePanelProps> = (props) => {
-  return (
-    <LoadingSuspense containerClass="flex-col-nowrap flex-1 px-2 pt-1">
-      <BlamePanelInner {...props} />
-    </LoadingSuspense>
-  );
-};
+export const BlamePanel = withLoadingSuspense(BlamePanelInner, "flex-col-nowrap flex-1 px-2 pt-1");

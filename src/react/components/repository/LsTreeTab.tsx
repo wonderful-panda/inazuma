@@ -9,7 +9,7 @@ import { Icon } from "../Icon";
 import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { BlamePanel } from "./BlamePanel";
 import { CommitAttributes } from "./CommitAttributes";
-import { LoadingSuspense } from "./LoadingSuspense";
+import { withLoadingSuspense } from "./LoadingSuspense";
 import { LsTree } from "./LsTree";
 import PathFilter from "./PathFilter";
 
@@ -176,12 +176,4 @@ const LsTreeTabContent: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) 
   );
 };
 
-const LsTreeTab: React.FC<LsTreeTabProps> = (props) => {
-  return (
-    <LoadingSuspense containerClass="flex flex-1">
-      <LsTreeTabContent {...props} />
-    </LoadingSuspense>
-  );
-};
-
-export default LsTreeTab;
+export default withLoadingSuspense(LsTreeTabContent, "flex flex-1");
