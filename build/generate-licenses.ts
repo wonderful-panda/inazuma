@@ -13,10 +13,6 @@ const fontLicenses = {
   Octicons: {
     name: "MIT",
     url: "https://raw.githubusercontent.com/primer/octicons/main/LICENSE"
-  },
-  Carbon: {
-    name: "Apache-2.0",
-    url: "https://raw.githubusercontent.com/carbon-design-system/carbon/main/LICENSE"
   }
 };
 
@@ -170,7 +166,8 @@ const generateJsLicensesHtml = async (licensesData: Record<string, any>) => {
         licenseTexts[licenseName] = licenseText;
       } catch (error) {
         console.warn(`Failed to fetch license for ${fontName}, using fallback`);
-        licenseTexts[licenseName] = `License: ${licenseName}\nFor full license text, visit: ${licenseInfo.url}`;
+        licenseTexts[licenseName] =
+          `License: ${licenseName}\nFor full license text, visit: ${licenseInfo.url}`;
       }
     }
   }
