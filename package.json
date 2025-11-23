@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf --glob node_modules/.cache dist/* src/react/generated/* src-tauri/generated/* src-tauri/target",
+    "prebuild:iconname": "ts-node build/generate-iconname.ts",
     "prebuild:iconbundle": "ts-node build/create-iconbundle.ts",
     "prebuild:gitinfo": "ts-node build/generate-gitinfo.ts",
     "generate-dts:bindings": "ts-node build/generate-bindings.ts",
@@ -65,6 +66,7 @@
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^5.1.0",
     "env-cmd": "^10.1.0",
+    "globby": "^16.0.0",
     "handlebars": "^4.7.7",
     "jotai-devtools": "^0.13.0",
     "license-checker": "^25.0.1",

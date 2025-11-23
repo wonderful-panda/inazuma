@@ -25,7 +25,8 @@ const RotateButton: React.FC<{
       "bg-splitter shadow-lg",
       "transform group-hover:visible",
       "transition-transform duration-200 ease-linear",
-      horiz ? "hover:rotate-90" : "hover:-rotate-90",
+      horiz ? "rotate-0" : "rotate-90",
+      horiz ? "hover:rotate-90" : "hover:rotate-0",
       dragging ? "visible" : "invisible"
     )}
     title="Switch direction"
@@ -33,7 +34,7 @@ const RotateButton: React.FC<{
     onClick={onClick}
     size="large"
   >
-    <Icon icon={`carbon:drag-${horiz ? "horizontal" : "vertical"}`} className="min-w-4 min-h-4" />
+    <Icon icon="mdi:resize-horizontal" className="min-w-4 min-h-4" />
   </IconButton>
 );
 
