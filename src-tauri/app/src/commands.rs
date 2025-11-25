@@ -19,6 +19,13 @@ use crate::{
 };
 use types::*;
 
+/// Loads persisted configuration and environment data.
+///
+/// Returns both the user configuration settings and the current environment state,
+/// including recent opened repositories and other session data.
+///
+/// # Returns
+/// A tuple containing the `Config` and `Environment` data.
 #[tauri::command]
 pub async fn load_persist_data(
     config_state: State<'_, ConfigStateMutex>,
@@ -29,6 +36,12 @@ pub async fn load_persist_data(
     Ok((config.config.clone(), env.env.clone()))
 }
 
+/// Stores the list of recently opened repositories.
+///
+/// Updates the environment state with a new list of recently opened repository paths.
+///
+/// # Arguments
+/// * `new_list` - Vector of repository paths to store as recently opened
 #[tauri::command]
 pub async fn store_recent_opened(
     new_list: Vec<String>,
@@ -39,6 +52,13 @@ pub async fn store_recent_opened(
     Ok(())
 }
 
+/// Stores arbitrary application state as key-value pairs.
+///
+/// Updates the environment state with a new state map, typically used for
+/// persisting UI state across sessions.
+///
+/// # Arguments
+/// * `new_state` - HashMap containing state key-value pairs to store
 #[tauri::command]
 pub async fn store_state(
     new_state: HashMap<String, String>,
@@ -49,6 +69,16 @@ pub async fn store_state(
     Ok(())
 }
 
+/// Saves user configuration to persistent storage.
+///
+/// Persists the configuration settings to disk so they can be restored
+/// in future sessions.
+///
+/// # Arguments
+/// * `new_config` - The configuration object to save
+///
+/// # Errors
+/// Returns an error if the configuration cannot be saved to disk.
 #[tauri::command]
 pub async fn save_config(
     new_config: Config,
@@ -60,6 +90,13 @@ pub async fn save_config(
         .map_err(|e| format!("Failed to save config, {}", e))
 }
 
+/// Shows a native folder selection dialog.
+///
+/// Opens a blocking folder picker dialog, allowing the user to select a directory.
+/// The path is normalized with forward slashes.
+///
+/// # Returns
+/// The selected folder path as a string, or `None` if the dialog was cancelled.
 #[tauri::command]
 pub async fn show_folder_selector<T: Runtime>(
     window: Window<T>,
@@ -73,6 +110,16 @@ pub async fn show_folder_selector<T: Runtime>(
         .map(|path| path.to_string().replace("\\", "/").into())
 }
 
+/// Opens a Git repository and starts watching for changes.
+///
+/// Initializes the repository in the application state and sets up file watching
+/// to detect changes in the working directory.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository to open
+///
+/// # Errors
+/// Returns an error if the repository cannot be opened or watching fails.
 #[tauri::command]
 pub async fn open_repository<R: Runtime>(
     repo_path: &Path,
@@ -89,6 +136,15 @@ pub async fn open_repository<R: Runtime>(
     Ok(())
 }
 
+/// Closes a Git repository and stops watching for changes.
+///
+/// Removes the file watcher for the repository, cleaning up resources.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository to close
+///
+/// # Errors
+/// Returns an error if unwatching fails.
 #[tauri::command]
 #[allow(unused_variables)]
 pub async fn close_repository(
@@ -104,6 +160,18 @@ pub async fn close_repository(
     Ok(())
 }
 
+/// Fetches the commit history and references for a repository.
+///
+/// Retrieves the commit log along with all branches, tags, and reflog entries.
+/// The reflog entries are merged into the refs structure.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `max_count` - Maximum number of commits to fetch
+/// * `reflog_count` - Maximum number of reflog entries to fetch
+///
+/// # Returns
+/// A tuple containing the list of commits and all references (including reflog).
 #[tauri::command]
 pub async fn fetch_history(
     repo_path: &Path,
@@ -131,6 +199,13 @@ pub async fn fetch_history(
     Ok((commits, refs))
 }
 
+/// Gets the name of the currently checked out branch.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+///
+/// # Returns
+/// The name of the current branch.
 #[tauri::command]
 pub async fn get_current_branch(repo_path: &Path) -> Result<String, String> {
     git::branch::get_current_branch(repo_path)
@@ -138,6 +213,16 @@ pub async fn get_current_branch(repo_path: &Path) -> Result<String, String> {
         .map_err(|e| e.into())
 }
 
+/// Gets the reflog entries for a repository.
+///
+/// Returns the reference log showing where branches and HEAD have pointed in the past.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `count` - Maximum number of reflog entries to retrieve
+///
+/// # Returns
+/// A vector of tuples containing (reference name, commit ID) pairs.
 #[tauri::command]
 pub async fn get_reflog(repo_path: &Path, count: u32) -> Result<Vec<(String, String)>, String> {
     git::refs::get_reflog(repo_path, count)
@@ -145,6 +230,14 @@ pub async fn get_reflog(repo_path: &Path, count: u32) -> Result<Vec<(String, Str
         .map_err(|e| e.into())
 }
 
+/// Gets detailed information about a specific commit.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `revspec` - Git revision specification (commit hash, branch name, etc.)
+///
+/// # Returns
+/// Detailed commit information including message, author, date, and changes.
 #[tauri::command]
 pub async fn get_commit_detail(repo_path: &Path, revspec: &str) -> Result<CommitDetail, String> {
     git::commit_detail::get_commit_detail(repo_path, revspec)
@@ -152,6 +245,16 @@ pub async fn get_commit_detail(repo_path: &Path, revspec: &str) -> Result<Commit
         .map_err(|e| e.into())
 }
 
+/// Gets the status of the working tree.
+///
+/// Returns information about staged and unstaged changes, including file statistics
+/// (number of added/deleted lines) for each modified file.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+///
+/// # Returns
+/// Working tree status containing files and their change statistics.
 #[tauri::command]
 pub async fn get_workingtree_stat<'a>(repo_path: &'a Path) -> Result<WorkingTreeStat, String> {
     let (mut files, parent_ids) = tokio::try_join!(
@@ -188,6 +291,18 @@ pub async fn get_workingtree_stat<'a>(repo_path: &'a Path) -> Result<WorkingTree
     Ok(WorkingTreeStat { files, parent_ids })
 }
 
+/// Gets blame information for a file.
+///
+/// Returns line-by-line authorship information, commit history for the file,
+/// and the file content.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `rel_path` - Relative path to the file within the repository
+/// * `revspec` - Git revision specification to blame at
+///
+/// # Returns
+/// Blame data including entries, commits, and base64-encoded file content.
 #[tauri::command]
 pub async fn get_blame(repo_path: &Path, rel_path: &str, revspec: &str) -> Result<Blame, String> {
     let (blame_entries, commits, content) = tokio::try_join!(
@@ -203,6 +318,15 @@ pub async fn get_blame(repo_path: &Path, rel_path: &str, revspec: &str) -> Resul
     })
 }
 
+/// Gets file content at a specific revision, encoded as base64.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `rel_path` - Relative path to the file within the repository
+/// * `revspec` - Git revision specification to retrieve content from
+///
+/// # Returns
+/// Base64-encoded file content.
 #[tauri::command]
 pub async fn get_content_base64(
     repo_path: &Path,
@@ -213,11 +337,28 @@ pub async fn get_content_base64(
     Ok(base64::encode(&content))
 }
 
+/// Gets the directory tree at a specific revision.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `revspec` - Git revision specification
+///
+/// # Returns
+/// List of entries in the tree (files and directories).
 #[tauri::command]
 pub async fn get_tree(repo_path: &Path, revspec: &str) -> Result<Vec<LstreeEntry>, String> {
     Ok(git::lstree::lstree(repo_path, revspec).await?)
 }
 
+/// Gets the file changes between two revisions.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `revspec1` - First Git revision specification
+/// * `revspec2` - Second Git revision specification
+///
+/// # Returns
+/// List of files that changed between the two revisions.
 #[tauri::command]
 pub async fn get_changes_between(
     repo_path: &Path,
@@ -227,6 +368,19 @@ pub async fn get_changes_between(
     Ok(git::diff::get_changes_between(repo_path, revspec1, revspec2).await?)
 }
 
+/// Gets the file changes introduced by a commit.
+///
+/// Compares the commit with its parent to show what was changed.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `revspec` - Git revision specification
+///
+/// # Returns
+/// List of files changed in the commit.
+///
+/// # Errors
+/// Returns an error if the parent commit is not found.
 #[tauri::command]
 pub async fn get_changes(repo_path: &Path, revspec: &str) -> Result<Vec<FileEntry>, String> {
     if let Some(parent) =
@@ -238,6 +392,15 @@ pub async fn get_changes(repo_path: &Path, revspec: &str) -> Result<Vec<FileEntr
     }
 }
 
+/// Gets the unified diff for a file in the working tree, encoded as base64.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `rel_path` - Relative path to the file within the repository
+/// * `cached` - If true, get diff of staged changes; if false, get unstaged changes
+///
+/// # Returns
+/// Base64-encoded unified diff.
 #[tauri::command]
 pub async fn get_workingtree_udiff_base64(
     repo_path: &Path,
@@ -248,21 +411,51 @@ pub async fn get_workingtree_udiff_base64(
     Ok(base64::encode(binary_content))
 }
 
+/// Stages files for commit.
+///
+/// Adds the specified files to the staging area (index).
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `rel_paths` - List of relative file paths to stage
 #[tauri::command]
 pub async fn stage(repo_path: &Path, rel_paths: Vec<&str>) -> Result<(), String> {
     Ok(git::workingtree::stage(repo_path, &rel_paths).await?)
 }
 
+/// Unstages files from the staging area.
+///
+/// Removes the specified files from the staging area (index) while keeping
+/// the changes in the working directory.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `rel_paths` - List of relative file paths to unstage
 #[tauri::command]
 pub async fn unstage(repo_path: &Path, rel_paths: Vec<&str>) -> Result<(), String> {
     Ok(git::workingtree::unstage(repo_path, &rel_paths).await?)
 }
 
+/// Restores files to their state in the index.
+///
+/// Discards changes in the working directory for the specified files,
+/// reverting them to their last committed or staged state.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `rel_paths` - List of relative file paths to restore
 #[tauri::command]
 pub async fn restore(repo_path: &Path, rel_paths: Vec<&str>) -> Result<(), String> {
     Ok(git::workingtree::restore(repo_path, &rel_paths).await?)
 }
 
+/// Creates a Git commit with staged changes.
+///
+/// Can create a new commit or amend the last commit depending on the options.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `options` - Commit options including the commit message and amend flag
 #[tauri::command]
 pub async fn commit(repo_path: &Path, options: CommitOptions) -> Result<(), String> {
     match options {
@@ -283,31 +476,71 @@ pub async fn commit(repo_path: &Path, options: CommitOptions) -> Result<(), Stri
     }
 }
 
+/// Creates a new Git branch.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `options` - Branch creation options including name and starting point
 #[tauri::command]
 pub async fn create_branch(repo_path: &Path, options: CreateBranchOptions) -> Result<(), String> {
     Ok(git::branch::create_branch(repo_path, &options).await?)
 }
 
+/// Deletes a Git branch.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `options` - Branch deletion options including name and force flag
 #[tauri::command]
 pub async fn delete_branch(repo_path: &Path, options: DeleteBranchOptions) -> Result<(), String> {
     Ok(git::branch::delete_branch(repo_path, &options).await?)
 }
 
+/// Switches to a different branch or commit.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `options` - Switch options including target branch/commit
 #[tauri::command]
 pub async fn switch(repo_path: &Path, options: SwitchOptions) -> Result<(), String> {
     Ok(git::switch::switch(repo_path, &options).await?)
 }
 
+/// Resets the current branch to a specific commit.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `options` - Reset options including target commit and reset mode (soft/mixed/hard)
 #[tauri::command]
 pub async fn reset(repo_path: &Path, options: ResetOptions) -> Result<(), String> {
     Ok(git::reset::reset(repo_path, &options).await?)
 }
 
+/// Gets the list of configured remote repositories.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+///
+/// # Returns
+/// List of remote names (e.g., "origin", "upstream").
 #[tauri::command]
 pub async fn get_remote_list(repo_path: &Path) -> Result<Vec<String>, String> {
     Ok(git::remote::get_remote_list(repo_path).await?)
 }
 
+/// Opens an external diff tool to compare two file versions.
+///
+/// Prepares temporary files for both versions and launches the configured
+/// external diff tool. The temporary files are watched for changes to detect
+/// edits made in the external tool.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `left` - Left file specification (revision and path)
+/// * `right` - Right file specification (revision and path)
+///
+/// # Errors
+/// Returns an error if no external diff tool is configured or if the repository is not opened.
 #[tauri::command]
 pub async fn show_external_diff(
     repo_path: &Path,
@@ -355,6 +588,10 @@ pub async fn show_external_diff(
     Ok(())
 }
 
+/// Copies text to the system clipboard.
+///
+/// # Arguments
+/// * `text` - The text to copy to the clipboard
 #[tauri::command]
 pub async fn yank_text<T: Runtime>(text: &str, app_handle: AppHandle<T>) -> Result<(), String> {
     app_handle
@@ -363,6 +600,17 @@ pub async fn yank_text<T: Runtime>(text: &str, app_handle: AppHandle<T>) -> Resu
         .map_err(|e| format!("{}", e))
 }
 
+/// Opens a pseudo-terminal (PTY) and executes a command.
+///
+/// Creates a new PTY session and runs the specified command in it.
+/// Output is emitted via Tauri events.
+///
+/// # Arguments
+/// * `id` - Unique identifier for this PTY session
+/// * `command_line` - Command to execute in the PTY
+/// * `cwd` - Working directory for the command
+/// * `rows` - Number of rows in the terminal
+/// * `cols` - Number of columns in the terminal
 #[tauri::command]
 pub async fn open_pty<T: Runtime>(
     id: usize,
@@ -415,6 +663,13 @@ async fn open_pty_internal<'a, T: Runtime, P: Into<Cow<'a, Path>>>(
     return Ok(());
 }
 
+/// Writes data to a running PTY session.
+///
+/// Sends input to the pseudo-terminal, simulating user input.
+///
+/// # Arguments
+/// * `id` - PTY session identifier
+/// * `data` - Data to write to the PTY
 #[tauri::command]
 pub async fn write_pty(
     id: usize,
@@ -427,12 +682,24 @@ pub async fn write_pty(
         .map_err(|e| format!("{}", e))
 }
 
+/// Closes a PTY session and terminates the running process.
+///
+/// # Arguments
+/// * `id` - PTY session identifier
 #[tauri::command]
 pub async fn close_pty(id: usize, pty_state: State<'_, PtyStateMutex>) -> Result<(), String> {
     let pty = pty_state.0.lock().await;
     pty.kill(PtyId(id)).await.map_err(|e| format!("{}", e))
 }
 
+/// Resizes a PTY session.
+///
+/// Updates the terminal dimensions for a running PTY session.
+///
+/// # Arguments
+/// * `id` - PTY session identifier
+/// * `rows` - New number of rows
+/// * `cols` - New number of columns
 #[tauri::command]
 pub async fn resize_pty(
     id: usize,
@@ -446,6 +713,18 @@ pub async fn resize_pty(
         .map_err(|e| format!("{}", e))
 }
 
+/// Executes a Git command in a PTY session.
+///
+/// Constructs a Git command line and runs it in a new PTY session,
+/// allowing for interactive Git operations with terminal output.
+///
+/// # Arguments
+/// * `id` - Unique identifier for this PTY session
+/// * `repo_path` - Optional path to the Git repository
+/// * `command` - Git subcommand to execute
+/// * `args` - Arguments to pass to the Git command
+/// * `rows` - Number of rows in the terminal
+/// * `cols` - Number of columns in the terminal
 #[tauri::command]
 pub async fn exec_git_with_pty<T: Runtime>(
     id: usize,
@@ -475,6 +754,15 @@ pub async fn exec_git_with_pty<T: Runtime>(
     .await
 }
 
+/// Gets the configured Git user information.
+///
+/// Retrieves the user.name and user.email from the Git configuration.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+///
+/// # Returns
+/// Git user information containing name and email.
 #[tauri::command]
 pub async fn get_user_info(repo_path: &Path) -> Result<GitUser, String> {
     let (name, email) = tokio::try_join!(
@@ -485,11 +773,25 @@ pub async fn get_user_info(repo_path: &Path) -> Result<GitUser, String> {
     Ok(GitUser { name, email })
 }
 
+/// Finds the root directory of a Git repository.
+///
+/// Searches for a Git repository starting from the current directory and
+/// traversing up the directory tree.
+///
+/// # Returns
+/// The path to the repository root, or `None` if not inside a Git repository.
 #[tauri::command]
 pub async fn find_repository_root() -> Result<Option<String>, String> {
     Ok(git::find_repository_root().await?)
 }
 
+/// Gets a list of all fonts installed on the system.
+///
+/// Scans the system for available fonts and returns their metadata,
+/// sorted alphabetically by full name.
+///
+/// # Returns
+/// List of fonts with their names and properties (including monospace flag).
 #[tauri::command]
 pub async fn get_system_fonts() -> Result<Vec<Font>, String> {
     let source = FsSource::new();
@@ -515,6 +817,10 @@ pub async fn get_system_fonts() -> Result<Vec<Font>, String> {
     Ok(vec)
 }
 
+/// Sets the application window title.
+///
+/// # Arguments
+/// * `title` - The new window title
 #[tauri::command]
 pub async fn set_window_title<T: Runtime>(title: &str, window: Window<T>) -> Result<(), String> {
     window.set_title(title).map_err(|e| format!("{}", e))
