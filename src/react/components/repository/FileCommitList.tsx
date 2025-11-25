@@ -1,5 +1,6 @@
 import { useTheme } from "@mui/material";
-import { useCallback } from "react";
+import { useCallback, useEffect, useImperativeHandle, useRef } from "react";
+import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "../VirtualList";
 import { FileCommitListRow } from "./FileCommitListRow";
 
@@ -39,8 +40,20 @@ export const FileCommitList: React.FC<
     },
     [commits, baseFontSize]
   );
+  const selectedIndex = useSelectedIndex();
+  const innerRef = useRef<VirtualListMethods>(null);
+  useEffect(() => {
+    innerRef.current?.scrollToItem(selectedIndex);
+  }, [selectedIndex]);
+
+  useImperativeHandle(ref, () => ({
+    scrollToItem: (index: number) => {
+      innerRef.current?.scrollToItem(index);
+    }
+  }));
+
   return (
-    <VirtualList<FileCommit> ref={ref} items={commits} itemSize={rowHeight} {...rest}>
+    <VirtualList<FileCommit> ref={innerRef} items={commits} itemSize={rowHeight} {...rest}>
       {renderRow}
     </VirtualList>
   );
