@@ -26,6 +26,8 @@ import type { VirtualListMethods } from "../VirtualList";
 import { CommitDetail } from "./CommitDetail";
 import { CommitList } from "./CommitList";
 import { CommitLogSideBar } from "./CommitLogSideBar";
+import { LoadingSuspense } from "./LoadingSuspense";
+import { RepositoryErrorBoundary } from "./RepositoryErrorBoundary";
 import { WorkingTree } from "./WorkingTree";
 
 const useBeginCommitCommand = () => {
@@ -199,7 +201,7 @@ const CommitLogInner: React.FC<{
         <Cmd name="PrevCommit" hotkey="Ctrl+P" handler={movePrevious} />
         <Cmd name="ShowLsTree" hotkey="Ctrl+L" handler={showLsTreeTab} />
       </CommandGroup>
-      <div className="flex-row-nowrap flex-1">
+      <LoadingSuspense containerClass="flex-row-nowrap flex-1">
         <CommitLogSideBar refs={log.refs} onItemClick={handleSideBarItemClick} />
         <PersistSplitterPanel
           persistKey="repository/CommitLog"
@@ -227,7 +229,7 @@ const CommitLogInner: React.FC<{
           }
           second={detail}
         />
-      </div>
+      </LoadingSuspense>
     </>
   );
 };
@@ -238,7 +240,11 @@ const CommitLog: React.FC = () => {
   if (!repoPath || !log) {
     return null;
   }
-  return <CommitLogInner repoPath={repoPath} log={log} />;
+  return (
+    <RepositoryErrorBoundary>
+      <CommitLogInner repoPath={repoPath} log={log} />
+    </RepositoryErrorBoundary>
+  );
 };
 
 export default CommitLog;

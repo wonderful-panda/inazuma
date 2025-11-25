@@ -1,4 +1,5 @@
 import { BlamePanel } from "./BlamePanel";
+import { RepositoryErrorBoundary } from "./RepositoryErrorBoundary";
 
 export interface BlameTabProps {
   repoPath: string;
@@ -9,14 +10,16 @@ export interface BlameTabProps {
 
 const BlameTab: React.FC<BlameTabProps> = ({ repoPath, path, commit, refs }) => {
   return (
-    <BlamePanel
-      persistKey="repository/BlameTab"
-      repoPath={repoPath}
-      path={path}
-      commit={commit}
-      refs={refs}
-      showCommitAttrs
-    />
+    <RepositoryErrorBoundary>
+      <BlamePanel
+        persistKey="repository/BlameTab"
+        repoPath={repoPath}
+        path={path}
+        commit={commit}
+        refs={refs}
+        showCommitAttrs
+      />
+    </RepositoryErrorBoundary>
   );
 };
 

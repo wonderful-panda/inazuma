@@ -12,6 +12,7 @@ import { CommitAttributes } from "./CommitAttributes";
 import { withLoadingSuspense } from "./LoadingSuspense";
 import { LsTree } from "./LsTree";
 import PathFilter from "./PathFilter";
+import { withRepositoryErrorBoundary } from "./RepositoryErrorBoundary";
 
 export interface LsTreeTabProps {
   repoPath: string;
@@ -176,4 +177,4 @@ const LsTreeTabContent: React.FC<LsTreeTabProps> = ({ repoPath, commit, refs }) 
   );
 };
 
-export default withLoadingSuspense(LsTreeTabContent, "flex flex-1");
+export default withRepositoryErrorBoundary(withLoadingSuspense(LsTreeTabContent, "flex flex-1"));

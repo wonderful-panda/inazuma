@@ -13,7 +13,8 @@ import { PersistSplitterPanel } from "../PersistSplitterPanel";
 import { CommitAttributes } from "./CommitAttributes";
 import { DiffViewer, type DiffViewerOptions } from "./DiffViewer";
 import { FileList, type FileListViewType, useFileListRowEventHandler } from "./FileList";
-import { LoadingSuspense } from "./LoadingSuspense";
+import { LoadingSuspense, withLoadingSuspense } from "./LoadingSuspense";
+import { withRepositoryErrorBoundary } from "./RepositoryErrorBoundary";
 
 export interface CommitDiffTabProps {
   repoPath: string;
@@ -163,12 +164,4 @@ const CommitDiffContent: React.FC<{
   );
 };
 
-const CommitDiffTab: React.FC<CommitDiffTabProps> = ({ repoPath, commitFrom, commitTo }) => {
-  return (
-    <LoadingSuspense containerClass="flex flex-1">
-      <CommitDiffContent {...{ repoPath, commitFrom, commitTo }} />
-    </LoadingSuspense>
-  );
-};
-
-export default CommitDiffTab;
+export default withRepositoryErrorBoundary(withLoadingSuspense(CommitDiffContent, "flex flex-1"));
