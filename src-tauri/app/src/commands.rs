@@ -318,6 +318,30 @@ pub async fn get_blame(repo_path: &Path, rel_path: &str, revspec: &str) -> Resul
     })
 }
 
+/// Gets the commit that last modified a file at or before a specified revision.
+///
+/// Finds the most recent commit that modified the specified file, searching from
+/// the given revision backwards through the commit history.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `rel_path` - Relative path to the file within the repository
+/// * `revspec` - Git revision specification (commit hash, branch name, etc.)
+///
+/// # Returns
+/// The full commit object including ID, author, date, and message, or `None` if no
+/// commits are found that modified the file at or before the specified revision.
+#[tauri::command]
+pub async fn get_last_modify_commit(
+    repo_path: &Path,
+    rel_path: &str,
+    revspec: &str,
+) -> Result<Option<Commit>, String> {
+    git::log::get_last_modify_commit(repo_path, rel_path, revspec)
+        .await
+        .map_err(|e| e.into())
+}
+
 /// Gets file content at a specific revision, encoded as base64.
 ///
 /// # Arguments

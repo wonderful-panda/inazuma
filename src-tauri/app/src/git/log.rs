@@ -203,6 +203,31 @@ pub async fn filelog(
     Ok(entries)
 }
 
+pub async fn get_last_modify_commit(
+    repo_path: &Path,
+    rel_path: &str,
+    revspec: &str,
+) -> Result<Option<Commit>, GitError> {
+    let format = format!("--format={}", LOG_FORMAT);
+    let args = vec![
+        format.as_str(),
+        "-1",
+        revspec,
+        "--",
+        rel_path,
+    ];
+    let output = exec(repo_path, "log", &args, &[]).await?;
+    GitError::assert_process_output("log", &output)?;
+    let stdout = std::str::from_utf8(&output.stdout).unwrap();
+    let mut commits = parse_log_output(stdout)?;
+
+    if commits.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(commits.remove(0)))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

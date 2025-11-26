@@ -773,6 +773,41 @@ Returns the complete directory tree at a specific commit. Useful for browsing re
 
 ---
 
+### `get_last_modify_commit`
+
+Gets the commit that last modified a file at or before a specified revision.
+
+**Parameters:**
+- `repo_path: string` - Path to the Git repository
+- `rel_path: string` - Relative path to the file within the repository
+- `revspec: string` - Git revision specification (commit hash, branch name, etc.)
+
+**Returns:** `Promise<Commit | undefined>`
+- The full commit object of the latest commit that meets the following conditions:
+  - The specified file was changed in that commit
+  - The commit is either the one specified by revspec or one of its ancestors
+- `undefined` if no commits are found that modified the file
+
+**Usage:**
+```typescript
+const commit = await invoke('get_last_modify_commit', {
+  repoPath: '/path/to/repo',
+  relPath: 'src/main.ts',
+  revspec: 'abc1234'
+});
+
+if (commit) {
+  console.log(`Last modified by ${commit.author} in ${commit.id}`);
+} else {
+  console.log('File not found in history');
+}
+```
+
+**Description:**
+Finds the most recent commit that modified the specified file, searching from the given revision backwards through the commit history. Returns the complete commit object including ID, author, email, date, message, and parent IDs. Returns `undefined` if no commits are found (e.g., for newly added files or files that don't exist at the specified revision).
+
+---
+
 ## PTY/Terminal Operations
 
 ### `open_pty`
