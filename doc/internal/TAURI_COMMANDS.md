@@ -611,6 +611,46 @@ Returns line-by-line authorship information, commit history for the file, and th
 
 ---
 
+### `get_filelog`
+
+Gets the commit history for a specific file.
+
+**Parameters:**
+- `repo_path: string` - Path to the Git repository
+- `rel_path: string` - Relative path to the file within the repository
+- `max_count: number` - Maximum number of commits to retrieve (0 for unlimited)
+- `all: boolean` - If true, includes all branches, tags, and remotes
+- `heads: string[]` - List of specific refs to start from (empty array for default)
+
+**Returns:** `Promise<FileLogEntry[]>`
+- List of file log entries, each containing:
+  - `commit`: The full commit object
+  - `entry`: File change information including status and statistics
+
+**Usage:**
+```typescript
+const fileHistory = await invoke('get_filelog', {
+  repoPath: '/path/to/repo',
+  relPath: 'src/main.ts',
+  maxCount: 100,
+  all: true,
+  heads: []
+});
+
+fileHistory.forEach(({ commit, entry }) => {
+  console.log(`${commit.id}: ${commit.summary}`);
+  console.log(`  ${entry.status} ${entry.path}`);
+  if (entry.delta) {
+    console.log(`  +${entry.delta.added} -${entry.delta.deleted}`);
+  }
+});
+```
+
+**Description:**
+Returns the history of commits that modified the specified file, including file statistics (additions/deletions) for each commit. Automatically follows file renames using `--follow`. This is useful for viewing the complete history of a file, including when it was renamed or moved.
+
+---
+
 ### `get_changes_between`
 
 Gets the file changes between two revisions.

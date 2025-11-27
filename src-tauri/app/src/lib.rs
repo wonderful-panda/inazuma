@@ -129,6 +129,7 @@ pub fn run() {
             commands::get_current_branch,
             commands::get_blame,
             commands::get_last_modify_commit,
+            commands::get_filelog,
             commands::get_changes,
             commands::get_changes_between,
             commands::get_commit_detail,

@@ -342,6 +342,33 @@ pub async fn get_last_modify_commit(
         .map_err(|e| e.into())
 }
 
+/// Gets the commit history for a specific file.
+///
+/// Returns the history of commits that modified the specified file, including
+/// file statistics (additions/deletions) for each commit. Follows file renames.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `rel_path` - Relative path to the file within the repository
+/// * `max_count` - Maximum number of commits to retrieve (0 for unlimited)
+/// * `all` - If true, includes all branches, tags, and remotes
+/// * `heads` - List of specific refs to start from (empty for default)
+///
+/// # Returns
+/// List of file log entries, each containing a commit and the file change information.
+#[tauri::command]
+pub async fn get_filelog(
+    repo_path: &Path,
+    rel_path: &str,
+    max_count: u32,
+    all: bool,
+    heads: Vec<&str>,
+) -> Result<Vec<FileLogEntry>, String> {
+    git::log::filelog(repo_path, rel_path, max_count, all, &heads)
+        .await
+        .map_err(|e| e.into())
+}
+
 /// Gets file content at a specific revision, encoded as base64.
 ///
 /// # Arguments
