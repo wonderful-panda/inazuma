@@ -419,7 +419,6 @@ pub struct BlameEntry {
 #[ts(export)]
 pub struct Blame {
     pub blame_entries: Vec<BlameEntry>,
-    pub commits: Vec<FileLogEntry>,
     pub content_base64: String,
 }
 

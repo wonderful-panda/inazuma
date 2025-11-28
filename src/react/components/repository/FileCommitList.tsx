@@ -7,6 +7,7 @@ import { FileCommitListRow } from "./FileCommitListRow";
 export interface FileCommitListProps extends VirtualListEvents<FileCommit> {
   commits: readonly FileCommit[];
   refs: Refs | undefined;
+  markedCommitId?: string;
 }
 
 export const getRowHeight = (commit: FileCommit | undefined, baseFontSize: number) => {
@@ -19,7 +20,7 @@ export const getRowHeight = (commit: FileCommit | undefined, baseFontSize: numbe
 
 export const FileCommitList: React.FC<
   FileCommitListProps & { ref?: React.Ref<VirtualListMethods> }
-> = ({ commits, refs, ref, ...rest }) => {
+> = ({ commits, refs, ref, markedCommitId, ...rest }) => {
   const theme = useTheme();
   const baseFontSize = theme.custom.baseFontSize;
   const renderRow = useCallback(
@@ -27,12 +28,12 @@ export const FileCommitList: React.FC<
       <FileCommitListRow
         commit={item}
         index={index}
-        head={item.id === refs?.head}
+        markedCommitId={markedCommitId}
         refs={refs?.refsById[item.id]}
         height={getRowHeight(item, baseFontSize)}
       />
     ),
-    [refs, baseFontSize]
+    [refs, baseFontSize, markedCommitId]
   );
   const rowHeight = useCallback(
     (index: number) => {

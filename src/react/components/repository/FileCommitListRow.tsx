@@ -13,7 +13,7 @@ export const getRowHeightClass = (commit: FileCommit) => (commit.oldPath ? "h-[7
 export interface FileCommitListRowProps {
   commit: FileCommit;
   refs: Ref[] | undefined;
-  head: boolean;
+  markedCommitId: string | undefined;
   index: number;
   height: number;
   onClick?: (event: React.MouseEvent) => void;
@@ -37,6 +37,7 @@ const FilePaths: React.FC<{ file: FileEntry }> = ({ file }) =>
 const FileCommitListRow_: React.FC<FileCommitListRowProps> = ({
   commit,
   refs,
+  markedCommitId,
   index,
   onClick,
   height,
@@ -61,7 +62,14 @@ const FileCommitListRow_: React.FC<FileCommitListRowProps> = ({
           {refs?.map((r) => (
             <RefBadge key={`${r.type}:${r.fullname}`} r={r} />
           ))}
-          <span className="ellipsis">{commit.summary}</span>
+          <span
+            className={classNames(
+              "ellipsis",
+              commit.id === markedCommitId && "text-primary font-bold"
+            )}
+          >
+            {commit.summary}
+          </span>
         </div>
         <div className="flex-row-nowrap items-center leading-5 pl-2 text-greytext ellipsis">
           <FileStat className="text-base min-w-26 mr-1" file={commit} />

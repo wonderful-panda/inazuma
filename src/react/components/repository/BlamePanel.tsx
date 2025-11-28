@@ -1,9 +1,11 @@
+import type { FileLogEntry } from "@backend/FileLogEntry";
 import classNames from "classnames";
-import { useCallback, useMemo, useState } from "react";
+import { use, useCallback, useMemo, useState } from "react";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useFileCommitContextMenu } from "@/hooks/useContextMenu";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
-import { useTauriSuspenseQuery } from "@/hooks/useTauriQuery";
+import { useTauriQueryInvoke } from "@/hooks/useTauriQuery";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import { decodeBase64, decodeToString } from "@/strings";
 import { GitHash } from "../GitHash";
@@ -13,12 +15,12 @@ import { BlameFooter } from "./BlameFooter";
 import { BlameViewer } from "./BlameViewer";
 import { CommitAttributes } from "./CommitAttributes";
 import { FileCommitList } from "./FileCommitList";
-import { withLoadingSuspense } from "./LoadingSuspense";
+import { LoadingSuspense, withLoadingSuspense } from "./LoadingSuspense";
 
 setupMonaco();
 
 export interface SecondPanelProps {
-  blame: Blame;
+  lazyData: Promise<[FileLogEntry[], RawBlame]>;
   path: string;
   selectedCommitId: string | undefined;
   onUpdateSelectedCommitId: (value: string | undefined) => void;
@@ -28,24 +30,44 @@ const FirstPanel: React.FC<{
   direction: Direction;
   showCommitAttrs: boolean;
   commit: Commit;
+  lazyData: Promise<[FileLogEntry[], string | undefined]>;
   path: string;
-  blame: Blame;
   refs: Refs | undefined;
-  selectedIndex: number;
-  setSelectedIndex: SetState<number>;
+  selectedCommitId: string | undefined;
+  onUpdateSelectedCommitId: SetState<string | undefined>;
 }> = ({
   direction,
   showCommitAttrs,
   commit,
+  lazyData,
   path,
-  blame,
   refs,
-  selectedIndex,
-  setSelectedIndex
+  selectedCommitId,
+  onUpdateSelectedCommitId
 }) => {
+  const [commits, lastModifiedCommitId] = use(lazyData);
+  const commitIdToIndex = useMemo(
+    () => new Map(commits.map((c, index) => [c.id, index] as const)),
+    [commits]
+  );
+  const selectedIndex = commitIdToIndex.get(selectedCommitId ?? "") ?? -1;
+  const setSelectedIndex = useCallback<SetState<number>>(
+    (value) => {
+      onUpdateSelectedCommitId((curentId) => {
+        if (typeof value === "function") {
+          const currentIndex = commitIdToIndex.get(curentId ?? "") ?? -1;
+          return commits[value(currentIndex)]?.id;
+        } else {
+          return commits[value]?.id;
+        }
+      });
+    },
+    [commits, commitIdToIndex, onUpdateSelectedCommitId]
+  );
+
   const handleRowContextMenu = useFileCommitContextMenu(path);
   const { handleKeyDown, handleRowMouseDown } = useListIndexChanger(
-    blame.commits.length,
+    commits.length,
     setSelectedIndex
   );
   const horiz = direction === "horiz";
@@ -61,8 +83,9 @@ const FirstPanel: React.FC<{
       <SelectedIndexProvider value={selectedIndex}>
         <KeyDownTrapper className="m-1 p-1 border border-paper" onKeyDown={handleKeyDown}>
           <FileCommitList
-            commits={blame.commits}
+            commits={commits}
             refs={refs}
+            markedCommitId={lastModifiedCommitId}
             onRowMouseDown={handleRowMouseDown}
             onRowContextMenu={handleRowContextMenu}
           />
@@ -73,7 +96,7 @@ const FirstPanel: React.FC<{
 };
 
 const SecondPanel: React.FC<SecondPanelProps> = ({
-  blame,
+  lazyData,
   path,
   selectedCommitId,
   onUpdateSelectedCommitId
@@ -81,30 +104,35 @@ const SecondPanel: React.FC<SecondPanelProps> = ({
   const handleRowContextMenu = useFileCommitContextMenu(path);
   const language = getLangIdFromPath(path);
   const [hoveredCommit, setHoveredCommit] = useState<Commit | undefined>(undefined);
-  const commits = useMemo(() => {
-    return blame.commits.reduce(
-      (prev, cur) => {
-        prev[cur.id] = cur;
-        return prev;
-      },
-      {} as Record<string, FileCommit>
-    );
-  }, [blame]);
+
+  const [commits, rawBlame] = use(lazyData);
+  const commitMap = useMemo(() => new Map(commits.map((c) => [c.id, c])), [commits]);
+  const blame = useMemo(() => {
+    const content = decodeToString(decodeBase64(rawBlame.contentBase64));
+    const commitIds: string[] = [];
+    for (const entry of rawBlame.blameEntries) {
+      for (const line of entry.lineNo) {
+        commitIds[line - 1] = entry.id;
+      }
+    }
+    return { commits, content, commitIds };
+  }, [commits, rawBlame]);
+
   const onHoveredCommitIdChanged = useCallback(
     (value: string | undefined) => {
-      setHoveredCommit(value ? commits[value] : undefined);
+      setHoveredCommit(value ? commitMap.get(value) : undefined);
     },
-    [commits]
+    [commitMap]
   );
   const handleContextMenu = useCallback(
     (e: MouseEvent, commitId: string) => {
-      const commit = commits[commitId];
+      const commit = commitMap.get(commitId);
       if (!commit) {
         return;
       }
       handleRowContextMenu(e, -1, commit);
     },
-    [commits, handleRowContextMenu]
+    [commitMap, handleRowContextMenu]
   );
   return (
     <div className="flex-col-nowrap flex-1 p-1">
@@ -134,56 +162,47 @@ const BlamePanelInner: React.FC<BlamePanelProps> = ({
   repoPath,
   persistKey,
   commit,
-  path,
+  path: relPath,
   refs,
   showCommitAttrs = false
 }) => {
-  const { data: rawBlame } = useTauriSuspenseQuery("get_blame", {
-    repoPath,
-    relPath: path,
-    revspec: commit.id
-  });
-  const blame = useMemo(() => {
-    const content = decodeToString(decodeBase64(rawBlame.contentBase64));
-    const commitIds: string[] = [];
-    for (const entry of rawBlame.blameEntries) {
-      for (const line of entry.lineNo) {
-        commitIds[line - 1] = entry.id;
-      }
-    }
-    return { commits: rawBlame.commits, content, commitIds };
-  }, [rawBlame]);
-
-  const [selectedItem, setSelectedItem] = useState({
-    index: -1,
-    commitId: undefined as string | undefined
-  });
-  const setSelectedIndex = useCallback<SetState<number>>(
-    (value) => {
-      setSelectedItem((cur) => {
-        const index = typeof value === "function" ? value(cur.index) : value;
-        const commitId = blame.commits[index]?.id;
-        return { index, commitId };
-      });
-    },
-    [blame]
+  const invoke = useTauriQueryInvoke();
+  const commitsPromise = useMemo(() => {
+    return invokeTauriCommand("get_filelog", {
+      repoPath,
+      relPath,
+      maxCount: 1000,
+      all: true,
+      heads: []
+    });
+  }, [repoPath, relPath]);
+  const lastModifiedCommitPromise = useMemo(
+    () =>
+      invoke("get_last_modify_commit", { repoPath, relPath, revspec: commit.id }).then(
+        (c) => c?.id
+      ),
+    [invoke, repoPath, relPath, commit.id]
+  );
+  const blamePromise = useMemo(
+    () => invoke("get_blame", { repoPath, relPath, revspec: commit.id }),
+    [invoke, repoPath, relPath, commit.id]
   );
 
-  const setSelectedCommitId = useCallback<SetState<string | undefined>>(
-    (value) => {
-      setSelectedItem((cur) => {
-        const commitId = typeof value === "function" ? value(cur.commitId) : value;
-        const index = blame.commits.findIndex((c) => c.id === commitId);
-        return { index, commitId: 0 <= index ? commitId : undefined };
-      });
-    },
-    [blame]
+  const leftPromise = useMemo(
+    () => Promise.all([commitsPromise, lastModifiedCommitPromise]),
+    [commitsPromise, lastModifiedCommitPromise]
   );
+  const rightPromise = useMemo(
+    () => Promise.all([commitsPromise, blamePromise]),
+    [commitsPromise, blamePromise]
+  );
+
+  const [selectedCommitId, setSelectedCommitId] = useState<string | undefined>(undefined);
 
   return (
     <>
       <div className="flex-row-nowrap items-center text-xl p-2 font-mono font-bold">
-        <span className="pr-2 whitespace-nowrap text-secondary">{path}</span>
+        <span className="pr-2 whitespace-nowrap text-secondary">{relPath}</span>
         <span className="text-greytext pr-2">@</span>
         <GitHash className="text-greytext" hash={commit.id} />
       </div>
@@ -192,24 +211,28 @@ const BlamePanelInner: React.FC<BlamePanelProps> = ({
         initialRatio={0.3}
         initialDirection="horiz"
         first={(direction) => (
-          <FirstPanel
-            direction={direction}
-            showCommitAttrs={showCommitAttrs}
-            refs={refs}
-            blame={blame}
-            path={path}
-            commit={commit}
-            selectedIndex={selectedItem.index}
-            setSelectedIndex={setSelectedIndex}
-          />
+          <LoadingSuspense containerClass="flex flex-1">
+            <FirstPanel
+              direction={direction}
+              showCommitAttrs={showCommitAttrs}
+              refs={refs}
+              lazyData={leftPromise}
+              path={relPath}
+              commit={commit}
+              selectedCommitId={selectedCommitId}
+              onUpdateSelectedCommitId={setSelectedCommitId}
+            />
+          </LoadingSuspense>
         )}
         second={
-          <SecondPanel
-            blame={blame}
-            path={path}
-            selectedCommitId={selectedItem.commitId}
-            onUpdateSelectedCommitId={setSelectedCommitId}
-          />
+          <LoadingSuspense containerClass="flex flex-1">
+            <SecondPanel
+              lazyData={rightPromise}
+              path={relPath}
+              selectedCommitId={selectedCommitId}
+              onUpdateSelectedCommitId={setSelectedCommitId}
+            />
+          </LoadingSuspense>
         }
         allowDirectionChange
       />

@@ -42,6 +42,7 @@ declare global {
   type FontFamily = import("@backend/FontFamily").FontFamily;
   type Environment = import("@backend/Environment").Environment;
   type Config = import("@backend/Config").Config;
+  type RawBlame = import("@backend/Blame").Blame;
 
   type BranchRef = Extract<Ref, { type: "branch" }>;
   type TagRef = Extract<Ref, { type: "tag" }>;

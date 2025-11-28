@@ -302,18 +302,16 @@ pub async fn get_workingtree_stat<'a>(repo_path: &'a Path) -> Result<WorkingTree
 /// * `revspec` - Git revision specification to blame at
 ///
 /// # Returns
-/// Blame data including entries, commits, and base64-encoded file content.
+/// Blame data including entries and base64-encoded file content.
 #[tauri::command]
 pub async fn get_blame(repo_path: &Path, rel_path: &str, revspec: &str) -> Result<Blame, String> {
-    let (blame_entries, commits, content) = tokio::try_join!(
+    let (blame_entries, content) = tokio::try_join!(
         git::blame::blame(repo_path, rel_path, revspec),
-        git::log::filelog(repo_path, rel_path, 1000, true, &[]),
         git::file::get_content(repo_path, rel_path, revspec, false)
     )?;
     let content_base64 = base64::encode(&content);
     Ok(Blame {
         blame_entries,
-        commits,
         content_base64,
     })
 }

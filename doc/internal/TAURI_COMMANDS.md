@@ -595,7 +595,7 @@ Gets blame information for a file.
 - `revspec: string` - Git revision specification to blame at
 
 **Returns:** `Promise<Blame>`
-- Blame data including entries, commits, and base64-encoded file content
+- Blame data including entries and base64-encoded file content
 
 **Usage:**
 ```typescript
