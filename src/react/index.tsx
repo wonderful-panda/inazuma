@@ -127,8 +127,10 @@ const displayStateStorage = {
     return this.state[key] ?? null;
   },
   setItem(key: string, value: string) {
-    this.state[key] = value;
-    saveDisplayState(this.state);
+    if (this.state[key] !== value) {
+      this.state[key] = value;
+      saveDisplayState(this.state);
+    }
   },
   reset(state: Record<string, string | undefined>) {
     const newState: Record<string, string> = {};
