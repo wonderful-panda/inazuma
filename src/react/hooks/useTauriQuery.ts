@@ -13,7 +13,8 @@ const deterministicTauriCommandNames = [
   "get_changes_between",
   "get_commit_detail",
   "get_content_base64",
-  "get_tree"
+  "get_tree",
+  "get_last_modify_commit"
 ] as const satisfies (keyof TauriInvokeType)[];
 
 export type DeterministicTauriCommand = (typeof deterministicTauriCommandNames)[number];
