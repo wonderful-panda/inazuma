@@ -281,6 +281,7 @@ export const FileList: React.FC<FileListProps> = ({
             index={index}
             height={rowHeight}
             actionCommands={actionCommands}
+            showFullPath={view !== "folder"}
           />
         );
       } else if (isFolder(item.data)) {
@@ -298,7 +299,7 @@ export const FileList: React.FC<FileListProps> = ({
         );
       }
     },
-    [rowHeight, headerRowHeight, commit, actionCommands]
+    [rowHeight, headerRowHeight, commit, actionCommands, view]
   );
   const handleSelectionChange = useMemo(() => {
     if (onSelectionChange === undefined) {

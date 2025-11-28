@@ -6,6 +6,7 @@ import type { FileCommand, IconActionItem } from "@/commands/types";
 import { type FileStatus, getFileStatusAttr } from "@/filestatus";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import type { IconName } from "@/types/IconName";
+import { getFileName } from "@/util";
 import { Icon } from "../Icon";
 import { FileStat } from "./FileStat";
 import { FileStatusIcon } from "./FileStatusIcon";
@@ -17,6 +18,7 @@ export interface FileListRowProps {
   index: number;
   height: number;
   actionCommands?: readonly FileCommand[];
+  showFullPath?: boolean;
 }
 
 const OldPath: React.FC<{ file: FileEntry }> = ({ file }) =>
@@ -34,7 +36,8 @@ const FileListRow_: React.FC<FileListRowProps> = ({
   file,
   index,
   height,
-  actionCommands
+  actionCommands,
+  showFullPath = true
 }) => {
   const selectedIndex = useSelectedIndex();
   const actions = useMemo(
@@ -42,6 +45,7 @@ const FileListRow_: React.FC<FileListRowProps> = ({
       fileCommandsToActions(actionCommands, commit, file).filter((a) => a.icon) as IconActionItem[],
     [actionCommands, commit, file]
   );
+  const displayPath = showFullPath ? file.path : getFileName(file.path);
   return (
     <div
       className={classNames(
@@ -56,7 +60,7 @@ const FileListRow_: React.FC<FileListRowProps> = ({
       </div>
       <div className="flex-1 flex-col-nowrap pl-1 overflow-hidden font-mono">
         <Typography variant="subtitle1" component="div" className="ellipsis h-6 leading-6">
-          {file.path}
+          {displayPath}
         </Typography>
         <Typography
           variant="body2"
