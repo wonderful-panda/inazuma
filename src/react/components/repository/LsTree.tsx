@@ -1,8 +1,10 @@
 import { useTheme } from "@mui/material";
 import classNames from "classnames";
 import { useCallback } from "react";
+import { getFileIcon } from "@/fileicon";
 import { useSelectedIndex } from "@/hooks/useSelectedIndex";
 import { getFileName } from "@/util";
+import { Icon } from "../Icon";
 import { VirtualTree, type VirtualTreeProps } from "../VirtualTree";
 
 export interface LsTreeProps
@@ -18,6 +20,8 @@ const LsTreeRow: React.FC<{
   getRowClass?: (item: LstreeData) => string | undefined;
 }> = ({ item, index, getRowClass }) => {
   const selectedIndex = useSelectedIndex();
+  const isFolder = item.data.type === "tree";
+  const icon = getFileIcon(item.data.path, isFolder);
   return (
     <div
       className={classNames(
@@ -26,6 +30,9 @@ const LsTreeRow: React.FC<{
         getRowClass?.(item.data)
       )}
     >
+      <span className="mr-2 flex items-center text-greytext" style={{ fontSize: "16px" }}>
+        <Icon icon={icon} />
+      </span>
       {getFileName(item.data.path)}
     </div>
   );
