@@ -3,7 +3,6 @@ import "./install-polyfill";
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
 import { listen } from "@tauri-apps/api/event";
-import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
@@ -17,7 +16,7 @@ import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 import { ContextMenuProvider } from "./context/ContextMenuContext";
 import { DialogProvider } from "./context/DialogContext";
 import { LoadingProvider } from "./context/LoadingContext";
-import { type PartialStorage, PersistStateProvider } from "./context/PersistStateContext";
+import { PersistStateProvider } from "./context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
 import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions/openRepository";
 import { useWithRef } from "./hooks/useWithRef";
@@ -40,6 +39,7 @@ import {
   type TabsState,
   useAppTabsValue
 } from "./state/tabs";
+import { createStateStorage, type StateStorage } from "./stateStorage";
 import { assertNever } from "./util";
 
 if (import.meta.env.DEV) {
@@ -115,37 +115,6 @@ const getInitialRepository = async (hash: string | undefined) => {
   }
 };
 
-const saveDisplayState = debounce((newState: Record<string, string>) => {
-  invokeTauriCommand("store_state", { newState }).catch((e) => {
-    console.warn("Failed to store display state:", e);
-  });
-}, 1000);
-
-const displayStateStorage = {
-  state: {} as Record<string, string>,
-  getItem(key: string) {
-    return this.state[key] ?? null;
-  },
-  setItem(key: string, value: string) {
-    if (this.state[key] !== value) {
-      this.state[key] = value;
-      saveDisplayState(this.state);
-    }
-  },
-  reset(state: Record<string, string | undefined>) {
-    const newState: Record<string, string> = {};
-    for (const [k, v] of Object.entries(state)) {
-      if (v) {
-        newState[k] = v;
-      }
-    }
-    this.state = newState;
-  }
-} satisfies PartialStorage & {
-  state: Record<string, string>;
-  reset: (state: Record<string, string | undefined>) => void;
-};
-
 const Content: React.FC = () => {
   const tabs = useAppTabsValue();
   const renderTabContent = useCallback<TabContainerProps<AppTabType>["renderTabContent"]>(
@@ -205,7 +174,13 @@ const Content: React.FC = () => {
     </>
   );
 };
-const App = ({ startupRepository }: { startupRepository: string | undefined }) => {
+const App = ({
+  startupRepository,
+  stateStorage
+}: {
+  startupRepository: string | undefined;
+  stateStorage: StateStorage;
+}) => {
   const config = useConfigValue();
   const [, openRepository] = useWithRef(useOpenRepository());
   const reloadRepository = useReloadSpecifiedRepository();
@@ -241,7 +216,7 @@ const App = ({ startupRepository }: { startupRepository: string | undefined }) =
       <ThemeProvider theme={theme}>
         <CommandGroupProvider>
           <ContextMenuProvider>
-            <PersistStateProvider storage={displayStateStorage} prefix="inazuma:">
+            <PersistStateProvider storage={stateStorage}>
               <ConfirmDialogProvider>
                 <AlertProvider>
                   <LoadingProvider>
@@ -264,7 +239,7 @@ void (async () => {
   const [config, environment] = await invokeTauriCommand("load_persist_data");
   updateFont(config.fontFamily);
   updateFontSize(config.fontSize);
-  displayStateStorage.reset(environment.state || {});
+  const stateStorage = createStateStorage("inazuma:", environment.state || {});
   setInitialValue(config, environment.recentOpened || []);
   const appTabsJsonString = sessionStorage.getItem("applicationTabs");
   if (appTabsJsonString) {
@@ -295,5 +270,5 @@ void (async () => {
 
   const root = createRoot(document.getElementById("app")!);
 
-  root.render(<App startupRepository={startupRepository} />);
+  root.render(<App startupRepository={startupRepository} stateStorage={stateStorage} />);
 })();
