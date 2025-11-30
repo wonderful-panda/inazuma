@@ -41,7 +41,8 @@ type Action =
         | "externalDiff"
         | "interactiveShell"
         | "recentListCount"
-        | "avatarShape";
+        | "avatarShape"
+        | "logLevel";
       payload: string | null | undefined;
     }
   | {
@@ -91,6 +92,18 @@ const reducer = (state: Config, action: Action) => {
         break;
       case "avatarShape":
         newState.avatarShape = value === "circle" ? "circle" : "square";
+        break;
+      case "logLevel":
+        if (
+          value === "off" ||
+          value === "error" ||
+          value === "warn" ||
+          value === "info" ||
+          value === "debug" ||
+          value === "trace"
+        ) {
+          newState.logLevel = value;
+        }
         break;
       default:
         assertNever(action);
@@ -249,6 +262,21 @@ const PreferenceDialogContent: React.FC<
           value={state.recentListCount}
           onChange={({ target }) => dispatch({ type: "recentListCount", payload: target.value })}
         />
+        <div className="flex-col-nowrap mt-4">
+          <FormLabel>Log level</FormLabel>
+          <RadioGroup
+            row
+            value={state.logLevel}
+            onChange={({ target }) => dispatch({ type: "logLevel", payload: target.value })}
+          >
+            <FormControlLabel value="off" control={<Radio />} label="off" />
+            <FormControlLabel value="error" control={<Radio />} label="error" />
+            <FormControlLabel value="warn" control={<Radio />} label="warn" />
+            <FormControlLabel value="info" control={<Radio />} label="info" />
+            <FormControlLabel value="debug" control={<Radio />} label="debug" />
+            <FormControlLabel value="trace" control={<Radio />} label="trace" />
+          </RadioGroup>
+        </div>
       </SectionContent>
     </div>
   );

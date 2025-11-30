@@ -10,6 +10,42 @@ fn default_use_gravatar() -> bool {
     true
 }
 
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[ts(export)]
+pub enum LogLevel {
+    #[serde(rename = "off")]
+    Off,
+    #[serde(rename = "error")]
+    Error,
+    #[serde(rename = "warn")]
+    Warn,
+    #[serde(rename = "info")]
+    Info,
+    #[serde(rename = "debug")]
+    Debug,
+    #[serde(rename = "trace")]
+    Trace,
+}
+
+impl Default for LogLevel {
+    fn default() -> Self {
+        LogLevel::Info
+    }
+}
+
+impl LogLevel {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            LogLevel::Off => "off",
+            LogLevel::Error => "error",
+            LogLevel::Warn => "warn",
+            LogLevel::Info => "info",
+            LogLevel::Debug => "debug",
+            LogLevel::Trace => "trace",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -28,6 +64,8 @@ pub struct ConfigBase {
     pub avatar_shape: AvatarShape,
     #[serde(default = "default_use_gravatar")]
     pub use_gravatar: bool,
+    #[serde(default)]
+    pub log_level: LogLevel,
 }
 
 impl Into<Config> for ConfigBase {
@@ -40,6 +78,7 @@ impl Into<Config> for ConfigBase {
             recent_list_count: self.recent_list_count,
             avatar_shape: self.avatar_shape,
             use_gravatar: self.use_gravatar,
+            log_level: self.log_level,
         }
     }
 }
@@ -57,6 +96,7 @@ pub struct Config {
     pub recent_list_count: u32,
     pub avatar_shape: AvatarShape,
     pub use_gravatar: bool,
+    pub log_level: LogLevel,
 }
 
 impl Default for Config {
@@ -69,6 +109,7 @@ impl Default for Config {
             recent_list_count: default_recent_count(),
             avatar_shape: AvatarShape::default(),
             use_gravatar: default_use_gravatar(),
+            log_level: LogLevel::default(),
         }
     }
 }

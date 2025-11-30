@@ -239,6 +239,7 @@ void (async () => {
   const [config, environment] = await invokeTauriCommand("load_persist_data");
   updateFont(config.fontFamily);
   updateFontSize(config.fontSize);
+  void invokeTauriCommand("set_log_level", { level: config.logLevel });
   const stateStorage = createStateStorage("inazuma:", environment.state || {});
   setInitialValue(config, environment.recentOpened || []);
   const appTabsJsonString = sessionStorage.getItem("applicationTabs");
@@ -250,6 +251,7 @@ void (async () => {
     void invokeTauriCommand("save_config", { newConfig: value });
     updateFont(value.fontFamily);
     updateFontSize(value.fontSize);
+    void invokeTauriCommand("set_log_level", { level: value.logLevel });
   });
   const unwatch2 = registerRecentOpenedRepositoriesWatcher(
     (value) => void invokeTauriCommand("store_recent_opened", { newList: value })

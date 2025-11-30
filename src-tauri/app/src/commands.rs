@@ -874,3 +874,35 @@ pub async fn get_system_fonts() -> Result<Vec<Font>, String> {
 pub async fn set_window_title<T: Runtime>(title: &str, window: Window<T>) -> Result<(), String> {
     window.set_title(title).map_err(|e| format!("{}", e))
 }
+
+/// Sets the maximum log level at runtime.
+///
+/// Dynamically changes the global maximum log level for the application.
+/// Only log messages at or below this level will be emitted.
+///
+/// # Arguments
+/// * `level` - The log level as a string: "off", "error", "warn", "info", "debug", or "trace"
+///
+/// # Returns
+/// Returns Ok(()) on success, or an error message if the level string is invalid.
+#[tauri::command]
+pub fn set_log_level(level: &str) -> Result<(), String> {
+    let level_filter = match level.to_lowercase().as_str() {
+        "off" => log::LevelFilter::Off,
+        "error" => log::LevelFilter::Error,
+        "warn" => log::LevelFilter::Warn,
+        "info" => log::LevelFilter::Info,
+        "debug" => log::LevelFilter::Debug,
+        "trace" => log::LevelFilter::Trace,
+        _ => {
+            return Err(format!(
+                "Invalid log level: '{}'. Valid levels are: off, error, warn, info, debug, trace",
+                level
+            ))
+        }
+    };
+
+    log::set_max_level(level_filter);
+    info!("Log level changed to: {}", level);
+    Ok(())
+}

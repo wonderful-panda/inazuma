@@ -13,7 +13,8 @@ const configAtom = atom<Config>({
   fontSize: "medium",
   recentListCount: 10,
   avatarShape: "square",
-  useGravatar: true
+  useGravatar: true,
+  logLevel: "info"
 });
 export const useConfig = () => useAtom(configAtom, opt);
 export const useConfigValue = () => useAtomValue(configAtom, opt);

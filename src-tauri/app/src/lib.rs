@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate log;
-extern crate env_logger;
 
 mod avatar_protocol_handler;
 pub mod commands;
@@ -26,6 +25,7 @@ use tauri::{
 use tauri_plugin_clipboard_manager;
 use tauri_plugin_dialog;
 use tauri_plugin_http;
+use tauri_plugin_log;
 use tokio::spawn;
 use types::WindowState;
 
@@ -45,6 +45,19 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
     if let Err(e) = config_state.load() {
         warn!("Failed to load config file, {}", e);
     };
+
+    // Set initial log level from config
+    let level_filter = match config_state.config.log_level.as_str() {
+        "off" => log::LevelFilter::Off,
+        "error" => log::LevelFilter::Error,
+        "warn" => log::LevelFilter::Warn,
+        "info" => log::LevelFilter::Info,
+        "debug" => log::LevelFilter::Debug,
+        "trace" => log::LevelFilter::Trace,
+        _ => log::LevelFilter::Info,
+    };
+    log::set_max_level(level_filter);
+    info!("Log level set to: {}", config_state.config.log_level.as_str());
 
     let env_path = app_dir.join(".environment.json");
     let mut env_state = EnvState::from_path(env_path);
@@ -109,6 +122,7 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
 
 pub fn run() {
     let app = tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_http::init())
@@ -159,6 +173,7 @@ pub fn run() {
             commands::exec_git_with_pty,
             commands::find_repository_root,
             commands::set_window_title,
+            commands::set_log_level,
         ])
         .setup(|app| setup(app))
         .register_asynchronous_uri_scheme_protocol("avatar", move |ctx, request, responder| {
