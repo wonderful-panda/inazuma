@@ -58,12 +58,7 @@ export const getFileIcon = (path: string, isFolder: boolean): IconName => {
     return "mdi:folder-zip";
 
   // Config files
-  if (
-    ext === ".env" ||
-    ext === ".gitignore" ||
-    ext === ".gitattributes" ||
-    ext === ".editorconfig"
-  )
+  if (ext === ".env" || ext === ".gitignore" || ext === ".gitattributes" || ext === ".editorconfig")
     return "mdi:file-cog";
 
   // Package/build files

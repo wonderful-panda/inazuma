@@ -57,7 +57,10 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
         _ => log::LevelFilter::Info,
     };
     log::set_max_level(level_filter);
-    info!("Log level set to: {}", config_state.config.log_level.as_str());
+    info!(
+        "Log level set to: {}",
+        config_state.config.log_level.as_str()
+    );
 
     let env_path = app_dir.join(".environment.json");
     let mut env_state = EnvState::from_path(env_path);

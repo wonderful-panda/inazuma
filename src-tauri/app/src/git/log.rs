@@ -209,13 +209,7 @@ pub async fn get_last_modify_commit(
     revspec: &str,
 ) -> Result<Option<Commit>, GitError> {
     let format = format!("--format={}", LOG_FORMAT);
-    let args = vec![
-        format.as_str(),
-        "-1",
-        revspec,
-        "--",
-        rel_path,
-    ];
+    let args = vec![format.as_str(), "-1", revspec, "--", rel_path];
     let output = exec(repo_path, "log", &args, &[]).await?;
     GitError::assert_process_output("log", &output)?;
     let stdout = std::str::from_utf8(&output.stdout).unwrap();
