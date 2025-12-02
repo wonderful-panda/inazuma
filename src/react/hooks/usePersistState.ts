@@ -1,11 +1,18 @@
-import { useCallback, useContext, useSyncExternalStore } from "react";
+import { useCallback, useContext, useRef, useSyncExternalStore } from "react";
 import { PersistStateContext } from "@/context/PersistStateContext";
 
 export const usePersistState = <T>(key: string, initialValue: T): [T, (value: T) => void] => {
   const store = useContext(PersistStateContext);
-  const getSnapshot = useCallback(() => {
-    const storedValue = store.getItem(key);
-    return storedValue ? (JSON.parse(storedValue) as T) : initialValue;
+  const lastValueRef = useRef<{ rawValue: string | null; parsedValue: T } | undefined>(undefined);
+  const getSnapshot = useCallback((): T => {
+    const rawValue = store.getItem(key);
+    if (lastValueRef.current?.rawValue === rawValue) {
+      return lastValueRef.current.parsedValue;
+    } else {
+      const parsedValue = rawValue ? (JSON.parse(rawValue) as T) : initialValue;
+      lastValueRef.current = { rawValue, parsedValue };
+      return parsedValue;
+    }
   }, [store.getItem, key, initialValue]);
 
   const subscribe = useCallback(
