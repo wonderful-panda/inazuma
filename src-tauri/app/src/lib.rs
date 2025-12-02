@@ -112,8 +112,6 @@ fn setup<T: Runtime>(app: &mut App<T>) -> Result<(), Box<dyn Error>> {
                 error!("Failed to show main window, {}", e);
                 return Err(e.into());
             }
-            #[cfg(debug_assertions)]
-            win.open_devtools();
         }
         Err(e) => {
             error!("Failed to create main window, {}", e);
@@ -177,6 +175,7 @@ pub fn run() {
             commands::find_repository_root,
             commands::set_window_title,
             commands::set_log_level,
+            commands::open_devtools,
         ])
         .setup(|app| setup(app))
         .register_asynchronous_uri_scheme_protocol("avatar", move |ctx, request, responder| {

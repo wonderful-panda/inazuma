@@ -875,6 +875,27 @@ pub async fn set_window_title<T: Runtime>(title: &str, window: Window<T>) -> Res
     window.set_title(title).map_err(|e| format!("{}", e))
 }
 
+/// Opens the developer tools window.
+///
+/// This command is only available in development builds (debug_assertions).
+/// In production builds, this function will return an error.
+#[tauri::command]
+pub async fn open_devtools<T: Runtime>(window: Window<T>) -> Result<(), String> {
+    #[cfg(debug_assertions)]
+    {
+        use tauri::Manager;
+
+        if let Some(win) = window.get_webview_window("main") {
+            win.open_devtools();
+        }
+        Ok(())
+    }
+    #[cfg(not(debug_assertions))]
+    {
+        Err("DevTools are only available in development mode".to_string())
+    }
+}
+
 /// Sets the maximum log level at runtime.
 ///
 /// Dynamically changes the global maximum log level for the application.

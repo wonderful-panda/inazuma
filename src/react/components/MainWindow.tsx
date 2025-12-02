@@ -18,6 +18,7 @@ import {
   useState
 } from "react";
 import type { IconActionItem, Spacer } from "@/commands/types";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useConfig } from "@/state/root";
 import { nope } from "@/util";
 import { useAboutDialog } from "./AboutDialog";
@@ -96,7 +97,8 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
           const fontSize = fontSizeList[(fontSizeList.indexOf(prev.fontSize) + 1) % 3] ?? "x-small";
           return { ...prev, fontSize };
         });
-      }
+      },
+      openDevtools: () => void invokeTauriCommand("open_devtools")
     }),
     [config, setConfig, openPreference, openAbout]
   );
@@ -148,6 +150,16 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
                   <Icon className="text-2xl text-inherit" icon={a.icon} />
                 </IconButton>
               )
+            )}
+            {import.meta.env.DEV && (
+              <IconButton
+                title="Show devtools"
+                className="p-0 w-9"
+                onClick={callbacks.openDevtools}
+                size="large"
+              >
+                <Icon className="text-2xl text-inherit" icon="mdi:tools" />
+              </IconButton>
             )}
           </div>
           <ApplicationDrawer opened={drawerOpened} close={closeDrawer} items={drawerItems} />
