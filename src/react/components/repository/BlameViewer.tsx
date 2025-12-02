@@ -93,9 +93,9 @@ const selectedCommitDecorationOptions: IModelDecorationOptions = {
 };
 
 const createEditorOptions = (blame: Blame, fontSize: number): IEditorConstructionOptions => {
-  const dateMap: Record<string, string> = blame.commits.reduce(
-    (prev, cur) => {
-      prev[cur.id] = formatDate(cur.date);
+  const dateMap: Record<string, string> = Object.values(blame.commitMetadata).reduce(
+    (prev, { id, date }) => {
+      prev[id] = formatDate(date);
       return prev;
     },
     {} as Record<string, string>
@@ -113,7 +113,7 @@ const createEditorOptions = (blame: Blame, fontSize: number): IEditorConstructio
       if (!id) {
         return "";
       }
-      return `${lineno.toString()} ${shortHash(id)} ${dateMap[id]}`;
+      return `${lineno} ${shortHash(id)} ${dateMap[id]}`;
     }
   };
 };

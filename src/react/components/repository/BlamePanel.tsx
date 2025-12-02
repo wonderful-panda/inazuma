@@ -4,6 +4,7 @@ import { use, useCallback, useMemo, useState } from "react";
 import { SelectedIndexProvider } from "@/context/SelectedIndexContext";
 import { useFileCommitContextMenu } from "@/hooks/useContextMenu";
 import { useListIndexChanger } from "@/hooks/useListIndexChanger";
+import { usePromise } from "@/hooks/usePromise";
 import { useTauriQueryInvoke } from "@/hooks/useTauriQuery";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
@@ -20,10 +21,11 @@ import { LoadingSuspense, withLoadingSuspense } from "./LoadingSuspense";
 setupMonaco();
 
 export interface SecondPanelProps {
-  lazyData: Promise<[FileLogEntry[], RawBlame]>;
+  blamePromise: Promise<RawBlame>;
   path: string;
   selectedCommitId: string | undefined;
   onUpdateSelectedCommitId: (value: string | undefined) => void;
+  onContextMenu: (event: MouseEvent, commitId: string) => void;
 }
 
 const FirstPanel: React.FC<{
@@ -96,43 +98,34 @@ const FirstPanel: React.FC<{
 };
 
 const SecondPanel: React.FC<SecondPanelProps> = ({
-  lazyData,
+  blamePromise,
   path,
   selectedCommitId,
-  onUpdateSelectedCommitId
+  onUpdateSelectedCommitId,
+  onContextMenu
 }) => {
-  const handleRowContextMenu = useFileCommitContextMenu(path);
   const language = getLangIdFromPath(path);
-  const [hoveredCommit, setHoveredCommit] = useState<Commit | undefined>(undefined);
+  const [hoveredCommit, setHoveredCommit] = useState<BlameCommitMetadata | undefined>(undefined);
+  const rawBlame = use(blamePromise);
 
-  const [commits, rawBlame] = use(lazyData);
-  const commitMap = useMemo(() => new Map(commits.map((c) => [c.id, c])), [commits]);
-  const blame = useMemo(() => {
+  const blame = useMemo<Blame>(() => {
     const content = decodeToString(decodeBase64(rawBlame.contentBase64));
+    const commitMetadata: Record<string, BlameCommitMetadata> = {};
     const commitIds: string[] = [];
-    for (const entry of rawBlame.blameEntries) {
-      for (const line of entry.lineNo) {
-        commitIds[line - 1] = entry.id;
+    for (const { id, summary, author, date, lineNo } of rawBlame.blameEntries) {
+      commitMetadata[id] = { id, summary, author, date };
+      for (const line of lineNo) {
+        commitIds[line - 1] = id;
       }
     }
-    return { commits, content, commitIds };
-  }, [commits, rawBlame]);
+    return { content, commitIds, commitMetadata };
+  }, [rawBlame]);
 
   const onHoveredCommitIdChanged = useCallback(
     (value: string | undefined) => {
-      setHoveredCommit(value ? commitMap.get(value) : undefined);
+      setHoveredCommit(blame.commitMetadata[value ?? ""]);
     },
-    [commitMap]
-  );
-  const handleContextMenu = useCallback(
-    (e: MouseEvent, commitId: string) => {
-      const commit = commitMap.get(commitId);
-      if (!commit) {
-        return;
-      }
-      handleRowContextMenu(e, -1, commit);
-    },
-    [commitMap, handleRowContextMenu]
+    [blame.commitMetadata]
   );
   return (
     <div className="flex-col-nowrap flex-1 p-1">
@@ -142,7 +135,7 @@ const SecondPanel: React.FC<SecondPanelProps> = ({
         selectedCommitId={selectedCommitId}
         onUpdateSelectedcommitId={onUpdateSelectedCommitId}
         onHoveredCommitIdChanged={onHoveredCommitIdChanged}
-        onContextMenu={handleContextMenu}
+        onContextMenu={onContextMenu}
       />
       <BlameFooter commit={hoveredCommit} />
     </div>
@@ -192,12 +185,21 @@ const BlamePanelInner: React.FC<BlamePanelProps> = ({
     () => Promise.all([commitsPromise, lastModifiedCommitPromise]),
     [commitsPromise, lastModifiedCommitPromise]
   );
-  const rightPromise = useMemo(
-    () => Promise.all([commitsPromise, blamePromise]),
-    [commitsPromise, blamePromise]
-  );
 
   const [selectedCommitId, setSelectedCommitId] = useState<string | undefined>(undefined);
+
+  const commits = usePromise<FileLogEntry[] | undefined>(commitsPromise, undefined);
+  const handleRowContextMenu = useFileCommitContextMenu(relPath);
+  const handleEditorContextMenu = useCallback(
+    (e: MouseEvent, commitId: string) => {
+      const commit = commits?.find((c) => c.id === commitId);
+      if (!commit) {
+        return;
+      }
+      handleRowContextMenu(e, -1, commit);
+    },
+    [commits, handleRowContextMenu]
+  );
 
   return (
     <>
@@ -227,10 +229,11 @@ const BlamePanelInner: React.FC<BlamePanelProps> = ({
         second={
           <LoadingSuspense containerClass="flex flex-1">
             <SecondPanel
-              lazyData={rightPromise}
+              blamePromise={blamePromise}
               path={relPath}
               selectedCommitId={selectedCommitId}
               onUpdateSelectedCommitId={setSelectedCommitId}
+              onContextMenu={handleEditorContextMenu}
             />
           </LoadingSuspense>
         }

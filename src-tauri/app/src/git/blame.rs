@@ -5,6 +5,7 @@ use types::BlameEntry;
 
 pub fn parse_blame_output(output: &str) -> Vec<BlameEntry> {
     let header_regex = Regex::new(r"^([a-f0-9]{40}) \d+ (\d+) (\d+)$").unwrap();
+    let metadata_regex = Regex::new(r"^(author|author-time|summary) (.+)$").unwrap();
     let mut entries: Vec<BlameEntry> = Vec::new();
     let mut previous_id = "";
     output.lines().for_each(|line| {
@@ -16,12 +17,29 @@ pub fn parse_blame_output(output: &str) -> Vec<BlameEntry> {
                 previous_id = id;
                 entries.push(BlameEntry {
                     id: id.to_string(),
+                    summary: String::from(""),
+                    author: String::from(""),
+                    date: 0u64,
                     line_no: Vec::new(),
                 });
             }
             let line_no = &mut entries.last_mut().unwrap().line_no;
             for n in start_line..(start_line + line_count) {
                 line_no.push(n);
+            }
+        } else if let Some(c) = metadata_regex.captures(line) {
+            let entry = entries.last_mut().unwrap();
+            match &c[1] {
+                "author" => {
+                    entry.author = c[2].to_owned();
+                }
+                "author-time" => {
+                    entry.date = c[2].parse::<u64>().unwrap() * 1000;
+                }
+                "summary" => {
+                    entry.summary = c[2].to_owned();
+                }
+                _ => {}
             }
         }
     });

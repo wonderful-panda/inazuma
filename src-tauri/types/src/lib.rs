@@ -452,6 +452,10 @@ pub struct LstreeEntry {
 #[ts(export)]
 pub struct BlameEntry {
     pub id: String,
+    pub author: String,
+    pub summary: String,
+    #[ts(type = "number")]
+    pub date: u64,
     pub line_no: Vec<u32>,
 }
 

@@ -79,9 +79,16 @@ declare global {
         type: "status";
       } & WorkingTreeStat);
 
+  interface BlameCommitMetadata {
+    id: string;
+    summary: string;
+    author: string;
+    date: number;
+  }
+
   interface Blame {
-    commits: readonly FileCommit[];
     commitIds: readonly string[];
+    commitMetadata: Record<string, BlameCommitMetadata>;
     content: {
       text: string;
       encoding: string;

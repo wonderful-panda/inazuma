@@ -3,7 +3,7 @@ import { shortHash } from "@/util";
 
 const className = "flex-row-nowrap flex-none px-2 h-8 items-center";
 
-export const BlameFooter: React.FC<{ commit?: Commit }> = ({ commit }) => {
+export const BlameFooter: React.FC<{ commit?: BlameCommitMetadata }> = ({ commit }) => {
   if (!commit) {
     return <div className={className} />;
   }
