@@ -128,7 +128,7 @@ const GroupHeader: React.FC<{
     <div
       className={classNames(
         "relative flex-row-nowrap items-center pl-2 flex-1 text-lg font-bold cursor-pointer overflow-hidden select-none group",
-        selectedIndex === index ? "bg-highlight" : "hover:bg-hoverHighlight"
+        selectedIndex === index ? "bg-highlight" : "hover:bg-hover-highlight"
       )}
       style={{ height }}
     >

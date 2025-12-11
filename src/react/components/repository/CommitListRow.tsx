@@ -107,7 +107,7 @@ const CommitListRow_: React.FC<CommitListRowProps> = ({
       className={classNames(
         "flex h-full box-border cursor-pointer overflow-hidden group",
         "pl-4 border-b border-paper",
-        selected ? "bg-highlight" : "hover:bg-hoverHighlight"
+        selected ? "bg-highlight" : "hover:bg-hover-highlight"
       )}
     >
       <GraphCell graph={graph} height={height} head={head} maskIdPrefix={parentId} />

@@ -51,7 +51,7 @@ const FileListRow_: React.FC<FileListRowProps> = ({
       className={classNames(
         "group flex flex-1 overflow-hidden box-border cursor-pointer py-1",
         "border-b border-highlight",
-        index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
+        index === selectedIndex ? "bg-highlight" : "hover:bg-hover-highlight"
       )}
       style={{ height }}
     >
@@ -90,7 +90,7 @@ const FileListFolderRow_: React.FC<FileListFolderRowProps> = ({ icon, index, hei
       className={classNames(
         "group flex flex-1 overflow-hidden box-border cursor-pointer py-1",
         "border-b border-highlight",
-        index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
+        index === selectedIndex ? "bg-highlight" : "hover:bg-hover-highlight"
       )}
       style={{ height }}
     >
@@ -124,7 +124,7 @@ const FileListStatusRow_: React.FC<FileListStatusRowProps> = ({ status, index, h
       className={classNames(
         "group flex flex-1 overflow-hidden box-border cursor-pointer py-1",
         "border-b border-highlight",
-        index === selectedIndex ? "bg-highlight" : "hover:bg-hoverHighlight"
+        index === selectedIndex ? "bg-highlight" : "hover:bg-hover-highlight"
       )}
       style={{ height }}
     >

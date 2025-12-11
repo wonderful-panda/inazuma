@@ -25,7 +25,7 @@ const LsTreeRow: React.FC<{
   return (
     <div
       className={classNames(
-        "flex-1 min-h-full flex items-center px-2 cursor-default whitespace-nowrap overflow-hidden hover:bg-hoverHighlight",
+        "flex-1 min-h-full flex items-center px-2 cursor-default whitespace-nowrap overflow-hidden hover:bg-hover-highlight",
         index === selectedIndex && "bg-highlight",
         getRowClass?.(item.data)
       )}
