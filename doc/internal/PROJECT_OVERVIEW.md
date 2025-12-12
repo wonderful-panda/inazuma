@@ -42,6 +42,7 @@ inazuma/
 │       ├── components/           # React components
 │       │   ├── hoc/             # Higher-order components
 │       │   ├── home/            # Home screen components
+│       │   ├── preference/      # Preference dialog components
 │       │   └── repository/       # Main repository view components
 │       ├── context/              # React contexts
 │       ├── generated/            # Auto-generated TypeScript types
@@ -223,6 +224,7 @@ User configuration is stored in Tauri's app directory:
 - Interactive shell path
 - Gravatar usage
 - Log level
+- Custom commands (user-defined commands with placeholders support)
 
 ## Development Notes
 

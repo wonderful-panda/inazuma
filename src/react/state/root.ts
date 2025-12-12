@@ -14,7 +14,8 @@ const configAtom = atom<Config>({
   recentListCount: 10,
   avatarShape: "square",
   useGravatar: true,
-  logLevel: "info"
+  logLevel: "info",
+  customCommands: []
 });
 export const useConfig = () => useAtom(configAtom, opt);
 export const useConfigValue = () => useAtomValue(configAtom, opt);

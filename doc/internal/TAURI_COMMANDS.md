@@ -1073,9 +1073,18 @@ Updates the native window title. Used to display the current repository and bran
 ### Common Types
 
 ```typescript
+interface CustomCommand {
+  name: string;
+  description: string;
+  commandLine: string;
+  confirmBeforeExecute: boolean;
+  useBuiltinTerminal: boolean;
+}
+
 interface Config {
   theme?: 'light' | 'dark';
   externalDiffTool?: string;
+  customCommands: CustomCommand[];
   // ... other config fields
 }
 

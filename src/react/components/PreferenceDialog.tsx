@@ -1,10 +1,14 @@
+import type { CustomCommand } from "@backend/CustomCommand";
 import {
   Autocomplete,
+  Box,
   Checkbox,
   FormControlLabel,
   FormLabel,
   Radio,
   RadioGroup,
+  Tab,
+  Tabs,
   TextField,
   Typography
 } from "@mui/material";
@@ -17,8 +21,9 @@ import {
   DialogContent,
   DialogTitle
 } from "@/components/Dialog";
+import { CustomCommandTab } from "@/components/preference/CustomCommandTab";
 import { useAlert } from "@/context/AlertContext";
-import { useDialog } from "@/context/DialogContext";
+import { DialogProvider, useDialog } from "@/context/DialogContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { assertNever } from "@/util";
 
@@ -50,6 +55,10 @@ type Action =
       payload: boolean;
     }
   | {
+      type: "customCommands";
+      payload: CustomCommand[];
+    }
+  | {
       type: "reset";
       payload: Config;
     };
@@ -59,6 +68,8 @@ const reducer = (state: Config, action: Action) => {
     return action.payload;
   } else if (action.type === "useGravatar") {
     return { ...state, useGravatar: action.payload };
+  } else if (action.type === "customCommands") {
+    return { ...state, customCommands: action.payload };
   } else {
     const newState = { ...state };
     const value = action.payload ?? undefined;
@@ -156,16 +167,28 @@ const FontSelector: React.FC<{
   );
 };
 
-const PreferenceDialogContent: React.FC<
-  PreferenceDialogProps & { ref?: React.Ref<{ save: () => void }> }
-> = (props) => {
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
+  return (
+    <div role="tabpanel" hidden={value !== index} className="flex-1 overflow-auto">
+      {value === index && <div>{children}</div>}
+    </div>
+  );
+};
+
+const GeneralTab: React.FC<{
+  state: Config;
+  dispatch: React.Dispatch<Action>;
+}> = ({ state, dispatch }) => {
   const { reportError } = useAlert();
-  const [state, dispatch] = useReducer(reducer, props.config);
-  useImperativeHandle(props.ref, () => ({
-    save: () => props.onConfigChange(state)
-  }));
   const [standardFonts, setStandardFonts] = useState<string[] | "loading">("loading");
   const [monospaceFonts, setMonospaceFonts] = useState<string[] | "loading">("loading");
+
   useEffect(() => {
     invokeTauriCommand("get_system_fonts")
       .then((fonts) => {
@@ -180,6 +203,7 @@ const PreferenceDialogContent: React.FC<
         reportError({ error });
       });
   }, [reportError]);
+
   return (
     <div className="p-2">
       <SectionHeader text="Font" />
@@ -279,6 +303,46 @@ const PreferenceDialogContent: React.FC<
         </div>
       </SectionContent>
     </div>
+  );
+};
+
+const PreferenceDialogContent: React.FC<
+  PreferenceDialogProps & { ref?: React.Ref<{ save: () => void }> }
+> = (props) => {
+  const [state, dispatch] = useReducer(reducer, props.config);
+  const [currentTab, setCurrentTab] = useState(0);
+
+  useImperativeHandle(props.ref, () => ({
+    save: () => props.onConfigChange(state)
+  }));
+
+  const handleTabChange = useCallback((_event: React.SyntheticEvent, newValue: number) => {
+    setCurrentTab(newValue);
+  }, []);
+
+  return (
+    <Box sx={{ display: "flex", height: "100%" }}>
+      <DialogProvider>
+        <Tabs
+          orientation="vertical"
+          value={currentTab}
+          onChange={handleTabChange}
+          sx={{ borderRight: 1, borderColor: "divider", minWidth: 150 }}
+        >
+          <Tab label="General" />
+          <Tab label="Custom Commands" />
+        </Tabs>
+        <TabPanel value={currentTab} index={0}>
+          <GeneralTab state={state} dispatch={dispatch} />
+        </TabPanel>
+        <TabPanel value={currentTab} index={1}>
+          <CustomCommandTab
+            customCommands={state.customCommands}
+            onChange={(commands) => dispatch({ type: "customCommands", payload: commands })}
+          />
+        </TabPanel>
+      </DialogProvider>
+    </Box>
   );
 };
 
