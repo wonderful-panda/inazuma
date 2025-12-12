@@ -11,6 +11,7 @@ import {
 import { Icon } from "@/components/Icon";
 import { useDialog } from "@/context/DialogContext";
 import { CustomCommandForm } from "./CustomCommandForm";
+import { SectionContent, SectionHeader } from "./PreferenceSection";
 
 export interface CustomCommandTabProps {
   customCommands: CustomCommand[];
@@ -118,55 +119,56 @@ export const CustomCommandTab: React.FC<CustomCommandTabProps> = ({ customComman
   );
 
   return (
-    <div className="flex-col-wrap p-4">
-      <div className="flex-row-nowrap justify-between items-center mb-4">
-        <Typography variant="h6">Custom Commands</Typography>
+    <div className="p-2">
+      <div className="flex-row-nowrap justify-between items-center">
+        <SectionHeader text="Custom Commands" />
         <Button variant="contained" startIcon={<Icon icon="mdi:plus" />} onClick={handleAdd}>
           Add
         </Button>
       </div>
-
-      <List>
-        {customCommands.length === 0 && (
-          <Typography variant="body2" color="textSecondary" className="p-4">
-            No custom commands defined. Click "Add" to create one.
-          </Typography>
-        )}
-        {customCommands.map((cmd, index) => (
-          <div key={cmd.name} className="group">
-            <ListItem dense disablePadding className="hover:bg-hover-highlight">
-              <div className="flex flex-1 flex-col px-4 py-2">
-                <Typography variant="subtitle1" className="font-bold">
-                  {cmd.name}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {cmd.description}
-                </Typography>
-              </div>
-              <div className="mr-4 flex-row-nowrap gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75">
-                <IconButton
-                  edge="end"
-                  onClick={() => handleEdit(index, cmd)}
-                  className="hover:bg-highlight text-2xl"
-                  size="large"
-                  title="Edit"
-                >
-                  <Icon icon="mdi:pencil" />
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  onClick={() => handleDelete(index)}
-                  className="hover:bg-highlight text-2xl"
-                  size="large"
-                  title="Delete"
-                >
-                  <Icon icon="mdi:close" />
-                </IconButton>
-              </div>
-            </ListItem>
-          </div>
-        ))}
-      </List>
+      <SectionContent>
+        <List>
+          {customCommands.length === 0 && (
+            <Typography variant="body2" color="textSecondary" className="p-4">
+              No custom commands defined. Click "Add" to create one.
+            </Typography>
+          )}
+          {customCommands.map((cmd, index) => (
+            <div key={cmd.name} className="group">
+              <ListItem dense disablePadding className="hover:bg-hover-highlight">
+                <div className="flex flex-1 flex-col px-4 py-2">
+                  <Typography variant="subtitle1" className="font-bold">
+                    {cmd.name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {cmd.description}
+                  </Typography>
+                </div>
+                <div className="mr-4 flex-row-nowrap gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75">
+                  <IconButton
+                    edge="end"
+                    onClick={() => handleEdit(index, cmd)}
+                    className="hover:bg-highlight text-2xl"
+                    size="large"
+                    title="Edit"
+                  >
+                    <Icon icon="mdi:pencil" />
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    onClick={() => handleDelete(index)}
+                    className="hover:bg-highlight text-2xl"
+                    size="large"
+                    title="Delete"
+                  >
+                    <Icon icon="mdi:close" />
+                  </IconButton>
+                </div>
+              </ListItem>
+            </div>
+          ))}
+        </List>
+      </SectionContent>
     </div>
   );
 };

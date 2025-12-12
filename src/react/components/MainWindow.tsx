@@ -24,7 +24,7 @@ import { nope } from "@/util";
 import { useAboutDialog } from "./AboutDialog";
 import { Cmd, CommandGroup } from "./CommandGroup";
 import { Icon } from "./Icon";
-import { usePreferenceDialog } from "./PreferenceDialog";
+import { usePreferenceDialog } from "./preference/PreferenceDialog";
 
 export interface MainWindowProps {
   title: string;

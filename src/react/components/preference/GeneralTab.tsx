@@ -1,41 +1,17 @@
-import type { CustomCommand } from "@backend/CustomCommand";
 import {
   Autocomplete,
-  Box,
   Checkbox,
   FormControlLabel,
   FormLabel,
   Radio,
   RadioGroup,
-  Tab,
-  Tabs,
-  TextField,
-  Typography
+  TextField
 } from "@mui/material";
 import classNames from "classnames";
-import { useCallback, useEffect, useImperativeHandle, useReducer, useRef, useState } from "react";
-import {
-  AcceptButton,
-  CancelButton,
-  DialogActions,
-  DialogContent,
-  DialogTitle
-} from "@/components/Dialog";
-import { CustomCommandTab } from "@/components/preference/CustomCommandTab";
+import { useEffect, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
-import { DialogProvider, useDialog } from "@/context/DialogContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { assertNever } from "@/util";
-
-const SectionHeader: React.FC<{ text: string }> = ({ text }) => (
-  <Typography variant="h6" component="div" color="primary">
-    {text}
-  </Typography>
-);
-
-const SectionContent: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <div className="flex-col-wrap px-4 pt-0 pb-8">{children}</div>
-);
+import { SectionContent, SectionHeader } from "./PreferenceSection";
 
 type Action =
   | {
@@ -53,79 +29,11 @@ type Action =
   | {
       type: "useGravatar";
       payload: boolean;
-    }
-  | {
-      type: "customCommands";
-      payload: CustomCommand[];
-    }
-  | {
-      type: "reset";
-      payload: Config;
     };
 
-const reducer = (state: Config, action: Action) => {
-  if (action.type === "reset") {
-    return action.payload;
-  } else if (action.type === "useGravatar") {
-    return { ...state, useGravatar: action.payload };
-  } else if (action.type === "customCommands") {
-    return { ...state, customCommands: action.payload };
-  } else {
-    const newState = { ...state };
-    const value = action.payload ?? undefined;
-    switch (action.type) {
-      case "fontFamilyStandard":
-        newState.fontFamily = { ...state.fontFamily, standard: value };
-        break;
-      case "fontFamilyMonospace":
-        newState.fontFamily = { ...state.fontFamily, monospace: value };
-        break;
-      case "fontSize":
-        if (value === "x-small" || value === "small") {
-          newState.fontSize = value;
-        } else {
-          newState.fontSize = "medium";
-        }
-        break;
-      case "externalDiff":
-        newState.externalDiffTool = value;
-        break;
-      case "interactiveShell":
-        newState.interactiveShell = value;
-        break;
-      case "recentListCount":
-        {
-          const intValue = Number.parseInt(value ?? "0", 10);
-          if (!Number.isNaN(intValue) && intValue > 0) {
-            newState.recentListCount = intValue;
-          }
-        }
-        break;
-      case "avatarShape":
-        newState.avatarShape = value === "circle" ? "circle" : "square";
-        break;
-      case "logLevel":
-        if (
-          value === "off" ||
-          value === "error" ||
-          value === "warn" ||
-          value === "info" ||
-          value === "debug" ||
-          value === "trace"
-        ) {
-          newState.logLevel = value;
-        }
-        break;
-      default:
-        assertNever(action);
-    }
-    return newState;
-  }
-};
-
-export interface PreferenceDialogProps {
-  config: Config;
-  onConfigChange: (config: Config) => void;
+export interface GeneralTabProps {
+  state: Config;
+  dispatch: React.Dispatch<Action>;
 }
 
 const FontSelector: React.FC<{
@@ -167,24 +75,7 @@ const FontSelector: React.FC<{
   );
 };
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
-  return (
-    <div role="tabpanel" hidden={value !== index} className="flex-1 overflow-auto">
-      {value === index && <div>{children}</div>}
-    </div>
-  );
-};
-
-const GeneralTab: React.FC<{
-  state: Config;
-  dispatch: React.Dispatch<Action>;
-}> = ({ state, dispatch }) => {
+export const GeneralTab: React.FC<GeneralTabProps> = ({ state, dispatch }) => {
   const { reportError } = useAlert();
   const [standardFonts, setStandardFonts] = useState<string[] | "loading">("loading");
   const [monospaceFonts, setMonospaceFonts] = useState<string[] | "loading">("loading");
@@ -303,79 +194,5 @@ const GeneralTab: React.FC<{
         </div>
       </SectionContent>
     </div>
-  );
-};
-
-const PreferenceDialogContent: React.FC<
-  PreferenceDialogProps & { ref?: React.Ref<{ save: () => void }> }
-> = (props) => {
-  const [state, dispatch] = useReducer(reducer, props.config);
-  const [currentTab, setCurrentTab] = useState(0);
-
-  useImperativeHandle(props.ref, () => ({
-    save: () => props.onConfigChange(state)
-  }));
-
-  const handleTabChange = useCallback((_event: React.SyntheticEvent, newValue: number) => {
-    setCurrentTab(newValue);
-  }, []);
-
-  return (
-    <Box sx={{ display: "flex", height: "100%" }}>
-      <DialogProvider>
-        <Tabs
-          orientation="vertical"
-          value={currentTab}
-          onChange={handleTabChange}
-          sx={{ borderRight: 1, borderColor: "divider", minWidth: 150 }}
-        >
-          <Tab label="General" />
-          <Tab label="Custom Commands" />
-        </Tabs>
-        <TabPanel value={currentTab} index={0}>
-          <GeneralTab state={state} dispatch={dispatch} />
-        </TabPanel>
-        <TabPanel value={currentTab} index={1}>
-          <CustomCommandTab
-            customCommands={state.customCommands}
-            onChange={(commands) => dispatch({ type: "customCommands", payload: commands })}
-          />
-        </TabPanel>
-      </DialogProvider>
-    </Box>
-  );
-};
-
-export const PreferenceDialogBody: React.FC<PreferenceDialogProps> = (props) => {
-  const contentRef = useRef({} as React.ComponentRef<typeof PreferenceDialogContent>);
-  const handleSave = useCallback(() => {
-    contentRef.current.save();
-    return Promise.resolve(true);
-  }, []);
-  return (
-    <>
-      <DialogTitle>PREFERENCE</DialogTitle>
-      <DialogContent>
-        <PreferenceDialogContent ref={contentRef} {...props} />
-      </DialogContent>
-      <DialogActions>
-        <AcceptButton text="Save" onClick={handleSave} default />
-        <CancelButton />
-      </DialogActions>
-    </>
-  );
-};
-
-export const usePreferenceDialog = () => {
-  const dialog = useDialog();
-  return useCallback(
-    async (props: PreferenceDialogProps) => {
-      return await dialog.showModal({
-        content: <PreferenceDialogBody {...props} />,
-        defaultActionKey: "Ctrl+Enter",
-        fullscreen: true
-      });
-    },
-    [dialog]
   );
 };
