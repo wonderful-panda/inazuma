@@ -3,6 +3,7 @@ extern crate log;
 
 mod avatar_protocol_handler;
 pub mod commands;
+pub mod custom_command;
 pub mod git;
 pub mod platform;
 pub mod pty;
@@ -146,6 +147,8 @@ pub fn run() {
             commands::get_last_modify_commit,
             commands::get_filelog,
             commands::get_changes,
+            custom_command::exec_custom_command_with_pty,
+            custom_command::exec_custom_command_detached,
             commands::get_changes_between,
             commands::get_commit_detail,
             commands::get_content_base64,
