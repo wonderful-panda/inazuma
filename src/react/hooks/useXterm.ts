@@ -14,12 +14,11 @@ interface Shell {
   id: number;
   term: Terminal;
   fitAddon: FitAddon;
-  killed: boolean;
 }
 
 export type PtyId = number & { readonly _PtyId: unique symbol };
 
-export type PtyExitStatus = "succeeded" | "failed" | "aborted";
+export type PtyExitStatus = "succeeded" | "failed";
 
 export interface InteractiveShellOptions {
   openPty: (id: PtyId, rows: number, cols: number) => Promise<void>;
@@ -42,12 +41,7 @@ export const useXterm = () => {
   const kill = useCallback(async () => {
     const closePty = closePtyRef.current;
     closePtyRef.current = undefined;
-    if (closePty) {
-      if (shell.current) {
-        shell.current.killed = true;
-      }
-      await closePty();
-    }
+    await closePty?.();
   }, []);
 
   const dispose = useCallback(async () => {
@@ -92,12 +86,12 @@ export const useXterm = () => {
         }
         setTimeout(() => {
           unlistenPtyData();
-          void onExit?.(shell.current?.killed ? "aborted" : payload ? "succeeded" : "failed");
+          void onExit?.(payload ? "succeeded" : "failed");
         }, 100); // sometimes pty-exit arrives before last pty-data.
       });
       await openPty(id, term.rows, term.cols);
       term.focus();
-      shell.current = { id, term, fitAddon, killed: false };
+      shell.current = { id, term, fitAddon };
     },
     [dispose]
   );
@@ -161,10 +155,6 @@ export const useExecuteGitInXterm = () => {
               case "failed":
                 alert.showError("Failed.");
                 xterm.write(CRLF + BOLD + ULINE + YELLOW + "### FAILED ###" + RESET + CRLF);
-                break;
-              case "aborted":
-                alert.showWarning("Cancelled.");
-                xterm.write(CRLF + BOLD + ULINE + YELLOW + "### CANCELLED ###" + RESET + CRLF);
                 break;
               default:
                 assertNever(status);

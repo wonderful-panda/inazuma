@@ -11,7 +11,7 @@ import {
 
 export const XtermDialogBody: React.FC<{
   title: string;
-  openXterm: (el: HTMLDivElement) => Promise<PtyExitStatus>;
+  openXterm: (el: HTMLDivElement) => Promise<PtyExitStatus | "cancelled">;
   killPty: () => Promise<void>;
   children: React.ReactNode;
 }> = ({ title, openXterm, killPty, children }) => {
@@ -26,7 +26,7 @@ export const XtermDialogBody: React.FC<{
     try {
       const ret = await openXterm(xtermRef.current);
       switch (ret) {
-        case "aborted":
+        case "cancelled":
           setState("ready");
           break;
         default:
@@ -53,7 +53,7 @@ export const XtermDialogBody: React.FC<{
       </DialogContent>
       <DialogActions>
         <AcceptButton onClick={handleOk} disabled={state !== "ready"} text="Execute" />
-        <DialogButton onClick={killPty} disabled={state !== "running"} text="Cancel" />
+        <DialogButton onClick={killPty} disabled={state !== "running"} text="Abort" />
         <CancelButton text="Close" />
       </DialogActions>
     </>

@@ -39,13 +39,13 @@ export const FetchDialogBody: React.FC<{
   }, []);
 
   const openXterm_ = useCallback(
-    async (el: HTMLDivElement): Promise<PtyExitStatus> => {
+    async (el: HTMLDivElement): Promise<PtyExitStatus | "cancelled"> => {
       if (!remoteRef.current) {
-        return "aborted";
+        return "cancelled";
       }
       if (mode !== "all" && !remoteRef.current.value) {
         alert.showWarning("Remote is not specified");
-        return "aborted";
+        return "cancelled";
       }
       const tags = tagsRef.current?.checked;
       const opt = { type: mode, tags, remote: remoteRef.current.value };
