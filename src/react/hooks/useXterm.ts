@@ -116,57 +116,93 @@ export const useXterm = () => {
   return { open, fit, write, changeFont, kill, dispose };
 };
 
-export const useExecuteGitInXterm = () => {
+const useExecuteInXterm = <O>(
+  openPty: (id: PtyId, rows: number, cols: number, options: O) => Promise<void>,
+  showFinishBanner: boolean
+) => {
   const xterm = useXterm();
   const alert = useAlert();
   const fontFamily = useConfigValue().fontFamily.monospace ?? "monospace";
+  const runningRef = useRef(false);
   const [, reloadRepositoryRef] = useWithRef(useReloadRepository());
   const execute = useCallback(
-    (
-      el: HTMLDivElement,
-      options: {
-        command: string;
-        args: string[];
-        repoPath?: string;
-        onSucceeded?: () => Promise<unknown>;
-      }
-    ) => {
+    (el: HTMLDivElement, options: O, callback?: { onSucceeded?: () => Promise<void> }) => {
       return new Promise<PtyExitStatus>((resolve) => {
         void xterm.open(el, {
-          openPty: (id, rows, cols) => {
+          openPty: async (id, rows, cols) => {
             alert.clear();
-            return invokeTauriCommand("exec_git_with_pty", {
-              id,
-              command: options.command,
-              args: options.args,
-              repoPath: options.repoPath,
-              rows,
-              cols
-            });
+            try {
+              runningRef.current = true;
+              return await openPty(id, rows, cols, options);
+            } catch (e) {
+              runningRef.current = false;
+              throw e;
+            }
           },
           fontFamily,
           fontSize: 16,
           onExit: async (status) => {
             switch (status) {
               case "succeeded":
-                await (options.onSucceeded ?? reloadRepositoryRef.current)?.();
-                xterm.write(CRLF + BOLD + ULINE + GREEN + "### FINISHED ###" + RESET + CRLF);
+                await (callback?.onSucceeded ?? reloadRepositoryRef.current)?.();
+                if (showFinishBanner) {
+                  xterm.write(CRLF + BOLD + ULINE + GREEN + "### FINISHED ###" + RESET + CRLF);
+                }
                 break;
               case "failed":
-                alert.showError("Failed.");
-                xterm.write(CRLF + BOLD + ULINE + YELLOW + "### FAILED ###" + RESET + CRLF);
+                if (showFinishBanner) {
+                  alert.showWarning("Failed or Aborted.");
+                  xterm.write(
+                    CRLF + BOLD + ULINE + YELLOW + "### FAILED or ABORTED ###" + RESET + CRLF
+                  );
+                }
                 break;
               default:
                 assertNever(status);
                 break;
             }
+            runningRef.current = false;
             resolve(status);
           }
         });
       });
     },
-    [xterm, fontFamily, alert]
+    [xterm, fontFamily, alert, openPty, showFinishBanner]
   );
   const kill = useCallback(() => xterm.kill(), [xterm]);
-  return { execute, kill };
+  const isRunning = useCallback(() => runningRef.current, []);
+  return { execute, kill, isRunning };
 };
+
+const executeGit = (
+  id: PtyId,
+  rows: number,
+  cols: number,
+  options: { command: string; args: string[]; repoPath?: string }
+) =>
+  invokeTauriCommand("exec_git_with_pty", {
+    id,
+    rows,
+    cols,
+    command: options.command,
+    args: options.args,
+    repoPath: options.repoPath
+  });
+
+export const useExecuteGitInXterm = () => useExecuteInXterm(executeGit, true);
+
+const executeCustomCommand = (
+  id: PtyId,
+  rows: number,
+  cols: number,
+  options: { commandLine: string; repoPath: string }
+) =>
+  invokeTauriCommand("exec_custom_command_with_pty", {
+    id,
+    rows,
+    cols,
+    commandLine: options.commandLine,
+    repoPath: options.repoPath
+  });
+
+export const useExecuteCustomCommandInXterm = () => useExecuteInXterm(executeCustomCommand, false);

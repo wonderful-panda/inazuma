@@ -3,16 +3,16 @@ import { useCallback } from "react";
 import type { DialogResult } from "@/components/Dialog";
 import { PushDialogBody } from "@/components/repository/PushDialogBody";
 import { useAlert } from "@/context/AlertContext";
-import { useDialog } from "@/context/DialogContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { repoPathAtom } from "@/state/repository";
 import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
 import { useExecuteGitInXterm } from "../useXterm";
+import { useXtermDialog } from "../useXtermDialog";
 
 export const useBeginPush = () => {
-  const dialog = useDialog();
   const alert = useAlert();
-  const { execute, kill } = useExecuteGitInXterm();
+  const { execute, kill, isRunning } = useExecuteGitInXterm();
+  const dialog = useXtermDialog({ isRunning });
   const repoPath = useAtomValue(repoPathAtom);
 
   const openXterm = useCallback(
@@ -33,20 +33,14 @@ export const useBeginPush = () => {
         alert.showWarning("No remote repository is registered");
         return { result: "rejected" };
       }
-      return await dialog.showModal({
-        content: (
-          <PushDialogBody
-            openXterm={openXterm}
-            killPty={kill}
-            remotes={remotes}
-            branchName={branchName}
-          />
-        ),
-        onBeforeClose: async () => {
-          await kill();
-          return true;
-        }
-      });
+      return await dialog.showModal(
+        <PushDialogBody
+          openXterm={openXterm}
+          killPty={kill}
+          remotes={remotes}
+          branchName={branchName}
+        />
+      );
     },
     [dialog, openXterm, kill, alert, repoPath]
   );
