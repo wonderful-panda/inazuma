@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { PtyExitStatus } from "@/hooks/useXterm";
 import {
   AcceptButton,
@@ -13,8 +13,9 @@ export const XtermDialogBody: React.FC<{
   title: string;
   openXterm: (el: HTMLDivElement) => Promise<PtyExitStatus | "cancelled">;
   killPty: () => Promise<void>;
+  startImmediate?: boolean;
   children: React.ReactNode;
-}> = ({ title, openXterm, killPty, children }) => {
+}> = ({ title, openXterm, killPty, startImmediate, children }) => {
   const xtermRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<"ready" | "running" | "succeeded" | "failed">("ready");
 
@@ -39,6 +40,11 @@ export const XtermDialogBody: React.FC<{
       throw e;
     }
   }, [openXterm]);
+  useEffect(() => {
+    if (startImmediate) {
+      setTimeout(handleOk, 100);
+    }
+  }, [startImmediate, handleOk]);
   return (
     <>
       <DialogTitle>{title}</DialogTitle>

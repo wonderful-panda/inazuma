@@ -18,8 +18,7 @@ export const useCommitContextMenu = (): ((
   const { show } = useContext(ContextMenuContext);
   const confirmDialog = useConfirmDialog();
   const commitCommands = useCommitCommands();
-  const { customCommands, canExecute, getCommandWithContext, executeCommandDetached } =
-    useCustomCommands();
+  const { customCommands, canExecute, getCommandWithContext, executeCommand } = useCustomCommands();
 
   const onCommitContextMenu = useCallback(
     (event: React.MouseEvent | MouseEvent, _index: number, commit: Commit) => {
@@ -36,37 +35,27 @@ export const useCommitContextMenu = (): ((
         label: command.description || command.name,
         disabled: !canExecute(command, commit),
         handler: async () => {
-          if (command.useBuiltinTerminal) {
-            // TODO: Implement PTY dialog for custom commands
+          // Show confirmation dialog if required
+          if (command.confirmBeforeExecute) {
             const result = getCommandWithContext(command, commit);
             if (result.error) {
               console.error("Cannot execute command:", result.error);
               return;
             }
-            console.log("Execute with PTY:", command.name, "->", result.commandLine);
-          } else {
-            // Show confirmation dialog if required
-            if (command.confirmBeforeExecute) {
-              const result = getCommandWithContext(command, commit);
-              if (result.error) {
-                console.error("Cannot execute command:", result.error);
-                return;
-              }
 
-              const confirmResult = await confirmDialog.showModal({
-                title: "Execute Custom Command",
-                content: `Do you want to execute this command?\n\n${result.commandLine}`
-              });
-
-              if (confirmResult !== "accepted") {
-                return;
-              }
-            }
-
-            void executeCommandDetached(command, commit).catch((error) => {
-              console.error("Failed to execute custom command:", error);
+            const confirmResult = await confirmDialog.showModal({
+              title: "Execute Custom Command",
+              content: `Do you want to execute this command?\n\n${result.commandLine}`
             });
+
+            if (confirmResult !== "accepted") {
+              return;
+            }
           }
+
+          void executeCommand(command, commit).catch((error) => {
+            console.error("Failed to execute custom command:", error);
+          });
         }
       }));
 
@@ -83,7 +72,7 @@ export const useCommitContextMenu = (): ((
       customCommands,
       canExecute,
       getCommandWithContext,
-      executeCommandDetached
+      executeCommand
     ]
   );
   return onCommitContextMenu;

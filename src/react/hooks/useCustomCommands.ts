@@ -4,17 +4,11 @@ import type { CustomCommand } from "@backend/CustomCommand";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { currentBranchAtom, repoPathAtom } from "@/state/repository";
 import { useConfigValue } from "@/state/root";
+import { useBeginCustomCommand } from "./actions/beginCustomCommand";
 
 export interface UseCustomCommandsReturn {
   customCommands: CustomCommand[];
-  executeCommandWithPty: (
-    command: CustomCommand,
-    commit: Commit,
-    ptyId: number,
-    rows: number,
-    cols: number
-  ) => Promise<void>;
-  executeCommandDetached: (command: CustomCommand, commit: Commit) => Promise<void>;
+  executeCommand: (command: CustomCommand, commit: Commit) => Promise<void>;
   canExecute: (command: CustomCommand, commit: Commit | undefined) => boolean;
   getCommandWithContext: (
     command: CustomCommand,
@@ -34,6 +28,7 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
   const currentBranch = useAtomValue(currentBranchAtom);
 
   const customCommands = config.customCommands;
+  const beginCustomCommand = useBeginCustomCommand();
 
   /**
    * Replace placeholders in command line with actual values
@@ -93,49 +88,29 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
   );
 
   /**
-   * Execute command in built-in terminal (PTY)
+   * Execute command
    */
-  const executeCommandWithPty = useCallback(
-    async (command: CustomCommand, commit: Commit, ptyId: number, rows: number, cols: number) => {
-      const result = getCommandWithContext(command, commit);
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      await invokeTauriCommand("exec_custom_command_with_pty", {
-        id: ptyId,
-        repoPath: repoPath || undefined,
-        commandLine: result.commandLine,
-        rows,
-        cols
-      });
-    },
-    [getCommandWithContext, repoPath]
-  );
-
-  /**
-   * Execute command in background (detached process)
-   * Confirmation dialog should be shown by the caller
-   */
-  const executeCommandDetached = useCallback(
+  const executeCommand = useCallback(
     async (command: CustomCommand, commit: Commit) => {
       const result = getCommandWithContext(command, commit);
       if (result.error) {
         throw new Error(result.error);
       }
-
-      await invokeTauriCommand("exec_custom_command_detached", {
-        repoPath: repoPath || undefined,
-        commandLine: result.commandLine
-      });
+      if (command.useBuiltinTerminal) {
+        await beginCustomCommand(command.name, command.description, result.commandLine);
+      } else {
+        await invokeTauriCommand("exec_custom_command_detached", {
+          repoPath: repoPath || undefined,
+          commandLine: result.commandLine
+        });
+      }
     },
-    [getCommandWithContext, repoPath]
+    [getCommandWithContext, repoPath, beginCustomCommand]
   );
 
   return {
     customCommands,
-    executeCommandWithPty,
-    executeCommandDetached,
+    executeCommand,
     canExecute,
     getCommandWithContext
   };
