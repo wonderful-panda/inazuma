@@ -74,6 +74,8 @@ const CustomCommandFormDialog: React.FC<{
 
 export const CustomCommandTab: React.FC<CustomCommandTabProps> = ({ customCommands, onChange }) => {
   const dialog = useDialog();
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleAdd = useCallback(() => {
     dialog.showModal({
@@ -118,6 +120,88 @@ export const CustomCommandTab: React.FC<CustomCommandTabProps> = ({ customComman
     [customCommands, onChange]
   );
 
+  // Drag and drop handlers
+  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", index.toString());
+  }, []);
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent<HTMLDivElement>, index: number) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+
+      if (draggedIndex !== null && draggedIndex !== index) {
+        setDragOverIndex(index);
+      }
+    },
+    [draggedIndex]
+  );
+
+  const handleDragLeave = useCallback(() => {
+    setDragOverIndex(null);
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+      e.preventDefault();
+
+      if (draggedIndex === null || draggedIndex === dropIndex) {
+        setDraggedIndex(null);
+        setDragOverIndex(null);
+        return;
+      }
+
+      // Reorder array
+      const newCommands = [...customCommands];
+      const [draggedItem] = newCommands.splice(draggedIndex, 1);
+      if (draggedItem) {
+        newCommands.splice(dropIndex, 0, draggedItem);
+      }
+
+      onChange(newCommands);
+
+      // Reset state
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+    },
+    [draggedIndex, customCommands, onChange]
+  );
+
+  const handleDragEnd = useCallback(() => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  }, []);
+
+  // Keyboard navigation handlers
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent, index: number) => {
+      if (e.key === "ArrowUp" && index > 0) {
+        e.preventDefault();
+        const newCommands = [...customCommands];
+        const current = newCommands[index];
+        const above = newCommands[index - 1];
+        if (current && above) {
+          newCommands[index - 1] = current;
+          newCommands[index] = above;
+          onChange(newCommands);
+        }
+      } else if (e.key === "ArrowDown" && index < customCommands.length - 1) {
+        e.preventDefault();
+        const newCommands = [...customCommands];
+        const current = newCommands[index];
+        const below = newCommands[index + 1];
+        if (current && below) {
+          newCommands[index] = below;
+          newCommands[index + 1] = current;
+          onChange(newCommands);
+        }
+      }
+    },
+    [customCommands, onChange]
+  );
+
   return (
     <div className="p-2">
       <div className="flex-row-nowrap justify-between items-center">
@@ -134,8 +218,30 @@ export const CustomCommandTab: React.FC<CustomCommandTabProps> = ({ customComman
             </Typography>
           )}
           {customCommands.map((cmd, index) => (
-            <div key={cmd.name} className="group">
+            <div
+              key={cmd.name}
+              draggable
+              onDragStart={(e) => handleDragStart(e, index)}
+              onDragOver={(e) => handleDragOver(e, index)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, index)}
+              onDragEnd={handleDragEnd}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              tabIndex={0}
+              role="button"
+              aria-label={`${cmd.name}. Press up or down arrow keys to reorder`}
+              className={`
+                group
+                ${draggedIndex === index ? "opacity-50" : ""}
+                ${dragOverIndex === index ? "border-t-2 border-primary" : ""}
+              `}
+            >
               <ListItem dense disablePadding className="hover:bg-hover-highlight">
+                {/* Drag handle */}
+                <div className="px-2 cursor-move hover:bg-gray-100 rounded" title="Drag to reorder">
+                  <Icon icon="mdi:drag-vertical" className="text-gray-400 hover:text-gray-600" />
+                </div>
+
                 <div className="flex flex-1 flex-col px-4 py-2">
                   <Typography variant="subtitle1" className="font-bold">
                     {cmd.name}
