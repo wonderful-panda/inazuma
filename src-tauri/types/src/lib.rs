@@ -60,6 +60,22 @@ pub struct CustomCommand {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
+pub struct RepositoryConfig {
+    #[serde(default)]
+    pub custom_commands: Vec<CustomCommand>,
+}
+
+impl Default for RepositoryConfig {
+    fn default() -> Self {
+        RepositoryConfig {
+            custom_commands: Vec::new(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ConfigBase {
     #[serde(default)]
     pub font_family: FontFamily,

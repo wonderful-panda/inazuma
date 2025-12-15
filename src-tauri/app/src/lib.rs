@@ -15,6 +15,7 @@ use state::avatars::AvatarsState;
 use state::config::{ConfigState, ConfigStateMutex};
 use state::env::{EnvState, EnvStateMutex};
 use state::pty::PtyStateMutex;
+use state::repo_config::RepoConfigStateMutex;
 use state::repositories::RepositoriesStateMutex;
 use state::stager::StagerStateMutex;
 use std::{error::Error, fs::create_dir_all};
@@ -130,6 +131,7 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .manage(EnvStateMutex::new())
         .manage(ConfigStateMutex::new())
+        .manage(RepoConfigStateMutex::new())
         .manage(PtyStateMutex::new())
         .manage(RepositoriesStateMutex::new())
         .manage(StagerStateMutex::new())
@@ -179,6 +181,8 @@ pub fn run() {
             commands::set_window_title,
             commands::set_log_level,
             commands::open_devtools,
+            commands::load_repo_config,
+            commands::save_repo_config,
         ])
         .setup(|app| setup(app))
         .register_asynchronous_uri_scheme_protocol("avatar", move |ctx, request, responder| {
