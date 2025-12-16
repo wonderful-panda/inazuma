@@ -10,6 +10,7 @@ import {
 } from "@/components/Dialog";
 import { Icon } from "@/components/Icon";
 import { useDialog } from "@/context/DialogContext";
+import { useDragAndDropReorder } from "@/hooks/useDragAndDropReorder";
 import { CustomCommandForm } from "./CustomCommandForm";
 import { SectionContent, SectionHeader } from "./PreferenceSection";
 import type { TabContentProps } from "./types";
@@ -82,9 +83,10 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
   emptyMessage = 'No custom commands defined. Click "Add" to create one.'
 }) => {
   const dialog = useDialog();
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-  const [insertPosition, setInsertPosition] = useState<"before" | "after">("before");
+  const { draggedIndex, dragOverIndex, insertPosition, handlers } = useDragAndDropReorder(
+    customCommands,
+    onChange
+  );
 
   const handleAdd = useCallback(() => {
     dialog.showModal({
@@ -129,105 +131,6 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
     [customCommands, onChange]
   );
 
-  // Drag and drop handlers
-  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", index.toString());
-  }, []);
-
-  const handleDragOver = useCallback(
-    (e: React.DragEvent<HTMLDivElement>, index: number) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = "move";
-
-      if (draggedIndex !== null && draggedIndex !== index) {
-        // Calculate if cursor is in top half or bottom half of the element
-        const rect = e.currentTarget.getBoundingClientRect();
-        const midpoint = rect.top + rect.height / 2;
-        const position = e.clientY < midpoint ? "before" : "after";
-
-        setDragOverIndex(index);
-        setInsertPosition(position);
-      }
-    },
-    [draggedIndex]
-  );
-
-  const handleDragLeave = useCallback(() => {
-    setDragOverIndex(null);
-  }, []);
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
-      e.preventDefault();
-
-      if (draggedIndex === null || draggedIndex === dropIndex) {
-        setDraggedIndex(null);
-        setDragOverIndex(null);
-        return;
-      }
-
-      // Calculate actual insert position based on cursor position
-      let actualInsertIndex = dropIndex;
-      if (insertPosition === "after") {
-        actualInsertIndex = dropIndex + 1;
-      }
-
-      // Adjust for the removal of the dragged item
-      if (draggedIndex < actualInsertIndex) {
-        actualInsertIndex--;
-      }
-
-      // Reorder array
-      const newCommands = [...customCommands];
-      const [draggedItem] = newCommands.splice(draggedIndex, 1);
-      if (draggedItem) {
-        newCommands.splice(actualInsertIndex, 0, draggedItem);
-      }
-
-      onChange(newCommands);
-
-      // Reset state
-      setDraggedIndex(null);
-      setDragOverIndex(null);
-    },
-    [draggedIndex, insertPosition, customCommands, onChange]
-  );
-
-  const handleDragEnd = useCallback(() => {
-    setDraggedIndex(null);
-    setDragOverIndex(null);
-  }, []);
-
-  // Keyboard navigation handlers
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent, index: number) => {
-      if (e.key === "ArrowUp" && index > 0) {
-        e.preventDefault();
-        const newCommands = [...customCommands];
-        const current = newCommands[index];
-        const above = newCommands[index - 1];
-        if (current && above) {
-          newCommands[index - 1] = current;
-          newCommands[index] = above;
-          onChange(newCommands);
-        }
-      } else if (e.key === "ArrowDown" && index < customCommands.length - 1) {
-        e.preventDefault();
-        const newCommands = [...customCommands];
-        const current = newCommands[index];
-        const below = newCommands[index + 1];
-        if (current && below) {
-          newCommands[index] = below;
-          newCommands[index + 1] = current;
-          onChange(newCommands);
-        }
-      }
-    },
-    [customCommands, onChange]
-  );
-
   return (
     <div className="flex flex-col h-full">
       <div className="flex-row-nowrap justify-between items-center mb-2">
@@ -248,12 +151,12 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
               <div
                 key={cmd.name}
                 draggable
-                onDragStart={(e) => handleDragStart(e, index)}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, index)}
-                onDragEnd={handleDragEnd}
-                onKeyDown={(e) => handleKeyDown(e, index)}
+                onDragStart={(e) => handlers.handleDragStart(e, index)}
+                onDragOver={(e) => handlers.handleDragOver(e, index)}
+                onDragLeave={handlers.handleDragLeave}
+                onDrop={(e) => handlers.handleDrop(e, index)}
+                onDragEnd={handlers.handleDragEnd}
+                onKeyDown={(e) => handlers.handleKeyDown(e, index)}
                 tabIndex={0}
                 role="button"
                 aria-label={`${cmd.name}. Press up or down arrow keys to reorder`}
