@@ -12,29 +12,7 @@ import { useEffect, useState } from "react";
 import { useAlert } from "@/context/AlertContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { SectionContent, SectionHeader } from "./PreferenceSection";
-
-type Action =
-  | {
-      type:
-        | "fontFamilyStandard"
-        | "fontFamilyMonospace"
-        | "fontSize"
-        | "externalDiff"
-        | "interactiveShell"
-        | "recentListCount"
-        | "avatarShape"
-        | "logLevel";
-      payload: string | null | undefined;
-    }
-  | {
-      type: "useGravatar";
-      payload: boolean;
-    };
-
-export interface GeneralTabProps {
-  state: Config;
-  dispatch: React.Dispatch<Action>;
-}
+import type { TabContentProps } from "./types";
 
 const FontSelector: React.FC<{
   label: string;
@@ -75,7 +53,7 @@ const FontSelector: React.FC<{
   );
 };
 
-export const GeneralTab: React.FC<GeneralTabProps> = ({ state, dispatch }) => {
+export const GeneralTab: React.FC<TabContentProps> = ({ config, dispatch }) => {
   const { reportError } = useAlert();
   const [standardFonts, setStandardFonts] = useState<string[] | "loading">("loading");
   const [monospaceFonts, setMonospaceFonts] = useState<string[] | "loading">("loading");
@@ -102,20 +80,20 @@ export const GeneralTab: React.FC<GeneralTabProps> = ({ state, dispatch }) => {
         <FontSelector
           label="Default font"
           fontFamilies={standardFonts}
-          value={state.fontFamily.standard}
+          value={config.fontFamily.standard}
           onChange={(payload) => dispatch({ type: "fontFamilyStandard", payload })}
         />
         <FontSelector
           label="Monospace font"
           fontFamilies={monospaceFonts}
-          value={state.fontFamily.monospace}
+          value={config.fontFamily.monospace}
           onChange={(payload) => dispatch({ type: "fontFamilyMonospace", payload })}
         />
         <div className="flex-col-nowrap mt-4">
           <FormLabel>Font size</FormLabel>
           <RadioGroup
             row
-            value={state.fontSize}
+            value={config.fontSize}
             onChange={({ target }) => dispatch({ type: "fontSize", payload: target.value })}
           >
             <FormControlLabel value="x-small" control={<Radio />} label="x-small" />
@@ -131,14 +109,14 @@ export const GeneralTab: React.FC<GeneralTabProps> = ({ state, dispatch }) => {
           label="External diff tool (${left} and ${right} will be replaced with file path)"
           margin="dense"
           variant="standard"
-          value={state.externalDiffTool}
+          value={config.externalDiffTool}
           onChange={({ target }) => dispatch({ type: "externalDiff", payload: target.value })}
         />
         <TextField
           label="Interactive shell"
           margin="dense"
           variant="standard"
-          value={state.interactiveShell}
+          value={config.interactiveShell}
           onChange={({ target }) => dispatch({ type: "interactiveShell", payload: target.value })}
         />
       </SectionContent>
@@ -148,7 +126,7 @@ export const GeneralTab: React.FC<GeneralTabProps> = ({ state, dispatch }) => {
           <FormLabel>Shape</FormLabel>
           <RadioGroup
             row
-            value={state.avatarShape}
+            value={config.avatarShape}
             onChange={({ target }) => dispatch({ type: "avatarShape", payload: target.value })}
           >
             <FormControlLabel value="square" control={<Radio />} label="square" />
@@ -159,7 +137,7 @@ export const GeneralTab: React.FC<GeneralTabProps> = ({ state, dispatch }) => {
           label="Fetch avatars from Gravatar.com"
           control={
             <Checkbox
-              checked={state.useGravatar}
+              checked={config.useGravatar}
               onChange={({ target }) => dispatch({ type: "useGravatar", payload: target.checked })}
             />
           }
@@ -174,14 +152,14 @@ export const GeneralTab: React.FC<GeneralTabProps> = ({ state, dispatch }) => {
           margin="dense"
           variant="standard"
           style={{ maxWidth: "240px" }}
-          value={state.recentListCount}
+          value={config.recentListCount}
           onChange={({ target }) => dispatch({ type: "recentListCount", payload: target.value })}
         />
         <div className="flex-col-nowrap mt-4">
           <FormLabel>Log level</FormLabel>
           <RadioGroup
             row
-            value={state.logLevel}
+            value={config.logLevel}
             onChange={({ target }) => dispatch({ type: "logLevel", payload: target.value })}
           >
             <FormControlLabel value="off" control={<Radio />} label="off" />

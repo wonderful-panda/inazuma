@@ -12,13 +12,7 @@ import { Icon } from "@/components/Icon";
 import { useDialog } from "@/context/DialogContext";
 import { CustomCommandForm } from "./CustomCommandForm";
 import { SectionContent, SectionHeader } from "./PreferenceSection";
-
-export interface CustomCommandTabProps {
-  customCommands: CustomCommand[];
-  onChange: (commands: CustomCommand[]) => void;
-  repoCustomCommands: CustomCommand[] | null;
-  onRepoCustomCommandsChange: (commands: CustomCommand[]) => void;
-}
+import type { TabContentProps } from "./types";
 
 const CustomCommandFormDialog: React.FC<{
   initialValue?: Partial<CustomCommand>;
@@ -298,30 +292,39 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
   );
 };
 
-export const CustomCommandTab: React.FC<CustomCommandTabProps> = ({
-  customCommands,
-  onChange,
-  repoCustomCommands,
-  onRepoCustomCommandsChange
-}) => {
+export const CustomCommandTab: React.FC<TabContentProps> = ({ config, repoConfig, dispatch }) => {
+  const handleGlobalCommandsChange = useCallback(
+    (commands: CustomCommand[]) => {
+      dispatch({ type: "customCommands", payload: commands });
+    },
+    [dispatch]
+  );
+
+  const handleRepositoryCommandsChange = useCallback(
+    (commands: CustomCommand[]) => {
+      dispatch({ type: "repoCustomCommands", payload: commands });
+    },
+    [dispatch]
+  );
+
   return (
     <div className="p-2 h-full flex flex-col gap-4">
       {/* Global custom commands section */}
       <div className="flex-1 overflow-hidden">
         <CustomCommandList
           title="Global Custom Commands"
-          customCommands={customCommands}
-          onChange={onChange}
+          customCommands={config.customCommands}
+          onChange={handleGlobalCommandsChange}
         />
       </div>
 
       {/* Repository-specific custom commands section */}
-      {repoCustomCommands && (
+      {repoConfig?.customCommands && (
         <div className="flex-1 overflow-hidden border-t border-splitter pt-4">
           <CustomCommandList
             title="Repository Custom Commands"
-            customCommands={repoCustomCommands}
-            onChange={onRepoCustomCommandsChange}
+            customCommands={repoConfig.customCommands}
+            onChange={handleRepositoryCommandsChange}
             emptyMessage="No repository-specific commands. These commands will only be available in this repository."
           />
         </div>

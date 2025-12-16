@@ -1,6 +1,6 @@
-import type { CustomCommand } from "@backend/CustomCommand";
 import type { RepositoryConfig } from "@backend/RepositoryConfig";
 import { Box, Tab, Tabs } from "@mui/material";
+import type React from "react";
 import { useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
 import {
   AcceptButton,
@@ -13,43 +13,9 @@ import { DialogProvider, useDialog } from "@/context/DialogContext";
 import { assertNever } from "@/util";
 import { CustomCommandTab } from "./CustomCommandTab";
 import { GeneralTab } from "./GeneralTab";
+import type { PreferenceAction, PreferenceState, TabContentProps } from "./types";
 
-interface PreferenceState {
-  config: Config;
-  repoConfig: RepositoryConfig | null;
-}
-
-type Action =
-  | {
-      type:
-        | "fontFamilyStandard"
-        | "fontFamilyMonospace"
-        | "fontSize"
-        | "externalDiff"
-        | "interactiveShell"
-        | "recentListCount"
-        | "avatarShape"
-        | "logLevel";
-      payload: string | null | undefined;
-    }
-  | {
-      type: "useGravatar";
-      payload: boolean;
-    }
-  | {
-      type: "customCommands";
-      payload: CustomCommand[];
-    }
-  | {
-      type: "repoCustomCommands";
-      payload: CustomCommand[];
-    }
-  | {
-      type: "reset";
-      payload: PreferenceState;
-    };
-
-const reducer = (state: PreferenceState, action: Action): PreferenceState => {
+const reducer = (state: PreferenceState, action: PreferenceAction): PreferenceState => {
   if (action.type === "reset") {
     return action.payload;
   } else if (action.type === "useGravatar") {
@@ -135,6 +101,11 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
   );
 };
 
+const tabs: Array<{ name: string; Component: React.ComponentType<TabContentProps> }> = [
+  { name: "General", Component: GeneralTab },
+  { name: "Custom Commands", Component: CustomCommandTab }
+];
+
 const PreferenceDialogContent: React.FC<
   PreferenceDialogProps & { ref?: React.Ref<{ save: () => void }> }
 > = (props) => {
@@ -166,22 +137,15 @@ const PreferenceDialogContent: React.FC<
           onChange={handleTabChange}
           sx={{ borderRight: 1, borderColor: "divider", minWidth: 150 }}
         >
-          <Tab label="General" />
-          <Tab label="Custom Commands" />
+          {tabs.map(({ name }, index) => (
+            <Tab key={index} label={name} />
+          ))}
         </Tabs>
-        <TabPanel value={currentTab} index={0}>
-          <GeneralTab state={state.config} dispatch={dispatch} />
-        </TabPanel>
-        <TabPanel value={currentTab} index={1}>
-          <CustomCommandTab
-            customCommands={state.config.customCommands}
-            onChange={(commands) => dispatch({ type: "customCommands", payload: commands })}
-            repoCustomCommands={state.repoConfig?.customCommands ?? null}
-            onRepoCustomCommandsChange={(commands) =>
-              dispatch({ type: "repoCustomCommands", payload: commands })
-            }
-          />
-        </TabPanel>
+        {tabs.map(({ Component }, index) => (
+          <TabPanel key={index} value={currentTab} index={index}>
+            <Component config={state.config} repoConfig={state.repoConfig} dispatch={dispatch} />
+          </TabPanel>
+        ))}
       </DialogProvider>
     </Box>
   );
