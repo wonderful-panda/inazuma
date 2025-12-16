@@ -84,6 +84,7 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
   const dialog = useDialog();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [insertPosition, setInsertPosition] = useState<"before" | "after">("before");
 
   const handleAdd = useCallback(() => {
     dialog.showModal({
@@ -141,7 +142,13 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
       e.dataTransfer.dropEffect = "move";
 
       if (draggedIndex !== null && draggedIndex !== index) {
+        // Calculate if cursor is in top half or bottom half of the element
+        const rect = e.currentTarget.getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+        const position = e.clientY < midpoint ? "before" : "after";
+
         setDragOverIndex(index);
+        setInsertPosition(position);
       }
     },
     [draggedIndex]
@@ -161,11 +168,22 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
         return;
       }
 
+      // Calculate actual insert position based on cursor position
+      let actualInsertIndex = dropIndex;
+      if (insertPosition === "after") {
+        actualInsertIndex = dropIndex + 1;
+      }
+
+      // Adjust for the removal of the dragged item
+      if (draggedIndex < actualInsertIndex) {
+        actualInsertIndex--;
+      }
+
       // Reorder array
       const newCommands = [...customCommands];
       const [draggedItem] = newCommands.splice(draggedIndex, 1);
       if (draggedItem) {
-        newCommands.splice(dropIndex, 0, draggedItem);
+        newCommands.splice(actualInsertIndex, 0, draggedItem);
       }
 
       onChange(newCommands);
@@ -174,7 +192,7 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
       setDraggedIndex(null);
       setDragOverIndex(null);
     },
-    [draggedIndex, customCommands, onChange]
+    [draggedIndex, insertPosition, customCommands, onChange]
   );
 
   const handleDragEnd = useCallback(() => {
@@ -242,7 +260,13 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
                 className={`
                   group
                   ${draggedIndex === index ? "opacity-50" : ""}
-                  ${dragOverIndex === index ? "border-t-2 border-primary" : ""}
+                  ${
+                    dragOverIndex === index
+                      ? insertPosition === "before"
+                        ? "border-t-2 border-primary"
+                        : "border-b-2 border-primary"
+                      : ""
+                  }
                 `}
               >
                 <ListItem dense disablePadding className="hover:bg-hover-highlight">
