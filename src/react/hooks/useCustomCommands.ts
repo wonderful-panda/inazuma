@@ -1,13 +1,15 @@
 import { useAtomValue } from "jotai";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import type { CustomCommand } from "@backend/CustomCommand";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { currentBranchAtom, repoPathAtom } from "@/state/repository";
+import { currentBranchAtom, repoConfigAtom, repoPathAtom } from "@/state/repository";
 import { useConfigValue } from "@/state/root";
 import { useBeginCustomCommand } from "./actions/beginCustomCommand";
 
 export interface UseCustomCommandsReturn {
   customCommands: CustomCommand[];
+  globalCommands: CustomCommand[];
+  repositoryCommands: CustomCommand[];
   executeCommand: (command: CustomCommand, commit: Commit) => Promise<void>;
   canExecute: (command: CustomCommand, commit: Commit | undefined) => boolean;
   getCommandWithContext: (
@@ -26,8 +28,19 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
   const config = useConfigValue();
   const repoPath = useAtomValue(repoPathAtom);
   const currentBranch = useAtomValue(currentBranchAtom);
+  const repoConfig = useAtomValue(repoConfigAtom);
 
-  const customCommands = config.customCommands;
+  const globalCommands = useMemo(() => config.customCommands || [], [config.customCommands]);
+  const repositoryCommands = useMemo(
+    () => repoConfig?.customCommands || [],
+    [repoConfig?.customCommands]
+  );
+
+  // Merge global and repository-specific custom commands
+  const customCommands = useMemo(() => {
+    return [...globalCommands, ...repositoryCommands];
+  }, [globalCommands, repositoryCommands]);
+
   const beginCustomCommand = useBeginCustomCommand();
 
   /**
@@ -110,6 +123,8 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
 
   return {
     customCommands,
+    globalCommands,
+    repositoryCommands,
     executeCommand,
     canExecute,
     getCommandWithContext

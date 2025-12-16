@@ -2,7 +2,13 @@ import type { Getter, Setter } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import { Grapher, type GraphFragment } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { logAtom, repoPathAtom, repositoryStoresAtomFamily, setLogAtom } from "@/state/repository";
+import {
+  loadRepoConfigAtom,
+  logAtom,
+  repoPathAtom,
+  repositoryStoresAtomFamily,
+  setLogAtom
+} from "@/state/repository";
 import { reflogAtom } from "@/state/repository/misc";
 import { addRecentOpenedRepository } from "@/state/root";
 import { addAppTab, getAppTabsValue, selectAppTab } from "@/state/tabs";
@@ -98,12 +104,14 @@ export const useOpenRepository = () => {
         );
         if (0 <= index) {
           store.set(setLogAtom, { path, commits, refs, graph, keepTabs: true });
+          await store.set(loadRepoConfigAtom);
           selectAppTab(index);
           return;
         }
         await invokeTauriCommand("open_repository", { repoPath: path });
         addRecentOpenedRepository(path);
         store.set(setLogAtom, { path, commits, refs, graph, keepTabs: false });
+        await store.set(loadRepoConfigAtom);
         addAppTab({
           type: "repository",
           id: `__REPO__:${path}`,

@@ -16,6 +16,8 @@ import { SectionContent, SectionHeader } from "./PreferenceSection";
 export interface CustomCommandTabProps {
   customCommands: CustomCommand[];
   onChange: (commands: CustomCommand[]) => void;
+  repoCustomCommands: CustomCommand[] | null;
+  onRepoCustomCommandsChange: (commands: CustomCommand[]) => void;
 }
 
 const CustomCommandFormDialog: React.FC<{
@@ -72,7 +74,19 @@ const CustomCommandFormDialog: React.FC<{
   );
 };
 
-export const CustomCommandTab: React.FC<CustomCommandTabProps> = ({ customCommands, onChange }) => {
+interface CustomCommandListProps {
+  title: string;
+  customCommands: CustomCommand[];
+  onChange: (commands: CustomCommand[]) => void;
+  emptyMessage?: string;
+}
+
+const CustomCommandList: React.FC<CustomCommandListProps> = ({
+  title,
+  customCommands,
+  onChange,
+  emptyMessage = 'No custom commands defined. Click "Add" to create one.'
+}) => {
   const dialog = useDialog();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -203,78 +217,115 @@ export const CustomCommandTab: React.FC<CustomCommandTabProps> = ({ customComman
   );
 
   return (
-    <div className="p-2">
-      <div className="flex-row-nowrap justify-between items-center">
-        <SectionHeader text="Custom Commands" />
+    <div className="flex flex-col h-full">
+      <div className="flex-row-nowrap justify-between items-center mb-2">
+        <SectionHeader text={title} />
         <Button variant="contained" startIcon={<Icon icon="mdi:plus" />} onClick={handleAdd}>
           Add
         </Button>
       </div>
-      <SectionContent>
-        <List>
-          {customCommands.length === 0 && (
-            <Typography variant="body2" color="textSecondary" className="p-4">
-              No custom commands defined. Click "Add" to create one.
-            </Typography>
-          )}
-          {customCommands.map((cmd, index) => (
-            <div
-              key={cmd.name}
-              draggable
-              onDragStart={(e) => handleDragStart(e, index)}
-              onDragOver={(e) => handleDragOver(e, index)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, index)}
-              onDragEnd={handleDragEnd}
-              onKeyDown={(e) => handleKeyDown(e, index)}
-              tabIndex={0}
-              role="button"
-              aria-label={`${cmd.name}. Press up or down arrow keys to reorder`}
-              className={`
-                group
-                ${draggedIndex === index ? "opacity-50" : ""}
-                ${dragOverIndex === index ? "border-t-2 border-primary" : ""}
-              `}
-            >
-              <ListItem dense disablePadding className="hover:bg-hover-highlight">
-                {/* Drag handle */}
-                <div className="px-2 cursor-move hover:bg-gray-100 rounded" title="Drag to reorder">
-                  <Icon icon="mdi:drag-vertical" className="text-gray-400 hover:text-gray-600" />
-                </div>
+      <div className="flex-1 overflow-auto">
+        <SectionContent>
+          <List>
+            {customCommands.length === 0 && (
+              <Typography variant="body2" color="textSecondary" className="p-4">
+                {emptyMessage}
+              </Typography>
+            )}
+            {customCommands.map((cmd, index) => (
+              <div
+                key={cmd.name}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragEnd={handleDragEnd}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                tabIndex={0}
+                role="button"
+                aria-label={`${cmd.name}. Press up or down arrow keys to reorder`}
+                className={`
+                  group
+                  ${draggedIndex === index ? "opacity-50" : ""}
+                  ${dragOverIndex === index ? "border-t-2 border-primary" : ""}
+                `}
+              >
+                <ListItem dense disablePadding className="hover:bg-hover-highlight">
+                  {/* Drag handle */}
+                  <div
+                    className="px-2 cursor-move hover:bg-gray-100 rounded"
+                    title="Drag to reorder"
+                  >
+                    <Icon icon="mdi:drag-vertical" className="text-gray-400 hover:text-gray-600" />
+                  </div>
 
-                <div className="flex flex-1 flex-col px-4 py-2">
-                  <Typography variant="subtitle1" className="font-bold">
-                    {cmd.name}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {cmd.description}
-                  </Typography>
-                </div>
-                <div className="mr-4 flex-row-nowrap gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75">
-                  <IconButton
-                    edge="end"
-                    onClick={() => handleEdit(index, cmd)}
-                    className="hover:bg-highlight text-2xl"
-                    size="large"
-                    title="Edit"
-                  >
-                    <Icon icon="mdi:pencil" />
-                  </IconButton>
-                  <IconButton
-                    edge="end"
-                    onClick={() => handleDelete(index)}
-                    className="hover:bg-highlight text-2xl"
-                    size="large"
-                    title="Delete"
-                  >
-                    <Icon icon="mdi:close" />
-                  </IconButton>
-                </div>
-              </ListItem>
-            </div>
-          ))}
-        </List>
-      </SectionContent>
+                  <div className="flex flex-1 flex-col px-4 py-2">
+                    <Typography variant="subtitle1" className="font-bold">
+                      {cmd.name}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {cmd.description}
+                    </Typography>
+                  </div>
+                  <div className="mr-4 flex-row-nowrap gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75">
+                    <IconButton
+                      edge="end"
+                      onClick={() => handleEdit(index, cmd)}
+                      className="hover:bg-highlight text-2xl"
+                      size="large"
+                      title="Edit"
+                    >
+                      <Icon icon="mdi:pencil" />
+                    </IconButton>
+                    <IconButton
+                      edge="end"
+                      onClick={() => handleDelete(index)}
+                      className="hover:bg-highlight text-2xl"
+                      size="large"
+                      title="Delete"
+                    >
+                      <Icon icon="mdi:close" />
+                    </IconButton>
+                  </div>
+                </ListItem>
+              </div>
+            ))}
+          </List>
+        </SectionContent>
+      </div>
+    </div>
+  );
+};
+
+export const CustomCommandTab: React.FC<CustomCommandTabProps> = ({
+  customCommands,
+  onChange,
+  repoCustomCommands,
+  onRepoCustomCommandsChange
+}) => {
+  return (
+    <div className="p-2 h-full flex flex-col gap-4">
+      {/* Global custom commands section */}
+      <div className="flex-1 overflow-hidden">
+        <CustomCommandList
+          title="Global Custom Commands"
+          customCommands={customCommands}
+          onChange={onChange}
+        />
+      </div>
+
+      {/* Repository-specific custom commands section */}
+      {repoCustomCommands && (
+        <div className="flex-1 overflow-hidden border-t border-splitter pt-4">
+          <CustomCommandList
+            title="Repository Custom Commands"
+            customCommands={repoCustomCommands}
+            onChange={onRepoCustomCommandsChange}
+            emptyMessage="No repository-specific commands. These commands will only be available in this repository."
+          />
+        </div>
+      )}
     </div>
   );
 };

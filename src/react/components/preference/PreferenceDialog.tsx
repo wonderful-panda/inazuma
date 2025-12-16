@@ -1,4 +1,5 @@
 import type { CustomCommand } from "@backend/CustomCommand";
+import type { RepositoryConfig } from "@backend/RepositoryConfig";
 import { Box, Tab, Tabs } from "@mui/material";
 import { useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
 import {
@@ -12,6 +13,11 @@ import { DialogProvider, useDialog } from "@/context/DialogContext";
 import { assertNever } from "@/util";
 import { CustomCommandTab } from "./CustomCommandTab";
 import { GeneralTab } from "./GeneralTab";
+
+interface PreferenceState {
+  config: Config;
+  repoConfig: RepositoryConfig | null;
+}
 
 type Action =
   | {
@@ -35,50 +41,59 @@ type Action =
       payload: CustomCommand[];
     }
   | {
+      type: "repoCustomCommands";
+      payload: CustomCommand[];
+    }
+  | {
       type: "reset";
-      payload: Config;
+      payload: PreferenceState;
     };
 
-const reducer = (state: Config, action: Action) => {
+const reducer = (state: PreferenceState, action: Action): PreferenceState => {
   if (action.type === "reset") {
     return action.payload;
   } else if (action.type === "useGravatar") {
-    return { ...state, useGravatar: action.payload };
+    return { ...state, config: { ...state.config, useGravatar: action.payload } };
   } else if (action.type === "customCommands") {
-    return { ...state, customCommands: action.payload };
+    return { ...state, config: { ...state.config, customCommands: action.payload } };
+  } else if (action.type === "repoCustomCommands") {
+    return {
+      ...state,
+      repoConfig: state.repoConfig ? { ...state.repoConfig, customCommands: action.payload } : null
+    };
   } else {
-    const newState = { ...state };
+    const newConfig = { ...state.config };
     const value = action.payload ?? undefined;
     switch (action.type) {
       case "fontFamilyStandard":
-        newState.fontFamily = { ...state.fontFamily, standard: value };
+        newConfig.fontFamily = { ...state.config.fontFamily, standard: value };
         break;
       case "fontFamilyMonospace":
-        newState.fontFamily = { ...state.fontFamily, monospace: value };
+        newConfig.fontFamily = { ...state.config.fontFamily, monospace: value };
         break;
       case "fontSize":
         if (value === "x-small" || value === "small") {
-          newState.fontSize = value;
+          newConfig.fontSize = value;
         } else {
-          newState.fontSize = "medium";
+          newConfig.fontSize = "medium";
         }
         break;
       case "externalDiff":
-        newState.externalDiffTool = value;
+        newConfig.externalDiffTool = value;
         break;
       case "interactiveShell":
-        newState.interactiveShell = value;
+        newConfig.interactiveShell = value;
         break;
       case "recentListCount":
         {
           const intValue = Number.parseInt(value ?? "0", 10);
           if (!Number.isNaN(intValue) && intValue > 0) {
-            newState.recentListCount = intValue;
+            newConfig.recentListCount = intValue;
           }
         }
         break;
       case "avatarShape":
-        newState.avatarShape = value === "circle" ? "circle" : "square";
+        newConfig.avatarShape = value === "circle" ? "circle" : "square";
         break;
       case "logLevel":
         if (
@@ -89,19 +104,21 @@ const reducer = (state: Config, action: Action) => {
           value === "debug" ||
           value === "trace"
         ) {
-          newState.logLevel = value;
+          newConfig.logLevel = value;
         }
         break;
       default:
         assertNever(action);
     }
-    return newState;
+    return { ...state, config: newConfig };
   }
 };
 
 export interface PreferenceDialogProps {
   config: Config;
   onConfigChange: (config: Config) => void;
+  repoConfig?: RepositoryConfig | null;
+  onRepoConfigChange?: (config: RepositoryConfig) => void;
 }
 
 interface TabPanelProps {
@@ -113,7 +130,7 @@ interface TabPanelProps {
 const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
   return (
     <div role="tabpanel" hidden={value !== index} className="flex-1 overflow-auto">
-      {value === index && <div>{children}</div>}
+      {value === index && <div className="h-full">{children}</div>}
     </div>
   );
 };
@@ -121,11 +138,19 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
 const PreferenceDialogContent: React.FC<
   PreferenceDialogProps & { ref?: React.Ref<{ save: () => void }> }
 > = (props) => {
-  const [state, dispatch] = useReducer(reducer, props.config);
+  const [state, dispatch] = useReducer(reducer, {
+    config: props.config,
+    repoConfig: props.repoConfig ?? null
+  });
   const [currentTab, setCurrentTab] = useState(0);
 
   useImperativeHandle(props.ref, () => ({
-    save: () => props.onConfigChange(state)
+    save: () => {
+      props.onConfigChange(state.config);
+      if (state.repoConfig && props.onRepoConfigChange) {
+        props.onRepoConfigChange(state.repoConfig);
+      }
+    }
   }));
 
   const handleTabChange = useCallback((_event: React.SyntheticEvent, newValue: number) => {
@@ -145,12 +170,16 @@ const PreferenceDialogContent: React.FC<
           <Tab label="Custom Commands" />
         </Tabs>
         <TabPanel value={currentTab} index={0}>
-          <GeneralTab state={state} dispatch={dispatch} />
+          <GeneralTab state={state.config} dispatch={dispatch} />
         </TabPanel>
         <TabPanel value={currentTab} index={1}>
           <CustomCommandTab
-            customCommands={state.customCommands}
+            customCommands={state.config.customCommands}
             onChange={(commands) => dispatch({ type: "customCommands", payload: commands })}
+            repoCustomCommands={state.repoConfig?.customCommands ?? null}
+            onRepoCustomCommandsChange={(commands) =>
+              dispatch({ type: "repoCustomCommands", payload: commands })
+            }
           />
         </TabPanel>
       </DialogProvider>

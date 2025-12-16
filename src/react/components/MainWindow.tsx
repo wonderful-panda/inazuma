@@ -1,3 +1,4 @@
+import type { RepositoryConfig } from "@backend/RepositoryConfig";
 import {
   Drawer,
   ListItem,
@@ -7,6 +8,7 @@ import {
   Typography
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
+import { atom, useAtomValue } from "jotai";
 import type React from "react";
 import {
   createContext,
@@ -19,7 +21,9 @@ import {
 } from "react";
 import type { IconActionItem, Spacer } from "@/commands/types";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { repoConfigAtom, repositoryStoresAtomFamily, saveRepoConfigAtom } from "@/state/repository";
 import { useConfig } from "@/state/root";
+import { useAppTabsValue } from "@/state/tabs";
 import { nope } from "@/util";
 import { useAboutDialog } from "./AboutDialog";
 import { Cmd, CommandGroup } from "./CommandGroup";
@@ -87,9 +91,38 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [props, setProps] = useState<MainWindowProps>({ title: "" });
   const openPreference = usePreferenceDialog();
   const openAbout = useAboutDialog();
+
+  // Get current repository and its config
+  const appTabs = useAppTabsValue();
+  const currentTab = appTabs.tabs[appTabs.currentIndex];
+  const repoPath = currentTab?.type === "repository" ? currentTab.payload.path : null;
+
+  const repositoryStore = useAtomValue(
+    useMemo(() => (repoPath ? repositoryStoresAtomFamily(repoPath) : atom(null)), [repoPath])
+  );
+
+  const repoConfig = useMemo(() => {
+    if (!repositoryStore) return null;
+    return repositoryStore.get(repoConfigAtom);
+  }, [repositoryStore]);
+
+  const handleRepoConfigChange = useCallback(
+    async (newConfig: RepositoryConfig) => {
+      if (!repositoryStore) return;
+      await repositoryStore.set(saveRepoConfigAtom, newConfig);
+    },
+    [repositoryStore]
+  );
+
   const callbacks = useMemo(
     () => ({
-      openPreference: () => void openPreference({ config, onConfigChange: setConfig }),
+      openPreference: () =>
+        void openPreference({
+          config,
+          onConfigChange: setConfig,
+          repoConfig,
+          onRepoConfigChange: handleRepoConfigChange
+        }),
       openAbout: () => void openAbout(),
       changeFontSize: () => {
         setConfig((prev) => {
@@ -100,7 +133,7 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
       },
       openDevtools: () => void invokeTauriCommand("open_devtools")
     }),
-    [config, setConfig, openPreference, openAbout]
+    [config, setConfig, repoConfig, handleRepoConfigChange, openPreference, openAbout]
   );
 
   const drawerItems = useMemo<readonly IconActionItem[]>(

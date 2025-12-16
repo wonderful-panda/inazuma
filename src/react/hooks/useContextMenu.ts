@@ -1,4 +1,5 @@
 import { useCallback, useContext } from "react";
+import type { CustomCommand } from "@backend/CustomCommand";
 import {
   commitCommandsToActions,
   fileCommandsToActions,
@@ -18,7 +19,13 @@ export const useCommitContextMenu = (): ((
   const { show } = useContext(ContextMenuContext);
   const confirmDialog = useConfirmDialog();
   const commitCommands = useCommitCommands();
-  const { customCommands, canExecute, getCommandWithContext, executeCommand } = useCustomCommands();
+  const {
+    globalCommands,
+    repositoryCommands,
+    canExecute,
+    getCommandWithContext,
+    executeCommand
+  } = useCustomCommands();
 
   const onCommitContextMenu = useCallback(
     (event: React.MouseEvent | MouseEvent, _index: number, commit: Commit) => {
@@ -29,10 +36,10 @@ export const useCommitContextMenu = (): ((
       // Standard menu items
       const standardMenus = commitCommandsToActions(commitCommands, commit);
 
-      // Custom command menu items
-      const customMenus: ActionItem[] = customCommands.map((command) => ({
-        id: `custom-${command.name}`,
-        label: command.description || command.name,
+      // Helper to create menu item from custom command
+      const createCustomMenuItem = (command: CustomCommand, source: "Global" | "Repository"): ActionItem => ({
+        id: `custom-${source.toLowerCase()}-${command.name}`,
+        label: `${command.description || command.name} (${source})`,
         disabled: !canExecute(command, commit),
         handler: async () => {
           // Show confirmation dialog if required
@@ -57,7 +64,12 @@ export const useCommitContextMenu = (): ((
             console.error("Failed to execute custom command:", error);
           });
         }
-      }));
+      });
+
+      // Custom command menu items
+      const globalMenus: ActionItem[] = globalCommands.map((cmd) => createCustomMenuItem(cmd, "Global"));
+      const repoMenus: ActionItem[] = repositoryCommands.map((cmd) => createCustomMenuItem(cmd, "Repository"));
+      const customMenus: ActionItem[] = [...globalMenus, ...repoMenus];
 
       // Combine standard menus and custom menus with separator
       const menus: ("divider" | ActionItem)[] =
@@ -69,7 +81,8 @@ export const useCommitContextMenu = (): ((
       show,
       confirmDialog,
       commitCommands,
-      customCommands,
+      globalCommands,
+      repositoryCommands,
       canExecute,
       getCommandWithContext,
       executeCommand
