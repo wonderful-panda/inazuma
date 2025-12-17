@@ -41,10 +41,7 @@ impl RepoConfigState {
     }
 
     pub fn save(&mut self, new_config: RepositoryConfig) -> Result<(), Box<dyn Error>> {
-        let repo_path = self
-            .repo_path
-            .as_ref()
-            .ok_or("No repository path set")?;
+        let repo_path = self.repo_path.as_ref().ok_or("No repository path set")?;
 
         let path = repo_path.join(".git").join("inazuma.json");
 

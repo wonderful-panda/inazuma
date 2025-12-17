@@ -2,8 +2,8 @@ use crate::state::pty::PtyStateMutex;
 use portable_pty::ExitStatus;
 use std::borrow::Cow;
 use std::path::{Path, PathBuf};
-use tauri::{AppHandle, Runtime, State};
 use tauri::Emitter;
+use tauri::{AppHandle, Runtime, State};
 
 /// Executes a custom command in a PTY (pseudo-terminal).
 ///

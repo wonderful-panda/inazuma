@@ -1,6 +1,6 @@
+import type { CustomCommand } from "@backend/CustomCommand";
 import { useAtomValue } from "jotai";
 import { useCallback, useMemo } from "react";
-import type { CustomCommand } from "@backend/CustomCommand";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { currentBranchAtom, repoConfigAtom, repoPathAtom } from "@/state/repository";
 import { useConfigValue } from "@/state/root";
@@ -53,6 +53,7 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
       const errors: string[] = [];
 
       // Replace ${repo}
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: expected
       if (commandLine.includes("${repo}")) {
         if (!repoPath) {
           errors.push("Repository path is not available");
@@ -62,6 +63,7 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
       }
 
       // Replace ${branch}
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: expected
       if (commandLine.includes("${branch}")) {
         if (!currentBranch) {
           errors.push("Current branch is not available");
@@ -71,6 +73,7 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
       }
 
       // Replace ${commit}
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: expected
       if (commandLine.includes("${commit}")) {
         if (!commit) {
           errors.push("Commit is not selected");

@@ -26,7 +26,7 @@ export interface UseDragAndDropReorderReturn extends DragAndDropReorderState {
  * @param onChange - Callback function called with the new order when items are reordered
  * @returns State and handlers for drag-and-drop functionality
  */
-export const useDragAndDropReorder = <T,>(
+export const useDragAndDropReorder = <T>(
   items: T[],
   onChange: (newItems: T[]) => void
 ): UseDragAndDropReorderReturn => {
