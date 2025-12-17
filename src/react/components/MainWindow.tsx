@@ -8,7 +8,7 @@ import {
   Typography
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import { atom, useAtomValue } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import type React from "react";
 import {
   createContext,
@@ -97,21 +97,16 @@ export const MainWindow: React.FC<React.PropsWithChildren> = ({ children }) => {
   const currentTab = appTabs.tabs[appTabs.currentIndex];
   const repoPath = currentTab?.type === "repository" ? currentTab.payload.path : null;
 
-  const repositoryStore = useAtomValue(
-    useMemo(() => (repoPath ? repositoryStoresAtomFamily(repoPath) : atom(null)), [repoPath])
-  );
+  const repoStore = useAtomValue(repoPath ? repositoryStoresAtomFamily(repoPath) : atom(undefined));
 
-  const repoConfig = useMemo(() => {
-    if (!repositoryStore) return null;
-    return repositoryStore.get(repoConfigAtom);
-  }, [repositoryStore]);
+  const repoConfig = useAtomValue(repoConfigAtom, { store: repoStore });
+  const saveRepoConfig = useSetAtom(saveRepoConfigAtom, { store: repoStore });
 
   const handleRepoConfigChange = useCallback(
     async (newConfig: RepositoryConfig) => {
-      if (!repositoryStore) return;
-      await repositoryStore.set(saveRepoConfigAtom, newConfig);
+      await saveRepoConfig(newConfig);
     },
-    [repositoryStore]
+    [saveRepoConfig]
   );
 
   const callbacks = useMemo(

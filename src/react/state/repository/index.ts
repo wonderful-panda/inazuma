@@ -69,31 +69,26 @@ export const setCommitDetailAtom = atom(
  */
 export const repoConfigAtom = atom<RepositoryConfig | undefined>(undefined);
 
-export const loadRepoConfigAtom = atom(
-  null,
-  async (get, set) => {
-    const repoPath = get(_repoPathAtom);
-    if (!repoPath) {
-      set(repoConfigAtom, undefined);
-      return;
-    }
-    try {
-      const config = await invokeTauriCommand("load_repo_config", { repoPath });
-      set(repoConfigAtom, config);
-    } catch (error) {
-      console.error("Failed to load repository config:", error);
-      set(repoConfigAtom, { customCommands: [] });
-    }
+export const loadRepoConfigAtom = atom(null, async (get, set) => {
+  const repoPath = get(_repoPathAtom);
+  if (!repoPath) {
+    set(repoConfigAtom, undefined);
+    return;
   }
-);
+  try {
+    const config = await invokeTauriCommand("load_repo_config", { repoPath });
+    set(repoConfigAtom, config);
+  } catch (error) {
+    console.error("Failed to load repository config:", error);
+    set(repoConfigAtom, { customCommands: [] });
+  }
+});
 
-export const saveRepoConfigAtom = atom(
-  null,
-  async (get, _set, newConfig: RepositoryConfig) => {
-    const repoPath = get(_repoPathAtom);
-    if (!repoPath) {
-      throw new Error("No repository path set");
-    }
-    await invokeTauriCommand("save_repo_config", { repoPath, newConfig });
+export const saveRepoConfigAtom = atom(null, async (get, set, newConfig: RepositoryConfig) => {
+  const repoPath = get(_repoPathAtom);
+  if (!repoPath) {
+    throw new Error("No repository path set");
   }
-);
+  await invokeTauriCommand("save_repo_config", { repoPath, newConfig });
+  set(repoConfigAtom, newConfig);
+});
