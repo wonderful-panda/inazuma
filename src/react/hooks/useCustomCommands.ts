@@ -2,7 +2,7 @@ import type { CustomCommand } from "@backend/CustomCommand";
 import { useAtomValue } from "jotai";
 import { useCallback, useMemo } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { currentBranchAtom, repoConfigAtom, repoPathAtom } from "@/state/repository";
+import { repoConfigAtom, repoPathAtom } from "@/state/repository";
 import { useConfigValue } from "@/state/root";
 import { useBeginCustomCommand } from "./actions/beginCustomCommand";
 
@@ -27,7 +27,6 @@ export interface UseCustomCommandsReturn {
 export const useCustomCommands = (): UseCustomCommandsReturn => {
   const config = useConfigValue();
   const repoPath = useAtomValue(repoPathAtom);
-  const currentBranch = useAtomValue(currentBranchAtom);
   const repoConfig = useAtomValue(repoConfigAtom);
 
   const globalCommands = useMemo(() => config.customCommands || [], [config.customCommands]);
@@ -58,17 +57,10 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
         if (!repoPath) {
           errors.push("Repository path is not available");
         } else {
-          commandLine = commandLine.replace(/\$\{repo\}/g, repoPath);
-        }
-      }
-
-      // Replace ${branch}
-      // biome-ignore lint/suspicious/noTemplateCurlyInString: expected
-      if (commandLine.includes("${branch}")) {
-        if (!currentBranch) {
-          errors.push("Current branch is not available");
-        } else {
-          commandLine = commandLine.replace(/\$\{branch\}/g, currentBranch.name);
+          // Convert path separators to backslash on Windows
+          const isWindows = navigator.userAgent.toLowerCase().includes("win");
+          const pathToUse = isWindows ? repoPath.replace(/\//g, "\\") : repoPath;
+          commandLine = commandLine.replace(/\$\{repo\}/g, pathToUse);
         }
       }
 
@@ -88,7 +80,7 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
 
       return { commandLine };
     },
-    [repoPath, currentBranch]
+    [repoPath]
   );
 
   /**

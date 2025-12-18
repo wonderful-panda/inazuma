@@ -71,7 +71,7 @@ export const CustomCommandForm: React.FC<CustomCommandFormProps> = (props) => {
         rows={3}
         value={commandLine}
         onChange={(e) => setCommandLine(e.target.value)}
-        helperText="Use ${repo}, ${branch}, ${commit} for placeholders"
+        helperText="Use ${repo}, ${commit} for placeholders (${repo} uses backslash on Windows)"
       />
       <FormControlLabel
         control={
