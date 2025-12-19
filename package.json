@@ -14,7 +14,7 @@
     "generate-dts:invoke": "ts-node build/generate-invoke.ts",
     "generate-dts": "run-s generate-dts:*",
     "generate-licenses": "ts-node build/generate-licenses.ts",
-    "format:frontend": "biome format --write src/react",
+    "format:frontend": "biome check --formatter-enabled=true --assist-enabled=true --write src/react",
     "format:tauri": "cargo fmt --manifest-path src-tauri/app/Cargo.toml --all",
     "format": "run-s format:frontend format:tauri",
     "lint": "biome lint src/react",

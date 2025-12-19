@@ -1,8 +1,8 @@
+import type { RepositoryConfig } from "@backend/RepositoryConfig";
 import { atom, createStore } from "jotai";
 import { atomFamily } from "jotai/utils";
 import type { GraphFragment } from "@/grapher";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import type { RepositoryConfig } from "@backend/RepositoryConfig";
 import { resetRepoTabsAtom } from "./tabs";
 import { workingTreeAtom } from "./workingtree";
 
