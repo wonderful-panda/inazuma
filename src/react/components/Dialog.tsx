@@ -350,6 +350,7 @@ export const Dialog: React.FC<{ ref?: React.Ref<DialogMethods> }> = ({ ref: oute
     (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
+        e.stopPropagation();
         void close({ result: "rejected" });
       } else {
         e.stopPropagation();
