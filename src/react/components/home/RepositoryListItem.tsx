@@ -49,11 +49,12 @@ export const RepositoryListItem: React.FC<RepositoryListItemProps> = ({
             <Icon icon={icon} />
           </ListItemIcon>
           <ListItemText
-            primaryTypographyProps={{ className: "text-xl" }}
-            secondaryTypographyProps={{ className: "text-greytext" }}
             primary={primary}
             secondary={secondary}
-          />
+            slotProps={{
+              primary: { className: "text-xl" },
+              secondary: { className: "text-greytext" }
+            }} />
           {secondaryAction && (
             <ListItemSecondaryAction
               className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75"
