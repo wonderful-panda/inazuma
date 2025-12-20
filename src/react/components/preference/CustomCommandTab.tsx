@@ -1,4 +1,5 @@
-import type { CustomCommand } from "@backend/CustomCommand";
+import type { CommitCustomCommand } from "@backend/CommitCustomCommand";
+import type { FileCustomCommand } from "@backend/FileCustomCommand";
 import { Button, IconButton, List, ListItem, Typography } from "@mui/material";
 import { useCallback, useRef, useState } from "react";
 import {
@@ -11,16 +12,17 @@ import {
 import { Icon } from "@/components/Icon";
 import { useDialog } from "@/context/DialogContext";
 import { useDragAndDropReorder } from "@/hooks/useDragAndDropReorder";
-import { CustomCommandForm } from "./CustomCommandForm";
+import { CustomCommandForm, type CommandType } from "./CustomCommandForm";
 import { SectionContent, SectionHeader } from "./PreferenceSection";
 import type { TabContentProps } from "./types";
 
 const CustomCommandFormDialog: React.FC<{
-  initialValue?: Partial<CustomCommand>;
+  commandType: CommandType;
+  initialValue?: Partial<CommitCustomCommand> | Partial<FileCustomCommand>;
   editMode: boolean;
   existingNames: string[];
-  onSave: (command: CustomCommand) => void;
-}> = ({ initialValue, editMode, existingNames, onSave }) => {
+  onSave: (command: CommitCustomCommand | FileCustomCommand) => void;
+}> = ({ commandType, initialValue, editMode, existingNames, onSave }) => {
   const formRef = useRef({} as React.ComponentRef<typeof CustomCommandForm>);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,16 +52,25 @@ const CustomCommandFormDialog: React.FC<{
     return Promise.resolve(true);
   }, [editMode, existingNames, onSave]);
 
+  const titleText = editMode
+    ? `Edit ${commandType === "commit" ? "Commit" : "File"} Command`
+    : `Add ${commandType === "commit" ? "Commit" : "File"} Command`;
+
   return (
     <>
-      <DialogTitle>{editMode ? "Edit Custom Command" : "Add Custom Command"}</DialogTitle>
+      <DialogTitle>{titleText}</DialogTitle>
       <DialogContent>
         {error && (
           <Typography color="error" className="mb-2">
             {error}
           </Typography>
         )}
-        <CustomCommandForm ref={formRef} initialValue={initialValue} editMode={editMode} />
+        <CustomCommandForm
+          ref={formRef}
+          commandType={commandType}
+          initialValue={initialValue}
+          editMode={editMode}
+        />
       </DialogContent>
       <DialogActions>
         <AcceptButton text="Save" onClick={handleSave} default />
@@ -69,19 +80,21 @@ const CustomCommandFormDialog: React.FC<{
   );
 };
 
-interface CustomCommandListProps {
+interface CustomCommandListProps<T extends CommitCustomCommand | FileCustomCommand> {
   title: string;
-  customCommands: CustomCommand[];
-  onChange: (commands: CustomCommand[]) => void;
+  commandType: CommandType;
+  customCommands: T[];
+  onChange: (commands: T[]) => void;
   emptyMessage?: string;
 }
 
-const CustomCommandList: React.FC<CustomCommandListProps> = ({
+function CustomCommandList<T extends CommitCustomCommand | FileCustomCommand>({
   title,
+  commandType,
   customCommands,
   onChange,
   emptyMessage = 'No custom commands defined. Click "Add" to create one.'
-}) => {
+}: CustomCommandListProps<T>) {
   const dialog = useDialog();
   const { draggedIndex, dragOverIndex, insertPosition, handlers } = useDragAndDropReorder(
     customCommands,
@@ -92,34 +105,36 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
     dialog.showModal({
       content: (
         <CustomCommandFormDialog
+          commandType={commandType}
           editMode={false}
           existingNames={customCommands.map((cmd) => cmd.name)}
           onSave={(command) => {
-            onChange([...customCommands, command]);
+            onChange([...customCommands, command as T]);
           }}
         />
       )
     });
-  }, [dialog, customCommands, onChange]);
+  }, [dialog, commandType, customCommands, onChange]);
 
   const handleEdit = useCallback(
-    (index: number, command: CustomCommand) => {
+    (index: number, command: T) => {
       dialog.showModal({
         content: (
           <CustomCommandFormDialog
+            commandType={commandType}
             initialValue={command}
             editMode={true}
             existingNames={customCommands.map((cmd) => cmd.name)}
             onSave={(updatedCommand) => {
               const newCommands = [...customCommands];
-              newCommands[index] = updatedCommand;
+              newCommands[index] = updatedCommand as T;
               onChange(newCommands);
             }}
           />
         )
       });
     },
-    [dialog, customCommands, onChange]
+    [dialog, commandType, customCommands, onChange]
   );
 
   const handleDelete = useCallback(
@@ -217,45 +232,98 @@ const CustomCommandList: React.FC<CustomCommandListProps> = ({
       </div>
     </div>
   );
-};
+}
 
 export const CustomCommandTab: React.FC<TabContentProps> = ({ config, repoConfig, dispatch }) => {
-  const handleGlobalCommandsChange = useCallback(
-    (commands: CustomCommand[]) => {
+  const handleGlobalCommitCommandsChange = useCallback(
+    (commands: CommitCustomCommand[]) => {
       dispatch({ type: "customCommands", payload: commands });
     },
     [dispatch]
   );
 
-  const handleRepositoryCommandsChange = useCallback(
-    (commands: CustomCommand[]) => {
+  const handleGlobalFileCommandsChange = useCallback(
+    (commands: FileCustomCommand[]) => {
+      dispatch({ type: "customFileCommands", payload: commands });
+    },
+    [dispatch]
+  );
+
+  const handleRepositoryCommitCommandsChange = useCallback(
+    (commands: CommitCustomCommand[]) => {
       dispatch({ type: "repoCustomCommands", payload: commands });
     },
     [dispatch]
   );
 
-  return (
-    <div className="p-2 h-full flex flex-col gap-4">
-      {/* Global custom commands section */}
-      <div className="flex-1 overflow-hidden">
-        <CustomCommandList
-          title="Global Custom Commands"
-          customCommands={config.customCommands}
-          onChange={handleGlobalCommandsChange}
-        />
-      </div>
+  const handleRepositoryFileCommandsChange = useCallback(
+    (commands: FileCustomCommand[]) => {
+      dispatch({ type: "repoCustomFileCommands", payload: commands });
+    },
+    [dispatch]
+  );
 
-      {/* Repository-specific custom commands section */}
-      {repoConfig?.customCommands && (
-        <div className="flex-1 overflow-hidden border-t border-splitter pt-4">
+  return (
+    <div className="p-2 h-full flex gap-4">
+      {/* Left column: Commit Commands */}
+      <div className="flex-1 flex flex-col">
+        <Typography variant="h6" className="mb-2">
+          Commit Commands
+        </Typography>
+
+        {/* Global commit commands */}
+        <div className="flex-1 overflow-hidden mb-4">
           <CustomCommandList
-            title="Repository Custom Commands"
-            customCommands={repoConfig.customCommands}
-            onChange={handleRepositoryCommandsChange}
-            emptyMessage="No repository-specific commands. These commands will only be available in this repository."
+            title="Global"
+            commandType="commit"
+            customCommands={config.customCommands}
+            onChange={handleGlobalCommitCommandsChange}
           />
         </div>
-      )}
+
+        {/* Repository-specific commit commands */}
+        {repoConfig && (
+          <div className="flex-1 overflow-hidden border-t border-splitter pt-4">
+            <CustomCommandList
+              title="Repository"
+              commandType="commit"
+              customCommands={repoConfig.customCommands}
+              onChange={handleRepositoryCommitCommandsChange}
+              emptyMessage="No repository-specific commands. These commands will only be available in this repository."
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Right column: File Commands */}
+      <div className="flex-1 flex flex-col border-l border-splitter pl-4">
+        <Typography variant="h6" className="mb-2">
+          File Commands
+        </Typography>
+
+        {/* Global file commands */}
+        <div className="flex-1 overflow-hidden mb-4">
+          <CustomCommandList
+            title="Global"
+            commandType="file"
+            customCommands={config.customFileCommands}
+            onChange={handleGlobalFileCommandsChange}
+          />
+        </div>
+
+        {/* Repository-specific file commands */}
+        {repoConfig && (
+          <div className="flex-1 overflow-hidden border-t border-splitter pt-4">
+            <CustomCommandList
+              title="Repository"
+              commandType="file"
+              customCommands={repoConfig.customFileCommands}
+              onChange={handleRepositoryFileCommandsChange}
+              emptyMessage="No repository-specific commands. These commands will only be available in this repository."
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

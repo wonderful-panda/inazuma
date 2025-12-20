@@ -1,4 +1,5 @@
-import type { CustomCommand } from "@backend/CustomCommand";
+import type { CommitCustomCommand } from "@backend/CommitCustomCommand";
+import type { FileCustomCommand } from "@backend/FileCustomCommand";
 import { useCallback, useContext } from "react";
 import {
   commitCommandsToActions,
@@ -19,8 +20,13 @@ export const useCommitContextMenu = (): ((
   const { show } = useContext(ContextMenuContext);
   const confirmDialog = useConfirmDialog();
   const commitCommands = useCommitCommands();
-  const { globalCommands, repositoryCommands, canExecute, getCommandWithContext, executeCommand } =
-    useCustomCommands();
+  const {
+    globalCommitCommands,
+    repositoryCommitCommands,
+    canExecuteCommitCommand,
+    getCommitCommandWithContext,
+    executeCommitCommand
+  } = useCustomCommands();
 
   const onCommitContextMenu = useCallback(
     (event: React.MouseEvent | MouseEvent, _index: number, commit: Commit) => {
@@ -33,16 +39,16 @@ export const useCommitContextMenu = (): ((
 
       // Helper to create menu item from custom command
       const createCustomMenuItem = (
-        command: CustomCommand,
+        command: CommitCustomCommand,
         source: "Global" | "Repository"
       ): ActionItem => ({
         id: `custom-${source.toLowerCase()}-${command.name}`,
         label: `${command.description || command.name} (${source})`,
-        disabled: !canExecute(command, commit),
+        disabled: !canExecuteCommitCommand(command, commit),
         handler: async () => {
           // Show confirmation dialog if required
           if (command.confirmBeforeExecute) {
-            const result = getCommandWithContext(command, commit);
+            const result = getCommitCommandWithContext(command, commit);
             if (result.error) {
               console.error("Cannot execute command:", result.error);
               return;
@@ -58,17 +64,17 @@ export const useCommitContextMenu = (): ((
             }
           }
 
-          void executeCommand(command, commit).catch((error) => {
+          void executeCommitCommand(command, commit).catch((error) => {
             console.error("Failed to execute custom command:", error);
           });
         }
       });
 
       // Custom command menu items
-      const globalMenus: ActionItem[] = globalCommands.map((cmd) =>
+      const globalMenus: ActionItem[] = globalCommitCommands.map((cmd) =>
         createCustomMenuItem(cmd, "Global")
       );
-      const repoMenus: ActionItem[] = repositoryCommands.map((cmd) =>
+      const repoMenus: ActionItem[] = repositoryCommitCommands.map((cmd) =>
         createCustomMenuItem(cmd, "Repository")
       );
       const customMenus: ActionItem[] = [...globalMenus, ...repoMenus];
@@ -83,11 +89,11 @@ export const useCommitContextMenu = (): ((
       show,
       confirmDialog,
       commitCommands,
-      globalCommands,
-      repositoryCommands,
-      canExecute,
-      getCommandWithContext,
-      executeCommand
+      globalCommitCommands,
+      repositoryCommitCommands,
+      canExecuteCommitCommand,
+      getCommitCommandWithContext,
+      executeCommitCommand
     ]
   );
   return onCommitContextMenu;
@@ -106,7 +112,16 @@ export const useFileContextMenuT = <T>(
   getFile: (item: T) => FileEntry | undefined
 ): ((event: React.MouseEvent | MouseEvent, index: number, item: T) => void) => {
   const { show } = useContext(ContextMenuContext);
+  const confirmDialog = useConfirmDialog();
   const fileCommands = useFileCommands();
+  const {
+    globalFileCommands,
+    repositoryFileCommands,
+    canExecuteFileCommand,
+    getFileCommandWithContext,
+    executeFileCommand
+  } = useCustomCommands();
+
   const onFileContextMenu = useCallback(
     (event: React.MouseEvent | MouseEvent, _index: number, item: T) => {
       if (!commit) {
@@ -116,10 +131,70 @@ export const useFileContextMenuT = <T>(
       if (!file) {
         return;
       }
-      const menus = fileCommandsToActions(fileCommands, commit, file);
+
+      // Standard menu items
+      const standardMenus = fileCommandsToActions(fileCommands, commit, file);
+
+      // Helper to create menu item from custom file command
+      const createCustomFileMenuItem = (
+        command: FileCustomCommand,
+        source: "Global" | "Repository"
+      ): ActionItem => ({
+        id: `custom-file-${source.toLowerCase()}-${command.name}`,
+        label: `${command.description || command.name} (${source})`,
+        disabled: !canExecuteFileCommand(command, file.path),
+        handler: async () => {
+          // Show confirmation dialog if required
+          if (command.confirmBeforeExecute) {
+            const result = getFileCommandWithContext(command, file.path, commit);
+            if (result.error) {
+              console.error("Cannot execute command:", result.error);
+              return;
+            }
+
+            const confirmResult = await confirmDialog.showModal({
+              title: "Execute Custom Command",
+              content: `Do you want to execute this command?\n\n${result.commandLine}`
+            });
+
+            if (confirmResult !== "accepted") {
+              return;
+            }
+          }
+
+          void executeFileCommand(command, file.path, commit).catch((error) => {
+            console.error("Failed to execute custom file command:", error);
+          });
+        }
+      });
+
+      // Custom file command menu items
+      const globalMenus: ActionItem[] = globalFileCommands
+        .filter((cmd) => canExecuteFileCommand(cmd, file.path))
+        .map((cmd) => createCustomFileMenuItem(cmd, "Global"));
+      const repoMenus: ActionItem[] = repositoryFileCommands
+        .filter((cmd) => canExecuteFileCommand(cmd, file.path))
+        .map((cmd) => createCustomFileMenuItem(cmd, "Repository"));
+      const customMenus: ActionItem[] = [...globalMenus, ...repoMenus];
+
+      // Combine standard menus and custom menus with separator
+      const menus: ("divider" | ActionItem)[] =
+        customMenus.length > 0 ? [...standardMenus, "divider", ...customMenus] : standardMenus;
+
       show(event, menus);
     },
-    [commit, show, getFile, fileCommands]
+    [
+      commit,
+      show,
+      confirmDialog,
+      getFile,
+      fileCommands,
+      globalFileCommands,
+      repositoryFileCommands,
+      canExecuteFileCommand,
+      getFileCommandWithContext,
+      executeFileCommand
+    ]
   );
   return onFileContextMenu;
 };

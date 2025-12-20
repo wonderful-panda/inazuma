@@ -15,7 +15,8 @@ const configAtom = atom<Config>({
   avatarShape: "square",
   useGravatar: true,
   logLevel: "info",
-  customCommands: []
+  customCommands: [],
+  customFileCommands: []
 });
 export const useConfig = () => useAtom(configAtom, opt);
 export const useConfigValue = () => useAtomValue(configAtom, opt);

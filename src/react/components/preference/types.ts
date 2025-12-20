@@ -1,4 +1,5 @@
-import type { CustomCommand } from "@backend/CustomCommand";
+import type { CommitCustomCommand } from "@backend/CommitCustomCommand";
+import type { FileCustomCommand } from "@backend/FileCustomCommand";
 import type { RepositoryConfig } from "@backend/RepositoryConfig";
 
 export interface PreferenceState {
@@ -25,11 +26,19 @@ export type PreferenceAction =
     }
   | {
       type: "customCommands";
-      payload: CustomCommand[];
+      payload: CommitCustomCommand[];
+    }
+  | {
+      type: "customFileCommands";
+      payload: FileCustomCommand[];
     }
   | {
       type: "repoCustomCommands";
-      payload: CustomCommand[];
+      payload: CommitCustomCommand[];
+    }
+  | {
+      type: "repoCustomFileCommands";
+      payload: FileCustomCommand[];
     }
   | {
       type: "reset";

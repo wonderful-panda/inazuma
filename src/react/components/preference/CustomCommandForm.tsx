@@ -1,13 +1,17 @@
-import type { CustomCommand } from "@backend/CustomCommand";
+import type { CommitCustomCommand } from "@backend/CommitCustomCommand";
+import type { FileCustomCommand } from "@backend/FileCustomCommand";
 import { Checkbox, FormControlLabel, IconButton, TextField, Tooltip } from "@mui/material";
 import type React from "react";
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Icon } from "../Icon";
 
+export type CommandType = "commit" | "file";
+
 export interface CustomCommandFormProps {
-  initialValue?: Partial<CustomCommand>;
+  commandType: CommandType;
+  initialValue?: Partial<CommitCustomCommand> | Partial<FileCustomCommand>;
   editMode: boolean;
-  ref?: React.Ref<{ getValue: () => CustomCommand }>;
+  ref?: React.Ref<{ getValue: () => CommitCustomCommand | FileCustomCommand }>;
 }
 
 interface PlaceholderHelpProps {
@@ -43,7 +47,9 @@ const PlaceholderHelp: React.FC<PlaceholderHelpProps> = ({ placeholders, contain
       open={open}
       disableFocusListener
       disableHoverListener
-      classes={{ tooltip: "relative bg-tooltip border border-background drop-shadow max-w-96" }}
+      classes={{
+        tooltip: "relative bg-tooltip border border-background drop-shadow max-w-120"
+      }}
       title={title}
       slotProps={{ popper: { disablePortal: true, container: containerEl } }}
     >
@@ -55,10 +61,13 @@ const PlaceholderHelp: React.FC<PlaceholderHelpProps> = ({ placeholders, contain
 };
 
 export const CustomCommandForm: React.FC<CustomCommandFormProps> = (props) => {
-  const { initialValue, editMode } = props;
+  const { commandType, initialValue, editMode } = props;
   const [name, setName] = useState(initialValue?.name ?? "");
   const [description, setDescription] = useState(initialValue?.description ?? "");
   const [commandLine, setCommandLine] = useState(initialValue?.commandLine ?? "");
+  const [filePattern, setFilePattern] = useState(
+    "filePattern" in (initialValue ?? {}) ? (initialValue as FileCustomCommand).filePattern : ""
+  );
   const [confirmBeforeExecute, setConfirmBeforeExecute] = useState(
     initialValue?.confirmBeforeExecute ?? false
   );
@@ -71,22 +80,56 @@ export const CustomCommandForm: React.FC<CustomCommandFormProps> = (props) => {
     setName(initialValue?.name ?? "");
     setDescription(initialValue?.description ?? "");
     setCommandLine(initialValue?.commandLine ?? "");
+    setFilePattern(
+      "filePattern" in (initialValue ?? {}) ? (initialValue as FileCustomCommand).filePattern : ""
+    );
     setConfirmBeforeExecute(initialValue?.confirmBeforeExecute ?? false);
     setUseBuiltinTerminal(initialValue?.useBuiltinTerminal ?? true);
   }, [initialValue]);
 
   // Expose getValue method via ref
   useImperativeHandle(props.ref, () => ({
-    getValue: () => ({
-      name,
-      description,
-      commandLine,
-      confirmBeforeExecute,
-      useBuiltinTerminal
-    })
+    getValue: () => {
+      if (commandType === "file") {
+        return {
+          name,
+          description,
+          commandLine,
+          filePattern,
+          confirmBeforeExecute,
+          useBuiltinTerminal
+        } as FileCustomCommand;
+      } else {
+        return {
+          name,
+          description,
+          commandLine,
+          confirmBeforeExecute,
+          useBuiltinTerminal
+        } as CommitCustomCommand;
+      }
+    }
   }));
 
   const el = useRef<HTMLDivElement>(null);
+
+  // Define placeholders based on command type
+  const placeholders =
+    commandType === "file"
+      ? [
+          { name: "repo", description: "Repository path" },
+          { name: "commit", description: "Commit id (full long hash)" },
+          { name: "file", description: "File path (relative to repository root)" },
+          { name: "absfile", description: "File absolute path" },
+          { name: "filename", description: "File name only" },
+          { name: "dir", description: "Directory path (relative to repository root)" },
+          { name: "absdir", description: "Directory absolute path" }
+        ]
+      : [
+          { name: "repo", description: "Repository path" },
+          { name: "commit", description: "Commit id (full long hash)" }
+        ];
+
   return (
     <div className="relative flex-col-wrap p-4" ref={el}>
       <TextField
@@ -108,6 +151,17 @@ export const CustomCommandForm: React.FC<CustomCommandFormProps> = (props) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
+      {commandType === "file" && (
+        <TextField
+          label="File Pattern (Regular Expression)"
+          margin="dense"
+          variant="standard"
+          fullWidth
+          value={filePattern}
+          onChange={(e) => setFilePattern(e.target.value)}
+          helperText="Regular expression to match file paths (e.g., .*\.rs$ for Rust files). Leave empty to match all files."
+        />
+      )}
       <div className="flex-row-nowrap">
         <TextField
           label="Command Line"
@@ -120,13 +174,7 @@ export const CustomCommandForm: React.FC<CustomCommandFormProps> = (props) => {
           value={commandLine}
           onChange={(e) => setCommandLine(e.target.value)}
         />
-        <PlaceholderHelp
-          containerEl={el.current}
-          placeholders={[
-            { name: "repo", description: "Repository path" },
-            { name: "commit", description: "Commit id (full long hash)" }
-          ]}
-        />
+        <PlaceholderHelp containerEl={el.current} placeholders={placeholders} />
       </div>
       <FormControlLabel
         control={

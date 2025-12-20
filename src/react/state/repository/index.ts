@@ -80,7 +80,7 @@ export const loadRepoConfigAtom = atom(null, async (get, set) => {
     set(repoConfigAtom, config);
   } catch (error) {
     console.error("Failed to load repository config:", error);
-    set(repoConfigAtom, { customCommands: [] });
+    set(repoConfigAtom, { customCommands: [], customFileCommands: [] });
   }
 });
 

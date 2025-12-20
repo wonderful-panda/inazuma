@@ -49,7 +49,7 @@ impl LogLevel {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-pub struct CustomCommand {
+pub struct CommitCustomCommand {
     pub name: String,
     pub description: String,
     pub command_line: String,
@@ -60,15 +60,30 @@ pub struct CustomCommand {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
+pub struct FileCustomCommand {
+    pub name: String,
+    pub description: String,
+    pub command_line: String,
+    pub file_pattern: String,
+    pub confirm_before_execute: bool,
+    pub use_builtin_terminal: bool,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct RepositoryConfig {
     #[serde(default)]
-    pub custom_commands: Vec<CustomCommand>,
+    pub custom_commands: Vec<CommitCustomCommand>,
+    #[serde(default)]
+    pub custom_file_commands: Vec<FileCustomCommand>,
 }
 
 impl Default for RepositoryConfig {
     fn default() -> Self {
         RepositoryConfig {
             custom_commands: Vec::new(),
+            custom_file_commands: Vec::new(),
         }
     }
 }
@@ -94,7 +109,9 @@ pub struct ConfigBase {
     #[serde(default)]
     pub log_level: LogLevel,
     #[serde(default)]
-    pub custom_commands: Vec<CustomCommand>,
+    pub custom_commands: Vec<CommitCustomCommand>,
+    #[serde(default)]
+    pub custom_file_commands: Vec<FileCustomCommand>,
 }
 
 impl Into<Config> for ConfigBase {
@@ -109,6 +126,7 @@ impl Into<Config> for ConfigBase {
             use_gravatar: self.use_gravatar,
             log_level: self.log_level,
             custom_commands: self.custom_commands,
+            custom_file_commands: self.custom_file_commands,
         }
     }
 }
@@ -128,7 +146,9 @@ pub struct Config {
     pub use_gravatar: bool,
     pub log_level: LogLevel,
     #[serde(default)]
-    pub custom_commands: Vec<CustomCommand>,
+    pub custom_commands: Vec<CommitCustomCommand>,
+    #[serde(default)]
+    pub custom_file_commands: Vec<FileCustomCommand>,
 }
 
 impl Default for Config {
@@ -143,6 +163,7 @@ impl Default for Config {
             use_gravatar: default_use_gravatar(),
             log_level: LogLevel::default(),
             custom_commands: Vec::new(),
+            custom_file_commands: Vec::new(),
         }
     }
 }
@@ -590,8 +611,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_custom_command_serialization() {
-        let cmd = CustomCommand {
+    fn test_commit_custom_command_serialization() {
+        let cmd = CommitCustomCommand {
             name: "test-cmd".to_string(),
             description: "Test command".to_string(),
             command_line: "echo hello".to_string(),
@@ -600,14 +621,31 @@ mod tests {
         };
 
         let json = serde_json::to_string(&cmd).unwrap();
-        let deserialized: CustomCommand = serde_json::from_str(&json).unwrap();
+        let deserialized: CommitCustomCommand = serde_json::from_str(&json).unwrap();
 
         assert_eq!(cmd, deserialized);
     }
 
     #[test]
-    fn test_custom_command_camel_case() {
-        let cmd = CustomCommand {
+    fn test_file_custom_command_serialization() {
+        let cmd = FileCustomCommand {
+            name: "test-file-cmd".to_string(),
+            description: "Test file command".to_string(),
+            command_line: "echo ${file}".to_string(),
+            file_pattern: ".*\\.rs$".to_string(),
+            confirm_before_execute: true,
+            use_builtin_terminal: false,
+        };
+
+        let json = serde_json::to_string(&cmd).unwrap();
+        let deserialized: FileCustomCommand = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(cmd, deserialized);
+    }
+
+    #[test]
+    fn test_commit_custom_command_camel_case() {
+        let cmd = CommitCustomCommand {
             name: "test".to_string(),
             description: "desc".to_string(),
             command_line: "cmd".to_string(),
@@ -622,14 +660,33 @@ mod tests {
     }
 
     #[test]
+    fn test_file_custom_command_camel_case() {
+        let cmd = FileCustomCommand {
+            name: "test".to_string(),
+            description: "desc".to_string(),
+            command_line: "cmd".to_string(),
+            file_pattern: ".*".to_string(),
+            confirm_before_execute: true,
+            use_builtin_terminal: true,
+        };
+
+        let json = serde_json::to_string(&cmd).unwrap();
+        assert!(json.contains("\"confirmBeforeExecute\""));
+        assert!(json.contains("\"useBuiltinTerminal\""));
+        assert!(json.contains("\"commandLine\""));
+        assert!(json.contains("\"filePattern\""));
+    }
+
+    #[test]
     fn test_config_with_custom_commands_default() {
         let config = Config::default();
         assert_eq!(config.custom_commands.len(), 0);
+        assert_eq!(config.custom_file_commands.len(), 0);
     }
 
     #[test]
     fn test_config_with_custom_commands_serialization() {
-        let cmd = CustomCommand {
+        let commit_cmd = CommitCustomCommand {
             name: "git-log".to_string(),
             description: "Show git log".to_string(),
             command_line: "git log --oneline".to_string(),
@@ -637,8 +694,18 @@ mod tests {
             use_builtin_terminal: true,
         };
 
+        let file_cmd = FileCustomCommand {
+            name: "open-file".to_string(),
+            description: "Open file".to_string(),
+            command_line: "code ${file}".to_string(),
+            file_pattern: ".*".to_string(),
+            confirm_before_execute: false,
+            use_builtin_terminal: false,
+        };
+
         let mut config = Config::default();
-        config.custom_commands.push(cmd);
+        config.custom_commands.push(commit_cmd);
+        config.custom_file_commands.push(file_cmd);
 
         let json = serde_json::to_string(&config).unwrap();
         let deserialized: Config = serde_json::from_str(&json).unwrap();
@@ -646,5 +713,7 @@ mod tests {
         assert_eq!(config, deserialized);
         assert_eq!(deserialized.custom_commands.len(), 1);
         assert_eq!(deserialized.custom_commands[0].name, "git-log");
+        assert_eq!(deserialized.custom_file_commands.len(), 1);
+        assert_eq!(deserialized.custom_file_commands[0].name, "open-file");
     }
 }

@@ -22,10 +22,19 @@ const reducer = (state: PreferenceState, action: PreferenceAction): PreferenceSt
     return { ...state, config: { ...state.config, useGravatar: action.payload } };
   } else if (action.type === "customCommands") {
     return { ...state, config: { ...state.config, customCommands: action.payload } };
+  } else if (action.type === "customFileCommands") {
+    return { ...state, config: { ...state.config, customFileCommands: action.payload } };
   } else if (action.type === "repoCustomCommands") {
     return {
       ...state,
       repoConfig: state.repoConfig ? { ...state.repoConfig, customCommands: action.payload } : null
+    };
+  } else if (action.type === "repoCustomFileCommands") {
+    return {
+      ...state,
+      repoConfig: state.repoConfig
+        ? { ...state.repoConfig, customFileCommands: action.payload }
+        : null
     };
   } else {
     const newConfig = { ...state.config };
