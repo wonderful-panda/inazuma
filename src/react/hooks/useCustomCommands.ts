@@ -1,6 +1,7 @@
 import type { CommitCustomCommand } from "@backend/CommitCustomCommand";
 import type { FileCustomCommand } from "@backend/FileCustomCommand";
 import { useAtomValue } from "jotai";
+import { minimatch } from "minimatch";
 import { useCallback, useMemo } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { repoConfigAtom, repoPathAtom } from "@/state/repository";
@@ -214,15 +215,22 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
     (command: FileCustomCommand, filePath: string) => {
       // Check file pattern if specified
       if (command.filePattern) {
-        try {
-          const regex = new RegExp(command.filePattern);
-          if (!regex.test(filePath)) {
+        // Split by newlines to get individual glob patterns
+        const patterns = command.filePattern.split('\n').filter(p => p.trim() !== '');
+
+        if (patterns.length === 0) {
+          return true; // No valid patterns, match all
+        }
+
+        // Check if any pattern matches
+        return patterns.some(pattern => {
+          try {
+            return minimatch(filePath, pattern.trim());
+          } catch {
+            // Invalid glob pattern - ignore this pattern
             return false;
           }
-        } catch {
-          // Invalid regex pattern - skip this command
-          return false;
-        }
+        });
       }
       return true;
     },

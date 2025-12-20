@@ -153,13 +153,15 @@ export const CustomCommandForm: React.FC<CustomCommandFormProps> = (props) => {
       />
       {commandType === "file" && (
         <TextField
-          label="File Pattern (Regular Expression)"
+          label="File Pattern (Glob Patterns)"
           margin="dense"
           variant="standard"
           fullWidth
+          multiline
+          rows={3}
           value={filePattern}
           onChange={(e) => setFilePattern(e.target.value)}
-          helperText="Regular expression to match file paths (e.g., .*\.rs$ for Rust files). Leave empty to match all files."
+          helperText="Glob patterns to match file paths, one per line (e.g., *.rs, src/**/*.ts). Leave empty to match all files."
         />
       )}
       <div className="flex-row-nowrap">
