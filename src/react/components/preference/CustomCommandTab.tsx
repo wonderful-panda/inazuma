@@ -1,6 +1,6 @@
 import type { CommitCustomCommand } from "@backend/CommitCustomCommand";
 import type { FileCustomCommand } from "@backend/FileCustomCommand";
-import { Button, IconButton, List, ListItem, Typography } from "@mui/material";
+import { IconButton, List, ListItem, Typography } from "@mui/material";
 import { useCallback, useRef, useState } from "react";
 import {
   AcceptButton,
@@ -12,7 +12,7 @@ import {
 import { Icon } from "@/components/Icon";
 import { useDialog } from "@/context/DialogContext";
 import { useDragAndDropReorder } from "@/hooks/useDragAndDropReorder";
-import { CustomCommandForm, type CommandType } from "./CustomCommandForm";
+import { type CommandType, CustomCommandForm } from "./CustomCommandForm";
 import { SectionContent, SectionHeader } from "./PreferenceSection";
 import type { TabContentProps } from "./types";
 
@@ -52,10 +52,7 @@ const CustomCommandFormDialog: React.FC<{
     return Promise.resolve(true);
   }, [editMode, existingNames, onSave]);
 
-  const titleText = editMode
-    ? `Edit ${commandType === "commit" ? "Commit" : "File"} Command`
-    : `Add ${commandType === "commit" ? "Commit" : "File"} Command`;
-
+  const titleText = `${editMode ? "Edit" : "Add"} ${commandType} Command`;
   return (
     <>
       <DialogTitle>{titleText}</DialogTitle>
@@ -148,11 +145,11 @@ function CustomCommandList<T extends CommitCustomCommand | FileCustomCommand>({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-row-nowrap justify-between items-center mb-2">
+      <div className="flex-row-nowrap justify-between items-center">
         <SectionHeader text={title} />
-        <Button variant="contained" startIcon={<Icon icon="mdi:plus" />} onClick={handleAdd}>
-          Add
-        </Button>
+        <IconButton onClick={handleAdd} title={`Add ${commandType} command`}>
+          <Icon icon="mdi:add" />
+        </IconButton>
       </div>
       <div className="flex-1 overflow-auto">
         <SectionContent>
@@ -196,20 +193,23 @@ function CustomCommandList<T extends CommitCustomCommand | FileCustomCommand>({
                     <Icon icon="mdi:drag-vertical" className="text-gray-400 hover:text-gray-600" />
                   </div>
 
-                  <div className="flex flex-1 flex-col px-4 py-2">
+                  <div className="grid px-4 py-2 w-full">
                     <Typography variant="subtitle1" className="font-bold">
                       {cmd.name}
                     </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {cmd.description}
+                    <Typography
+                      variant="body2"
+                      className="text-greytext overflow-hidden whitespace-nowrap ellipsis"
+                    >
+                      {cmd.description || "No description"}
                     </Typography>
                   </div>
-                  <div className="mr-4 flex-row-nowrap gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75">
+                  <div className="mr-4 flex-row-nowrap gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75">
                     <IconButton
                       edge="end"
                       onClick={() => handleEdit(index, cmd)}
-                      className="hover:bg-highlight text-2xl"
-                      size="large"
+                      className="hover:bg-highlight text-xl"
+                      size="medium"
                       title="Edit"
                     >
                       <Icon icon="mdi:pencil" />
@@ -217,8 +217,8 @@ function CustomCommandList<T extends CommitCustomCommand | FileCustomCommand>({
                     <IconButton
                       edge="end"
                       onClick={() => handleDelete(index)}
-                      className="hover:bg-highlight text-2xl"
-                      size="large"
+                      className="hover:bg-highlight text-xl"
+                      size="medium"
                       title="Delete"
                     >
                       <Icon icon="mdi:close" />
@@ -266,15 +266,11 @@ export const CustomCommandTab: React.FC<TabContentProps> = ({ config, repoConfig
   return (
     <div className="p-2 h-full flex gap-4">
       {/* Left column: Commit Commands */}
-      <div className="flex-1 flex flex-col">
-        <Typography variant="h6" className="mb-2">
-          Commit Commands
-        </Typography>
-
+      <div className="px-4 flex-1 flex flex-col">
         {/* Global commit commands */}
         <div className="flex-1 overflow-hidden mb-4">
           <CustomCommandList
-            title="Global"
+            title="Commit commands"
             commandType="commit"
             customCommands={config.customCommands}
             onChange={handleGlobalCommitCommandsChange}
@@ -283,9 +279,9 @@ export const CustomCommandTab: React.FC<TabContentProps> = ({ config, repoConfig
 
         {/* Repository-specific commit commands */}
         {repoConfig && (
-          <div className="flex-1 overflow-hidden border-t border-splitter pt-4">
+          <div className="flex-1 overflow-hidden pt-4">
             <CustomCommandList
-              title="Repository"
+              title="Commit commands (Repository-specific)"
               commandType="commit"
               customCommands={repoConfig.customCommands}
               onChange={handleRepositoryCommitCommandsChange}
@@ -296,15 +292,11 @@ export const CustomCommandTab: React.FC<TabContentProps> = ({ config, repoConfig
       </div>
 
       {/* Right column: File Commands */}
-      <div className="flex-1 flex flex-col border-l border-splitter pl-4">
-        <Typography variant="h6" className="mb-2">
-          File Commands
-        </Typography>
-
+      <div className="px-4 flex-1 flex flex-col border-l border-splitter">
         {/* Global file commands */}
         <div className="flex-1 overflow-hidden mb-4">
           <CustomCommandList
-            title="Global"
+            title="File commands"
             commandType="file"
             customCommands={config.customFileCommands}
             onChange={handleGlobalFileCommandsChange}
@@ -313,9 +305,9 @@ export const CustomCommandTab: React.FC<TabContentProps> = ({ config, repoConfig
 
         {/* Repository-specific file commands */}
         {repoConfig && (
-          <div className="flex-1 overflow-hidden border-t border-splitter pt-4">
+          <div className="flex-1 overflow-hidden pt-4">
             <CustomCommandList
-              title="Repository"
+              title="File commands (Repository-specific)"
               commandType="file"
               customCommands={repoConfig.customFileCommands}
               onChange={handleRepositoryFileCommandsChange}
