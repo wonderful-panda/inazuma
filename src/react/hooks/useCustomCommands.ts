@@ -16,7 +16,11 @@ export interface UseCustomCommandsReturn {
   repositoryCommitCommands: CommitCustomCommand[];
   repositoryFileCommands: FileCustomCommand[];
   executeCommitCommand: (command: CommitCustomCommand, commit: Commit) => Promise<void>;
-  executeFileCommand: (command: FileCustomCommand, filePath: string, commit: Commit | undefined) => Promise<void>;
+  executeFileCommand: (
+    command: FileCustomCommand,
+    filePath: string,
+    commit: Commit | undefined
+  ) => Promise<void>;
   canExecuteCommitCommand: (command: CommitCustomCommand, commit: Commit | undefined) => boolean;
   canExecuteFileCommand: (command: FileCustomCommand, filePath: string) => boolean;
   getCommitCommandWithContext: (
@@ -43,7 +47,10 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
 
   // Global commands
   const globalCommitCommands = useMemo(() => config.customCommands || [], [config.customCommands]);
-  const globalFileCommands = useMemo(() => config.customFileCommands || [], [config.customFileCommands]);
+  const globalFileCommands = useMemo(
+    () => config.customFileCommands || [],
+    [config.customFileCommands]
+  );
 
   // Repository-specific commands
   const repositoryCommitCommands = useMemo(
@@ -211,31 +218,28 @@ export const useCustomCommands = (): UseCustomCommandsReturn => {
    * Check if file command can be executed
    * Validates that all required placeholder values are available and file pattern matches
    */
-  const canExecuteFileCommand = useCallback(
-    (command: FileCustomCommand, filePath: string) => {
-      // Check file pattern if specified
-      if (command.filePattern) {
-        // Split by newlines to get individual glob patterns
-        const patterns = command.filePattern.split('\n').filter(p => p.trim() !== '');
+  const canExecuteFileCommand = useCallback((command: FileCustomCommand, filePath: string) => {
+    // Check file pattern if specified
+    if (command.filePattern) {
+      // Split by newlines to get individual glob patterns
+      const patterns = command.filePattern.split("\n").filter((p) => p.trim() !== "");
 
-        if (patterns.length === 0) {
-          return true; // No valid patterns, match all
-        }
-
-        // Check if any pattern matches
-        return patterns.some(pattern => {
-          try {
-            return minimatch(filePath, pattern.trim());
-          } catch {
-            // Invalid glob pattern - ignore this pattern
-            return false;
-          }
-        });
+      if (patterns.length === 0) {
+        return true; // No valid patterns, match all
       }
-      return true;
-    },
-    []
-  );
+
+      // Check if any pattern matches
+      return patterns.some((pattern) => {
+        try {
+          return minimatch(filePath, pattern.trim());
+        } catch {
+          // Invalid glob pattern - ignore this pattern
+          return false;
+        }
+      });
+    }
+    return true;
+  }, []);
 
   /**
    * Execute commit command

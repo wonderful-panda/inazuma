@@ -54,7 +54,8 @@ export const RepositoryListItem: React.FC<RepositoryListItemProps> = ({
             slotProps={{
               primary: { className: "text-xl" },
               secondary: { className: "text-greytext" }
-            }} />
+            }}
+          />
           {secondaryAction && (
             <ListItemSecondaryAction
               className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 duration-75"
