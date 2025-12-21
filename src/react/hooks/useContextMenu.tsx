@@ -1,5 +1,7 @@
 import type { CommitCustomCommand } from "@backend/CommitCustomCommand";
 import type { FileCustomCommand } from "@backend/FileCustomCommand";
+import { IconButton, Typography } from "@mui/material";
+import type React from "react";
 import { useCallback, useContext } from "react";
 import {
   commitCommandsToActions,
@@ -8,9 +10,37 @@ import {
   useFileCommands
 } from "@/commands";
 import type { ActionItem } from "@/commands/types";
+import { Icon } from "@/components/Icon";
+import { useAlert } from "@/context/AlertContext";
 import { useConfirmDialog } from "@/context/ConfirmDialogContext";
 import { ContextMenuContext } from "@/context/ContextMenuContext";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useCustomCommands } from "./useCustomCommands";
+
+const ConfirmContent: React.FC<{ commandLine: string }> = ({ commandLine }) => {
+  const alert = useAlert();
+  const handleCopy = useCallback(async () => {
+    await invokeTauriCommand("yank_text", { text: commandLine });
+    alert.showSuccess("Copied");
+  }, [commandLine, alert]);
+  return (
+    <div className="grid max-w-160">
+      <Typography variant="subtitle1">Do you want to execute this command?</Typography>
+      <div className="grid grid-cols-[1fr_auto] items-center">
+        <Typography
+          variant="subtitle2"
+          className="leading-6 text-mono mx-2 px-2 overflow-hidden ellipsis"
+          title={commandLine}
+        >
+          {commandLine}
+        </Typography>
+        <IconButton size="small" onClick={handleCopy}>
+          <Icon icon="mdi:content-copy" />
+        </IconButton>
+      </div>
+    </div>
+  );
+};
 
 export const useCommitContextMenu = (): ((
   event: React.MouseEvent | MouseEvent,
@@ -56,7 +86,7 @@ export const useCommitContextMenu = (): ((
 
             const confirmResult = await confirmDialog.showModal({
               title: "Execute Custom Command",
-              content: `Do you want to execute this command?\n\n${result.commandLine}`
+              content: <ConfirmContent commandLine={result.commandLine} />
             });
 
             if (confirmResult !== "accepted") {
@@ -99,7 +129,7 @@ export const useCommitContextMenu = (): ((
   return onCommitContextMenu;
 };
 
-const itself = <T>(item: T) => item;
+const itself = <T,>(item: T) => item;
 
 export const useFileContextMenu = (
   commit: Commit | undefined
@@ -107,7 +137,7 @@ export const useFileContextMenu = (
   return useFileContextMenuT<FileEntry>(commit, itself);
 };
 
-export const useFileContextMenuT = <T>(
+export const useFileContextMenuT = <T,>(
   commit: Commit | undefined,
   getFile: (item: T) => FileEntry | undefined
 ): ((event: React.MouseEvent | MouseEvent, index: number, item: T) => void) => {
@@ -154,9 +184,8 @@ export const useFileContextMenuT = <T>(
 
             const confirmResult = await confirmDialog.showModal({
               title: "Execute Custom Command",
-              content: `Do you want to execute this command?\n\n${result.commandLine}`
+              content: <ConfirmContent commandLine={result.commandLine} />
             });
-
             if (confirmResult !== "accepted") {
               return;
             }
