@@ -217,15 +217,15 @@ const App = ({
         <CommandGroupProvider>
           <ContextMenuProvider>
             <PersistStateProvider storage={stateStorage}>
-              <ConfirmDialogProvider>
-                <AlertProvider>
+              <AlertProvider>
+                <ConfirmDialogProvider>
                   <LoadingProvider>
                     <DialogProvider>
                       <MainWindow>{content}</MainWindow>
                     </DialogProvider>
                   </LoadingProvider>
-                </AlertProvider>
-              </ConfirmDialogProvider>
+                </ConfirmDialogProvider>
+              </AlertProvider>
             </PersistStateProvider>
           </ContextMenuProvider>
         </CommandGroupProvider>
