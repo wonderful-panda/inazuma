@@ -158,7 +158,7 @@ const translateTsFunc = (func: TsFunc): TranslatedFunc => {
  * @returns The generated TypeScript code as a string
  */
 const generateInvokeType = () => {
-  const ret = cp.spawnSync("cargo", "run -- --src ../app/src/commands.rs".split(" "), {
+  const ret = cp.spawnSync("cargo", "run -- --src ../app/src/*.rs".split(" "), {
     cwd: "src-tauri/generate",
     stdio: ["ignore", "pipe", "inherit"]
   });

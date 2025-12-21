@@ -3,6 +3,7 @@ extern crate log;
 
 mod avatar_protocol_handler;
 pub mod commands;
+pub mod custom_command;
 pub mod git;
 pub mod platform;
 pub mod pty;
@@ -14,6 +15,7 @@ use state::avatars::AvatarsState;
 use state::config::{ConfigState, ConfigStateMutex};
 use state::env::{EnvState, EnvStateMutex};
 use state::pty::PtyStateMutex;
+use state::repo_config::RepoConfigStateMutex;
 use state::repositories::RepositoriesStateMutex;
 use state::stager::StagerStateMutex;
 use std::{error::Error, fs::create_dir_all};
@@ -129,6 +131,7 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .manage(EnvStateMutex::new())
         .manage(ConfigStateMutex::new())
+        .manage(RepoConfigStateMutex::new())
         .manage(PtyStateMutex::new())
         .manage(RepositoriesStateMutex::new())
         .manage(StagerStateMutex::new())
@@ -146,6 +149,8 @@ pub fn run() {
             commands::get_last_modify_commit,
             commands::get_filelog,
             commands::get_changes,
+            custom_command::exec_custom_command_with_pty,
+            custom_command::exec_custom_command_detached,
             commands::get_changes_between,
             commands::get_commit_detail,
             commands::get_content_base64,
@@ -176,6 +181,8 @@ pub fn run() {
             commands::set_window_title,
             commands::set_log_level,
             commands::open_devtools,
+            commands::load_repo_config,
+            commands::save_repo_config,
         ])
         .setup(|app| setup(app))
         .register_asynchronous_uri_scheme_protocol("avatar", move |ctx, request, responder| {

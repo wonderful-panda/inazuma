@@ -330,6 +330,7 @@ export const Dialog: React.FC<{ ref?: React.Ref<DialogMethods> }> = ({ ref: oute
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const ref = useRef<HTMLDialogElement>(null);
   const [, setStatus, statusRef] = useStateWithRef<"opened" | "closed" | "disposed">("disposed");
+  const [key, setKey] = useState(0);
 
   const draggable = !fullscreen;
 
@@ -349,6 +350,7 @@ export const Dialog: React.FC<{ ref?: React.Ref<DialogMethods> }> = ({ ref: oute
     (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
+        e.stopPropagation();
         void close({ result: "rejected" });
       } else {
         e.stopPropagation();
@@ -389,6 +391,7 @@ export const Dialog: React.FC<{ ref?: React.Ref<DialogMethods> }> = ({ ref: oute
         if (!dlg || statusRef.current === "opened") {
           return Promise.resolve({ result: "notready" });
         }
+        setKey((prev) => prev + 1);
         setPos({ x: 0, y: 0 });
         setStatus("opened");
         setProps(p);
@@ -426,6 +429,7 @@ export const Dialog: React.FC<{ ref?: React.Ref<DialogMethods> }> = ({ ref: oute
       onKeyDownCapture={handleKeyDownCapture}
     >
       <DialogInner
+        key={key}
         fullscreen={fullscreen ?? false}
         draggable={draggable}
         pos={pos}

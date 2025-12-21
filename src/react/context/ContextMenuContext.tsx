@@ -1,11 +1,11 @@
-import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import { Divider, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { createContext, useCallback, useMemo, useState } from "react";
 import type { ActionItem } from "@/commands/types";
 import { Icon } from "@/components/Icon";
 import { nope } from "@/util";
 
 export interface ContextMenuMethods {
-  show: (event: React.MouseEvent | MouseEvent, menus: ActionItem[]) => void;
+  show: (event: React.MouseEvent | MouseEvent, menus: ("divider" | ActionItem)[]) => void;
 }
 
 export const ContextMenuContext = createContext<ContextMenuMethods>({
@@ -15,7 +15,7 @@ export const ContextMenuContext = createContext<ContextMenuMethods>({
 interface State {
   top: number;
   left: number;
-  menus: ActionItem[];
+  menus: ("divider" | ActionItem)[];
 }
 
 export const ContextMenuProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -39,7 +39,12 @@ export const ContextMenuProvider: React.FC<React.PropsWithChildren> = ({ childre
   );
   const handleClose = useCallback(() => setState(undefined), []);
   const menuItems = useMemo(() => {
-    return (state?.menus ?? []).map((m) => {
+    return (state?.menus ?? []).map((m, index) => {
+      // Handle divider
+      if (m === "divider") {
+        return <Divider key={`divider-${index}`} />;
+      }
+
       const onClick = () => {
         if (m.disabled) {
           return;
@@ -47,6 +52,7 @@ export const ContextMenuProvider: React.FC<React.PropsWithChildren> = ({ childre
         handleClose();
         m.handler();
       };
+
       return (
         <MenuItem key={m.id} disabled={m.disabled} onClick={onClick}>
           <ListItemIcon className="w-8 min-w-0">{m.icon && <Icon icon={m.icon} />}</ListItemIcon>

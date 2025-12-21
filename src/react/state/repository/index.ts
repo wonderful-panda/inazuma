@@ -1,6 +1,8 @@
+import type { RepositoryConfig } from "@backend/RepositoryConfig";
 import { atom, createStore } from "jotai";
 import { atomFamily } from "jotai/utils";
 import type { GraphFragment } from "@/grapher";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { resetRepoTabsAtom } from "./tabs";
 import { workingTreeAtom } from "./workingtree";
 
@@ -61,3 +63,32 @@ export const setCommitDetailAtom = atom(
     }
   }
 );
+
+/**
+ * Repository-specific configuration
+ */
+export const repoConfigAtom = atom<RepositoryConfig | undefined>(undefined);
+
+export const loadRepoConfigAtom = atom(null, async (get, set) => {
+  const repoPath = get(_repoPathAtom);
+  if (!repoPath) {
+    set(repoConfigAtom, undefined);
+    return;
+  }
+  try {
+    const config = await invokeTauriCommand("load_repo_config", { repoPath });
+    set(repoConfigAtom, config);
+  } catch (error) {
+    console.error("Failed to load repository config:", error);
+    set(repoConfigAtom, { customCommands: [], customFileCommands: [] });
+  }
+});
+
+export const saveRepoConfigAtom = atom(null, async (get, set, newConfig: RepositoryConfig) => {
+  const repoPath = get(_repoPathAtom);
+  if (!repoPath) {
+    throw new Error("No repository path set");
+  }
+  await invokeTauriCommand("save_repo_config", { repoPath, newConfig });
+  set(repoConfigAtom, newConfig);
+});

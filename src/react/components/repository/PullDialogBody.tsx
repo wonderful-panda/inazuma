@@ -50,16 +50,16 @@ export const PullDialogBody: React.FC<{
   }, []);
 
   const openXterm_ = useCallback(
-    async (el: HTMLDivElement): Promise<PtyExitStatus> => {
+    async (el: HTMLDivElement): Promise<PtyExitStatus | "cancelled"> => {
       if (!remoteRef.current) {
-        return "aborted";
+        return "cancelled";
       }
       const remote = remoteRef.current.value;
       const tags = tagsRef.current?.checked;
       const autoStash = autoStashRef.current?.checked;
       if (!remote) {
         alert.showWarning("Remote is not specified");
-        return "aborted";
+        return "cancelled";
       }
       return await openXterm(el, { mode, remote, tags, autoStash });
     },

@@ -81,9 +81,11 @@ export const CommitDialogBody: React.FC = () => {
             rows={rows}
             multiline
             label="Commit message"
-            InputLabelProps={{ shrink: true }}
             placeholder="Input commit message"
             onChange={handleChange}
+            slotProps={{
+              inputLabel: { shrink: true }
+            }}
           />
           <LabelledCheckBox
             label="Amend last commit"

@@ -20,15 +20,15 @@ export const PushDialogBody: React.FC<{
   }, []);
 
   const openXterm_ = useCallback(
-    async (el: HTMLDivElement): Promise<PtyExitStatus> => {
+    async (el: HTMLDivElement): Promise<PtyExitStatus | "cancelled"> => {
       if (!remoteRef.current) {
-        return "aborted";
+        return "cancelled";
       }
       const remote = remoteRef.current.value;
       if (!remote) {
         alert.showWarning("Remote is not specified");
         remoteRef.current.focus();
-        return "aborted";
+        return "cancelled";
       }
       return await openXterm(el, remote, branchName);
     },

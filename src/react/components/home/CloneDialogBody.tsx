@@ -23,18 +23,18 @@ export const CloneDialogBody: React.FC<{
   const destinationRef = useRef<HTMLInputElement>(null);
 
   const openXterm_ = useCallback(
-    async (el: HTMLDivElement): Promise<PtyExitStatus> => {
+    async (el: HTMLDivElement): Promise<PtyExitStatus | "cancelled"> => {
       const url = urlRef.current?.value;
       const destinationFolder = destinationRef.current?.value;
       if (!url) {
         alert.showWarning("Url is not specified");
         urlRef.current?.focus();
-        return "aborted";
+        return "cancelled";
       }
       if (!destinationFolder) {
         alert.showWarning("Destination folder is not specified");
         destinationRef.current?.focus();
-        return "aborted";
+        return "cancelled";
       }
       return await openXterm(el, url, destinationFolder);
     },

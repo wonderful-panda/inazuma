@@ -48,7 +48,9 @@ export const NewBranchDialogBody: React.FC<{ commit: Commit }> = ({ commit }) =>
                 inputRef={branchNameRef}
                 className="w-80"
                 variant="standard"
-                InputLabelProps={{ shrink: true }}
+                slotProps={{
+                  inputLabel: { shrink: true }
+                }}
               />
             </div>
           </DialogSection>

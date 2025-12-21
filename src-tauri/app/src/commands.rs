@@ -927,3 +927,44 @@ pub fn set_log_level(level: &str) -> Result<(), String> {
     info!("Log level changed to: {}", level);
     Ok(())
 }
+
+/// Loads repository-specific configuration from `.git/inazuma.json`.
+///
+/// If the configuration file doesn't exist, returns a default empty configuration.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+///
+/// # Returns
+/// The repository-specific configuration containing custom commands.
+#[tauri::command]
+pub async fn load_repo_config(
+    repo_path: String,
+    repo_config_state: State<'_, crate::state::repo_config::RepoConfigStateMutex>,
+) -> Result<RepositoryConfig, String> {
+    let mut state = repo_config_state.0.lock().await;
+    state
+        .load(&repo_path)
+        .map_err(|e| format!("Failed to load repository config: {}", e))
+}
+
+/// Saves repository-specific configuration to `.git/inazuma.json`.
+///
+/// Creates or updates the repository configuration file.
+///
+/// # Arguments
+/// * `repo_path` - Path to the Git repository
+/// * `new_config` - The repository configuration to save
+#[tauri::command]
+pub async fn save_repo_config(
+    repo_path: String,
+    new_config: RepositoryConfig,
+    repo_config_state: State<'_, crate::state::repo_config::RepoConfigStateMutex>,
+) -> Result<(), String> {
+    let mut state = repo_config_state.0.lock().await;
+    // Set repo_path first
+    state.repo_path = Some(std::path::PathBuf::from(&repo_path));
+    state
+        .save(new_config)
+        .map_err(|e| format!("Failed to save repository config: {}", e))
+}

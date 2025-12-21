@@ -57,8 +57,10 @@ const AlertInner: React.FC<{
       onClose={onClose}
       anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
       autoHideDuration={5000}
-      ClickAwayListenerProps={{
-        mouseEvent: false
+      slotProps={{
+        clickAwayListener: {
+          mouseEvent: false
+        }
       }}
     >
       <SnackbarContent
