@@ -880,12 +880,12 @@ pub async fn set_window_title<T: Runtime>(title: &str, window: Window<T>) -> Res
 /// This command is only available in development builds (debug_assertions).
 /// In production builds, this function will return an error.
 #[tauri::command]
-pub async fn open_devtools<T: Runtime>(window: Window<T>) -> Result<(), String> {
+pub async fn open_devtools<T: Runtime>(_window: Window<T>) -> Result<(), String> {
     #[cfg(debug_assertions)]
     {
         use tauri::Manager;
 
-        if let Some(win) = window.get_webview_window("main") {
+        if let Some(win) = _window.get_webview_window("main") {
             win.open_devtools();
         }
         Ok(())

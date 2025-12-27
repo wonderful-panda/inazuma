@@ -108,7 +108,6 @@ pub async fn exec_custom_command_detached(
     #[cfg(unix)]
     {
         // On Unix: create a new process group using process_group(0)
-        use std::os::unix::process::CommandExt as _;
         cmd.process_group(0);
     }
 
