@@ -8,7 +8,7 @@ import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { repoPathAtom } from "@/features/repository/state";
 import { workingTreeAtom } from "@/features/repository/state/workingtree";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
-import { useReloadRepository } from "@/hooks/actions/openRepository";
+import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
 
 export const useReloadWorkingTree = () => {
   const repoPath = useAtomValue(repoPathAtom);

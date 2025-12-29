@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
 import { lazy } from "./shared/components/hoc/lazy";
-import Home from "./components/home";
+import Home from "./features/home/components";
 import { MainWindow } from "./core/layout/MainWindow";
 import { TabContainer, type TabContainerProps, TooltipTitle } from "./core/layout/TabContainer";
 import { AlertProvider, useAlert } from "./core/context/AlertContext";
@@ -18,7 +18,7 @@ import { DialogProvider } from "./core/context/DialogContext";
 import { LoadingProvider } from "./core/context/LoadingContext";
 import { PersistStateProvider } from "./core/context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
-import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions/openRepository";
+import { useOpenRepository, useReloadSpecifiedRepository } from "./features/home/hooks/actions/openRepository";
 import { useWithRef } from "./shared/hooks/utils/useWithRef";
 import { invokeTauriCommand } from "./invokeTauriCommand";
 import {

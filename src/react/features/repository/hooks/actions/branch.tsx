@@ -6,7 +6,7 @@ import { NewBranchDialogBody } from "@/features/repository/components/NewBranchD
 import { useAlert } from "@/core/context/AlertContext";
 import { useConfirmDialog } from "@/core/context/ConfirmDialogContext";
 import { useDialog } from "@/core/context/DialogContext";
-import { useReloadRepository } from "@/hooks/actions/openRepository";
+import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 import { useWithRef } from "@/shared/hooks/utils/useWithRef";
 import { invokeTauriCommand } from "@/invokeTauriCommand";

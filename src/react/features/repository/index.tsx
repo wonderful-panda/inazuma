@@ -6,7 +6,7 @@ import type { IconActionItem, Spacer } from "@/features/repository/commands/type
 import { CommandGroupTreeProvider } from "@/core/context/CommandGroupContext";
 import { DialogProvider } from "@/core/context/DialogContext";
 import { useBeginFetch } from "@/features/repository/hooks/actions/fetch";
-import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/hooks/actions/openRepository";
+import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/features/home/hooks/actions/openRepository";
 import { useBeginPull } from "@/features/repository/hooks/actions/pull";
 import { useBeginPush } from "@/features/repository/hooks/actions/push";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";

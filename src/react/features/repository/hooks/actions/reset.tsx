@@ -3,7 +3,7 @@ import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 import { ResetDialogBody } from "@/features/repository/components/ResetBranchDialogBody";
 import { useDialog } from "@/core/context/DialogContext";
-import { useReloadRepository } from "@/hooks/actions/openRepository";
+import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { currentBranchAtom, repoPathAtom } from "@/features/repository/state";

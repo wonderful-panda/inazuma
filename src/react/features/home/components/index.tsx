@@ -2,14 +2,14 @@ import { Divider, List, Typography } from "@mui/material";
 import { useCallback, useMemo } from "react";
 import { MainWindowProperty } from "@/core/layout/MainWindow";
 import type { Command } from "@/core/context/CommandGroupContext";
-import { useBeginClone } from "@/hooks/actions/clone";
-import { useOpenRepository } from "@/hooks/actions/openRepository";
+import { useBeginClone } from "@/features/home/hooks/actions/clone";
+import { useOpenRepository } from "@/features/home/hooks/actions/openRepository";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import {
   removeRecentOpenedRepository,
   useVisibleRecentOpenedRepositoriesValue
 } from "@/core/state/root";
-import { Cmd, CommandGroup } from "../CommandGroup";
+import { Cmd, CommandGroup } from "@/components/CommandGroup";
 import { RepositoryListItem, type RepositoryListItemProps } from "./RepositoryListItem";
 
 const Home: React.FC<{ active: boolean }> = ({ active }) => {

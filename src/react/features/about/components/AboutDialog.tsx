@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { CancelButton, DialogActions, DialogContent, DialogTitle } from "@/shared/components/ui/Dialog";
 import { useDialog } from "@/core/context/DialogContext";
 import { sha } from "@/generated/gitinfo.json";
-import { version } from "../../../package.json";
+import { version } from "../../../../../package.json";
 
 export const useAboutDialog = () => {
   const dialog = useDialog();

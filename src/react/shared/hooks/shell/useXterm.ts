@@ -7,7 +7,7 @@ import { useAlert } from "@/core/context/AlertContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useConfigValue } from "@/core/state/root";
 import { assertNever } from "@/util";
-import { useReloadRepository } from "@/hooks/actions/openRepository";
+import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
 import { useWithRef } from "@/shared/hooks/utils/useWithRef";
 
 interface Shell {
