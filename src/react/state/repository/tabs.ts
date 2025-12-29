@@ -1,5 +1,5 @@
-import type { TabDefinition } from "@/components/TabContainer";
-import { createTabsAtoms } from "../tabs";
+import type { TabDefinition } from "@/core/layout/TabContainer";
+import { createTabsAtoms } from "@/core/state/tabs";
 
 export interface TabType {
   commits: null;

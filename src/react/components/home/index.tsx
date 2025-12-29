@@ -1,14 +1,14 @@
 import { Divider, List, Typography } from "@mui/material";
 import { useCallback, useMemo } from "react";
-import { MainWindowProperty } from "@/components/MainWindow";
-import type { Command } from "@/context/CommandGroupContext";
+import { MainWindowProperty } from "@/core/layout/MainWindow";
+import type { Command } from "@/core/context/CommandGroupContext";
 import { useBeginClone } from "@/hooks/actions/clone";
 import { useOpenRepository } from "@/hooks/actions/openRepository";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import {
   removeRecentOpenedRepository,
   useVisibleRecentOpenedRepositoriesValue
-} from "@/state/root";
+} from "@/core/state/root";
 import { Cmd, CommandGroup } from "../CommandGroup";
 import { RepositoryListItem, type RepositoryListItemProps } from "./RepositoryListItem";
 

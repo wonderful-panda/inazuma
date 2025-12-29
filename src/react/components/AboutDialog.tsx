@@ -1,8 +1,8 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useCallback, useState } from "react";
-import { CancelButton, DialogActions, DialogContent, DialogTitle } from "@/components/Dialog";
-import { useDialog } from "@/context/DialogContext";
+import { CancelButton, DialogActions, DialogContent, DialogTitle } from "@/shared/components/ui/Dialog";
+import { useDialog } from "@/core/context/DialogContext";
 import { sha } from "@/generated/gitinfo.json";
 import { version } from "../../../package.json";
 

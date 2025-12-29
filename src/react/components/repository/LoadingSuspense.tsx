@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { Suspense } from "react";
-import { Loading } from "../Loading";
+import { Loading } from "@/shared/components/ui/Loading";
 
 export const LoadingSuspense: React.FC<React.PropsWithChildren<{ containerClass?: string }>> = ({
   children,

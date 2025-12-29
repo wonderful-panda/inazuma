@@ -1,4 +1,4 @@
-import type { IconName } from "./types/IconName";
+import type { IconName } from "@/core/types/IconName";
 import { getExtension } from "./util";
 
 export const getFileIcon = (path: string, isFolder: boolean): IconName => {

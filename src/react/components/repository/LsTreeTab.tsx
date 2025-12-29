@@ -1,12 +1,12 @@
 import { IconButton } from "@mui/material";
 import classNames from "classnames";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useTauriSuspenseQuery } from "@/hooks/useTauriQuery";
-import type { TreeItemVM, TreeModelDispatch } from "@/hooks/useTreeModel";
+import { useTauriSuspenseQuery } from "@/shared/hooks/integration/useTauriQuery";
+import type { TreeItemVM, TreeModelDispatch } from "@/shared/hooks/ui/useTreeModel";
 import { filterTreeItems, sortTree, type TreeItem } from "@/tree";
-import { FlexCard } from "../FlexCard";
-import { Icon } from "../Icon";
-import { PersistSplitterPanel } from "../PersistSplitterPanel";
+import { FlexCard } from "@/shared/components/ui/FlexCard";
+import { Icon } from "@/shared/components/ui/Icon";
+import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
 import { BlamePanel } from "./BlamePanel";
 import { CommitAttributes } from "./CommitAttributes";
 import { withLoadingSuspense } from "./LoadingSuspense";

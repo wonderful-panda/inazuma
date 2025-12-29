@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { CloneDialogBody } from "@/components/home/CloneDialogBody";
-import { useWithRef } from "../useWithRef";
-import { useExecuteGitInXterm } from "../useXterm";
-import { useXtermDialog } from "../useXtermDialog";
+import { useWithRef } from "@/shared/hooks/utils/useWithRef";
+import { useExecuteGitInXterm } from "@/shared/hooks/shell/useXterm";
+import { useXtermDialog } from "@/shared/hooks/shell/useXtermDialog";
 import { useOpenRepository } from "./openRepository";
 
 export const useBeginClone = () => {

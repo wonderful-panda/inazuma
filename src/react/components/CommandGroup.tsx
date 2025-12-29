@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
-import { type Command, useCommandGroupTree } from "@/context/CommandGroupContext";
-import { useCommandGroup } from "@/hooks/useCommandGroup";
+import { type Command, useCommandGroupTree } from "@/core/context/CommandGroupContext";
+import { useCommandGroup } from "@/shared/hooks/integration/useCommandGroup";
 import { nope } from "@/util";
 
 export const Cmd: React.FC<Command> = () => null;

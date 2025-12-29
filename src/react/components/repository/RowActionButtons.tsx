@@ -2,7 +2,7 @@ import { IconButton } from "@mui/material";
 import classNames from "classnames";
 import { memo, useMemo } from "react";
 import type { IconActionItem } from "@/commands/types";
-import { Icon } from "../Icon";
+import { Icon } from "@/shared/components/ui/Icon";
 
 export interface RowActionItem extends IconActionItem {
   alwaysVisible?: boolean;

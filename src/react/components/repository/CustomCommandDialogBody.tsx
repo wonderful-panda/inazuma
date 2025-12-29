@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import type { PtyExitStatus } from "@/hooks/useXterm";
-import { DialogSection } from "../Dialog";
-import { XtermDialogBody } from "../XtermDialogBody";
+import type { PtyExitStatus } from "@/shared/hooks/shell/useXterm";
+import { DialogSection } from "@/shared/components/ui/Dialog";
+import { XtermDialogBody } from "@/shared/components/shell/XtermDialogBody";
 
 export const CustomCommandDialogBody: React.FC<{
   name: string;

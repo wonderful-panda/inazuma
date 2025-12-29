@@ -3,7 +3,7 @@ import classNames from "classnames";
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { useBeginDeleteBranch, useSwitchBranch } from "@/hooks/actions/branch";
-import { Icon } from "../Icon";
+import { Icon } from "@/shared/components/ui/Icon";
 
 const HeaderItem: React.FC<{ text: string; expanded: boolean; onClick: () => void }> = ({
   text,

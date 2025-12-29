@@ -3,13 +3,13 @@ import { Provider, useAtomValue, useSetAtom } from "jotai";
 import { DevTools } from "jotai-devtools";
 import { useCallback, useEffect, useMemo } from "react";
 import type { IconActionItem, Spacer } from "@/commands/types";
-import { CommandGroupTreeProvider } from "@/context/CommandGroupContext";
-import { DialogProvider } from "@/context/DialogContext";
+import { CommandGroupTreeProvider } from "@/core/context/CommandGroupContext";
+import { DialogProvider } from "@/core/context/DialogContext";
 import { useBeginFetch } from "@/hooks/actions/fetch";
 import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/hooks/actions/openRepository";
 import { useBeginPull } from "@/hooks/actions/pull";
 import { useBeginPush } from "@/hooks/actions/push";
-import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { logAtom, repoPathAtom, repositoryStoresAtomFamily } from "@/state/repository";
 import {
@@ -26,14 +26,14 @@ import {
   selectRepoTabAtom,
   type TabType
 } from "@/state/repository/tabs";
-import { useConfigValue } from "@/state/root";
+import { useConfigValue } from "@/core/state/root";
 import { assertNever } from "@/util";
 import { Cmd, CommandGroup } from "../CommandGroup";
-import { lazy } from "../hoc/lazy";
-import { InteractiveShell } from "../InteractiveShell";
-import { MainWindowProperty } from "../MainWindow";
-import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { TabContainer, type TabContainerProps, TooltipTitle } from "../TabContainer";
+import { lazy } from "@/shared/components/hoc/lazy";
+import { InteractiveShell } from "@/shared/components/shell/InteractiveShell";
+import { MainWindowProperty } from "@/core/layout/MainWindow";
+import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
+import { TabContainer, type TabContainerProps, TooltipTitle } from "@/core/layout/TabContainer";
 import BlameTabTooltip from "./BlameTabTooltip";
 import CommitDiffTabTooltip from "./CommitDiffTabTooltip";
 import CommitLog from "./CommitLog";

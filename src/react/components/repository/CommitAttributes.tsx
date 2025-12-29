@@ -1,8 +1,8 @@
 import { formatDateTimeLong } from "@/date";
-import { useConfigValue } from "@/state/root";
-import type { IconName } from "@/types/IconName";
-import { GitHash } from "../GitHash";
-import { Icon } from "../Icon";
+import { useConfigValue } from "@/core/state/root";
+import type { IconName } from "@/core/types/IconName";
+import { GitHash } from "@/shared/components/ui/GitHash";
+import { Icon } from "@/shared/components/ui/Icon";
 import { Avatar } from "./Avatar";
 
 const AttrIcon: React.FC<{ icon: IconName }> = ({ icon }) => (

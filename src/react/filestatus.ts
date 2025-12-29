@@ -1,4 +1,4 @@
-import type { IconName } from "./types/IconName";
+import type { IconName } from "@/core/types/IconName";
 
 export const FileStatusList = ["?", "!", "M", "A", "D", "R", "C", "T", "U"] as const;
 export type FileStatus = (typeof FileStatusList)[number];

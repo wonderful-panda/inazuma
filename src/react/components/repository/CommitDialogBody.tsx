@@ -8,10 +8,10 @@ import {
   DialogContent,
   DialogTitle,
   LabelledCheckBox
-} from "@/components/Dialog";
-import { useAlert } from "@/context/AlertContext";
+} from "@/shared/components/ui/Dialog";
+import { useAlert } from "@/core/context/AlertContext";
 import { useCommit } from "@/hooks/actions/workingtree";
-import { useTauriQueryInvoke } from "@/hooks/useTauriQuery";
+import { useTauriQueryInvoke } from "@/shared/hooks/integration/useTauriQuery";
 import { repoPathAtom } from "@/state/repository";
 import { clamp } from "@/util";
 

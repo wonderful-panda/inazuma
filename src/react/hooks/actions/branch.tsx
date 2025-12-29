@@ -3,12 +3,12 @@ import { useCallback } from "react";
 import { DeleteBranchDialogBody } from "@/components/repository/DeleteBranchDialogBody";
 import { MoveBranchDialogBody } from "@/components/repository/MoveBranchDialogBody";
 import { NewBranchDialogBody } from "@/components/repository/NewBranchDialogBody";
-import { useAlert } from "@/context/AlertContext";
-import { useConfirmDialog } from "@/context/ConfirmDialogContext";
-import { useDialog } from "@/context/DialogContext";
+import { useAlert } from "@/core/context/AlertContext";
+import { useConfirmDialog } from "@/core/context/ConfirmDialogContext";
+import { useDialog } from "@/core/context/DialogContext";
 import { useReloadRepository } from "@/hooks/actions/openRepository";
-import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
-import { useWithRef } from "@/hooks/useWithRef";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
+import { useWithRef } from "@/shared/hooks/utils/useWithRef";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { repoPathAtom } from "../../state/repository";
 

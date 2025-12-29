@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useAlert } from "@/context/AlertContext";
+import { useAlert } from "@/core/context/AlertContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import type { FileCommand } from "./types";
 

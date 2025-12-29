@@ -7,9 +7,9 @@ import {
   DialogSection,
   DialogTitle,
   LabelledCheckBox
-} from "@/components/Dialog";
+} from "@/shared/components/ui/Dialog";
 import { useCreateBranch } from "@/hooks/actions/branch";
-import { Icon } from "../Icon";
+import { Icon } from "@/shared/components/ui/Icon";
 import { CommitAttributes } from "./CommitAttributes";
 
 export const NewBranchDialogBody: React.FC<{ commit: Commit }> = ({ commit }) => {

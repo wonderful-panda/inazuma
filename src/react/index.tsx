@@ -6,27 +6,27 @@ import { listen } from "@tauri-apps/api/event";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Cmd, CommandGroup } from "./components/CommandGroup";
-import { lazy } from "./components/hoc/lazy";
+import { lazy } from "./shared/components/hoc/lazy";
 import Home from "./components/home";
-import { MainWindow } from "./components/MainWindow";
-import { TabContainer, type TabContainerProps, TooltipTitle } from "./components/TabContainer";
-import { AlertProvider, useAlert } from "./context/AlertContext";
-import { CommandGroupProvider, CommandGroupTreeProvider } from "./context/CommandGroupContext";
-import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
-import { ContextMenuProvider } from "./context/ContextMenuContext";
-import { DialogProvider } from "./context/DialogContext";
-import { LoadingProvider } from "./context/LoadingContext";
-import { PersistStateProvider } from "./context/PersistStateContext";
+import { MainWindow } from "./core/layout/MainWindow";
+import { TabContainer, type TabContainerProps, TooltipTitle } from "./core/layout/TabContainer";
+import { AlertProvider, useAlert } from "./core/context/AlertContext";
+import { CommandGroupProvider, CommandGroupTreeProvider } from "./core/context/CommandGroupContext";
+import { ConfirmDialogProvider } from "./core/context/ConfirmDialogContext";
+import { ContextMenuProvider } from "./core/context/ContextMenuContext";
+import { DialogProvider } from "./core/context/DialogContext";
+import { LoadingProvider } from "./core/context/LoadingContext";
+import { PersistStateProvider } from "./core/context/PersistStateContext";
 import { getCssVariable, setCssVariable } from "./cssvar";
 import { useOpenRepository, useReloadSpecifiedRepository } from "./hooks/actions/openRepository";
-import { useWithRef } from "./hooks/useWithRef";
+import { useWithRef } from "./shared/hooks/utils/useWithRef";
 import { invokeTauriCommand } from "./invokeTauriCommand";
 import {
   registerConfigWatcher,
   registerRecentOpenedRepositoriesWatcher,
   setInitialValue,
   useConfigValue
-} from "./state/root";
+} from "./core/state/root";
 import {
   type AppTabType,
   registerApplicationTabsWatcher,
@@ -38,7 +38,7 @@ import {
   setInitialValue as setInitialAppTabsValue,
   type TabsState,
   useAppTabsValue
-} from "./state/tabs";
+} from "./core/state/tabs";
 import { createStateStorage, type StateStorage } from "./stateStorage";
 import { assertNever } from "./util";
 

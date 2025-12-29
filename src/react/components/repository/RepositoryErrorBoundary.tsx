@@ -1,9 +1,9 @@
 import { IconButton } from "@mui/material";
 import { useCallback } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
-import { useAlert } from "@/context/AlertContext";
+import { useAlert } from "@/core/context/AlertContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { Icon } from "../Icon";
+import { Icon } from "@/shared/components/ui/Icon";
 
 const Fallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
   const alert = useAlert();

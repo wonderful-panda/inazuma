@@ -8,10 +8,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle
-} from "@/components/Dialog";
-import { Icon } from "@/components/Icon";
-import { useDialog } from "@/context/DialogContext";
-import { useDragAndDropReorder } from "@/hooks/useDragAndDropReorder";
+} from "@/shared/components/ui/Dialog";
+import { Icon } from "@/shared/components/ui/Icon";
+import { useDialog } from "@/core/context/DialogContext";
+import { useDragAndDropReorder } from "@/shared/hooks/integration/useDragAndDropReorder";
 import { type CommandType, CustomCommandForm } from "./CustomCommandForm";
 import { SectionContent, SectionHeader } from "./PreferenceSection";
 import type { TabContentProps } from "./types";

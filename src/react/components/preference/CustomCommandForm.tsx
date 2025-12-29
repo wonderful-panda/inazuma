@@ -3,7 +3,7 @@ import type { FileCustomCommand } from "@backend/FileCustomCommand";
 import { Checkbox, FormControlLabel, IconButton, TextField, Tooltip } from "@mui/material";
 import type React from "react";
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { Icon } from "../Icon";
+import { Icon } from "@/shared/components/ui/Icon";
 
 export type CommandType = "commit" | "file";
 

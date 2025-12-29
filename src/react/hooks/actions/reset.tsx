@@ -2,9 +2,9 @@ import type { ResetOptions } from "@backend/ResetOptions";
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 import { ResetDialogBody } from "@/components/repository/ResetBranchDialogBody";
-import { useDialog } from "@/context/DialogContext";
+import { useDialog } from "@/core/context/DialogContext";
 import { useReloadRepository } from "@/hooks/actions/openRepository";
-import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { currentBranchAtom, repoPathAtom } from "../../state/repository";
 

@@ -7,10 +7,10 @@ import {
   DialogSection,
   DialogTitle,
   LabelledCheckBox
-} from "@/components/Dialog";
-import { useAlert } from "@/context/AlertContext";
+} from "@/shared/components/ui/Dialog";
+import { useAlert } from "@/core/context/AlertContext";
 import { useDeleteBranch } from "@/hooks/actions/branch";
-import { Icon } from "../Icon";
+import { Icon } from "@/shared/components/ui/Icon";
 
 export const DeleteBranchDialogBody: React.FC<{ branchName: string }> = ({ branchName }) => {
   const forceRef = useRef<HTMLInputElement | null>(null);

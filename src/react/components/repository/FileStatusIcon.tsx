@@ -1,5 +1,5 @@
 import { getFileStatusAttr } from "@/filestatus";
-import { Icon } from "../Icon";
+import { Icon } from "@/shared/components/ui/Icon";
 
 export interface FileStatusIconProps {
   statusCode: string;

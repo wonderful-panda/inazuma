@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
-import { useAlert } from "@/context/AlertContext";
+import { useAlert } from "@/core/context/AlertContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { SectionContent, SectionHeader } from "./PreferenceSection";
 import type { TabContentProps } from "./types";

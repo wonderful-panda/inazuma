@@ -13,7 +13,7 @@ import {
 } from "@/commands/diff";
 import type { IconActionItem } from "@/commands/types";
 import { useRestoreCommand, useStageCommand, useUnstageCommand } from "@/commands/workingtree";
-import { useAlert } from "@/context/AlertContext";
+import { useAlert } from "@/core/context/AlertContext";
 import {
   useBeginCommit,
   useFixup,
@@ -21,19 +21,19 @@ import {
   useStage,
   useUnstage
 } from "@/hooks/actions/workingtree";
-import { useFileContextMenuT } from "@/hooks/useContextMenu";
-import { useElementSize } from "@/hooks/useElementSize";
-import { useSelectedIndex } from "@/hooks/useSelectedIndex";
-import type { TreeItemVM, TreeModelDispatch } from "@/hooks/useTreeModel";
-import { useWithRef } from "@/hooks/useWithRef";
+import { useFileContextMenuT } from "@/shared/hooks/integration/useContextMenu";
+import { useElementSize } from "@/shared/hooks/ui/useElementSize";
+import { useSelectedIndex } from "@/shared/hooks/ui/useSelectedIndex";
+import type { TreeItemVM, TreeModelDispatch } from "@/shared/hooks/ui/useTreeModel";
+import { useWithRef } from "@/shared/hooks/utils/useWithRef";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { repoPathAtom } from "@/state/repository";
 import { decodeBase64, decodeToString } from "@/strings";
 import type { TreeItem } from "@/tree";
-import { FlexCard } from "../FlexCard";
-import { MonacoEditor } from "../MonacoEditor";
-import { PersistSplitterPanel } from "../PersistSplitterPanel";
-import { VirtualTree, type VirtualTreeProps } from "../VirtualTree";
+import { FlexCard } from "@/shared/components/ui/FlexCard";
+import { MonacoEditor } from "@/shared/components/ui/editor/MonacoEditor";
+import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
+import { VirtualTree, type VirtualTreeProps } from "@/shared/components/ui/VirtualTree";
 import { FileListRow } from "./FileListRow";
 import { NumStat } from "./NumStat";
 import PathFilter from "./PathFilter";

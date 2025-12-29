@@ -10,10 +10,10 @@ import {
   setLogAtom
 } from "@/state/repository";
 import { reflogAtom } from "@/state/repository/misc";
-import { addRecentOpenedRepository } from "@/state/root";
-import { addAppTab, getAppTabsValue, selectAppTab } from "@/state/tabs";
+import { addRecentOpenedRepository } from "@/core/state/root";
+import { addAppTab, getAppTabsValue, selectAppTab } from "@/core/state/tabs";
 import { getFileName, toSlashedPath } from "@/util";
-import { useCallbackWithErrorHandler } from "../useCallbackWithErrorHandler";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 
 const fetchHistory = async (repoPath: string, reflogCount: number) => {
   const [[commits, rawRefs], user] = await Promise.all([

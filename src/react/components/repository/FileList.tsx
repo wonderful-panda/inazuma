@@ -3,11 +3,11 @@ import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { executeFileCommand } from "@/commands";
 import type { FileCommand } from "@/commands/types";
 import { type FileStatus, FileStatusList } from "@/filestatus";
-import type { TreeItemVM, TreeModelDispatch } from "@/hooks/useTreeModel";
+import type { TreeItemVM, TreeModelDispatch } from "@/shared/hooks/ui/useTreeModel";
 import { filterTreeItems, shrinkTreeInplace, sortTreeInplace, type TreeItem } from "@/tree";
 import { assertNever, getFolderAndFileName, nope } from "@/util";
-import { Icon } from "../Icon";
-import { VirtualTree } from "../VirtualTree";
+import { Icon } from "@/shared/components/ui/Icon";
+import { VirtualTree } from "@/shared/components/ui/VirtualTree";
 import { FileListFolderRow, FileListRow, FileListStatusRow } from "./FileListRow";
 import PathFilter from "./PathFilter";
 

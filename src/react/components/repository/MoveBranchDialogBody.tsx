@@ -6,13 +6,13 @@ import {
   DialogContent,
   DialogSection,
   DialogTitle
-} from "@/components/Dialog";
-import { useAlert } from "@/context/AlertContext";
+} from "@/shared/components/ui/Dialog";
+import { useAlert } from "@/core/context/AlertContext";
 import { useCreateBranch } from "@/hooks/actions/branch";
-import { useCallbackWithErrorHandler } from "@/hooks/useCallbackWithErrorHandler";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { repoPathAtom } from "@/state/repository";
-import { Icon } from "../Icon";
+import { Icon } from "@/shared/components/ui/Icon";
 import { CommitAttributes } from "./CommitAttributes";
 
 export const MoveBranchDialogBody: React.FC<{ branchName: string; destination: Commit }> = ({

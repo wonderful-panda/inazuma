@@ -8,8 +8,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle
-} from "@/components/Dialog";
-import { DialogProvider, useDialog } from "@/context/DialogContext";
+} from "@/shared/components/ui/Dialog";
+import { DialogProvider, useDialog } from "@/core/context/DialogContext";
 import { assertNever } from "@/util";
 import { CustomCommandTab } from "./CustomCommandTab";
 import { GeneralTab } from "./GeneralTab";
