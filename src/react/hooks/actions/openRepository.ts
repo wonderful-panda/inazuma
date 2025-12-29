@@ -8,8 +8,8 @@ import {
   repoPathAtom,
   repositoryStoresAtomFamily,
   setLogAtom
-} from "@/state/repository";
-import { reflogAtom } from "@/state/repository/misc";
+} from "@/features/repository/state";
+import { reflogAtom } from "@/features/repository/state/misc";
 import { addRecentOpenedRepository } from "@/core/state/root";
 import { addAppTab, getAppTabsValue, selectAppTab } from "@/core/state/tabs";
 import { getFileName, toSlashedPath } from "@/util";

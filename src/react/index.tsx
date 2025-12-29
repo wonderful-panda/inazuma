@@ -46,7 +46,7 @@ if (import.meta.env.DEV) {
   void import("./jotai-devtools-styles");
 }
 
-const RepositoryPage = lazy(async () => (await import("./components/repository")).default, {
+const RepositoryPage = lazy(async () => (await import("@/features/repository")).default, {
   preload: true
 });
 

@@ -1,0 +1,18 @@
+import { useMemo } from "react";
+import { useBeginReset } from "@/features/repository/hooks/actions/reset";
+import type { CommitCommand } from "./types";
+
+export const useResetCommand = () => {
+  const beginReset = useBeginReset();
+  return useMemo<CommitCommand>(
+    () => ({
+      type: "commit",
+      id: "Reset",
+      label: "Reset to this commit",
+      icon: "mdi:arrow-left-top",
+      hidden: (commit) => commit.id === "--",
+      handler: async (commit) => beginReset(commit)
+    }),
+    [beginReset]
+  );
+};

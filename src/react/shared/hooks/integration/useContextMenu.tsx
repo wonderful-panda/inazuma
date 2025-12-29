@@ -8,8 +8,8 @@ import {
   fileCommandsToActions,
   useCommitCommands,
   useFileCommands
-} from "@/commands";
-import type { ActionItem } from "@/commands/types";
+} from "@/features/repository/commands";
+import type { ActionItem } from "@/features/repository/commands/types";
 import { Icon } from "@/shared/components/ui/Icon";
 import { useAlert } from "@/core/context/AlertContext";
 import { useConfirmDialog } from "@/core/context/ConfirmDialogContext";

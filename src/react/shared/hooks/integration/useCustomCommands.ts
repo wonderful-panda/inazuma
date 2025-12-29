@@ -4,9 +4,9 @@ import { useAtomValue } from "jotai";
 import { minimatch } from "minimatch";
 import { useCallback, useMemo } from "react";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { repoConfigAtom, repoPathAtom } from "@/state/repository";
+import { repoConfigAtom, repoPathAtom } from "@/features/repository/state";
 import { useConfigValue } from "@/core/state/root";
-import { useBeginCustomCommand } from "@/hooks/actions/beginCustomCommand";
+import { useBeginCustomCommand } from "@/features/repository/hooks/actions/beginCustomCommand";
 
 export interface UseCustomCommandsReturn {
   commitCommands: CommitCustomCommand[];

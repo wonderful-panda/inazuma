@@ -19,9 +19,9 @@ import {
   useMemo,
   useState
 } from "react";
-import type { IconActionItem, Spacer } from "@/commands/types";
+import type { IconActionItem, Spacer } from "@/features/repository/commands/types";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { repoConfigAtom, repositoryStoresAtomFamily, saveRepoConfigAtom } from "@/state/repository";
+import { repoConfigAtom, repositoryStoresAtomFamily, saveRepoConfigAtom } from "@/features/repository/state";
 import { useConfig } from "@/core/state/root";
 import { useAppTabsValue } from "@/core/state/tabs";
 import { nope } from "@/util";
