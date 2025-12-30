@@ -1,0 +1,132 @@
+import { useAtomValue } from "jotai";
+import { useCallback } from "react";
+import { useAlert } from "@/core/context/AlertContext";
+import { useConfirmDialog } from "@/core/context/ConfirmDialogContext";
+import { useDialog } from "@/core/context/DialogContext";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
+import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
+import { DeleteBranchDialogBody } from "@/features/repository/components/dialogs/DeleteBranchDialogBody";
+import { MoveBranchDialogBody } from "@/features/repository/components/MoveBranchDialogBody";
+import { NewBranchDialogBody } from "@/features/repository/components/NewBranchDialogBody";
+import { repoPathAtom } from "@/features/repository/state";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
+import { useWithRef } from "@/shared/hooks/utils/useWithRef";
+
+export const useBeginCreateBranch = () => {
+  const repoPath = useAtomValue(repoPathAtom);
+  const dialog = useDialog();
+
+  return useCallback(
+    async (commit: Commit) => {
+      if (!repoPath) {
+        return;
+      }
+      return await dialog.showModal({
+        content: <NewBranchDialogBody commit={commit} />,
+        defaultActionKey: "Enter"
+      });
+    },
+    [repoPath, dialog]
+  );
+};
+
+export const useBeginMoveBranch = () => {
+  const repoPath = useAtomValue(repoPathAtom);
+  const dialog = useDialog();
+
+  return useCallback(
+    async (branchName: string, destination: Commit) => {
+      if (!repoPath) {
+        return;
+      }
+      return await dialog.showModal({
+        content: <MoveBranchDialogBody branchName={branchName} destination={destination} />,
+        defaultActionKey: "Enter"
+      });
+    },
+    [repoPath, dialog]
+  );
+};
+
+export const useCreateBranch = () => {
+  const repoPath = useAtomValue(repoPathAtom);
+  const [, reloadRepository] = useWithRef(useReloadRepository());
+  const { showWarning } = useAlert();
+  return useCallbackWithErrorHandler(
+    async (options: CreateBranchOptions) => {
+      if (!repoPath) {
+        return false;
+      }
+      if (!options.branchName) {
+        showWarning("Branch name is not specified");
+        return false;
+      }
+      await invokeTauriCommand("create_branch", { repoPath, options });
+      await reloadRepository.current();
+      return true;
+    },
+    [repoPath, showWarning]
+  );
+};
+
+export const useBeginDeleteBranch = () => {
+  const repoPath = useAtomValue(repoPathAtom);
+  const dialog = useDialog();
+  return useCallback(
+    async (branchName: string) => {
+      if (!repoPath) {
+        return;
+      }
+      return await dialog.showModal({
+        content: <DeleteBranchDialogBody branchName={branchName} />
+      });
+    },
+    [repoPath, dialog]
+  );
+};
+
+export const useDeleteBranch = () => {
+  const repoPath = useAtomValue(repoPathAtom);
+  const [, reloadRepository] = useWithRef(useReloadRepository());
+  return useCallbackWithErrorHandler(
+    async (options: DeleteBranchOptions) => {
+      if (!repoPath) {
+        return false;
+      }
+      await invokeTauriCommand("delete_branch", { repoPath, options });
+      await reloadRepository.current();
+      return true;
+    },
+    [repoPath]
+  );
+};
+
+export const useSwitchBranch = () => {
+  const repoPath = useAtomValue(repoPathAtom);
+  const confirm = useConfirmDialog();
+  const [, reloadRepository] = useWithRef(useReloadRepository());
+  const { showWarning } = useAlert();
+  return useCallbackWithErrorHandler(
+    async (options: DeleteBranchOptions) => {
+      if (!repoPath) {
+        return false;
+      }
+      if (!options.branchName) {
+        showWarning("Branch name is not specified");
+        return false;
+      }
+      const ret = await confirm.showModal({
+        title: "Switch branch",
+        content: `Switch to branch [${options.branchName}]`
+      });
+      if (ret !== "accepted") {
+        return;
+      }
+
+      await invokeTauriCommand("switch", { repoPath, options });
+      await reloadRepository.current();
+      return true;
+    },
+    [repoPath, confirm, showWarning]
+  );
+};

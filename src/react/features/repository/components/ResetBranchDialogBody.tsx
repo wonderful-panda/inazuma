@@ -1,0 +1,113 @@
+import type { ResetMode } from "@backend/ResetMode";
+import { DialogActions, RadioGroup } from "@mui/material";
+import classNames from "classnames";
+import { useAtomValue } from "jotai";
+import { useRef } from "react";
+import { useAlert } from "@/core/context/AlertContext";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
+import { useReset } from "@/features/repository/hooks/actions/reset";
+import { repoPathAtom } from "@/features/repository/state";
+import {
+  AcceptButton,
+  CancelButton,
+  DialogContent,
+  DialogSection,
+  DialogTitle,
+  LabelledRadio
+} from "@/shared/components/ui/Dialog";
+import { Icon } from "@/shared/components/ui/Icon";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
+import { CommitAttributes } from "./CommitAttributes";
+
+const colors: Record<ResetMode, string> = {
+  soft: "bg-success",
+  mixed: "bg-info",
+  hard: "bg-warning"
+};
+const ModeRadio: React.FC<{ value: ResetMode; description: string }> = ({ value, description }) => {
+  return (
+    <LabelledRadio
+      value={value}
+      label={
+        <div className="flex-row-nowrap">
+          <span
+            className={classNames("capitalize mr-2 w-16 text-center rounded-md", colors[value])}
+          >
+            {value}
+          </span>
+          {description}
+        </div>
+      }
+    />
+  );
+};
+
+export const ResetDialogBody: React.FC<{ branchName: string; destination: Commit }> = ({
+  branchName,
+  destination
+}) => {
+  const alert = useAlert();
+  const reset = useReset();
+  const repoPath = useAtomValue(repoPathAtom);
+  const modeRef = useRef<HTMLDivElement>(null);
+  const invokeReset = useCallbackWithErrorHandler(async () => {
+    if (!modeRef.current) {
+      return false;
+    }
+    const checkedRadio = [
+      ...modeRef.current.querySelectorAll<HTMLInputElement>("input[type='radio']")
+    ].find((e) => e.checked);
+    if (!checkedRadio) {
+      alert.showWarning("No mode selected");
+      return false;
+    }
+    const mode = checkedRadio.value as ResetMode;
+    const currentBranch = await invokeTauriCommand("get_current_branch", { repoPath });
+    if (currentBranch !== branchName) {
+      alert.showError(`"${branchName}" is not current branch`);
+      return false;
+    }
+    return await reset({ commitId: destination.id, mode });
+  }, [alert, reset, repoPath, branchName, destination]);
+
+  return (
+    <>
+      <DialogTitle>Reset current branch to the specified commit</DialogTitle>
+      <DialogContent>
+        <div className="m-0 flex flex-col-nowrap w-176">
+          <DialogSection label="Current branch">
+            <div className="flex-row-nowrap">
+              <Icon icon="mdi:source-branch" className="mr-2 my-auto text-2xl" />
+              <span>{branchName}</span>
+            </div>
+          </DialogSection>
+          <DialogSection label="Reset to">
+            <div className="p-2 border border-greytext">
+              <CommitAttributes commit={destination} showSummary />
+            </div>
+          </DialogSection>
+          <DialogSection label="Mode">
+            <RadioGroup ref={modeRef} defaultValue="soft">
+              <ModeRadio
+                value="soft"
+                description="Don't touch the index or the working tree at all"
+              />
+              <ModeRadio
+                value="mixed"
+                description="Reset the index, and don't touch the working tree"
+              />
+              <ModeRadio
+                value="hard"
+                description="Discard all changes including the index and the working tree"
+              />
+            </RadioGroup>
+          </DialogSection>
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <AcceptButton onClick={invokeReset} default />
+        <CancelButton />
+      </DialogActions>
+    </>
+  );
+};

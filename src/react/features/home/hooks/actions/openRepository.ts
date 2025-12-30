@@ -1,0 +1,173 @@
+import type { Getter, Setter } from "jotai";
+import { useAtomCallback } from "jotai/utils";
+import { addRecentOpenedRepository } from "@/core/state/root";
+import { addAppTab, getAppTabsValue, selectAppTab } from "@/core/state/tabs";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
+import {
+  loadRepoConfigAtom,
+  logAtom,
+  repoPathAtom,
+  repositoryStoresAtomFamily,
+  setLogAtom
+} from "@/features/repository/state";
+import { reflogAtom } from "@/features/repository/state/misc";
+import { Grapher, type GraphFragment } from "@/features/repository/utils/grapher";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
+import { getFileName, toSlashedPath } from "@/shared/utils/util";
+
+const fetchHistory = async (repoPath: string, reflogCount: number) => {
+  const [[commits, rawRefs], user] = await Promise.all([
+    invokeTauriCommand("fetch_history", {
+      repoPath,
+      maxCount: 1000,
+      reflogCount
+    }),
+    invokeTauriCommand("get_user_info", { repoPath })
+  ]);
+  if (rawRefs.head) {
+    commits.unshift({
+      id: "--",
+      author: user.name,
+      mailAddress: user.email,
+      date: Date.now(),
+      summary: "<Working tree>",
+      parentIds: [rawRefs.head, ...rawRefs.mergeHeads]
+    });
+  }
+  const refs = makeRefs(rawRefs);
+  const grapher = new Grapher(["orange", "cyan", "yellow", "magenta"], refs);
+  const graph: Record<string, GraphFragment> = {};
+  for (const c of commits) {
+    graph[c.id] = grapher.proceed(c);
+  }
+  return { commits, refs, graph };
+};
+
+const makeRefs = (rawRefs: RawRefs): Refs => {
+  const { head, mergeHeads, refs: refArray } = rawRefs;
+  const refs: Refs = {
+    head,
+    mergeHeads,
+    branches: [],
+    tags: [],
+    remotes: {},
+    refsById: {}
+  };
+  for (const r of refArray) {
+    switch (r.type) {
+      case "branch":
+        refs.branches.push(r);
+        break;
+      case "tag":
+        refs.tags.push(r);
+        break;
+      case "remote":
+        // biome-ignore lint/suspicious/noAssignInExpressions: lazy initialization of array
+        (refs.remotes[r.remote] ?? (refs.remotes[r.remote] = [])).push(r);
+        break;
+      default:
+        break;
+    }
+    // biome-ignore lint/suspicious/noAssignInExpressions: lazy initialization of array
+    (refs.refsById[r.id] ?? (refs.refsById[r.id] = [])).push(r);
+  }
+  const types: Ref["type"][] = ["branch", "tag", "remote", "reflog"];
+  const compare = (a: Ref, b: Ref) => {
+    if (a.type === b.type) {
+      if (a.type === "branch" && b.type === "branch" && a.current !== b.current) {
+        return a.current ? -1 : 1;
+      } else if (a.type === "reflog" && b.type === "reflog") {
+        return a.index - b.index;
+      } else {
+        return a.fullname.localeCompare(b.fullname);
+      }
+    } else {
+      return types.indexOf(a.type) - types.indexOf(b.type);
+    }
+  };
+  for (const v of Object.values(refs.refsById)) {
+    v.sort(compare);
+  }
+  return refs;
+};
+
+export const useOpenRepository = () => {
+  return useAtomCallback(
+    useCallbackWithErrorHandler(
+      async (get: Getter, _set: Setter, realPath: string) => {
+        const path = toSlashedPath(realPath);
+        const store = get(repositoryStoresAtomFamily(path));
+        const { commits, refs, graph } = await fetchHistory(path, 0);
+        const appTabs = getAppTabsValue();
+        const index = appTabs.tabs.findIndex(
+          (tab) => tab.type === "repository" && path === tab.payload.path
+        );
+        if (0 <= index) {
+          store.set(setLogAtom, { path, commits, refs, graph, keepTabs: true });
+          await store.set(loadRepoConfigAtom);
+          selectAppTab(index);
+          return;
+        }
+        await invokeTauriCommand("open_repository", { repoPath: path });
+        addRecentOpenedRepository(path);
+        store.set(setLogAtom, { path, commits, refs, graph, keepTabs: false });
+        await store.set(loadRepoConfigAtom);
+        addAppTab({
+          type: "repository",
+          id: `__REPO__:${path}`,
+          title: getFileName(path),
+          payload: { path },
+          closable: true,
+          onClose: async () => {
+            await invokeTauriCommand("close_repository", { repoPath: path });
+            await repositoryStoresAtomFamily.remove(path);
+          }
+        });
+      },
+      [],
+      { loading: true }
+    )
+  );
+};
+
+const reloadSpecifiedRepository = async (get: Getter, _set: Setter, path: string) => {
+  const store = get(repositoryStoresAtomFamily(path));
+  const reflogCount = store.get(reflogAtom) ? 26 : 0;
+  const { commits, refs, graph } = await fetchHistory(path, reflogCount);
+  store.set(setLogAtom, { path, commits, refs, graph, keepTabs: true });
+};
+
+export const useReloadSpecifiedRepository = () => {
+  return useAtomCallback(
+    useCallbackWithErrorHandler(reloadSpecifiedRepository, [], { loading: true })
+  );
+};
+
+export const useReloadRepository = () => {
+  return useAtomCallback(
+    useCallbackWithErrorHandler(
+      (get: Getter, set: Setter) => {
+        const path = get(repoPathAtom);
+        return reloadSpecifiedRepository(get, set, path);
+      },
+      [],
+      { loading: true }
+    )
+  );
+};
+
+export const useLoadRepositoryIfNotYet = () => {
+  return useAtomCallback(
+    useCallbackWithErrorHandler(
+      (get: Getter, set: Setter) => {
+        if (get(logAtom) === undefined) {
+          const path = get(repoPathAtom);
+          return reloadSpecifiedRepository(get, set, path);
+        }
+        return Promise.resolve();
+      },
+      [],
+      { loading: true }
+    )
+  );
+};

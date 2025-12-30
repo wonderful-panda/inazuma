@@ -1,0 +1,30 @@
+import { useCallback } from "react";
+import { XtermDialogBody } from "@/shared/components/shell/XtermDialogBody";
+import { DialogSection } from "@/shared/components/ui/Dialog";
+import type { PtyExitStatus } from "@/shared/hooks/shell/useXterm";
+
+export const CustomCommandDialogBody: React.FC<{
+  name: string;
+  description?: string;
+  commandLine: string;
+  openXterm: (el: HTMLDivElement, commandLine: string) => Promise<PtyExitStatus>;
+  killPty: () => Promise<void>;
+}> = ({ name, description, commandLine, openXterm, killPty }) => {
+  const openXterm_ = useCallback(
+    async (el: HTMLDivElement): Promise<PtyExitStatus> => {
+      return await openXterm(el, commandLine);
+    },
+    [openXterm, commandLine]
+  );
+
+  return (
+    <XtermDialogBody
+      title="Custom Command Runner"
+      openXterm={openXterm_}
+      killPty={killPty}
+      startImmediate
+    >
+      <DialogSection label={description || name} />
+    </XtermDialogBody>
+  );
+};
