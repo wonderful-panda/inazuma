@@ -1,4 +1,4 @@
-import { TooltipTitle } from "@/core/layout/TabContainer";
+import { TooltipTitle } from "@/shared/components/ui/layout/TabContainer";
 import { CommitAttributes } from "./CommitAttributes";
 
 export interface BlameTabTooltipProps {

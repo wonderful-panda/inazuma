@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo } from "react";
 import { CommandGroupTreeProvider } from "@/core/context/CommandGroupContext";
 import { DialogProvider } from "@/core/context/DialogContext";
 import { MainWindowProperty } from "@/core/layout/MainWindow";
-import { TabContainer, type TabContainerProps, TooltipTitle } from "@/core/layout/TabContainer";
 import { useConfigValue } from "@/core/state/root";
 import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import {
@@ -35,6 +34,11 @@ import { lazy } from "@/shared/components/hoc/lazy";
 import { InteractiveShell } from "@/shared/components/shell/InteractiveShell";
 import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
+import {
+  TabContainer,
+  type TabContainerProps,
+  TooltipTitle
+} from "@/shared/components/ui/layout/TabContainer";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 import { assertNever } from "@/shared/utils/util";
 import BlameTabTooltip from "./components/BlameTabTooltip";

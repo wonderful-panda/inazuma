@@ -1,5 +1,5 @@
 import { atom, useAtomValue } from "jotai";
-import type { TabDefinition } from "@/core/layout/TabContainer";
+import type { TabDefinition } from "@/shared/components/ui/layout/TabContainer";
 import { getRootStore } from "./rootStore";
 import { createWacher } from "./util";
 

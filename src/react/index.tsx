@@ -13,7 +13,6 @@ import { DialogProvider } from "./core/context/DialogContext";
 import { LoadingProvider } from "./core/context/LoadingContext";
 import { PersistStateProvider } from "./core/context/PersistStateContext";
 import { MainWindow } from "./core/layout/MainWindow";
-import { TabContainer, type TabContainerProps, TooltipTitle } from "./core/layout/TabContainer";
 import {
   registerConfigWatcher,
   registerRecentOpenedRepositoriesWatcher,
@@ -42,6 +41,11 @@ import {
 } from "./features/home/hooks/actions/openRepository";
 import { lazy } from "./shared/components/hoc/lazy";
 import { Cmd, CommandGroup } from "./shared/components/ui/CommandGroup";
+import {
+  TabContainer,
+  type TabContainerProps,
+  TooltipTitle
+} from "./shared/components/ui/layout/TabContainer";
 import { useWithRef } from "./shared/hooks/utils/useWithRef";
 import { assertNever } from "./shared/utils/util";
 
