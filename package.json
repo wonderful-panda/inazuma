@@ -22,7 +22,7 @@
     "check:tauri": "cargo check --manifest-path src-tauri/app/Cargo.toml",
     "check:boundaries": "depcruise src/react --config .dependency-cruiser.cjs",
     "build:ts": "env-cmd -f build/build.env vite build",
-    "build:frontend": "run-s prebuild:* generate-dts check:ts build:ts",
+    "build:frontend": "run-s prebuild:* generate-dts check:ts check:boundaries build:ts",
     "build:tauri": "tauri build",
     "build:backend": "run-s generate-licenses build:tauri",
     "test:tauri": "cargo test --manifest-path src-tauri/app/Cargo.toml",
