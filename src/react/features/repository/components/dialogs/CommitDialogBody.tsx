@@ -13,7 +13,7 @@ import {
   LabelledCheckBox
 } from "@/shared/components/ui/Dialog";
 import { useTauriQueryInvoke } from "@/shared/hooks/integration/useTauriQuery";
-import { clamp } from "@/util";
+import { clamp } from "@/shared/utils/util";
 
 export const CommitDialogBody: React.FC = () => {
   const repoPath = useAtomValue(repoPathAtom);

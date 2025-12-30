@@ -2,7 +2,7 @@ import type { FileLogEntry } from "@backend/FileLogEntry";
 import classNames from "classnames";
 import { use, useCallback, useMemo, useState } from "react";
 import { SelectedIndexProvider } from "@/core/context/SelectedIndexContext";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
 import { GitHash } from "@/shared/components/ui/GitHash";
 import { KeyDownTrapper } from "@/shared/components/ui/KeyDownTrapper";
@@ -11,7 +11,7 @@ import { useFileCommitContextMenu } from "@/shared/hooks/integration/useContextM
 import { useTauriQueryInvoke } from "@/shared/hooks/integration/useTauriQuery";
 import { useListIndexChanger } from "@/shared/hooks/ui/useListIndexChanger";
 import { usePromise } from "@/shared/hooks/utils/usePromise";
-import { decodeBase64, decodeToString } from "@/strings";
+import { decodeBase64, decodeToString } from "@/shared/utils/strings";
 import { BlameFooter } from "./BlameFooter";
 import { BlameViewer } from "./BlameViewer";
 import { CommitAttributes } from "./CommitAttributes";

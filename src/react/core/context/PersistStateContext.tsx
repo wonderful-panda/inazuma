@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { StateStorage } from "@/stateStorage";
+import type { StateStorage } from "@/core/utils/stateStorage";
 
 export interface PartialStorage {
   getItem: (key: string) => string | null;

@@ -10,7 +10,7 @@ import {
   DialogContent,
   DialogTitle
 } from "@/shared/components/ui/Dialog";
-import { assertNever } from "@/util";
+import { assertNever } from "@/shared/utils/util";
 import { CustomCommandTab } from "./CustomCommandTab";
 import { GeneralTab } from "./GeneralTab";
 import type { PreferenceAction, PreferenceState, TabContentProps } from "./types";

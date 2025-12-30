@@ -13,7 +13,7 @@ import {
   useState
 } from "react";
 import { useStateWithRef } from "@/shared/hooks/utils/useStateWithRef";
-import { assertNever, wait } from "@/util";
+import { assertNever, wait } from "@/shared/utils/util";
 
 export interface DialogAction {
   text: string;

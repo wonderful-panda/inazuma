@@ -2,9 +2,9 @@ import { IconButton, Snackbar, SnackbarContent, Typography } from "@mui/material
 import { useCallback, useImperativeHandle, useState } from "react";
 import { createPortal } from "react-dom";
 import type { IconName } from "@/core/types/IconName";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { useWithRef } from "@/shared/hooks/utils/useWithRef";
-import { assertNever, serializeError, wait } from "@/util";
+import { assertNever, serializeError, wait } from "@/shared/utils/util";
 import { Icon } from "./Icon";
 
 const iconName = (type: AlertType): IconName => {

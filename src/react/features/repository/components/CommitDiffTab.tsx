@@ -9,7 +9,7 @@ import {
   useTauriSuspenseQuery
 } from "@/shared/hooks/integration/useTauriQuery";
 import { usePersistState } from "@/shared/hooks/utils/usePersistState";
-import { decodeBase64, decodeToString } from "@/strings";
+import { decodeBase64, decodeToString } from "@/shared/utils/strings";
 import { CommitAttributes } from "./CommitAttributes";
 import { DiffViewer, type DiffViewerOptions } from "./DiffViewer";
 import { FileList, type FileListViewType, useFileListRowEventHandler } from "./FileList";

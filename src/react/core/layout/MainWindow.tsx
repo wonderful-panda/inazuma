@@ -21,6 +21,7 @@ import {
 } from "react";
 import { useConfig } from "@/core/state/root";
 import { useAppTabsValue } from "@/core/state/tabs";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { useAboutDialog } from "@/features/about/components/AboutDialog";
 import { usePreferenceDialog } from "@/features/preferences/components/PreferenceDialog";
 import type { IconActionItem, Spacer } from "@/features/repository/commands/types";
@@ -29,10 +30,9 @@ import {
   repositoryStoresAtomFamily,
   saveRepoConfigAtom
 } from "@/features/repository/state";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { Icon } from "@/shared/components/ui/Icon";
-import { nope } from "@/util";
+import { nope } from "@/shared/utils/util";
 
 export interface MainWindowProps {
   title: string;

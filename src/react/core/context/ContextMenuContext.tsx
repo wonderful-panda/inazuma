@@ -2,7 +2,7 @@ import { Divider, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/materi
 import { createContext, useCallback, useMemo, useState } from "react";
 import type { ActionItem } from "@/features/repository/commands/types";
 import { Icon } from "@/shared/components/ui/Icon";
-import { nope } from "@/util";
+import { nope } from "@/shared/utils/util";
 
 export interface ContextMenuMethods {
   show: (event: React.MouseEvent | MouseEvent, menus: ("divider" | ActionItem)[]) => void;

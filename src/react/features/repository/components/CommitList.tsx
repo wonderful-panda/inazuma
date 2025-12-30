@@ -1,7 +1,7 @@
 import { useTheme } from "@mui/material";
 import { memo, useCallback, useMemo } from "react";
 import type { CommitCommand } from "@/features/repository/commands/types";
-import type { GraphFragment } from "@/grapher";
+import type { GraphFragment } from "@/features/repository/utils/grapher";
 import {
   VirtualList,
   type VirtualListEvents,

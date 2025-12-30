@@ -4,9 +4,9 @@ import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import { useRef } from "react";
 import { useAlert } from "@/core/context/AlertContext";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { useReset } from "@/features/repository/hooks/actions/reset";
 import { repoPathAtom } from "@/features/repository/state";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import {
   AcceptButton,
   CancelButton,

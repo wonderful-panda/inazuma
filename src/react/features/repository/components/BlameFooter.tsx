@@ -1,5 +1,5 @@
-import { formatDate } from "@/date";
-import { shortHash } from "@/util";
+import { formatDate } from "@/shared/utils/date";
+import { shortHash } from "@/shared/utils/util";
 
 const className = "flex-row-nowrap flex-none px-2 h-8 items-center";
 

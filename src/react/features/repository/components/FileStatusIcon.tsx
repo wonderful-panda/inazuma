@@ -1,4 +1,4 @@
-import { getFileStatusAttr } from "@/filestatus";
+import { getFileStatusAttr } from "@/features/repository/utils/filestatus";
 import { Icon } from "@/shared/components/ui/Icon";
 
 export interface FileStatusIconProps {

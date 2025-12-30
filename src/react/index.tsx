@@ -1,5 +1,5 @@
 import "@xterm/xterm/css/xterm.css";
-import "./install-polyfill";
+import "./core/setup/install-polyfill";
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { lime, yellow } from "@mui/material/colors";
 import { listen } from "@tauri-apps/api/event";
@@ -32,21 +32,21 @@ import {
   type TabsState,
   useAppTabsValue
 } from "./core/state/tabs";
-import { getCssVariable, setCssVariable } from "./cssvar";
+import { getCssVariable, setCssVariable } from "./core/utils/cssvar";
+import { invokeTauriCommand } from "./core/utils/invokeTauriCommand";
+import { createStateStorage, type StateStorage } from "./core/utils/stateStorage";
 import Home from "./features/home/components";
 import {
   useOpenRepository,
   useReloadSpecifiedRepository
 } from "./features/home/hooks/actions/openRepository";
-import { invokeTauriCommand } from "./invokeTauriCommand";
 import { lazy } from "./shared/components/hoc/lazy";
 import { Cmd, CommandGroup } from "./shared/components/ui/CommandGroup";
 import { useWithRef } from "./shared/hooks/utils/useWithRef";
-import { createStateStorage, type StateStorage } from "./stateStorage";
-import { assertNever } from "./util";
+import { assertNever } from "./shared/utils/util";
 
 if (import.meta.env.DEV) {
-  void import("./jotai-devtools-styles");
+  void import("./core/setup/jotai-devtools-styles");
 }
 
 const RepositoryPage = lazy(async () => (await import("@/features/repository")).default, {

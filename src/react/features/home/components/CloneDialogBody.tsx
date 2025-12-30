@@ -1,7 +1,7 @@
 import { IconButton, TextField } from "@mui/material";
 import { useCallback, useEffect, useRef } from "react";
 import { useAlert } from "@/core/context/AlertContext";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { XtermDialogBody } from "@/shared/components/shell/XtermDialogBody";
 import { DialogSection } from "@/shared/components/ui/Dialog";
 import { Icon } from "@/shared/components/ui/Icon";

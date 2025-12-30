@@ -1,9 +1,9 @@
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 import { useAlert } from "@/core/context/AlertContext";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { PullDialogBody, type PullOptions } from "@/features/repository/components/PullDialogBody";
 import { repoPathAtom } from "@/features/repository/state";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import type { DialogResult } from "@/shared/components/ui/Dialog";
 import { useExecuteGitInXterm } from "@/shared/hooks/shell/useXterm";
 import { useXtermDialog } from "@/shared/hooks/shell/useXtermDialog";

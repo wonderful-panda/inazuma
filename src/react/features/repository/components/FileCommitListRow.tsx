@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import { memo } from "react";
-import { formatDateTimeLong } from "@/date";
 import { GitHash } from "@/shared/components/ui/GitHash";
 import { Icon } from "@/shared/components/ui/Icon";
 import { useSelectedIndex } from "@/shared/hooks/ui/useSelectedIndex";
+import { formatDateTimeLong } from "@/shared/utils/date";
 import { FileStat } from "./FileStat";
 import { FileStatusIcon } from "./FileStatusIcon";
 import { RefBadge } from "./RefBadge";

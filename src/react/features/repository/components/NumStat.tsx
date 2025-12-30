@@ -1,5 +1,9 @@
 import { useMemo } from "react";
-import { type FileStatus, FileStatusList, isValidFileStatus } from "@/filestatus";
+import {
+  type FileStatus,
+  FileStatusList,
+  isValidFileStatus
+} from "@/features/repository/utils/filestatus";
 import { FileStatusIcon } from "./FileStatusIcon";
 
 export const NumStat: React.FC<{ files: readonly FileEntry[] }> = ({ files }) => {

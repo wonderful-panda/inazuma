@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useAlert } from "@/core/context/AlertContext";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { shortHash } from "@/util";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
+import { shortHash } from "@/shared/utils/util";
 import type { CommitCommand } from "./types";
 
 export const useCopyFullHashCommand = () => {

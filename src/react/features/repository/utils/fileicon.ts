@@ -1,5 +1,5 @@
 import type { IconName } from "@/core/types/IconName";
-import { getExtension } from "./util";
+import { getExtension } from "@/shared/utils/util";
 
 export const getFileIcon = (path: string, isFolder: boolean): IconName => {
   if (isFolder) {

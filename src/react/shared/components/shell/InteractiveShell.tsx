@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef } from "react";
 import { useAlert } from "@/core/context/AlertContext";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { type PtyExitStatus, type PtyId, useXterm } from "@/shared/hooks/shell/useXterm";
 import { useElementSize } from "@/shared/hooks/ui/useElementSize";
 

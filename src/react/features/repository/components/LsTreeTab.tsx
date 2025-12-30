@@ -6,7 +6,7 @@ import { Icon } from "@/shared/components/ui/Icon";
 import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
 import { useTauriSuspenseQuery } from "@/shared/hooks/integration/useTauriQuery";
 import type { TreeItemVM, TreeModelDispatch } from "@/shared/hooks/ui/useTreeModel";
-import { filterTreeItems, sortTree, type TreeItem } from "@/tree";
+import { filterTreeItems, sortTree, type TreeItem } from "@/shared/utils/tree";
 import { BlamePanel } from "./BlamePanel";
 import { CommitAttributes } from "./CommitAttributes";
 import { withLoadingSuspense } from "./LoadingSuspense";

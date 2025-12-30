@@ -6,6 +6,7 @@ import { useCallback, useContext } from "react";
 import { useAlert } from "@/core/context/AlertContext";
 import { useConfirmDialog } from "@/core/context/ConfirmDialogContext";
 import { ContextMenuContext } from "@/core/context/ContextMenuContext";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import {
   commitCommandsToActions,
   fileCommandsToActions,
@@ -13,7 +14,6 @@ import {
   useFileCommands
 } from "@/features/repository/commands";
 import type { ActionItem } from "@/features/repository/commands/types";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { Icon } from "@/shared/components/ui/Icon";
 import { useCustomCommands } from "./useCustomCommands";
 

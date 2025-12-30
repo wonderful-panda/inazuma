@@ -1,11 +1,11 @@
 import { styled, useTheme } from "@mui/material";
 import * as monaco from "monaco-editor";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { formatDate } from "@/date";
 import { lineNumbersToRanges } from "@/monaco";
 import { MonacoEditor } from "@/shared/components/ui/editor/MonacoEditor";
 import { useElementSize } from "@/shared/hooks/ui/useElementSize";
-import { shortHash } from "@/util";
+import { formatDate } from "@/shared/utils/date";
+import { shortHash } from "@/shared/utils/util";
 
 type IStandaloneCodeEditor = monaco.editor.IStandaloneCodeEditor;
 type IEditorConstructionOptions = monaco.editor.IEditorConstructionOptions;

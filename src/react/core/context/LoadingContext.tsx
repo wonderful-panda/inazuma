@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useRef } from "react";
 import { FullscreenLoading, type FullscreenLoadingMethods } from "@/shared/components/ui/Loading";
-import { nope } from "@/util";
+import { nope } from "@/shared/utils/util";
 
 const defaultMethods: FullscreenLoadingMethods = {
   show: nope,

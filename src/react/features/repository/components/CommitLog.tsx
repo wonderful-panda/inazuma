@@ -2,7 +2,6 @@ import { useAtomValue } from "jotai";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SelectedIndexProvider } from "@/core/context/SelectedIndexContext";
-import { getDragData, isDragDataPresent } from "@/dragdrop";
 import { useBrowseSourceTreeCommand } from "@/features/repository/commands/browseSourceTree";
 import { useCreateBranchCommand } from "@/features/repository/commands/createBranch";
 import { useResetCommand } from "@/features/repository/commands/reset";
@@ -31,6 +30,7 @@ import { useCommitContextMenu } from "@/shared/hooks/integration/useContextMenu"
 import { useListIndexChanger } from "@/shared/hooks/ui/useListIndexChanger";
 import { useStateWithRef } from "@/shared/hooks/utils/useStateWithRef";
 import { useWithRef } from "@/shared/hooks/utils/useWithRef";
+import { getDragData, isDragDataPresent } from "@/shared/utils/dragdrop";
 import { CommitDetail } from "./CommitDetail";
 import { CommitList } from "./CommitList";
 import { CommitLogSideBar } from "./CommitLogSideBar";

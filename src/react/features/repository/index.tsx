@@ -7,6 +7,7 @@ import { DialogProvider } from "@/core/context/DialogContext";
 import { MainWindowProperty } from "@/core/layout/MainWindow";
 import { TabContainer, type TabContainerProps, TooltipTitle } from "@/core/layout/TabContainer";
 import { useConfigValue } from "@/core/state/root";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import {
   useLoadRepositoryIfNotYet,
   useReloadRepository
@@ -30,13 +31,12 @@ import {
   selectRepoTabAtom,
   type TabType
 } from "@/features/repository/state/tabs";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { lazy } from "@/shared/components/hoc/lazy";
 import { InteractiveShell } from "@/shared/components/shell/InteractiveShell";
 import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
-import { assertNever } from "@/util";
+import { assertNever } from "@/shared/utils/util";
 import BlameTabTooltip from "./components/BlameTabTooltip";
 import CommitDiffTabTooltip from "./components/CommitDiffTabTooltip";
 import CommitLog from "./components/CommitLog";

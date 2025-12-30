@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useShowExternalDiff } from "@/features/repository/hooks/showExternalDiff";
-import { shortHash } from "@/util";
+import { shortHash } from "@/shared/utils/util";
 import type { FileCommand } from "./types";
 
 const $path = (_: Commit, file: FileEntry) => file.path;

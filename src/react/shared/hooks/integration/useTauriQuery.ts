@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import type { TauriInvokeType } from "@/generated/tauri-invoke";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 /**
  * Deterministic Tauri commands that are safe to cache.

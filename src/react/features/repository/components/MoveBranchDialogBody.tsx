@@ -1,9 +1,9 @@
 import { DialogActions } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { useAlert } from "@/core/context/AlertContext";
+import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { useCreateBranch } from "@/features/repository/hooks/actions/branch";
 import { repoPathAtom } from "@/features/repository/state";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import {
   AcceptButton,
   CancelButton,

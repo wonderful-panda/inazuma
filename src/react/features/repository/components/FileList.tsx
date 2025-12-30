@@ -2,12 +2,17 @@ import { IconButton, ToggleButton, ToggleButtonGroup, useTheme } from "@mui/mate
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { executeFileCommand } from "@/features/repository/commands";
 import type { FileCommand } from "@/features/repository/commands/types";
-import { type FileStatus, FileStatusList } from "@/filestatus";
+import { type FileStatus, FileStatusList } from "@/features/repository/utils/filestatus";
 import { Icon } from "@/shared/components/ui/Icon";
 import { VirtualTree } from "@/shared/components/ui/VirtualTree";
 import type { TreeItemVM, TreeModelDispatch } from "@/shared/hooks/ui/useTreeModel";
-import { filterTreeItems, shrinkTreeInplace, sortTreeInplace, type TreeItem } from "@/tree";
-import { assertNever, getFolderAndFileName, nope } from "@/util";
+import {
+  filterTreeItems,
+  shrinkTreeInplace,
+  sortTreeInplace,
+  type TreeItem
+} from "@/shared/utils/tree";
+import { assertNever, getFolderAndFileName, nope } from "@/shared/utils/util";
 import { FileListFolderRow, FileListRow, FileListStatusRow } from "./FileListRow";
 import PathFilter from "./PathFilter";
 

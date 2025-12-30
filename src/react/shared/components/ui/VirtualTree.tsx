@@ -17,7 +17,7 @@ import {
   type TreeModelDispatch,
   useTreeModel
 } from "@/shared/hooks/ui/useTreeModel";
-import type { TreeItem } from "@/tree";
+import type { TreeItem } from "@/shared/utils/tree";
 import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "./VirtualList";
 
 export interface VirtualTreeProps<T> extends VirtualListEvents<TreeItemVM<T>> {

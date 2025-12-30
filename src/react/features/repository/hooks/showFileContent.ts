@@ -2,7 +2,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { repoPathAtom } from "@/features/repository/state";
 import { addRepoTabAtom } from "@/features/repository/state/tabs";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
-import { getFileName, shortHash } from "@/util";
+import { getFileName, shortHash } from "@/shared/utils/util";
 
 export const useShowFileContent = () => {
   const repoPath = useAtomValue(repoPathAtom);

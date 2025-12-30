@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useRef } from "react";
 import { type AlertMethods, GlobalAlert } from "@/shared/components/ui/Alert";
-import { nope } from "@/util";
+import { nope } from "@/shared/utils/util";
 
 const defaultMethods: AlertMethods = {
   show: nope,
