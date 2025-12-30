@@ -2,8 +2,8 @@ import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import type * as monaco from "monaco-editor";
 import { memo, useMemo } from "react";
 import { getLangIdFromPath, setup as setupMonaco } from "@/monaco";
-import { Icon } from "@/shared/components/ui/Icon";
 import { type DiffContent, MonacoDiffEditor } from "@/shared/components/ui/editor/MonacoDiffEditor";
+import { Icon } from "@/shared/components/ui/Icon";
 
 setupMonaco();
 

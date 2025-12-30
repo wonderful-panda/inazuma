@@ -1,11 +1,11 @@
 import { IconButton, TextField } from "@mui/material";
 import { useCallback, useEffect, useRef } from "react";
 import { useAlert } from "@/core/context/AlertContext";
-import type { PtyExitStatus } from "@/shared/hooks/shell/useXterm";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { XtermDialogBody } from "@/shared/components/shell/XtermDialogBody";
 import { DialogSection } from "@/shared/components/ui/Dialog";
 import { Icon } from "@/shared/components/ui/Icon";
-import { XtermDialogBody } from "@/shared/components/shell/XtermDialogBody";
+import type { PtyExitStatus } from "@/shared/hooks/shell/useXterm";
 
 export const CloneDialogBody: React.FC<{
   openXterm: (el: HTMLDivElement, url: string, destinationFolder: string) => Promise<PtyExitStatus>;

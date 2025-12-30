@@ -1,13 +1,13 @@
 import { Typography } from "@mui/material";
 import classNames from "classnames";
 import { memo, useMemo } from "react";
+import type { IconName } from "@/core/types/IconName";
 import { fileCommandsToActions } from "@/features/repository/commands";
 import type { FileCommand, IconActionItem } from "@/features/repository/commands/types";
 import { type FileStatus, getFileStatusAttr } from "@/filestatus";
-import { useSelectedIndex } from "@/shared/hooks/ui/useSelectedIndex";
-import type { IconName } from "@/core/types/IconName";
-import { getFileName } from "@/util";
 import { Icon } from "@/shared/components/ui/Icon";
+import { useSelectedIndex } from "@/shared/hooks/ui/useSelectedIndex";
+import { getFileName } from "@/util";
 import { FileStat } from "./FileStat";
 import { FileStatusIcon } from "./FileStatusIcon";
 import { RowActionButtons } from "./RowActionButtons";

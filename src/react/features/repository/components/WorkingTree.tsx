@@ -4,6 +4,7 @@ import { useAtomValue } from "jotai";
 import { debounce } from "lodash";
 import type * as monaco from "monaco-editor";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useAlert } from "@/core/context/AlertContext";
 import { executeFileCommand } from "@/features/repository/commands";
 import { useCopyRelativePathCommand } from "@/features/repository/commands/copyRelativePath";
 import {
@@ -12,8 +13,11 @@ import {
   useDiffWithParentCommand
 } from "@/features/repository/commands/diff";
 import type { IconActionItem } from "@/features/repository/commands/types";
-import { useRestoreCommand, useStageCommand, useUnstageCommand } from "@/features/repository/commands/workingtree";
-import { useAlert } from "@/core/context/AlertContext";
+import {
+  useRestoreCommand,
+  useStageCommand,
+  useUnstageCommand
+} from "@/features/repository/commands/workingtree";
 import {
   useBeginCommit,
   useFixup,
@@ -21,19 +25,19 @@ import {
   useStage,
   useUnstage
 } from "@/features/repository/hooks/actions/workingtree";
+import { repoPathAtom } from "@/features/repository/state";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { MonacoEditor } from "@/shared/components/ui/editor/MonacoEditor";
+import { FlexCard } from "@/shared/components/ui/FlexCard";
+import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
+import { VirtualTree, type VirtualTreeProps } from "@/shared/components/ui/VirtualTree";
 import { useFileContextMenuT } from "@/shared/hooks/integration/useContextMenu";
 import { useElementSize } from "@/shared/hooks/ui/useElementSize";
 import { useSelectedIndex } from "@/shared/hooks/ui/useSelectedIndex";
 import type { TreeItemVM, TreeModelDispatch } from "@/shared/hooks/ui/useTreeModel";
 import { useWithRef } from "@/shared/hooks/utils/useWithRef";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { repoPathAtom } from "@/features/repository/state";
 import { decodeBase64, decodeToString } from "@/strings";
 import type { TreeItem } from "@/tree";
-import { FlexCard } from "@/shared/components/ui/FlexCard";
-import { MonacoEditor } from "@/shared/components/ui/editor/MonacoEditor";
-import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
-import { VirtualTree, type VirtualTreeProps } from "@/shared/components/ui/VirtualTree";
 import { FileListRow } from "./FileListRow";
 import { NumStat } from "./NumStat";
 import PathFilter from "./PathFilter";

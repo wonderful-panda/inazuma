@@ -1,8 +1,8 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { repoPathAtom } from "@/features/repository/state";
 import { addRepoTabAtom } from "@/features/repository/state/tabs";
-import { shortHash } from "@/util";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
+import { shortHash } from "@/util";
 
 export const useShowCommitDiff = () => {
   const repoPath = useAtomValue(repoPathAtom);

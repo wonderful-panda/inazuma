@@ -3,6 +3,9 @@ import type { FileCustomCommand } from "@backend/FileCustomCommand";
 import { IconButton, Typography } from "@mui/material";
 import type React from "react";
 import { useCallback, useContext } from "react";
+import { useAlert } from "@/core/context/AlertContext";
+import { useConfirmDialog } from "@/core/context/ConfirmDialogContext";
+import { ContextMenuContext } from "@/core/context/ContextMenuContext";
 import {
   commitCommandsToActions,
   fileCommandsToActions,
@@ -10,11 +13,8 @@ import {
   useFileCommands
 } from "@/features/repository/commands";
 import type { ActionItem } from "@/features/repository/commands/types";
-import { Icon } from "@/shared/components/ui/Icon";
-import { useAlert } from "@/core/context/AlertContext";
-import { useConfirmDialog } from "@/core/context/ConfirmDialogContext";
-import { ContextMenuContext } from "@/core/context/ContextMenuContext";
 import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { Icon } from "@/shared/components/ui/Icon";
 import { useCustomCommands } from "./useCustomCommands";
 
 const ConfirmContent: React.FC<{ commandLine: string }> = ({ commandLine }) => {

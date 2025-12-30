@@ -1,5 +1,6 @@
 import { DialogActions, TextField } from "@mui/material";
 import { useCallback, useEffect, useRef } from "react";
+import { useCreateBranch } from "@/features/repository/hooks/actions/branch";
 import {
   AcceptButton,
   CancelButton,
@@ -8,7 +9,6 @@ import {
   DialogTitle,
   LabelledCheckBox
 } from "@/shared/components/ui/Dialog";
-import { useCreateBranch } from "@/features/repository/hooks/actions/branch";
 import { Icon } from "@/shared/components/ui/Icon";
 import { CommitAttributes } from "./CommitAttributes";
 

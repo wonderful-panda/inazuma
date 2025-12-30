@@ -1,15 +1,15 @@
 import _ from "lodash";
 import { useMemo, useState } from "react";
 import { useDiffAgainstCommand } from "@/features/repository/commands/diff";
-import { usePersistState } from "@/shared/hooks/utils/usePersistState";
+import { FlexCard } from "@/shared/components/ui/FlexCard";
+import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
 import {
   type DeterministicTauriInvoke,
   useTauriComposeQuery,
   useTauriSuspenseQuery
 } from "@/shared/hooks/integration/useTauriQuery";
+import { usePersistState } from "@/shared/hooks/utils/usePersistState";
 import { decodeBase64, decodeToString } from "@/strings";
-import { FlexCard } from "@/shared/components/ui/FlexCard";
-import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
 import { CommitAttributes } from "./CommitAttributes";
 import { DiffViewer, type DiffViewerOptions } from "./DiffViewer";
 import { FileList, type FileListViewType, useFileListRowEventHandler } from "./FileList";

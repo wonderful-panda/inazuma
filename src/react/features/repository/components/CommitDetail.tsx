@@ -4,10 +4,10 @@ import { useCopyRelativePathCommand } from "@/features/repository/commands/copyR
 import { useDiffWithParentCommand } from "@/features/repository/commands/diff";
 import { useShowFileContentCommand } from "@/features/repository/commands/showFileContent";
 import { useShowLsTree } from "@/features/repository/hooks/showLsTree";
-import { useFileContextMenu } from "@/shared/hooks/integration/useContextMenu";
-import { usePersistState } from "@/shared/hooks/utils/usePersistState";
 import { FlexCard } from "@/shared/components/ui/FlexCard";
 import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
+import { useFileContextMenu } from "@/shared/hooks/integration/useContextMenu";
+import { usePersistState } from "@/shared/hooks/utils/usePersistState";
 import { CommitAttributes } from "./CommitAttributes";
 import { FileList, type FileListViewType, fixView, useFileListRowEventHandler } from "./FileList";
 import { NumStat } from "./NumStat";

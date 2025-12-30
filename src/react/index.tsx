@@ -5,11 +5,6 @@ import { lime, yellow } from "@mui/material/colors";
 import { listen } from "@tauri-apps/api/event";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Cmd, CommandGroup } from "./shared/components/ui/CommandGroup";
-import { lazy } from "./shared/components/hoc/lazy";
-import Home from "./features/home/components";
-import { MainWindow } from "./core/layout/MainWindow";
-import { TabContainer, type TabContainerProps, TooltipTitle } from "./core/layout/TabContainer";
 import { AlertProvider, useAlert } from "./core/context/AlertContext";
 import { CommandGroupProvider, CommandGroupTreeProvider } from "./core/context/CommandGroupContext";
 import { ConfirmDialogProvider } from "./core/context/ConfirmDialogContext";
@@ -17,10 +12,8 @@ import { ContextMenuProvider } from "./core/context/ContextMenuContext";
 import { DialogProvider } from "./core/context/DialogContext";
 import { LoadingProvider } from "./core/context/LoadingContext";
 import { PersistStateProvider } from "./core/context/PersistStateContext";
-import { getCssVariable, setCssVariable } from "./cssvar";
-import { useOpenRepository, useReloadSpecifiedRepository } from "./features/home/hooks/actions/openRepository";
-import { useWithRef } from "./shared/hooks/utils/useWithRef";
-import { invokeTauriCommand } from "./invokeTauriCommand";
+import { MainWindow } from "./core/layout/MainWindow";
+import { TabContainer, type TabContainerProps, TooltipTitle } from "./core/layout/TabContainer";
 import {
   registerConfigWatcher,
   registerRecentOpenedRepositoriesWatcher,
@@ -39,6 +32,16 @@ import {
   type TabsState,
   useAppTabsValue
 } from "./core/state/tabs";
+import { getCssVariable, setCssVariable } from "./cssvar";
+import Home from "./features/home/components";
+import {
+  useOpenRepository,
+  useReloadSpecifiedRepository
+} from "./features/home/hooks/actions/openRepository";
+import { invokeTauriCommand } from "./invokeTauriCommand";
+import { lazy } from "./shared/components/hoc/lazy";
+import { Cmd, CommandGroup } from "./shared/components/ui/CommandGroup";
+import { useWithRef } from "./shared/hooks/utils/useWithRef";
 import { createStateStorage, type StateStorage } from "./stateStorage";
 import { assertNever } from "./util";
 

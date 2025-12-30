@@ -2,6 +2,7 @@ import type { CommitCustomCommand } from "@backend/CommitCustomCommand";
 import type { FileCustomCommand } from "@backend/FileCustomCommand";
 import { IconButton, List, ListItem, Typography } from "@mui/material";
 import { useCallback, useRef, useState } from "react";
+import { useDialog } from "@/core/context/DialogContext";
 import {
   AcceptButton,
   CancelButton,
@@ -10,7 +11,6 @@ import {
   DialogTitle
 } from "@/shared/components/ui/Dialog";
 import { Icon } from "@/shared/components/ui/Icon";
-import { useDialog } from "@/core/context/DialogContext";
 import { useDragAndDropReorder } from "@/shared/hooks/integration/useDragAndDropReorder";
 import { type CommandType, CustomCommandForm } from "./CustomCommandForm";
 import { SectionContent, SectionHeader } from "./PreferenceSection";

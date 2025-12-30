@@ -9,6 +9,7 @@ import {
   useRef
 } from "react";
 import { SelectedIndexProvider } from "@/core/context/SelectedIndexContext";
+import { KeyDownTrapper } from "@/shared/components/ui/KeyDownTrapper";
 import { useTreeIndexChanger } from "@/shared/hooks/ui/useTreeIndexChanger";
 import {
   type NodeState,
@@ -17,7 +18,6 @@ import {
   useTreeModel
 } from "@/shared/hooks/ui/useTreeModel";
 import type { TreeItem } from "@/tree";
-import { KeyDownTrapper } from "@/shared/components/ui/KeyDownTrapper";
 import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "./VirtualList";
 
 export interface VirtualTreeProps<T> extends VirtualListEvents<TreeItemVM<T>> {

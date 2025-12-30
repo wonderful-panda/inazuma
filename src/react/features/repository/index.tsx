@@ -2,15 +2,19 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider, useAtomValue, useSetAtom } from "jotai";
 import { DevTools } from "jotai-devtools";
 import { useCallback, useEffect, useMemo } from "react";
-import type { IconActionItem, Spacer } from "@/features/repository/commands/types";
 import { CommandGroupTreeProvider } from "@/core/context/CommandGroupContext";
 import { DialogProvider } from "@/core/context/DialogContext";
+import { MainWindowProperty } from "@/core/layout/MainWindow";
+import { TabContainer, type TabContainerProps, TooltipTitle } from "@/core/layout/TabContainer";
+import { useConfigValue } from "@/core/state/root";
+import {
+  useLoadRepositoryIfNotYet,
+  useReloadRepository
+} from "@/features/home/hooks/actions/openRepository";
+import type { IconActionItem, Spacer } from "@/features/repository/commands/types";
 import { useBeginFetch } from "@/features/repository/hooks/actions/fetch";
-import { useLoadRepositoryIfNotYet, useReloadRepository } from "@/features/home/hooks/actions/openRepository";
 import { useBeginPull } from "@/features/repository/hooks/actions/pull";
 import { useBeginPush } from "@/features/repository/hooks/actions/push";
-import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { logAtom, repoPathAtom, repositoryStoresAtomFamily } from "@/features/repository/state";
 import {
   hideInteractiveShellAtom,
@@ -26,14 +30,13 @@ import {
   selectRepoTabAtom,
   type TabType
 } from "@/features/repository/state/tabs";
-import { useConfigValue } from "@/core/state/root";
-import { assertNever } from "@/util";
-import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { lazy } from "@/shared/components/hoc/lazy";
 import { InteractiveShell } from "@/shared/components/shell/InteractiveShell";
-import { MainWindowProperty } from "@/core/layout/MainWindow";
+import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
-import { TabContainer, type TabContainerProps, TooltipTitle } from "@/core/layout/TabContainer";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
+import { assertNever } from "@/util";
 import BlameTabTooltip from "./components/BlameTabTooltip";
 import CommitDiffTabTooltip from "./components/CommitDiffTabTooltip";
 import CommitLog from "./components/CommitLog";

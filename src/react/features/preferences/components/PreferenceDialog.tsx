@@ -2,6 +2,7 @@ import type { RepositoryConfig } from "@backend/RepositoryConfig";
 import { Box, Tab, Tabs } from "@mui/material";
 import type React from "react";
 import { useCallback, useImperativeHandle, useReducer, useRef, useState } from "react";
+import { DialogProvider, useDialog } from "@/core/context/DialogContext";
 import {
   AcceptButton,
   CancelButton,
@@ -9,7 +10,6 @@ import {
   DialogContent,
   DialogTitle
 } from "@/shared/components/ui/Dialog";
-import { DialogProvider, useDialog } from "@/core/context/DialogContext";
 import { assertNever } from "@/util";
 import { CustomCommandTab } from "./CustomCommandTab";
 import { GeneralTab } from "./GeneralTab";

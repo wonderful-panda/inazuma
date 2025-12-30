@@ -1,14 +1,14 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
-import { CommitDialogBody } from "@/features/repository/components/dialogs/CommitDialogBody";
 import { useAlert } from "@/core/context/AlertContext";
 import { useConfirmDialog } from "@/core/context/ConfirmDialogContext";
 import { useDialog } from "@/core/context/DialogContext";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
+import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
+import { CommitDialogBody } from "@/features/repository/components/dialogs/CommitDialogBody";
 import { repoPathAtom } from "@/features/repository/state";
 import { workingTreeAtom } from "@/features/repository/state/workingtree";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
-import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
 
 export const useReloadWorkingTree = () => {
   const repoPath = useAtomValue(repoPathAtom);

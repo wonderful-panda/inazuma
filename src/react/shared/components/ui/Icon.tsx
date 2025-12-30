@@ -1,7 +1,7 @@
 import { Icon as IconOnline } from "@iconify/react";
 import { addCollection, type IconifyJSON, Icon as IconOffline } from "@iconify/react/offline";
-import iconifyJSONs from "@/generated/iconbundle.json";
 import type { IconName } from "@/core/types/IconName";
+import iconifyJSONs from "@/generated/iconbundle.json";
 
 const IconRaw = import.meta.env.PROD ? IconOffline : IconOnline;
 if (import.meta.env.PROD) {

@@ -19,16 +19,20 @@ import {
   useMemo,
   useState
 } from "react";
-import type { IconActionItem, Spacer } from "@/features/repository/commands/types";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { repoConfigAtom, repositoryStoresAtomFamily, saveRepoConfigAtom } from "@/features/repository/state";
 import { useConfig } from "@/core/state/root";
 import { useAppTabsValue } from "@/core/state/tabs";
-import { nope } from "@/util";
 import { useAboutDialog } from "@/features/about/components/AboutDialog";
+import { usePreferenceDialog } from "@/features/preferences/components/PreferenceDialog";
+import type { IconActionItem, Spacer } from "@/features/repository/commands/types";
+import {
+  repoConfigAtom,
+  repositoryStoresAtomFamily,
+  saveRepoConfigAtom
+} from "@/features/repository/state";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { Icon } from "@/shared/components/ui/Icon";
-import { usePreferenceDialog } from "@/features/preferences/components/PreferenceDialog";
+import { nope } from "@/util";
 
 export interface MainWindowProps {
   title: string;

@@ -3,6 +3,10 @@ import { DialogActions, RadioGroup } from "@mui/material";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import { useRef } from "react";
+import { useAlert } from "@/core/context/AlertContext";
+import { useReset } from "@/features/repository/hooks/actions/reset";
+import { repoPathAtom } from "@/features/repository/state";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import {
   AcceptButton,
   CancelButton,
@@ -11,12 +15,8 @@ import {
   DialogTitle,
   LabelledRadio
 } from "@/shared/components/ui/Dialog";
-import { useAlert } from "@/core/context/AlertContext";
-import { useReset } from "@/features/repository/hooks/actions/reset";
-import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { repoPathAtom } from "@/features/repository/state";
 import { Icon } from "@/shared/components/ui/Icon";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 import { CommitAttributes } from "./CommitAttributes";
 
 const colors: Record<ResetMode, string> = {

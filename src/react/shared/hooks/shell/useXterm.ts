@@ -4,11 +4,11 @@ import { Terminal } from "@xterm/xterm";
 import { useCallback, useRef } from "react";
 import { BOLD, CRLF, GREEN, RESET, ULINE, YELLOW } from "@/ansiEscape";
 import { useAlert } from "@/core/context/AlertContext";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useConfigValue } from "@/core/state/root";
-import { assertNever } from "@/util";
 import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useWithRef } from "@/shared/hooks/utils/useWithRef";
+import { assertNever } from "@/util";
 
 interface Shell {
   id: number;

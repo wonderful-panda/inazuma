@@ -2,10 +2,10 @@ import { useTheme } from "@mui/material";
 import classNames from "classnames";
 import { useCallback } from "react";
 import { getFileIcon } from "@/fileicon";
-import { useSelectedIndex } from "@/shared/hooks/ui/useSelectedIndex";
-import { getFileName } from "@/util";
 import { Icon } from "@/shared/components/ui/Icon";
 import { VirtualTree, type VirtualTreeProps } from "@/shared/components/ui/VirtualTree";
+import { useSelectedIndex } from "@/shared/hooks/ui/useSelectedIndex";
+import { getFileName } from "@/util";
 
 export interface LsTreeProps
   extends Omit<VirtualTreeProps<LstreeData>, "getItemKey" | "itemSize" | "renderRow"> {

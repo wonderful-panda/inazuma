@@ -1,7 +1,11 @@
 import { useTheme } from "@mui/material";
 import { useCallback, useEffect, useImperativeHandle, useRef } from "react";
+import {
+  VirtualList,
+  type VirtualListEvents,
+  type VirtualListMethods
+} from "@/shared/components/ui/VirtualList";
 import { useSelectedIndex } from "@/shared/hooks/ui/useSelectedIndex";
-import { VirtualList, type VirtualListEvents, type VirtualListMethods } from "@/shared/components/ui/VirtualList";
 import { FileCommitListRow } from "./FileCommitListRow";
 
 export interface FileCommitListProps extends VirtualListEvents<FileCommit> {

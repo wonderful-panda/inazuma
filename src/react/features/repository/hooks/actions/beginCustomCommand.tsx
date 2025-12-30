@@ -1,11 +1,11 @@
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
-import type { DialogResult } from "@/shared/components/ui/Dialog";
 import { CustomCommandDialogBody } from "@/features/repository/components/dialogs/CustomCommandDialogBody";
 import { repoPathAtom } from "@/features/repository/state";
-import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
+import type { DialogResult } from "@/shared/components/ui/Dialog";
 import { useExecuteCustomCommandInXterm } from "@/shared/hooks/shell/useXterm";
 import { useXtermDialog } from "@/shared/hooks/shell/useXtermDialog";
+import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 
 export const useBeginCustomCommand = () => {
   const { execute, kill, isRunning } = useExecuteCustomCommandInXterm();

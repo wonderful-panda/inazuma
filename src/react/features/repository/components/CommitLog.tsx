@@ -1,28 +1,36 @@
 import { useAtomValue } from "jotai";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { SelectedIndexProvider } from "@/core/context/SelectedIndexContext";
+import { getDragData, isDragDataPresent } from "@/dragdrop";
 import { useBrowseSourceTreeCommand } from "@/features/repository/commands/browseSourceTree";
 import { useCreateBranchCommand } from "@/features/repository/commands/createBranch";
 import { useResetCommand } from "@/features/repository/commands/reset";
 import type { CommitCommand } from "@/features/repository/commands/types";
-import { SelectedIndexProvider } from "@/core/context/SelectedIndexContext";
-import { getDragData, isDragDataPresent } from "@/dragdrop";
 import { useBeginMoveBranch } from "@/features/repository/hooks/actions/branch";
-import { useFetchCommitDetail } from "@/features/repository/hooks/fetchCommitDetail";
 import { useBeginReset } from "@/features/repository/hooks/actions/reset";
+import {
+  useBeginCommit,
+  useReloadWorkingTree
+} from "@/features/repository/hooks/actions/workingtree";
+import { useFetchCommitDetail } from "@/features/repository/hooks/fetchCommitDetail";
 import { useShowCommitDiff } from "@/features/repository/hooks/showCommitDiff";
 import { useShowLsTree } from "@/features/repository/hooks/showLsTree";
-import { useBeginCommit, useReloadWorkingTree } from "@/features/repository/hooks/actions/workingtree";
-import { useCommitContextMenu } from "@/shared/hooks/integration/useContextMenu";
-import { useListIndexChanger } from "@/shared/hooks/ui/useListIndexChanger";
-import { useStateWithRef } from "@/shared/hooks/utils/useStateWithRef";
-import { useWithRef } from "@/shared/hooks/utils/useWithRef";
-import { type CommitLogItems, commitDetailAtom, logAtom, repoPathAtom } from "@/features/repository/state";
+import {
+  type CommitLogItems,
+  commitDetailAtom,
+  logAtom,
+  repoPathAtom
+} from "@/features/repository/state";
 import { workingTreeAtom } from "@/features/repository/state/workingtree";
 import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { KeyDownTrapper } from "@/shared/components/ui/KeyDownTrapper";
 import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
 import type { VirtualListMethods } from "@/shared/components/ui/VirtualList";
+import { useCommitContextMenu } from "@/shared/hooks/integration/useContextMenu";
+import { useListIndexChanger } from "@/shared/hooks/ui/useListIndexChanger";
+import { useStateWithRef } from "@/shared/hooks/utils/useStateWithRef";
+import { useWithRef } from "@/shared/hooks/utils/useWithRef";
 import { CommitDetail } from "./CommitDetail";
 import { CommitList } from "./CommitList";
 import { CommitLogSideBar } from "./CommitLogSideBar";

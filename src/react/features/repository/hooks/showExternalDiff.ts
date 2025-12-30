@@ -1,8 +1,8 @@
 import { useAtomValue } from "jotai";
 import { useAlert } from "@/core/context/AlertContext";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { repoPathAtom } from "@/features/repository/state";
 import { useConfigValue } from "@/core/state/root";
+import { repoPathAtom } from "@/features/repository/state";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
 
 export const useShowExternalDiff = () => {

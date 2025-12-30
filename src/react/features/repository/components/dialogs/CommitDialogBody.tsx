@@ -1,6 +1,9 @@
 import { TextField } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAlert } from "@/core/context/AlertContext";
+import { useCommit } from "@/features/repository/hooks/actions/workingtree";
+import { repoPathAtom } from "@/features/repository/state";
 import {
   AcceptButton,
   CancelButton,
@@ -9,10 +12,7 @@ import {
   DialogTitle,
   LabelledCheckBox
 } from "@/shared/components/ui/Dialog";
-import { useAlert } from "@/core/context/AlertContext";
-import { useCommit } from "@/features/repository/hooks/actions/workingtree";
 import { useTauriQueryInvoke } from "@/shared/hooks/integration/useTauriQuery";
-import { repoPathAtom } from "@/features/repository/state";
 import { clamp } from "@/util";
 
 export const CommitDialogBody: React.FC = () => {

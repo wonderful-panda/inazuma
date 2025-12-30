@@ -3,10 +3,10 @@ import type { FileCustomCommand } from "@backend/FileCustomCommand";
 import { useAtomValue } from "jotai";
 import { minimatch } from "minimatch";
 import { useCallback, useMemo } from "react";
-import { invokeTauriCommand } from "@/invokeTauriCommand";
-import { repoConfigAtom, repoPathAtom } from "@/features/repository/state";
 import { useConfigValue } from "@/core/state/root";
 import { useBeginCustomCommand } from "@/features/repository/hooks/actions/beginCustomCommand";
+import { repoConfigAtom, repoPathAtom } from "@/features/repository/state";
+import { invokeTauriCommand } from "@/invokeTauriCommand";
 
 export interface UseCustomCommandsReturn {
   commitCommands: CommitCustomCommand[];
