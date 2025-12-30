@@ -28,7 +28,7 @@ import {
 } from "@/features/repository/state/tabs";
 import { useConfigValue } from "@/core/state/root";
 import { assertNever } from "@/util";
-import { Cmd, CommandGroup } from "@/components/CommandGroup";
+import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { lazy } from "@/shared/components/hoc/lazy";
 import { InteractiveShell } from "@/shared/components/shell/InteractiveShell";
 import { MainWindowProperty } from "@/core/layout/MainWindow";

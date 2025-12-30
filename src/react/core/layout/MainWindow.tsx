@@ -26,7 +26,7 @@ import { useConfig } from "@/core/state/root";
 import { useAppTabsValue } from "@/core/state/tabs";
 import { nope } from "@/util";
 import { useAboutDialog } from "@/features/about/components/AboutDialog";
-import { Cmd, CommandGroup } from "@/components/CommandGroup";
+import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { Icon } from "@/shared/components/ui/Icon";
 import { usePreferenceDialog } from "@/features/preferences/components/PreferenceDialog";
 

@@ -19,7 +19,7 @@ import { useStateWithRef } from "@/shared/hooks/utils/useStateWithRef";
 import { useWithRef } from "@/shared/hooks/utils/useWithRef";
 import { type CommitLogItems, commitDetailAtom, logAtom, repoPathAtom } from "@/features/repository/state";
 import { workingTreeAtom } from "@/features/repository/state/workingtree";
-import { Cmd, CommandGroup } from "@/components/CommandGroup";
+import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { KeyDownTrapper } from "@/shared/components/ui/KeyDownTrapper";
 import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
 import type { VirtualListMethods } from "@/shared/components/ui/VirtualList";

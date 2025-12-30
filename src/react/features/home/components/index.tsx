@@ -9,7 +9,7 @@ import {
   removeRecentOpenedRepository,
   useVisibleRecentOpenedRepositoriesValue
 } from "@/core/state/root";
-import { Cmd, CommandGroup } from "@/components/CommandGroup";
+import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { RepositoryListItem, type RepositoryListItemProps } from "./RepositoryListItem";
 
 const Home: React.FC<{ active: boolean }> = ({ active }) => {

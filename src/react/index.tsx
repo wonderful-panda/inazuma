@@ -5,7 +5,7 @@ import { lime, yellow } from "@mui/material/colors";
 import { listen } from "@tauri-apps/api/event";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Cmd, CommandGroup } from "./components/CommandGroup";
+import { Cmd, CommandGroup } from "./shared/components/ui/CommandGroup";
 import { lazy } from "./shared/components/hoc/lazy";
 import Home from "./features/home/components";
 import { MainWindow } from "./core/layout/MainWindow";
