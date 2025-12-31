@@ -8,7 +8,7 @@ import {
 } from "@/core/state/root";
 import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { useBeginClone } from "@/features/home/hooks/actions/clone";
-import { useOpenRepository } from "@/features/home/hooks/actions/openRepository";
+import { useOpenRepository } from "@/features/repository/hooks/actions/openRepository";
 import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { RepositoryListItem, type RepositoryListItemProps } from "./RepositoryListItem";
 

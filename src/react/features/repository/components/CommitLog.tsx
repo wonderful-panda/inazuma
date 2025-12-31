@@ -13,6 +13,7 @@ import {
   useReloadWorkingTree
 } from "@/features/repository/hooks/actions/workingtree";
 import { useFetchCommitDetail } from "@/features/repository/hooks/fetchCommitDetail";
+import { useCommitContextMenu } from "@/features/repository/hooks/useContextMenu";
 import { useShowCommitDiff } from "@/features/repository/hooks/showCommitDiff";
 import { useShowLsTree } from "@/features/repository/hooks/showLsTree";
 import {
@@ -26,7 +27,6 @@ import { Cmd, CommandGroup } from "@/shared/components/ui/CommandGroup";
 import { KeyDownTrapper } from "@/shared/components/ui/KeyDownTrapper";
 import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
 import type { VirtualListMethods } from "@/shared/components/ui/VirtualList";
-import { useCommitContextMenu } from "@/shared/hooks/integration/useContextMenu";
 import { useListIndexChanger } from "@/shared/hooks/ui/useListIndexChanger";
 import { useStateWithRef } from "@/shared/hooks/utils/useStateWithRef";
 import { useWithRef } from "@/shared/hooks/utils/useWithRef";

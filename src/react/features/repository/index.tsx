@@ -7,10 +7,6 @@ import { DialogProvider } from "@/core/context/DialogContext";
 import { MainWindowProperty } from "@/core/layout/MainWindow";
 import { useConfigValue } from "@/core/state/root";
 import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
-import {
-  useLoadRepositoryIfNotYet,
-  useReloadRepository
-} from "@/features/home/hooks/actions/openRepository";
 import type { IconActionItem, Spacer } from "@/features/repository/commands/types";
 import { useBeginFetch } from "@/features/repository/hooks/actions/fetch";
 import { useBeginPull } from "@/features/repository/hooks/actions/pull";
@@ -45,6 +41,7 @@ import BlameTabTooltip from "./components/BlameTabTooltip";
 import CommitDiffTabTooltip from "./components/CommitDiffTabTooltip";
 import CommitLog from "./components/CommitLog";
 import LsTreeTabTooltip from "./components/LsTreeTabTooltip";
+import { useLoadRepositoryIfNotYet, useReloadRepository } from "./hooks/actions/openRepository";
 
 const opt = { preload: true };
 const BlameTab = lazy(async () => (await import("./components/BlameTab")).default, opt);

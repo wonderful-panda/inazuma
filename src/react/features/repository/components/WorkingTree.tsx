@@ -26,12 +26,12 @@ import {
   useStage,
   useUnstage
 } from "@/features/repository/hooks/actions/workingtree";
+import { useFileContextMenuT } from "@/features/repository/hooks/useContextMenu";
 import { repoPathAtom } from "@/features/repository/state";
 import { MonacoEditor } from "@/shared/components/ui/editor/MonacoEditor";
 import { FlexCard } from "@/shared/components/ui/FlexCard";
 import { PersistSplitterPanel } from "@/shared/components/ui/layout/PersistSplitterPanel";
 import { VirtualTree, type VirtualTreeProps } from "@/shared/components/ui/VirtualTree";
-import { useFileContextMenuT } from "@/shared/hooks/integration/useContextMenu";
 import { useElementSize } from "@/shared/hooks/ui/useElementSize";
 import { useSelectedIndex } from "@/shared/hooks/ui/useSelectedIndex";
 import type { TreeItemVM, TreeModelDispatch } from "@/shared/hooks/ui/useTreeModel";

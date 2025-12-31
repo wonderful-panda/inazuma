@@ -5,8 +5,6 @@ import { useCallback, useRef } from "react";
 import { useAlert } from "@/core/context/AlertContext";
 import { useConfigValue } from "@/core/state/root";
 import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
-import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
-import { useWithRef } from "@/shared/hooks/utils/useWithRef";
 import { BOLD, CRLF, GREEN, RESET, ULINE, YELLOW } from "@/shared/utils/ansiEscape";
 import { assertNever } from "@/shared/utils/util";
 
@@ -124,9 +122,8 @@ const useExecuteInXterm = <O>(
   const alert = useAlert();
   const fontFamily = useConfigValue().fontFamily.monospace ?? "monospace";
   const runningRef = useRef(false);
-  const [, reloadRepositoryRef] = useWithRef(useReloadRepository());
   const execute = useCallback(
-    (el: HTMLDivElement, options: O, callback?: { onSucceeded?: () => Promise<void> }) => {
+    (el: HTMLDivElement, options: O, callback: { onSucceeded: () => Promise<unknown> }) => {
       return new Promise<PtyExitStatus>((resolve) => {
         void xterm.open(el, {
           openPty: async (id, rows, cols) => {
@@ -144,7 +141,7 @@ const useExecuteInXterm = <O>(
           onExit: async (status) => {
             switch (status) {
               case "succeeded":
-                await (callback?.onSucceeded ?? reloadRepositoryRef.current)?.();
+                await callback.onSucceeded();
                 if (showFinishBanner) {
                   xterm.write(CRLF + BOLD + ULINE + GREEN + "### FINISHED ###" + RESET + CRLF);
                 }

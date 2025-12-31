@@ -8,7 +8,11 @@ module.exports = {
       from: { path: '^src/react/features/([^/]+)/' },
       to: {
         path: '^src/react/features/([^/]+)/',
-        pathNot: '^src/react/features/$1/'
+        pathNot: [
+          '^src/react/features/$1/',
+          // Exception: home can import openRepository from repository
+          '^src/react/features/repository/hooks/actions/openRepository\\.ts$'
+        ]
       }
     },
     {
@@ -33,7 +37,10 @@ module.exports = {
     doNotFollow: {
       path: 'node_modules|generated'
     },
-    tsPreCompilationDeps: false,
+    tsConfig: {
+      fileName: 'tsconfig.depcruise.json'
+    },
+    tsPreCompilationDeps: true,
     reporterOptions: {
       dot: {
         collapsePattern: 'node_modules/[^/]+'

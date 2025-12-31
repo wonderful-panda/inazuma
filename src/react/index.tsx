@@ -38,7 +38,7 @@ import Home from "./features/home/components";
 import {
   useOpenRepository,
   useReloadSpecifiedRepository
-} from "./features/home/hooks/actions/openRepository";
+} from "./features/repository/hooks/actions/openRepository";
 import { lazy } from "./shared/components/hoc/lazy";
 import { Cmd, CommandGroup } from "./shared/components/ui/CommandGroup";
 import {

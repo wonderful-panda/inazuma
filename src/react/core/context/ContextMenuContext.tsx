@@ -1,6 +1,6 @@
 import { Divider, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { createContext, useCallback, useMemo, useState } from "react";
-import type { ActionItem } from "@/features/repository/commands/types";
+import type { ActionItem } from "@/core/types/actions";
 import { Icon } from "@/shared/components/ui/Icon";
 import { nope } from "@/shared/utils/util";
 

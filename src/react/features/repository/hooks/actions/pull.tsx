@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { useAlert } from "@/core/context/AlertContext";
 import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { PullDialogBody, type PullOptions } from "@/features/repository/components/PullDialogBody";
+import { useReloadRepository } from "@/features/repository/hooks/actions/openRepository";
 import { repoPathAtom } from "@/features/repository/state";
 import type { DialogResult } from "@/shared/components/ui/Dialog";
 import { useExecuteGitInXterm } from "@/shared/hooks/shell/useXterm";
@@ -12,24 +13,29 @@ import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWit
 export const useBeginPull = () => {
   const alert = useAlert();
   const repoPath = useAtomValue(repoPathAtom);
+  const reloadRepository = useReloadRepository();
 
   const { execute, kill, isRunning } = useExecuteGitInXterm();
   const dialog = useXtermDialog({ isRunning });
 
   const openXterm = useCallback(
     (el: HTMLDivElement, opt: PullOptions) => {
-      return execute(el, {
-        command: "pull",
-        args: [
-          opt.remote,
-          opt.mode,
-          opt.tags ? "--tags" : "--no-tags",
-          opt.autoStash ? "--autostash" : "--no-autostash"
-        ],
-        repoPath
-      });
+      return execute(
+        el,
+        {
+          command: "pull",
+          args: [
+            opt.remote,
+            opt.mode,
+            opt.tags ? "--tags" : "--no-tags",
+            opt.autoStash ? "--autostash" : "--no-autostash"
+          ],
+          repoPath
+        },
+        { onSucceeded: reloadRepository }
+      );
     },
-    [execute, repoPath]
+    [execute, repoPath, reloadRepository]
   );
 
   return useCallbackWithErrorHandler(async (): Promise<DialogResult | "failed"> => {

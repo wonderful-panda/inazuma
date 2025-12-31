@@ -1,6 +1,7 @@
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 import { CustomCommandDialogBody } from "@/features/repository/components/dialogs/CustomCommandDialogBody";
+import { useReloadRepository } from "@/features/repository/hooks/actions/openRepository";
 import { repoPathAtom } from "@/features/repository/state";
 import type { DialogResult } from "@/shared/components/ui/Dialog";
 import { useExecuteCustomCommandInXterm } from "@/shared/hooks/shell/useXterm";
@@ -11,15 +12,20 @@ export const useBeginCustomCommand = () => {
   const { execute, kill, isRunning } = useExecuteCustomCommandInXterm();
   const dialog = useXtermDialog({ isRunning });
   const repoPath = useAtomValue(repoPathAtom);
+  const reloadRepository = useReloadRepository();
 
   const openXterm = useCallback(
     async (el: HTMLDivElement, commandLine: string) => {
-      return await execute(el, {
-        commandLine,
-        repoPath
-      });
+      return await execute(
+        el,
+        {
+          commandLine,
+          repoPath
+        },
+        { onSucceeded: reloadRepository }
+      );
     },
-    [execute, repoPath]
+    [execute, repoPath, reloadRepository]
   );
 
   return useCallbackWithErrorHandler(

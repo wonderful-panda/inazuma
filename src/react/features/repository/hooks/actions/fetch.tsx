@@ -6,6 +6,7 @@ import {
   FetchDialogBody,
   type FetchOptions
 } from "@/features/repository/components/dialogs/FetchDialogBody";
+import { useReloadRepository } from "@/features/repository/hooks/actions/openRepository";
 import { repoPathAtom } from "@/features/repository/state";
 import type { DialogResult } from "@/shared/components/ui/Dialog";
 import { useExecuteGitInXterm } from "@/shared/hooks/shell/useXterm";
@@ -15,22 +16,27 @@ import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWit
 export const useBeginFetch = () => {
   const alert = useAlert();
   const repoPath = useAtomValue(repoPathAtom);
+  const reloadRepository = useReloadRepository();
 
   const { execute, kill, isRunning } = useExecuteGitInXterm();
   const dialog = useXtermDialog({ isRunning });
 
   const openXterm = useCallback(
     (el: HTMLDivElement, options: FetchOptions) => {
-      return execute(el, {
-        command: "fetch",
-        args: [
-          options.type === "all" ? "--all" : options.remote,
-          options.tags ? "--tags" : "--no-tags"
-        ],
-        repoPath
-      });
+      return execute(
+        el,
+        {
+          command: "fetch",
+          args: [
+            options.type === "all" ? "--all" : options.remote,
+            options.tags ? "--tags" : "--no-tags"
+          ],
+          repoPath
+        },
+        { onSucceeded: reloadRepository }
+      );
     },
-    [execute, repoPath]
+    [execute, repoPath, reloadRepository]
   );
 
   return useCallbackWithErrorHandler(async (): Promise<DialogResult> => {

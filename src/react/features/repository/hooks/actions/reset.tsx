@@ -3,10 +3,10 @@ import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 import { useDialog } from "@/core/context/DialogContext";
 import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
-import { useReloadRepository } from "@/features/home/hooks/actions/openRepository";
 import { ResetDialogBody } from "@/features/repository/components/ResetBranchDialogBody";
 import { currentBranchAtom, repoPathAtom } from "@/features/repository/state";
 import { useCallbackWithErrorHandler } from "@/shared/hooks/utils/useCallbackWithErrorHandler";
+import { useReloadRepository } from "./openRepository";
 
 export const useBeginReset = () => {
   const repoPath = useAtomValue(repoPathAtom);

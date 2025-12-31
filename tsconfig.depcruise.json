@@ -1,0 +1,11 @@
+{
+  "extends": "./src/react/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/react/*"],
+      "@backend/*": ["./src-tauri/types/bindings/*"]
+    }
+  },
+  "include": ["src/react/**/*.ts", "src/react/**/*.tsx"]
+}

@@ -21,10 +21,10 @@ import {
 } from "react";
 import { useConfig } from "@/core/state/root";
 import { useAppTabsValue } from "@/core/state/tabs";
+import type { IconActionItem, Spacer } from "@/core/types/actions";
 import { invokeTauriCommand } from "@/core/utils/invokeTauriCommand";
 import { useAboutDialog } from "@/features/about/components/AboutDialog";
 import { usePreferenceDialog } from "@/features/preferences/components/PreferenceDialog";
-import type { IconActionItem, Spacer } from "@/features/repository/commands/types";
 import {
   repoConfigAtom,
   repositoryStoresAtomFamily,

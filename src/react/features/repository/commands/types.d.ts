@@ -1,5 +1,9 @@
 import type { IconName } from "@/core/types/IconName";
 
+// Re-export common action types from core
+export type { ActionItem, IconActionItem, Spacer } from "@/core/types/actions";
+
+// Repository-specific command types
 export interface CommitCommand {
   type: "commit";
   id: string;
@@ -19,13 +23,3 @@ export interface FileCommand {
   hidden?(commit: Commit, file: FileEntry): boolean;
   disabled?(commit: Commit, file: FileEntry): boolean;
 }
-
-export interface ActionItem {
-  id: string;
-  label: string;
-  icon?: IconName;
-  disabled?: boolean;
-  handler: () => void;
-}
-export type IconActionItem = ActionItem & { icon: IconName };
-export type Spacer = string & { readonly _Spacer: unique symbol };
