@@ -13,9 +13,9 @@ import {
   useReloadWorkingTree
 } from "@/features/repository/hooks/actions/workingtree";
 import { useFetchCommitDetail } from "@/features/repository/hooks/fetchCommitDetail";
-import { useCommitContextMenu } from "@/features/repository/hooks/useContextMenu";
 import { useShowCommitDiff } from "@/features/repository/hooks/showCommitDiff";
 import { useShowLsTree } from "@/features/repository/hooks/showLsTree";
+import { useCommitContextMenu } from "@/features/repository/hooks/useContextMenu";
 import {
   type CommitLogItems,
   commitDetailAtom,
