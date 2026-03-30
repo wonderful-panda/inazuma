@@ -55,7 +55,7 @@ export const setup = () => {
   });
   monaco.editor.setTheme("inazuma-dark");
 
-  const { typescript, json, css } = monaco.languages;
+  const { typescript, json, css } = monaco;
   for (const d of [typescript.typescriptDefaults, typescript.javascriptDefaults]) {
     d.setDiagnosticsOptions({
       noSemanticValidation: true,
