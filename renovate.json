@@ -1,6 +1,52 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:recommended"],
+  "timezone": "Asia/Tokyo",
+  "schedule": ["before 5am on Friday"],
+  "prConcurrentLimit": 5,
+  "minimumReleaseAge": "5 days",
+  "packageRules": [
+    {
+      "description": "Group Tauri ecosystem updates",
+      "matchPackagePatterns": ["^@tauri-apps/"],
+      "groupName": "Tauri",
+      "automerge": false
+    },
+    {
+      "description": "Group MUI updates",
+      "matchPackagePatterns": ["^@mui/", "^@emotion/"],
+      "groupName": "MUI"
+    },
+    {
+      "description": "Group React updates",
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "React"
+    },
+    {
+      "description": "Group TanStack updates",
+      "matchPackagePatterns": ["^@tanstack/"],
+      "groupName": "TanStack"
+    },
+    {
+      "description": "Group xterm updates",
+      "matchPackagePatterns": ["^@xterm/"],
+      "groupName": "xterm"
+    },
+    {
+      "description": "Auto-merge minor/patch devDependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "description": "Never auto-merge major updates",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Group all Rust crate updates",
+      "matchManagers": ["cargo"],
+      "groupName": "Rust crates"
+    }
   ]
 }
