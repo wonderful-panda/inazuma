@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { createStore } from "jotai";
 import { Provider, useAtomValue, useSetAtom } from "jotai";
-import { DevTools } from "jotai-devtools";
 import { useCallback, useEffect, useMemo } from "react";
 import { CommandGroupTreeProvider } from "@/core/context/CommandGroupContext";
 import { DialogProvider } from "@/core/context/DialogContext";
@@ -42,6 +42,10 @@ import CommitDiffTabTooltip from "./components/CommitDiffTabTooltip";
 import CommitLog from "./components/CommitLog";
 import LsTreeTabTooltip from "./components/LsTreeTabTooltip";
 import { useLoadRepositoryIfNotYet, useReloadRepository } from "./hooks/actions/openRepository";
+
+const DevTools = (
+  import.meta.env.DEV ? lazy(() => import("jotai-devtools").then((m) => m.DevTools)) : () => null
+) as React.FC<{ store?: ReturnType<typeof createStore> }>;
 
 const opt = { preload: true };
 const BlameTab = lazy(async () => (await import("./components/BlameTab")).default, opt);
