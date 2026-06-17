@@ -68,7 +68,7 @@
     "@iconify/react": "^5.2.1",
     "@iconify/utils": "^2.3.0",
     "@tailwindcss/cli": "^4.1.16",
-    "@tailwindcss/vite": "^4.1.16",
+    "@tailwindcss/vite": "^4.3.1",
     "@tauri-apps/cli": "^2.9.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -77,7 +77,7 @@
     "@types/node": "^22.13.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "@vitejs/plugin-react": "^5.1.0",
+    "@vitejs/plugin-react": "^5.2.0",
     "@vitest/ui": "^4.1.2",
     "dependency-cruiser": "^17.3.10",
     "env-cmd": "^10.1.0",
@@ -91,7 +91,7 @@
     "tailwindcss": "^4.1.16",
     "ts-node": "^10.9.1",
     "typescript": "^5.9.3",
-    "vite": "^7.1.12",
+    "vite": "^8.0.16",
     "vitest": "^4.1.2"
   }
 }
