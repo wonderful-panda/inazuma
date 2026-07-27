@@ -1,4 +1,4 @@
-use rand::{distributions::Alphanumeric, thread_rng, Rng};
+use rand::{distr::Alphanumeric, rng, Rng};
 use tokio::{fs::create_dir_all, process::Command};
 
 use super::{rev_parse, GitError};
@@ -13,7 +13,7 @@ use types::FileSpec;
 use super::file::save_to;
 
 fn random_name(length: usize) -> String {
-    thread_rng()
+    rng()
         .sample_iter(&Alphanumeric)
         .take(length)
         .map(char::from)
