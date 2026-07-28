@@ -62,7 +62,7 @@
     "jsondiffpatch": "0.7.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.2",
+    "@biomejs/biome": "^2.5.6",
     "@emotion/react": "^11.14.0",
     "@iconify/json": "^2.2.407",
     "@iconify/react": "^5.2.1",

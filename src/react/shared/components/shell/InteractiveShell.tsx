@@ -41,6 +41,7 @@ const InteractiveShellInner: React.FC<
   // biome-ignore lint/correctness/useExhaustiveDependencies(height): width and height changes should trigger terminal resize
   useEffect(() => {
     if (open) {
+      // biome-ignore lint/suspicious/noFocusedTests: `fit` here is the xterm fit addon, not a focused test
       fit();
     }
   }, [width, height, fit, open]);

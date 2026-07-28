@@ -7,7 +7,7 @@
   },
   "linter": {
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "a11y": {
         "useKeyWithClickEvents": "off",
         "useSemanticElements": "off",
