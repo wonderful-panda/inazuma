@@ -59,7 +59,7 @@
   },
   "overrides": {
     "dompurify": "3.4.12",
-    "jsondiffpatch": "0.7.3"
+    "jsondiffpatch": "0.7.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.6",
