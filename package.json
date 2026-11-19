@@ -82,7 +82,7 @@
     "dependency-cruiser": "^17.3.10",
     "env-cmd": "^10.1.0",
     "globby": "^16.0.0",
-    "handlebars": "^4.7.9",
+    "handlebars": "^4.7.10",
     "jotai-devtools": "^0.13.0",
     "jsdom": "^29.0.1",
     "license-checker": "^25.0.1",
